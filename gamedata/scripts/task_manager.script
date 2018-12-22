@@ -1,0 +1,1777 @@
+local lua_random_task = nil
+local main_target
+
+local parent_by_story = {
+	[003] = "trader",
+	[500] = "barman",
+	[902] = "ecolog",
+	[507] = "dolg",
+	[425] = "borov",
+	[707] = "freedom",
+	[115] = "prapor",
+	[708] = "cherep",
+	[728] = "povar",
+	[734] = "skraga",
+	[729] = "engineer",
+	[724] = "capten",
+	[006] = "wolf",
+	[004] = "shustriy",
+	[510] = "drunk_dolg",
+	[504] = "hunter",
+	[518] = "zastava_commander",
+	[506] = "petrenko",
+	[607] = "lisiy",
+	[719] = "volkodav",
+	[9510]= "voron",
+	[9530]= "lim_trader",
+	[9532]= "pahom",
+	[9536]= "lesnik",
+	[9564]= "borzyi",
+	[9565]= "green_glavn",
+	[083]= "boryan",
+	[515] = "mercenary"
+}
+
+local story_by_parent = {
+	trader						= 003,
+	barman						= 500,
+	ecolog						= 902,
+	dolg					 	= 507,
+	borov					 	= 425,
+	freedom					 	= 707,
+	prapor				 		= 115,
+	cherep					 	= 708,
+	povar					 	= 728,
+	engineer				 	= 729,
+	capten					 	= 724,
+	skraga					 	= 734,
+	wolf						= 006,
+	shustriy					= 004,
+	drunk_dolg					= 510,
+	hunter						= 504,
+	zastava_commander 			= 518,
+	petrenko					= 506,
+	lisiy					 	= 607,
+	voron					 	= 9510,
+	lim_trader					= 9530,
+	pahom						= 9532,
+	lesnik						= 9536,
+	borzyi						= 9564,
+	green_glavn					= 9565,
+	boryan						= 083,
+	volkodav					= 719,
+	mercenary				 	= 515
+}
+
+local return_task_by_type = {
+	eliminate_lager = "return_for_reward",
+	defend_lager    = "return_for_reward",
+	kill_stalker    = "return_for_reward",
+	artefact        = "return_for_reward_bring",
+	monster_part    = "return_for_reward_bring",
+	courier         = "return_for_reward_bring",
+	find_item       = "return_for_reward_bring"
+}
+
+local hash_to_id={}
+local id_to_hash={}
+local ct_to_hash={}
+local hash_to_ct={}
+
+local i,k,v 
+function abort(fmt, ...)
+	local sReason = string.format(fmt, ...) or "<nil>"
+	assert("ERROR:" .. sReason)
+	get_console():execute("ОШИБКА:" .. string.gsub(sReason,"%s","_"))
+	get_console():execute("flush")
+end
+
+Dlg_AddPhrase = function (oDlg, sPhase, idPhase, idParent, ...)
+	return oDlg:AddPhrase(sPhase, idPhase, idParent, ...)
+end
+
+if script_server_object_version() <= 6 then
+	Dlg_AddPhrase = function (oDlg, sPhase, idPhase, idParent, ...)
+		return oDlg:AddPhrase(sPhase, tonumber(idPhase), tonumber(idParent) or -1, ...)
+	end
+end
+
+function stringhash(str)
+	local mpl=1
+	local hash=0
+	for i=1,string.len(str),1 do
+		local val=string.byte(string.sub(str,i,i))
+		hash=hash+mpl*val
+		mpl=mpl*2
+		if mpl==512 then mpl=1 end
+	end
+	return bit_and(hash,BAD_OBJ_ID)
+end
+
+class "Clua_randomTask"
+
+function Clua_randomTask:__init()
+	self.task_ini = ini_file("misc\\task_manager.ltx")
+	self.task_phrase_id = 100
+	if not self.task_ini:section_exist("list") then
+		--ODS("#DBG: Clua_randomTask:Error!:no section [list] in task_manager.ltx")
+	end
+	local n = self.task_ini:line_count("list")
+	local id, value = "",""
+	local category = ""
+	local r_task_rew=ReadIni(db.stor_ltx,"stor","r_treas_items") or "1"
+	self.task_info = {}
+	for i=0,n-1 do
+		result, id, value = self.task_ini:r_line("list",i,"","")
+		local hash = stringhash(id)
+		if hash_to_id[hash] then
+			--ODS("#DBG: Clua_randomTask:Collision!Hash=["..tostring(hash).."],Task=["..tostring(hash_to_id[hash]).."],id=["..tostring(id).."]")
+		end
+		hash_to_id[hash] = id
+		id_to_hash[id]   = hash
+		self.task_info[id] = {}
+		local curr_task_info = self.task_info[id]
+		curr_task_info.type = self.task_ini:r_string(id, "type")
+		curr_task_info.name = id
+		if self.task_ini:line_exist(id, "parent") then
+			curr_task_info.parent		= self.task_ini:r_string(id, "parent")
+			curr_task_info.complex_type = curr_task_info.type .. "_" .. curr_task_info.parent
+		else
+			curr_task_info.parent = "nil"
+			curr_task_info.complex_type = curr_task_info.type
+		end
+		local ct     = self.task_info[id].complex_type
+		local cthash = stringhash(ct)
+		hash_to_ct[cthash]=ct
+		ct_to_hash[ct]=cthash
+		if self.task_ini:line_exist(id, "target") then
+		curr_task_info.target		= self.task_ini:r_string(id, "target")
+		end
+		if not self.task_ini:line_exist(id,"quantity") then
+		curr_task_info.quantity = 1
+		else
+		curr_task_info.quantity	= utils.cfg_get_number(self.task_ini,id,"quantity",nil,false,1)
+		end
+		if not self.task_ini:line_exist(id, "rewarder") then
+			curr_task_info.rewarder	= curr_task_info.parent
+		else
+		curr_task_info.rewarder	= self.task_ini:r_string(id, "rewarder")
+		end
+		if self.task_ini:line_exist(id, "text") then
+			curr_task_info.text			= self.task_ini:r_string(id, "text")
+		end
+		if self.task_ini:line_exist(id, "description") then
+			curr_task_info.description	= self.task_ini:r_string(id, "description")
+		end
+		curr_task_info.time				= utils.cfg_get_number(self.task_ini, id, "time", nil, false)
+		curr_task_info.idle_time		= utils.cfg_get_number(self.task_ini, id, "idle_time", nil, false, 5) --было 15
+		curr_task_info.prior			= utils.cfg_get_number(self.task_ini, id, "prior", nil, false, 0)
+		if self.task_ini:line_exist(id, "init_condition") then
+			curr_task_info.init_condition = xr_logic.parse_condlist(db.actor, "task_manager", "init_condition", self.task_ini:r_string(id, "init_condition"))
+		end
+		curr_task_info.target_kill_item=treasure_manager.parse_spawns(utils.cfg_get_string(self.task_ini,id,"target_kill_items",nil,false,"")) 
+		curr_task_info.reward_item=treasure_manager.parse_spawns(utils.cfg_get_string(self.task_ini,id,"reward_item"..r_task_rew,nil,false,"")) 
+		curr_task_info.reward_money=utils.cfg_get_number(self.task_ini,id,"reward_money"..r_task_rew,nil,false)
+		local target_info = utils.cfg_get_string(self.task_ini, id, "target_info", nil, false,"")
+		if target_info=="" then target_info = nil end
+		curr_task_info.target_info = target_info
+		local reward_info = utils.cfg_get_string(self.task_ini, id, "reward_info", nil, false,"")
+		if reward_info=="" then reward_info = nil end
+		curr_task_info.reward_info = reward_info
+		if reward_info then
+			 self:read_info_reward_section(self.task_ini,reward_info,curr_task_info)
+		end
+		local target_dialog = utils.cfg_get_string(self.task_ini, id, "target_dialog", nil, false,"")
+		if target_dialog=="" then target_dialog = nil end
+		curr_task_info.target_dialog = target_dialog
+		curr_task_info.reward_dialog = utils.cfg_get_string(self.task_ini, id, "reward_dialog", nil, false,"")
+		if self.task_ini:line_exist(id, "community") then
+			curr_task_info.community = self.task_ini:r_string(id, "community")
+		end
+		curr_task_info.reward_rank       = utils.cfg_get_number(self.task_ini, id, "reward_rank", nil, false, 0)
+		curr_task_info.reward_reputation = utils.cfg_get_number(self.task_ini, id, "reward_reputation", nil, false)
+		curr_task_info.reward_relation = parse_key_value(utils.cfg_get_string(self.task_ini, id, "reward_relation", nil, false, ""))
+		if self.task_ini:line_exist(id, "condlist") then
+			curr_task_info.condlist = xr_logic.parse_condlist(db.actor, "task_manager", "condlist", self.task_ini:r_string(id, "condlist"))
+		else
+			curr_task_info.condlist = xr_logic.parse_condlist(db.actor, "task_manager", "condlist", "true")
+		end
+		curr_task_info.need_return         = utils.cfg_get_bool(self.task_ini, id, "need_return", nil, false, true)
+		curr_task_info.init_phrase_id      = self:get_phrase_id_str()
+		curr_task_info.desc_phrase_id      = self:get_phrase_id_str()
+		curr_task_info.yes_phrase_id       = self:get_phrase_id_str()
+		curr_task_info.no_phrase_id        = self:get_phrase_id_str()
+		curr_task_info.completed_phrase_id = self:get_phrase_id_str()
+		curr_task_info.completed_kill_phrase_0_id = self:get_phrase_id_str()
+		curr_task_info.completed_kill_phrase_1_id = self:get_phrase_id_str()
+		curr_task_info.completed_kill_phrase_2_id = self:get_phrase_id_str()
+		curr_task_info.completed_kill_phrase_3_id = self:get_phrase_id_str()
+		curr_task_info.completed_kill_phrase_4_id = self:get_phrase_id_str()
+		curr_task_info.money_or_items_phrase_id = self:get_phrase_id_str()
+		curr_task_info.money_or_items_phrase_2_id = self:get_phrase_id_str()
+		curr_task_info.want_money_phrase_id= self:get_phrase_id_str()
+		curr_task_info.want_items_phrase_id= self:get_phrase_id_str()
+		curr_task_info.add_money_phrase_id = self:get_phrase_id_str()
+		curr_task_info.add_items_phrase_id = self:get_phrase_id_str()
+		curr_task_info.enabled             = true
+		curr_task_info.enabled_props       = false
+		curr_task_info.status              = "normal"
+	end
+		self.task_id_by_type                = {}
+		self.task_id_by_parent              = {}
+		self.task_id_by_rewarder            = {}
+		self.task_id_by_yes_phrase_id       = {}
+		self.task_id_by_completed_phrase_id = {}
+		self.task_id_by_completed_kill_phrase_0_id = {}
+		self.task_id_by_completed_kill_phrase_1_id = {}
+		self.task_id_by_completed_kill_phrase_2_id = {}
+		self.task_id_by_completed_kill_phrase_3_id = {}
+		self.task_id_by_completed_kill_phrase_4_id = {}
+		self.task_id_by_money_or_items_phrase_id={}
+		self.task_id_by_money_or_items_phrase_2_id={}
+		self.task_id_by_want_money_phrase_id= {}
+		self.task_id_by_want_items_phrase_id= {}
+		self.task_id_by_add_money_phrase_id	= {}
+		self.task_id_by_add_items_phrase_id	= {}
+		self.task_id_by_desc_phrase_id      = {}
+		self.task_id_by_init_phrase_id      = {}
+		self.active_task_by_type            = {}
+		self.task_id_self_inited            = {}
+	for k,v in pairs(self.task_info) do
+		if self.task_id_by_type[v.type]==nil then
+			self.task_id_by_type[v.type] = {}
+		end
+		table.insert(self.task_id_by_type[v.type], k)
+		if self.task_id_by_parent[v.parent]==nil then
+			self.task_id_by_parent[v.parent] = {}
+		end
+		table.insert(self.task_id_by_parent[v.parent], k)
+		if self.task_id_by_rewarder[v.rewarder]==nil then
+			self.task_id_by_rewarder[v.rewarder] = {}
+		end
+		table.insert(self.task_id_by_rewarder[v.rewarder], k)
+		if v.rewarder~=v.parent then
+			if self.task_id_by_rewarder[v.parent]==nil then
+			self.task_id_by_rewarder[v.parent] = {}
+			end
+		table.insert(self.task_id_by_rewarder[v.parent], k)
+		end
+		self.task_id_by_yes_phrase_id[v.yes_phrase_id] = k
+		self.task_id_by_completed_phrase_id[v.completed_phrase_id] = k
+		self.task_id_by_completed_kill_phrase_0_id[v.completed_kill_phrase_0_id] = k
+		self.task_id_by_completed_kill_phrase_1_id[v.completed_kill_phrase_1_id] = k
+		self.task_id_by_completed_kill_phrase_2_id[v.completed_kill_phrase_2_id] = k
+		self.task_id_by_completed_kill_phrase_3_id[v.completed_kill_phrase_3_id] = k
+		self.task_id_by_completed_kill_phrase_4_id[v.completed_kill_phrase_4_id] = k
+		self.task_id_by_money_or_items_phrase_id[v.money_or_items_phrase_id]=k
+		self.task_id_by_money_or_items_phrase_2_id[v.money_or_items_phrase_2_id]=k
+		self.task_id_by_want_money_phrase_id[v.want_money_phrase_id]=k
+		self.task_id_by_want_items_phrase_id[v.want_items_phrase_id]=k
+		self.task_id_by_add_money_phrase_id[v.add_money_phrase_id]=k
+		self.task_id_by_add_items_phrase_id[v.add_items_phrase_id]=k
+		self.task_id_by_desc_phrase_id[v.desc_phrase_id] = k
+		self.task_id_by_init_phrase_id[v.init_phrase_id] = k
+		if v.init_condition~=nil then
+			table.insert(self.task_id_self_inited, k)
+		end
+	end
+end
+
+function Clua_randomTask:read_info_reward_section(ini,sect,container)
+	container.reward_info_portion = utils.cfg_get_string(ini,sect,"info_portion",nil,true,"")
+	container.reward_info_dialog = {}
+	local phr = 1
+	while true do
+		local phrase_id = utils.cfg_get_string(ini,sect,"phrase_"..phr,nil,false,"")
+		phr = phr+1
+		if phrase_id==nil or phrase_id=="" then break end
+		table.insert(container.reward_info_dialog, phrase_id)
+	end
+end
+
+local status_to_num = {normal=0,selected=1,completed=2,refused=3,failed=4,rewarded=5,restituion=6}
+local num_to_status = {[0]="normal",[1]="selected",[2]="completed",[3]="refused",[4]="failed",[5]="rewarded",[6]="restituion"}
+
+function Clua_randomTask:save(p)
+	local wt0 = p:w_tell() 
+	local iCnt,iCntA = 0,0
+	p:w_u8(255) --по 0 сделать
+	for k,v in pairs(self.task_info) do
+		iCnt = iCnt + 1
+	end
+	iCnt=iCnt-256
+	p:w_u8(iCnt)
+	for k,v in pairs(self.task_info) do
+		p:w_u16(id_to_hash[k])
+		p:w_bool(v.enabled)
+		p:w_bool(v.enabled_props)
+		p:w_u8(status_to_num[v.status])
+		p:w_u32(v.selected_target or -1)
+		p:w_u32(v.defend_target or -1)
+		--utils.w_CTime(p, v.last_task_time)
+		p:w_u8(v.last_task_time)
+	end
+	for k,v in pairs(self.active_task_by_type) do
+		iCntA = iCntA + 1
+	end
+	p:w_u8(iCntA)
+	for k,v in pairs(self.active_task_by_type) do
+		p:w_u16(ct_to_hash[k])
+		p:w_u16(id_to_hash[v])
+	end
+end
+
+function Clua_randomTask:load(p)
+	local rt0 = p:r_tell()
+	local iCnt,iCntA = p:r_u8(), 0 --по 0 сделать
+	iCnt = p:r_u8()+256
+	for k = 1,iCnt do
+		local hash = p:r_u16()
+		local id=hash_to_id[hash]
+		if id==nil then break end
+		self.task_info[id].enabled = p:r_bool()
+		self.task_info[id].enabled_props = p:r_bool()
+		self.task_info[id].status = num_to_status[p:r_u8()]
+		local selected_target = p:r_u32()
+		if selected_target~=-1 then
+			self.task_info[id].selected_target = selected_target
+		end
+		local defend_target = p:r_u32()
+		if defend_target ~= -1 then
+			self.task_info[id].defend_target = defend_target
+		end
+		self.task_info[id].last_task_time = p:r_u8()
+	end
+	iCntA = p:r_u8()
+	for k = 1,iCntA do
+		local cthash = p:r_u16()
+		local id=hash_to_ct[cthash]
+		local hash=p:r_u16()
+		if id then
+		self.active_task_by_type[id] = hash_to_id[hash]
+		end
+	end
+end
+
+function Clua_randomTask:get_id()
+	self.task_phrase_id = self.task_phrase_id + 1
+	return self.task_phrase_id
+end
+function Clua_randomTask:get_phrase_id_str()
+	return tostring(self:get_id())
+end
+
+function Clua_randomTask:get_parent(npc)
+	local story_id = npc:story_id()
+	return parent_by_story[story_id]
+end
+
+function Clua_randomTask:parent_can_task(actor, npc, p1, p2, p3)
+	local parent = self:get_parent(npc)
+	local avail = false
+	self:task_avail(actor, npc, nil, nil, nil, "reset")
+	for k,v in pairs(self.task_id_by_parent[parent]) do
+		if self:task_avail(actor, npc, nil, nil, self.task_info[v].init_phrase_id, true) and alife():story_object(tonumber(story_by_parent[self.task_info[v].rewarder])) and not has_alife_info(parent.."_task_failed") then
+			avail = true
+		end
+	end
+	return avail
+end
+function Clua_randomTask:active_parent_task(actor, npc)
+	local parent = self:get_parent(npc)
+	for k,v in pairs(self.active_task_by_type) do
+		if (self.task_info[v].status=="selected" or self.task_info[v].status=="completed") then
+			if self.task_info[v].type~="courier" then
+				if (self.task_info[v].parent==parent) then
+				return true
+				end
+			else
+				if (self.task_info[v].rewarder==parent) or (self.task_info[v].parent==parent) then
+					if string.sub (self.task_info[v].target , 1 , 4) == "ammo" then
+						local qnt=vergas_lib.get_box_size(self.task_info[v].target)*self.task_info[v].quantity
+						if vergas_lib.search_items(self.task_info[v].target,qnt,1) then
+							return true
+						end
+					elseif string.find(self.task_info[v].target, "antirad",1,true) or string.find(self.task_info[v].target, "medkit",1,true) or string.find(self.task_info[v].target, "energy_drink",1,true) then
+						if vergas_lib.search_items(self.task_info[v].target,self.task_info[v].quantity,1) then
+							return true
+						end
+					else
+						if sak.have_items_count(self.task_info[v].target,self.task_info[v].quantity) then
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end
+function Clua_randomTask:active_id_task(id_task)
+	local sel_task = self.task_info[self.active_task_by_type[id_task]]
+	local task_id=self.task_id_by_yes_phrase_id[tostring(id_task)]
+		if sel_task.status=="selected"
+		then
+		return true
+		end
+	return false
+end
+function Clua_randomTask:completed_id_task(id_task)
+	if self.task_info[id_task].status=="completed"
+		then
+			return true
+	end
+	return false
+end
+
+function Clua_randomTask:have_completed_job(actor, npc)
+	local parent = self:get_parent(npc)
+	for k,v in pairs(self.active_task_by_type) do
+		if self.task_info[v].parent==parent and
+			 self.task_info[v].status=="completed"
+		then
+			return true
+		end
+	end
+	return false
+end
+
+function Clua_randomTask:action_give_task(actor, npc, p1, p2)
+	local task = CGameTask()
+	local task_id=self.task_id_by_yes_phrase_id[tostring(p2)]
+	local task_desc = self.task_info[task_id]
+	if task_desc.target_info then
+	db.actor:give_info_portion(task_desc.target_info)
+	end
+	task:load(task_desc.complex_type)
+	task:set_title(task_desc.type)
+	local oo = task:get_objective(0)
+	oo:set_article_id(task_desc.description)
+	local objective = SGameTaskObjective(task,1)
+	objective:set_description(task_desc.name)
+	--if task_desc.target_objects~=nil then
+		--task_desc.selected_target = task_desc.target_objects[lua_random(table.getn(task_desc.target_objects))]
+		--print_table(task_desc.target_objects)
+	--end
+	if task_desc.type=="eliminate_lager" then
+		objective:set_map_hint(task_desc.text)
+		objective:set_map_location("eliminate_lager_location")
+		objective:set_object_id(task_desc.selected_target)
+		timers.start_timer("task_"..task_id,0,task_desc.time,11,"task_manager.make_task_failed(\""..task_id.."\")")
+	elseif task_desc.type=="defend_lager" then
+		objective:set_map_hint(task_desc.text)
+		objective:set_map_location("defend_lager_location")
+		objective:set_object_id(task_desc.selected_target)
+		local defend_object = alife():object(task_desc.selected_target)
+		local sm_ini = defend_object:spawn_ini()
+		self.task_info[task_id].defend_target = utils.cfg_get_number(sm_ini, "lua_random_task", "defend_target", nil, true)
+		timers.start_timer("task_"..task_id,0,task_desc.time,11,"task_manager.make_task_failed(\""..task_id.."\")")
+	elseif task_desc.type=="kill_stalker" then
+		objective:set_object_id(task_desc.selected_target)
+		if task_desc.target_dialog then
+			amk_add_target_id_to_kill_targets(task_desc.selected_target,task_desc.target_dialog,task_id)
+			timers.start_timer("task_"..task_id,0,task_desc.time,11,"task_manager.make_task_refused(\""..task_id.."\")")
+		end
+	elseif task_desc.type=="find_item" then
+		--objective:set_object_id(task_desc.selected_target)
+		local n_t=lua_random(math.floor(task_desc.time/2),task_desc.time)
+		timers.start_timer("task_"..task_id,0,n_t,13,"task_manager.make_task_refused(\""..task_id.."\")")
+	elseif task_desc.type=="courier" then
+		sak.create_items(db.actor,task_desc.target,task_desc.quantity)
+		timers.start_timer("task_"..task_id,0,task_desc.time,11,"task_manager.make_task_failed(\""..task_id.."\")")
+	elseif task_desc.type=="artefact" or task_desc.type=="monster_part" then
+		local n_t=lua_random(math.floor(task_desc.time/2),task_desc.time)
+		timers.start_timer("task_"..task_id,0,n_t,13,"task_manager.make_task_refused(\""..task_id.."\")")
+	end
+	objective:add_complete_func("task_manager.task_complete")
+	task:add_objective(objective)
+	
+	if task_desc.need_return then
+		objective = SGameTaskObjective(task,2)
+		objective:set_description(return_task_by_type[task_desc.type])
+		
+		objective:set_map_hint(return_task_by_type[task_desc.type])
+		objective:set_map_location("blue_location")
+		if not alife():story_object(tonumber(story_by_parent[task_desc.rewarder])) and tonumber(story_by_parent[task_desc.rewarder])~=3 then
+			return
+		end
+		objective:set_object_id(alife():story_object(tonumber(story_by_parent[task_desc.rewarder])).id)
+		task:add_objective(objective)
+	end
+	local time = -1
+	db.actor:give_task(task,time,false)
+	self.task_info[self.task_id_by_yes_phrase_id[tostring(p2)]].status = "selected"
+	self.active_task_by_type[task_desc.complex_type] = self.task_id_by_yes_phrase_id[tostring(p2)]
+	for k,v in pairs(self.task_info) do
+		if v.complex_type==task_desc.complex_type then
+			v.enabled = false
+		end
+	end
+end
+
+function Clua_randomTask:action_refuse_task(actor, npc, p1, p2)
+	local task_desc = self.task_info[self.task_id_by_yes_phrase_id[tostring(p2)]]
+	task_desc.status = "refused"
+	news_manager.send_task_news("refused", task_desc.type,task_desc.name)
+	if task_desc.type=="courier" then
+		if string.sub (task_desc.target , 1 , 4) == "ammo" then
+		local qnt=vergas_lib.get_box_size(task_desc.target)*task_desc.quantity
+			if vergas_lib.search_items(task_desc.target,qnt,1) then
+				vergas_lib.search_items(task_desc.target,qnt,2)
+			end
+		elseif string.find(task_desc.target, "antirad",1,true) or string.find(task_desc.target, "medkit",1,true) or string.find(task_desc.target, "energy_drink",1,true) then
+			if vergas_lib.search_items(task_desc.target,task_desc.quantity,1) then
+				vergas_lib.search_items(task_desc.target,task_desc.quantity,2)
+			end
+		else
+			if sak.have_items_count(task_desc.target,task_desc.quantity) then
+			sak_inventory.release_actor_items(task_desc.target,task_desc.quantity)
+			end
+		end
+	end
+	if task_desc.reward_reputation~=nil then
+	db.actor:change_character_reputation(-task_desc.reward_reputation)
+	end
+	if task_desc.reward_relation~=nil then
+		for kk,vv in pairs(task_desc.reward_relation) do
+		relation_registry.change_community_goodwill (kk, db.actor:id(), -(tonumber(vv)))
+		end
+	end
+	if task_desc.reward_rank~=nil then
+	actor_stats.add_points("quests", task_desc.name, 1, -task_desc.reward_rank*5)
+	db.actor:set_character_rank(db.actor:character_rank() -task_desc.reward_rank*5)
+	end
+	amk_remove_target_id_from_kill_targets(self.task_info[self.active_task_by_type[task_desc.complex_type]].selected_target)
+	self.task_info[self.active_task_by_type[task_desc.complex_type]].selected_target = nil
+	for k,v in pairs(self.task_info) do
+		if v.complex_type==task_desc.complex_type then
+			v.enabled = true
+		end
+	end
+end
+
+function Clua_randomTask:task_complete(p1, p2)
+	if db.actor==nil then
+		return false
+	end
+	local sel_task = self.task_info[self.active_task_by_type[p1]]
+	if sel_task==nil then
+		return false
+	end
+	if p2==0 then
+		if not sel_task.need_return and sel_task.status=="completed" then
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+		end
+		if sel_task.status=="rewarded" then
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+		end
+	end
+	if p2==1 then
+		if string.find(p1, "eliminate_lager",1,true)~=nil then
+			local oo = alife():object(sel_task.selected_target)
+			if oo and oo.gulag:get_population_comed()==0 then
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
+		elseif string.find(p1, "defend_lager",1,true)~=nil then
+			if xr_gulag.getGulagState(sel_task.defend_target)==0 then
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
+		elseif string.find(p1, "kill_stalker",1,true)~=nil then
+			local oo = alife():object(sel_task.selected_target)
+			if has_alife_info(self.active_task_by_type[p1].."_done") then
+				amk_remove_target_id_from_kill_targets(sel_task.selected_target)
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
+			if oo and oo:alive()==false then
+				amk_remove_target_id_from_kill_targets(sel_task.selected_target)
+				make_task_refused(p1)
+			end
+		elseif string.find(p1, "artefact",1,true)~=nil then
+			if sak.have_items_count(sel_task.target,sel_task.quantity,false,true) then
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
+		elseif string.find(p1,"monster_part",1,true)~=nil then
+			if sak.have_items_count(sel_task.target,sel_task.quantity) then
+				self.task_info[self.active_task_by_type[p1]].status="completed"
+				return true
+			end
+		elseif string.find(p1, "find_item",1,true)~=nil then
+			if sak.have_items_count(sel_task.target,sel_task.quantity) then
+				self.task_info[self.active_task_by_type[p1]].status = "completed"
+				return true
+			end
+		elseif string.find(p1, "courier",1,true)~=nil then
+			if string.sub (sel_task.target , 1 , 4) == "ammo" then
+			local qnt=vergas_lib.get_box_size(sel_task.target)*sel_task.quantity
+				if vergas_lib.search_items(sel_task.target,qnt,1) then
+					self.task_info[self.active_task_by_type[p1]].status = "completed"
+					return true
+				end
+			elseif string.find(sel_task.target, "antirad",1,true) or string.find(sel_task.target, "medkit",1,true) or string.find(sel_task.target, "energy_drink",1,true) then
+				if vergas_lib.search_items(sel_task.target,sel_task.quantity,1) then
+					self.task_info[self.active_task_by_type[p1]].status = "completed"
+					return true
+				end
+			else
+				if sak.have_items_count(sel_task.target,sel_task.quantity) then
+					self.task_info[self.active_task_by_type[p1]].status = "completed"
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+function Clua_randomTask:faze_1_complete(p1, p2)
+	if db.actor==nil then
+		return false
+	end
+	local sel_task = self.task_info[self.active_task_by_type[p1]]
+	if sel_task==nil then
+		return false
+	end
+	if p2==0 then
+	local day=timers.Get_Game_Days()
+		if not sel_task.need_return and sel_task.status=="completed" then
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+		end
+		if sel_task.status=="rewarded" then
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+		end
+	end
+	if p2==1 then
+		if string.find(p1, "kill_stalker",1,true)~=nil then
+			local oo = alife():object(sel_task.selected_target)
+			if has_alife_info(self.active_task_by_type[p1].."_done") then
+				amk_remove_target_id_from_kill_targets(sel_task.selected_target)
+				self.task_info[self.active_task_by_type[p1]].status = "in_progress"
+				return true
+			end
+			if oo and oo:alive()==false then
+				amk_remove_target_id_from_kill_targets(sel_task.selected_target)
+				make_task_refused(p1)
+			end
+		end
+	end
+	return false
+end
+
+function Clua_randomTask:task_fail(p1, p2)
+	if p2==0 then
+		local sel_task = self.task_info[self.active_task_by_type[p1]]
+		if sel_task==nil then
+			return false
+		end
+		local day=timers.Get_Game_Days()
+		if string.find(p1, "courier",1,true)~=nil then
+			--local rewarder = alife():story_object(story_by_parent[sel_task.rewarder])
+			--if (rewarder==nil or (rewarder.alive~=nil and not rewarder:alive())) and tonumber(story_by_parent[sel_task.parent])~=3 then
+			--self.task_info[self.active_task_by_type[p1]].status = "failed"
+			--self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			--return true
+			--end
+		else
+			local parent = alife():story_object(story_by_parent[sel_task.parent])
+			if (parent==nil or (parent.alive~=nil and not parent:alive())) and tonumber(story_by_parent[sel_task.parent])~=3 then
+			self.task_info[self.active_task_by_type[p1]].status = "failed"
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+			end
+		end
+		if sel_task.status=="refused" or sel_task.status=="failed" then
+			self.task_info[self.active_task_by_type[p1]].last_task_time = day
+			return true
+		end
+		if string.find(p1, "defend_lager",1,true)~=nil then
+			if alife():object(sel_task.selected_target).gulag:get_population_comed()==0 then
+				self.task_info[self.active_task_by_type[p1]].status = "failed"
+				self.task_info[self.active_task_by_type[p1]].last_task_time = day
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function Clua_randomTask:task_callback(p1, p2, state)
+	if tonumber(p2)~=0 then return end
+	if self.active_task_by_type[p1]==nil then return end
+	if tonumber(state)~=0 and tonumber(state)~=2 then return end
+	local task_info=self.task_info[self.active_task_by_type[p1]]
+	timers.stop_timer("task_"..tostring(task_info.name))
+	self.task_info[self.active_task_by_type[p1]].status = "normal"
+	if task_info and task_info.selected_target then
+		amk_remove_target_id_from_kill_targets(task_info.selected_target)
+	end
+	for k,v in pairs(self.task_info) do
+		if v.complex_type==self.task_info[self.active_task_by_type[p1]].complex_type then
+			v.enabled = true
+		end
+	end
+	self.active_task_by_type[p1] = nil
+end
+
+function Clua_randomTask:action_task_show(npc, actor)
+	local parent = self:get_parent(npc)
+	for k,v in pairs(self.task_id_by_parent[parent]) do
+		if self:task_avail(actor, npc, nil, nil, self.task_info[v].init_phrase_id, false) then
+			local task_texture, task_rect = get_texture_info("ui_icons_task_"..self.task_info[v].type, "ui_iconsTotal_locations")
+			db.actor:give_talk_message(game.translate_string(self.task_info[v].name), task_texture, task_rect,"iconed_trade_info")
+		end
+	end
+end
+
+function Clua_randomTask:task_avail(actor, npc, p1, p2, p3, calculate)
+	local task_desc = self.task_info[self.task_id_by_init_phrase_id[tostring(p3)]]
+	if calculate=="reset" then
+		self.current_parent_type_prior = {}
+		return
+	elseif calculate==true then
+		self:check_task_props(self.task_id_by_init_phrase_id[tostring(p3)])
+		local t = task_desc.enabled and task_desc.enabled_props and task_desc.init_condition==nil
+		if t==true and (self.current_parent_type_prior[task_desc.complex_type]==nil or
+			 self.current_parent_type_prior[task_desc.complex_type] > task_desc.prior)
+		then
+			self.current_parent_type_prior[task_desc.complex_type] = task_desc.prior
+		end
+		return t
+	end
+	if self.current_parent_type_prior[task_desc.complex_type]~=nil and
+		 self.current_parent_type_prior[task_desc.complex_type] < task_desc.prior then
+		return false
+	end
+	return task_desc.enabled and task_desc.enabled_props and task_desc.init_condition==nil
+end
+
+function Clua_randomTask:check_task_props(task_id)
+	if self.active_task_by_type[self.task_info[task_id].complex_type]~=nil then
+		self.task_info[task_id].enabled_props = false
+		return
+	end
+	if xr_logic.pick_section_from_condlist(db.actor, db.actor, self.task_info[task_id].condlist)==nil then
+		self.task_info[task_id].enabled_props = false
+		return
+	end
+	local day=timers.Get_Game_Days()
+	if self.task_info[task_id].last_task_time~=nil and (day-self.task_info[task_id].last_task_time) < self.task_info[task_id].idle_time then
+		self.task_info[task_id].enabled_props = false
+		return
+	end
+	if self.task_info[task_id].target_objects~=nil then
+		self.task_info[task_id].selected_target=self.task_info[task_id].target_objects[1]
+	end
+	if self.task_info[task_id].type=="eliminate_lager" then
+		if self.task_info[task_id].target_objects==nil then
+			self.task_info[task_id].enabled_props = false
+			return
+		end
+		for k,v in pairs(self.task_info[task_id].target_objects) do
+			local gulag = alife():object(v).gulag
+			if gulag:get_population_comed() > 0 then
+				self.task_info[task_id].enabled_props = true
+				return
+			end
+		end
+		self.task_info[task_id].enabled_props = false
+		return
+	elseif self.task_info[task_id].type=="defend_lager" then
+		if self.task_info[task_id].target_objects==nil then
+			self.task_info[task_id].enabled_props = false
+			return
+		end
+		for k,v in pairs(self.task_info[task_id].target_objects) do
+			local defend_object = alife():object(v)
+			local sm_ini = defend_object:spawn_ini()
+			local defend_target = utils.cfg_get_number(sm_ini, "lua_random_task", "defend_target", nil, true)
+			if xr_gulag.getGulagState(defend_target)==1 then
+				self.task_info[task_id].enabled_props = true
+				return
+			end
+		end
+		self.task_info[task_id].enabled_props = false
+		return
+	elseif self.task_info[task_id].type=="kill_stalker" then
+		if self.task_info[task_id].target_objects==nil then
+			self.task_info[task_id].enabled_props = false
+			return
+		end
+		local obj = alife():object(self.task_info[task_id].selected_target)
+		if obj~=nil and obj:alive()==true then
+			self.task_info[task_id].enabled_props = true
+			return
+		end
+		self.task_info[task_id].enabled_props = false
+		return
+	--[[elseif self.task_info[task_id].type=="find_item" then
+		if self.task_info[task_id].target_objects==nil or table.getn(self.task_info[task_id].target_objects)==0 then
+			self.task_info[task_id].enabled_props = false
+			return
+		end
+		for k,v in pairs(self.task_info[task_id].target_objects) do
+			local obj = alife():object(v)
+			if obj~=nil then
+				if obj.parent_id~=nil then
+					for kk,vv in pairs(parent_by_story) do
+						local parent = alife():story_object(kk)
+						if parent~=nil and obj.parent_id==parent.id then
+							self.task_info[task_id].enabled_props = false
+							return
+						end
+					end
+				end
+				self.task_info[task_id].enabled_props = true
+				return
+			end
+			self.task_info[task_id].enabled_props = false
+			return
+		end--]]
+	else
+		self.task_info[task_id].enabled_props = true
+		return
+	end
+end
+
+function Clua_randomTask:actor_update()
+	for k,v in pairs(self.task_id_self_inited) do
+		if self.task_info[v].status=="normal" then
+			self:check_task_props(v)
+			if self.task_info[v].enabled_props==true and
+				 self.task_info[v].enabled==true and
+				 xr_logic.pick_section_from_condlist(db.actor, db.actor, self.task_info[v].init_condition)~=nil
+			then
+				self:action_give_task(db.actor, nil, nil, self.task_info[v].yes_phrase_id)
+			end
+		end
+	end
+end
+
+function Clua_randomTask:active_task(actor, npc, p1, p2, p3)
+	return self.task_info[self.task_id_by_init_phrase_id[tostring(p3)]].status=="selected" or
+					self.task_info[self.task_id_by_init_phrase_id[tostring(p3)]].status=="completed"
+end
+
+function Clua_randomTask:make_task_failed(task_id)
+	local task_info=self.task_info[task_id]
+	if task_info and task_info.status~="normal" and task_info.status~="failed" and task_info.status~="refused" then
+		if task_info.reward_reputation~=nil then
+		db.actor:change_character_reputation(- (tonumber(task_info.reward_reputation))*20)
+		end
+		if task_info.reward_relation~=nil then
+			for kk,vv in pairs(task_info.reward_relation) do
+			relation_registry.change_community_goodwill(kk, db.actor:id(), -(tonumber(vv))*20)
+			end
+		end
+		if task_info.reward_rank~=nil then
+		actor_stats.add_points("quests", task_info.name, 1, -(tonumber(task_info.reward_rank))*20)
+		db.actor:set_character_rank(db.actor:character_rank() - (tonumber(task_info.reward_rank))*20)
+		end
+		news_manager.send_task_news("fail", task_info.type,task_info.name)
+		db.actor:give_info_portion(task_info.parent.."_task_failed")
+		task_info.status="failed"
+	end
+end
+function Clua_randomTask:make_task_refused(task_id)
+	if self.task_info and self.task_info[task_id] then
+		if self.task_info[task_id].type=="kill_stalker" then
+			sak_dialog.remove_npc_from_npc_targets(task_id.."_dlg")
+			if has_alife_info(task_id.."_done") then make_task_failed(task_id) return end
+		end
+		if self.task_info[task_id].status~="refused" and self.task_info[task_id].status~="normal" then
+		self.task_info[task_id].status="refused"
+		news_manager.send_task_news("refused", self.task_info[task_id].type,self.task_info[task_id].name)
+		local sender=self.task_info[task_id].rewarder
+		sak.send_tip(game.translate_string(task_id.."_no_need"),game.translate_string(sender.."a"),10,15,"default","news","red", false)
+		end
+	end
+end
+function Clua_randomTask:completed_task(actor, npc, p1, p2, p3)
+	if not p3 then return false end
+	local tid=self.task_id_by_desc_phrase_id[tostring(p2)]
+	if not tid then return false end
+	local task_desc=self.task_info[tid]
+	if task_desc.status~="completed" then return false end
+	if task_desc.type=="courier" and task_desc.rewarder~=self:get_parent(npc) then return false end
+	local can_finish = true
+	if task_desc.type=="artefact" then
+		if not sak.have_items_count(task_desc.target,task_desc.quantity,false,true) then
+			can_finish=false
+		end
+	elseif task_desc.type=="monster_part" then
+		if not sak.have_items_count(task_desc.target,task_desc.quantity) then
+			can_finish=false
+		end
+	elseif task_desc.type=="find_item" then
+		if not sak.have_items_count(task_desc.target,task_desc.quantity) then
+			can_finish = false
+		end
+	elseif task_desc.type=="courier" then
+		if string.sub (task_desc.target , 1 , 4) == "ammo" then
+			local qnt=vergas_lib.get_box_size(task_desc.target)*task_desc.quantity
+			if not vergas_lib.search_items(task_desc.target,qnt,1) then
+				can_finish = false
+			end
+		elseif string.find(task_desc.target, "antirad",1,true) or string.find(task_desc.target, "medkit",1,true) or string.find(task_desc.target, "energy_drink",1,true) then
+			if not vergas_lib.search_items(task_desc.target,task_desc.quantity,1) then
+				can_finish = false
+			end
+		else
+			if not sak.have_items_count(task_desc.target,task_desc.quantity) then
+				can_finish = false
+			end
+		end
+	elseif task_desc.type=="kill_stalker" then
+		if task_desc.target_kill_item and task_desc.target_kill_item~="" then
+			for kk,vv in pairs(task_desc.target_kill_item) do
+				if not sak.have_items_count(vv.section,vv.prob) then
+					can_finish = false
+					break
+				end
+			end
+		end
+	end
+	return can_finish
+end
+
+function Clua_randomTask:notkill_task(actor, npc, p1, p2, p3)
+	if not p3 then return false end
+	local tid=self.task_id_by_desc_phrase_id[tostring(p2)]
+	if not tid then return false end
+	local task_desc=self.task_info[tid]
+	if task_desc.type=="kill_stalker" and task_desc.rewarder==self:get_parent(npc) then return false end
+	return true
+end
+function Clua_randomTask:notcourier_task(actor, npc, p1, p2, p3)
+	if not p3 then return false end
+	local tid=self.task_id_by_desc_phrase_id[tostring(p2)]
+	if not tid then return false end
+	local task_desc=self.task_info[tid]
+	if task_desc.type=="courier" and task_desc.rewarder==self:get_parent(npc) then return false end
+	return true
+end
+function Clua_randomTask:task_take_target(actor,npc, p1, p2)
+	local parent = self:get_parent(npc)
+	local v=self.task_id_by_completed_phrase_id[tostring(p2)]
+	local task_desc = self.task_info[v]
+	if task_desc.parent==parent then
+		if task_desc.type=="courier" then
+			sak.create_items(db.actor,task_desc.target,task_desc.quantity)
+		end
+	end
+end
+
+function Clua_randomTask:init_task_dialog(dlg, parent)
+	local rand=lua_random(1,10)
+	local phr = Dlg_AddPhrase(dlg, "tm_seek_new_job_"..parent.."_"..rand,"0","",-10000)
+	local phrase_script = phr:GetPhraseScript()
+
+	phr = Dlg_AddPhrase(dlg, "tm_"..parent.."_list_job","1","0",-10000)
+	phrase_script = phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_task_show")
+	phrase_script:AddPrecondition("task_manager.precondition_vendor_can_task")
+
+	phr = Dlg_AddPhrase(dlg, "tm_"..parent.."_has_no_job","2","0",-10000)
+	phrase_script = phr:GetPhraseScript()
+	phrase_script:AddDontHasInfo(parent.."_task_failed")
+	phrase_script:AddPrecondition("task_manager.precondition_vendor_cannot_task")
+	
+	phr = dlg:AddPhrase("tm_"..parent.."_has_kozel","4","0",-10000)
+	phrase_script = phr:GetPhraseScript()
+	phrase_script:AddHasInfo(parent.."_task_failed")
+	phrase_script:AddPrecondition("task_manager.precondition_vendor_cannot_task")
+
+	for k,v in pairs(self.task_id_by_parent[parent]) do
+		phr = Dlg_AddPhrase(dlg, self.task_info[v].name, tostring(self.task_info[v].init_phrase_id), "1", -10000)
+		phrase_script = phr:GetPhraseScript()
+		phrase_script:AddPrecondition("task_manager.precondition_task_avail")
+
+		phr = Dlg_AddPhrase(dlg, self.task_info[v].text, tostring(self.task_info[v].desc_phrase_id), tostring(self.task_info[v].init_phrase_id), -10000)
+		phrase_script = phr:GetPhraseScript()
+		if self.task_info[v].type=="kill_stalker" then
+		phrase_script:AddAction("task_manager.show_killed_stalker")
+		end
+		if self.task_info[v].type~="kill_stalker" and self.task_info[v].type~="courier" then
+		phrase_script:AddAction("task_manager.show_reward_init")
+		end
+		
+
+		phr = Dlg_AddPhrase(dlg, "tm_seek_job_yes_"..parent.."_"..rand, tostring(self.task_info[v].yes_phrase_id), tostring(self.task_info[v].desc_phrase_id), -10000)
+		phrase_script = phr:GetPhraseScript()
+		phrase_script:AddAction("task_manager.action_give_task")
+
+		phr = Dlg_AddPhrase(dlg, "tm_seek_job_no_"..parent.."_"..rand, tostring(self.task_info[v].no_phrase_id), tostring(self.task_info[v].desc_phrase_id), -10000)
+	end
+	Dlg_AddPhrase(dlg, "tm_seek_job_abandon_"..parent.."_"..rand,"3","1",-10000)
+end
+
+local cant_finish
+function Clua_randomTask:task_give_target(actor,npc, p1, p2)
+	local rewarder = self:get_parent(npc)
+	local v=self.task_id_by_completed_phrase_id[tostring(p2)]
+	local task_desc = self.task_info[v]
+	local task_typ=task_desc.type
+	if (task_desc.status=="completed" or task_typ=="courier") and task_desc.rewarder==rewarder then
+		cant_finish = true
+		if task_typ=="artefact" or task_typ=="monster_part" then
+			if sak.have_items_count(task_desc.target,task_desc.quantity,false,true)~=true then
+			cant_finish = false
+			else
+			sak_inventory.release_actor_items(task_desc.target,task_desc.quantity)
+			sak.send_tip(game.translate_string(v.."_gg_no_need"),game.translate_string(rewarder.."a"),120,15,"default","news","red", false)
+			end
+		elseif task_typ=="courier" or task_typ=="find_item" then
+			if string.sub (task_desc.target , 1 , 4) == "ammo" then
+				local qnt=vergas_lib.get_box_size(task_desc.target)*task_desc.quantity
+				if vergas_lib.search_items(task_desc.target,qnt,1)~=true then
+					can_finish = false
+				else
+					vergas_lib.search_items(task_desc.target,qnt,2)
+				end
+			elseif string.find(task_desc.target, "antirad",1,true) or string.find(task_desc.target, "medkit",1,true) or string.find(task_desc.target, "energy_drink",1,true) then
+				if vergas_lib.search_items(task_desc.target,task_desc.quantity,1)~=true then
+					can_finish = false
+				else
+					vergas_lib.search_items(task_desc.target,task_desc.quantity,2)
+				end
+			else
+				if sak.have_items_count(task_desc.target,task_desc.quantity)~=true then
+				cant_finish = false
+				else
+					sak_inventory.release_actor_items(task_desc.target,task_desc.quantity)
+				end
+			end
+		end
+	end
+end
+
+function Clua_randomTask:task_give_kill_target(actor,npc, p1, p2)
+	local rewarder = self:get_parent(npc)
+	local v=self.task_id_by_completed_kill_phrase_2_id[tostring(p2)]
+	local task_desc = self.task_info[v]
+	local task_typ=task_desc.type
+	if task_desc.status=="completed" and task_desc.rewarder==rewarder then
+		cant_finish = true
+		if task_desc.target_kill_item and task_desc.target_kill_item~="" then
+			for kk,vv in pairs(task_desc.target_kill_item) do
+				sak_inventory.release_actor_items(vv.section,vv.prob)
+			end
+		end
+	end
+end
+
+function Clua_randomTask:task_reward(actor,npc, p1, p2)
+	local rewarder = self:get_parent(npc)
+	local v=self.task_id_by_completed_phrase_id[tostring(tonumber(p2))]
+	if cant_finish==true then
+	local task_desc = self.task_info[v]
+	self.task_info[v].status = "rewarded"
+		if task_desc.reward_money~=nil then
+		dialogs.relocate_money(npc, task_desc.reward_money, "in")
+		end
+		if task_desc.reward_item~=nil then
+			for kk,vv in pairs(task_desc.reward_item) do
+				if string.find(vv,"^af_") and not string.find(vv,"^af_dummy_") and not string.find(vv,"_dyn",1,true) and not string.find(vv,"_new",1,true) and not string.find(vv,"_1",1,true) and not string.find(vv,"_2",1,true) and not string.find(vv,"_3",1,true) and not string.find(vv,"_4",1,true) and not string.find(vv,"full_akkum",1,true) then
+				local b=lua_random(1,4)
+				vv=vv.."_dyn"..b.."d"
+				end
+			sak.create_items(db.actor,vv,vv.prob)
+			end
+		end
+		if task_desc.reward_reputation~=nil then
+		db.actor:change_character_reputation(task_desc.reward_reputation)
+		end
+		if task_desc.reward_relation~=nil then
+			for kk,vv in pairs(task_desc.reward_relation) do
+			relation_registry.change_community_goodwill (kk, db.actor:id(), tonumber(vv))
+			end
+		end
+		if task_desc.reward_rank~=nil then
+		actor_stats.add_points("quests", task_desc.name, 1, task_desc.reward_rank)
+		db.actor:set_character_rank(db.actor:character_rank() + task_desc.reward_rank)
+		end
+	end
+end
+function Clua_randomTask:task_reward_money(actor,npc,p1,p2)
+	local rewarder=self:get_parent(npc)
+	local v=self.task_id_by_add_money_phrase_id[tostring(tonumber(p2))]
+	if cant_finish==true then
+	local task_desc=self.task_info[v]
+	self.task_info[v].status="rewarded"
+		if task_desc.reward_money~=nil then
+		dialogs.relocate_money(npc,task_desc.reward_money,"in")
+		end
+		if task_desc.reward_reputation~=nil then
+		db.actor:change_character_reputation(task_desc.reward_reputation)
+		end
+		if task_desc.reward_relation~=nil then
+			for kk,vv in pairs(task_desc.reward_relation) do
+			relation_registry.change_community_goodwill (kk,db.actor:id(),tonumber(vv))
+			end
+		end
+		if task_desc.reward_rank~=nil then
+		actor_stats.add_points("quests",task_desc.name,1,task_desc.reward_rank)
+		db.actor:set_character_rank(db.actor:character_rank() + task_desc.reward_rank)
+		end
+		if self.task_info[v].type=="kill_stalker" then
+		sak_dialog.remove_npc_from_npc_targets(v.."_dlg")
+		end
+	end
+end
+function Clua_randomTask:task_reward_item(actor,npc,p1,p2)
+	local rewarder=self:get_parent(npc)
+	local v=self.task_id_by_add_items_phrase_id[tostring(tonumber(p2))]
+	if cant_finish==true then
+	local task_desc=self.task_info[v]
+	self.task_info[v].status="rewarded"
+		if task_desc.reward_item~=nil then
+			for kk,vv in pairs(task_desc.reward_item) do
+				if string.find(vv.section,"^af_") and not string.find(vv.section,"af_dummy_",1,true) and not string.find(vv.section,"af_unknown_",1,true) and not string.find(vv.section,"_dyn",1,true) and not string.find(vv.section,"_new",1,true) and not string.find(vv.section,"_red",1,true) and not string.find(vv.section,"_green",1,true) and not string.find(vv.section,"_1",1,true) and not string.find(vv.section,"_2",1,true) and not string.find(vv.section,"_3",1,true) and not string.find(vv.section,"_4",1,true) and not string.find(vv.section,"full_akkum",1,true) then  
+				local b=lua_random(1,5)
+				vv.section=vv.section.."_dyn"..b.."d"
+				end
+				if vv.section=="repair_item_weapon" then
+					vv.section="repair_item_weapon_feik"
+				elseif vv.section=="repair_itemoutfit" then
+					vv.section="repair_itemoutfit_feik"
+				end
+				sak.create_items(db.actor,vv.section,vv.prob)
+			end
+		end
+		if task_desc.reward_reputation~=nil then
+		db.actor:change_character_reputation(task_desc.reward_reputation)
+		end
+		if task_desc.reward_relation~=nil then
+			for kk,vv in pairs(task_desc.reward_relation) do
+			relation_registry.change_community_goodwill (kk,db.actor:id(),tonumber(vv))
+			end
+		end
+		if task_desc.reward_rank~=nil then
+		actor_stats.add_points("quests",task_desc.name,1,task_desc.reward_rank)
+		db.actor:set_character_rank(db.actor:character_rank() + task_desc.reward_rank)
+		end
+		if self.task_info[v].type=="kill_stalker" then
+		sak_dialog.remove_npc_from_npc_targets(v.."_dlg")
+		end
+	end
+end
+
+function Clua_randomTask:task_reward_info(actor,npc,p1,p2)
+	local v=self.task_id_by_add_items_phrase_id[tostring(tonumber(p2))] or self.task_id_by_add_money_phrase_id[tostring(tonumber(p2))]
+	if cant_finish==true then
+	local task_desc=self.task_info[v]
+		if self.task_info[v].reward_info then
+			local phrcnt=table.getn(self.task_info[v].reward_info_dialog)
+			local first=true
+			for i,p in ipairs(self.task_info[v].reward_info_dialog) do
+				if first then
+				first=false
+				db.actor:give_talk_message("%c[255,216,186,140]"..game.translate_string(p),"ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
+				db.actor:give_info_portion(tostring(self.task_info[v].reward_info_portion))
+				end 
+			end
+		end
+	end
+end
+
+function Clua_randomTask:task_reward_storyline(task)
+	local task_desc = self.task_info[task:get_id()]
+	if task_desc==nil or task_desc.type~="storyline" then
+		return
+	end
+	if task_desc.reward_reputation~=nil then
+		db.actor:change_character_reputation(task_desc.reward_reputation)
+	end
+	if task_desc.reward_relation~=nil then
+		for kk,vv in pairs(task_desc.reward_relation) do
+			relation_registry.change_community_goodwill (kk, db.actor:id(), tonumber(vv))
+		end
+	end
+	if task_desc.reward_rank~=nil then
+		actor_stats.add_points("quests", task_desc.name, 1, task_desc.reward_rank)
+		db.actor:set_character_rank(db.actor:character_rank() + task_desc.reward_rank)
+	end
+end
+
+function Clua_randomTask:init_reward_dialog(dlg, rewarder)
+	local rand=lua_random(1,10)
+	local phr = Dlg_AddPhrase(dlg, "tm_reward_job_"..rewarder.."_"..rand,"0","",-10000)
+	local phrase_script = phr:GetPhraseScript()
+
+	phr = Dlg_AddPhrase(dlg, "tm_"..rewarder.."_job_ask", "2", "0", -10000)
+	phrase_script = phr:GetPhraseScript()
+	local tabl_rewarder=self.task_id_by_rewarder[rewarder]
+
+	for k,v in pairs(tabl_rewarder) do
+	phr=dlg:AddPhrase(self.task_info[v].name,tostring(self.task_info[v].init_phrase_id),"2",-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddPrecondition("task_manager.precondition_active_task")
+
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_what",tostring(self.task_info[v].desc_phrase_id),tostring(self.task_info[v].init_phrase_id),-10000)
+
+	phr=dlg:AddPhrase("tm_job_refuse_"..rewarder.."_"..rand,tostring(self.task_info[v].yes_phrase_id),tostring(self.task_info[v].desc_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_refuse_task")
+	phrase_script:AddPrecondition("task_manager.precondition_notcompleted_task")
+	phrase_script:AddPrecondition("task_manager.precondition_notcourier_task")
+
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_refuse","1",tostring(self.task_info[v].yes_phrase_id),-10000)
+
+	phr=dlg:AddPhrase("tm_job_nothing_"..rewarder.."_"..rand,tostring(self.task_info[v].no_phrase_id),tostring(self.task_info[v].desc_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddPrecondition("task_manager.precondition_notcompleted_task")
+
+	phr=dlg:AddPhrase("tm_job_completed_"..rewarder.."_"..rand,tostring(self.task_info[v].completed_phrase_id),tostring(self.task_info[v].desc_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_task_give_target")
+	phrase_script:AddPrecondition("task_manager.precondition_completed_task")
+	phrase_script:AddPrecondition("task_manager.precondition_notkill_task")
+	
+	phr=dlg:AddPhrase(self.task_info[v].name.."_dlg_done_0",tostring(self.task_info[v].completed_kill_phrase_0_id),tostring(self.task_info[v].desc_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddPrecondition("task_manager.precondition_completed_task")
+	phrase_script:AddPrecondition("task_manager.precondition_kill_task")
+
+	phr=dlg:AddPhrase(self.task_info[v].name.."_dlg_done_1",tostring(self.task_info[v].completed_kill_phrase_1_id),tostring(self.task_info[v].completed_kill_phrase_0_id),-10000)
+	
+	phr=dlg:AddPhrase(self.task_info[v].name.."_dlg_done_2",tostring(self.task_info[v].completed_kill_phrase_2_id),tostring(self.task_info[v].completed_kill_phrase_1_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_task_give_kill_target")
+	
+	phr=dlg:AddPhrase(self.task_info[v].name.."_dlg_done_3",tostring(self.task_info[v].completed_kill_phrase_3_id),tostring(self.task_info[v].completed_kill_phrase_2_id),-10000)
+	
+	phr=dlg:AddPhrase(self.task_info[v].name.."_dlg_done_4",tostring(self.task_info[v].completed_kill_phrase_4_id),tostring(self.task_info[v].completed_kill_phrase_3_id),-10000)
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_money_or_items",tostring(self.task_info[v].money_or_items_phrase_2_id),tostring(self.task_info[v].completed_kill_phrase_4_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.show_2_reward")
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_items",tostring(self.task_info[v].want_items_phrase_id),tostring(self.task_info[v].money_or_items_phrase_2_id),-10000)
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_money",tostring(self.task_info[v].want_money_phrase_id),tostring(self.task_info[v].money_or_items_phrase_2_id),-10000)
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_money_or_items",tostring(self.task_info[v].money_or_items_phrase_id),tostring(self.task_info[v].completed_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.show_reward")
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_items",tostring(self.task_info[v].want_items_phrase_id),tostring(self.task_info[v].money_or_items_phrase_id),-10000)
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_money",tostring(self.task_info[v].want_money_phrase_id),tostring(self.task_info[v].money_or_items_phrase_id),-10000)
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_complete",tostring(self.task_info[v].add_money_phrase_id),tostring(self.task_info[v].want_money_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_task_reward_money")
+	phrase_script:AddAction("task_manager.action_task_reward_info")
+	
+	phr=dlg:AddPhrase("tm_"..rewarder.."_job_complete",tostring(self.task_info[v].add_items_phrase_id),tostring(self.task_info[v].want_items_phrase_id),-10000)
+	phrase_script=phr:GetPhraseScript()
+	phrase_script:AddAction("task_manager.action_task_reward_item")
+	phrase_script:AddAction("task_manager.action_task_reward_info")
+	end
+end
+
+function Clua_randomTask:register_target(obj)
+	if IsStalker(obj) then
+		for k,v in pairs(self.task_id_by_type["kill_stalker"]) do
+			if obj.alive~=nil and obj:alive()==true and
+				obj:profile_name()==self.task_info[v].target and alife():level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())~=alife():level_name(alife():level_id())
+				then 
+				if self.task_info[v].target_objects==nil then
+					self.task_info[v].target_objects = {}
+				end
+				table.insert(self.task_info[v].target_objects, obj.id)
+			end
+		end
+	elseif obj:clsid()==clsid.smart_terrain then
+		for k,v in pairs(self.task_id_by_type["eliminate_lager"]) do
+			if obj:name()==self.task_info[v].target then
+				if self.task_info[v].target_objects==nil then
+					self.task_info[v].target_objects = {}
+				end
+				table.insert(self.task_info[v].target_objects, obj.id)
+			end
+		end
+		for k,v in pairs(self.task_id_by_type["defend_lager"]) do
+			if obj:name()==self.task_info[v].target then
+				local sm_ini = obj:spawn_ini()
+				local defend_target = utils.cfg_get_number(sm_ini, "lua_random_task", "defend_target", nil, true)
+				if self.task_info[v].target_objects==nil then
+					self.task_info[v].target_objects = {}
+				end
+				table.insert(self.task_info[v].target_objects, obj.id)
+			end
+		end
+	else
+		for k,v in pairs(self.task_id_by_type["find_item"]) do
+			if obj:section_name()==self.task_info[v].target then
+				if self.task_info[v].target_objects==nil then
+					self.task_info[v].target_objects = {}
+				end
+				table.insert(self.task_info[v].target_objects, obj.id)
+			end
+		end
+	end
+end
+
+function Clua_randomTask:unregister_target(obj)
+	if IsStalker(obj) then
+		for k,v in pairs(self.task_id_by_type["kill_stalker"]) do
+			if self.task_info[v].target_objects~=nil then
+				for kk,vv in pairs(self.task_info[v].target_objects) do
+					if vv==obj.id then
+						table.remove(self.task_info[v].target_objects, vv)
+					end
+				end
+			end
+		end
+	elseif obj:clsid()==clsid.smart_terrain then
+	else
+		for k,v in pairs(self.task_id_by_type["find_item"]) do
+			if self.task_info[v].target_objects~=nil then
+				for kk,vv in pairs(self.task_info[v].target_objects) do
+					if vv==obj.id then
+						table.remove(self.task_info[v].target_objects, vv)
+					end
+				end
+			end
+		end
+	end
+end
+function Clua_randomTask:stats(obj)
+	--for k,v in pairs(self.task_info) do
+		--if v.init_condition~=nil then
+			--print_table(v.init_condition)
+		--end
+	--end
+end
+function get_lua_random_task()
+	if lua_random_task==nil then
+		lua_random_task = Clua_randomTask()
+	end
+	return lua_random_task
+end
+
+
+function init_trader_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "trader")
+end
+function init_barman_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "barman")
+end
+function init_ecolog_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "ecolog")
+end
+function init_dolg_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "dolg")
+end
+function init_borov_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "borov")
+end
+function init_freedom_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "freedom")
+end
+function init_lim_trader_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "lim_trader")
+end
+function init_green_glavn_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "green_glavn")
+end
+function init_prapor_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "prapor")
+end
+function init_shustriy_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "shustriy")
+end
+function init_lisiy_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "lisiy")
+end
+function init_hunter_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "hunter")
+end
+function init_drunk_dolg_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "drunk_dolg")
+end
+function init_petrenko_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "petrenko")
+end
+function init_wolf_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "wolf")
+end
+function init_voron_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "voron")
+end
+function init_volkodav_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "volkodav")
+end
+function init_boryan_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "boryan")
+end
+function init_lesnik_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "lesnik")
+end
+function init_borzyi_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "borzyi")
+end
+function init_pahom_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "pahom")
+end
+function init_zastava_commander_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "zastava_commander")
+end
+function init_mercenary_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "mercenary")
+end
+function init_cherep_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "cherep")
+end
+function init_povar_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "povar")
+end
+function init_engineer_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "engineer")
+end
+function init_capten_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "capten")
+end
+function init_skraga_task_dialog(dlg)
+	get_lua_random_task():init_task_dialog(dlg, "skraga")
+end
+
+
+function init_trader_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "trader")
+end
+function init_barman_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "barman")
+end
+function init_ecolog_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "ecolog")
+end
+function init_dolg_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "dolg")
+end
+function init_borov_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "borov")
+end
+function init_freedom_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "freedom")
+end
+function init_lim_trader_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "lim_trader")
+end
+function init_green_glavn_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "green_glavn")
+end
+function init_prapor_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "prapor")
+end
+function init_shustriy_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "shustriy")
+end
+function init_lisiy_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "lisiy")
+end
+function init_hunter_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "hunter")
+end
+function init_drunk_dolg_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "drunk_dolg")
+end
+function init_petrenko_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "petrenko")
+end
+function init_wolf_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "wolf")
+end
+function init_voron_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "voron")
+end
+function init_volkodav_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "volkodav")
+end
+function init_boryan_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "boryan")
+end
+function init_lesnik_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "lesnik")
+end
+function init_borzyi_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "borzyi")
+end
+function init_pahom_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "pahom")
+end
+function init_zastava_commander_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "zastava_commander")
+end
+function init_mercenary_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "mercenary")
+end
+function init_cherep_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "cherep")
+end
+function init_povar_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "povar")
+end
+function init_engineer_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "engineer")
+end
+function init_capten_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "capten")
+end
+function init_skraga_reward_dialog(dlg)
+	get_lua_random_task():init_reward_dialog(dlg, "skraga")
+end
+
+function Get_Actor(oSpeaker1, oSpeaker2)
+	if oSpeaker1:id()==db.actor:id() then
+		return oSpeaker1
+	end
+	return oSpeaker2
+end
+function Get_NPC(oSpeaker1, oSpeaker2)
+	if oSpeaker2:id()==db.actor:id() then
+		return oSpeaker1
+	end
+	return oSpeaker2
+end
+function Get_Actor_NPC(oSpeaker1, oSpeaker2)
+	if oSpeaker1:id()==db.actor:id() then
+		return oSpeaker1,oSpeaker2
+	end
+	return oSpeaker2,oSpeaker1
+end
+
+function has_active_vendor_task(actor, npc)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():active_parent_task(oActor, oNPC)
+end
+function precondition_task_avail(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():task_avail(oActor, oNPC, p1, p2, p3, false)
+end
+function precondition_active_task(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():active_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_completed_task(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():completed_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_notcompleted_task(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return not get_lua_random_task():completed_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_notcourier_task(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():notcourier_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_notkill_task(actor, npc, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():notkill_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_kill_task(actor, npc, p1, p2, p3)
+	return not precondition_notkill_task(actor, npc, p1, p2, p3)
+end
+
+function precondition_vendor_can_task(npc, actor, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():parent_can_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_vendor_cannot_task(npc, actor, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return not get_lua_random_task():parent_can_task(oActor, oNPC, p1, p2, p3)
+end
+function precondition_have_completed_job(npc, actor, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return get_lua_random_task():have_completed_job(oActor, oNPC)
+end
+function precondition_dont_have_completed_job(npc, actor, p1, p2, p3)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	return not get_lua_random_task():have_completed_job(oActor, oNPC)
+end
+
+function action_task_show(npc, actor)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():action_task_show(oNPC, oActor)
+end
+function action_give_task(actor, npc, p1, p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():action_give_task(oActor, oNPC, p1, p2)
+end
+function action_refuse_task(npc, actor, p1, p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():action_refuse_task(oNPC, oActor, p1, p2) 
+end
+function action_task_reward_money(actor,npc,p1,p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_reward_money(oActor, oNPC, p1, p2)
+end
+function action_task_reward_item(actor,npc,p1,p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_reward_item(oActor, oNPC, p1, p2)
+end
+function action_task_reward(actor, npc, p1, p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_reward(oActor, oNPC, p1, p2)
+end
+function action_task_reward_info(actor, npc, p1, p2, dlg)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_reward_info(oActor, oNPC, p1, p2, dlg)
+end
+function action_task_give_target(actor, npc, p1, p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_give_target(oActor, oNPC, p1, p2)
+end
+function action_task_give_kill_target(actor, npc, p1, p2)
+	local oActor, oNPC = Get_Actor_NPC(actor, npc)
+	get_lua_random_task():task_give_kill_target(oActor, oNPC, p1, p2)
+end
+function reward_by_task(task)
+	get_lua_random_task():task_reward_storyline(task)
+end
+function task_complete(p1, p2)
+	return get_lua_random_task():task_complete(p1, p2)
+end
+function task_fail(p1, p2)
+	return get_lua_random_task():task_fail(p1, p2)
+end
+function task_callback(p1, p2, state)
+	return get_lua_random_task():task_callback(p1, p2, state)
+end
+
+function actor_update()
+	get_lua_random_task():actor_update()
+end
+
+
+function save(p)
+	get_lua_random_task():save(p)
+end
+function load(p)
+	get_lua_random_task():load(p)
+end
+function clear_task_manager()
+	lua_random_task	= nil
+end
+
+function amk_kill_targets()
+	return xray_vars.load_table(nlc_vars, "kill_targets", {})
+end
+
+
+function amk_add_target_id_to_kill_targets(id,dialog,task_id)
+	local targets=amk_kill_targets()
+	table.insert(targets,{id=id,dialog=dialog,task_id=task_id})    
+	nlc_vars.kill_targets = targets
+end
+
+function amk_remove_target_id_from_kill_targets(id)
+	local targets=amk_kill_targets()
+	for n,v in pairs(targets) do
+		if v.id==id then
+			table.remove(targets,n)
+			break
+		end
+	end
+	nlc_vars.kill_targets = targets
+end
+
+
+function make_task_failed(task)
+local task_id=tostring(task)
+	get_lua_random_task():make_task_failed(task_id)
+end
+function make_task_refused(task)
+local task_id=tostring(task)
+	get_lua_random_task():make_task_refused(task_id)
+end
+
+function show_killed_stalker(actor,npc,p1,p2)
+	local killed_text_who,killed_text_where,killed_stalker,task_details
+	if lua_random_task==nil then lua_random_task=task_manager.Clua_randomTask() end
+	task_details=lua_random_task.task_info[lua_random_task.task_id_by_init_phrase_id[tostring(p2-1)]]
+	if task_details==nil then return end
+	killed_text_who,killed_text_where=format_killed_text(task_details.selected_target)
+	if killed_text_who~=nil and killed_text_who~="" and killed_text_where~=nil and killed_text_where~="" then
+		db.actor:give_talk_message(killed_text_who,"ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
+		db.actor:give_talk_message(killed_text_where,"ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
+	end
+end
+function format_killed_text(id)
+	local rwd={}
+	local killed_text_who, killed_text_where="",""
+	local obj=alife():object(id)
+	if obj==nil then return "" end
+	local m_level = news_main.get_point_description(news_main.get_object_levelname(obj), news_main.get_object_position(obj))
+	local name=news_main.get_npc_name(obj)
+		killed_text_who="Зовут его "..name
+		killed_text_where=m_level.." вроде его видели..."
+	return killed_text_who, killed_text_where
+end
+
+function show_reward_init(actor,npc,p1,p2)
+	if lua_random_task==nil then
+		lua_random_task=task_manager.Clua_randomTask()
+	end
+	local task_details=lua_random_task.task_info[lua_random_task.task_id_by_init_phrase_id[tostring(p2-1)]]
+	if task_details==nil then return end
+	show_all_reward(task_details)
+end
+
+function show_reward(actor,npc,p1,p2)
+	if lua_random_task==nil then
+		lua_random_task=task_manager.Clua_randomTask()
+	end
+	local task_details=lua_random_task.task_info[lua_random_task.task_id_by_money_or_items_phrase_id[tostring(p2)]]
+	if task_details==nil then return end
+	show_all_reward(task_details)
+end
+
+function show_2_reward(actor,npc,p1,p2)
+	if lua_random_task==nil then
+		lua_random_task=task_manager.Clua_randomTask()
+	end
+	local task_details=lua_random_task.task_info[lua_random_task.task_id_by_money_or_items_phrase_2_id[tostring(p2)]]
+	if task_details==nil then return end
+	show_all_reward(task_details)
+end
+
+function show_all_reward(task_details)
+	reward_text=format_reward_text(task_details.reward_item)
+	reward_money=task_details.reward_money
+	local task_texture,task_rect=get_texture_info("ui_iconsTotal_find_item")
+	if reward_text~=nil and reward_text~="" then
+		db.actor:give_talk_message(reward_text,task_texture,task_rect,"iconed_trade_info")
+	end
+	if reward_money~=nil then
+		task_texture,task_rect=get_texture_info("ui_iconsTotal_found_money")
+		if task_details.need_return and reward_text=="" then
+			db.actor:give_talk_message("Ну, или "..reward_money.." рублей (" .. game.translate_string("return_for_reward") .. ")",task_texture,task_rect,"iconed_trade_info")
+		else
+			db.actor:give_talk_message("Ну, или "..reward_money .. " рублей",task_texture,task_rect,"iconed_trade_info")
+		end
+	end
+end
+
+function format_reward_text(reward_list)
+	local i,v
+	local rwd={}
+	local reward_text=""
+	if reward_list==nil then return "" end
+	for kk,vv in pairs(reward_list) do
+		if string.sub (vv.section , 1 , 4) == "ammo" then
+		reward_text=reward_text..game.translate_string(news_manager.get_inv_name(vv.section)).." - "..vv.prob.." пачек;\\n"
+		else
+		reward_text=reward_text..game.translate_string(news_manager.get_inv_name(vv.section)).." - "..vv.prob.." шт.;\\n"
+		end
+	end
+	return reward_text
+end

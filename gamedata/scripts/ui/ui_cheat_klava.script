@@ -1,0 +1,1892 @@
+------------------------------------------------------------------
+--Vergas использование электронной записной книжки
+--NLC-6.0
+------------------------------------------------------------------
+
+class "cheat" (CUIScriptWnd)
+
+local message ="|"
+local message_1 = ""
+local message_2 = ""
+local message_3 = ""
+local message_4 = ""
+local message_5 = ""
+local message_6 = ""
+local message_7 = ""
+local message_8 = ""
+local message_9 = ""
+local message_10 = ""
+local message_11 = ""
+local message_12 = ""
+local message_13 = ""
+local message_14 = ""
+
+local wnd_0							--текст темы заметки
+local wnd_1							--текст заметки: строка 1 
+local wnd_2							--текст заметки: строка 2 
+local wnd_3							--текст заметки: строка 3
+local wnd_4							--текст заметки: строка 4
+local wnd_5							--текст заметки: строка 5
+local wnd_6							--текст заметки: строка 6
+local wnd_7							--текст заметки: строка 7
+local wnd_8							--текст заметки: строка 8
+local wnd_9							--текст заметки: строка 9
+local wnd_10						--текст заметки: строка 10
+local wnd_11						--текст заметки: строка 11
+local wnd_12						--текст заметки: строка 12
+local wnd_13						--текст заметки: строка 13
+local wnd_14						--текст заметки: строка 14
+local wnd_l							--лампочка шифта
+local wnd_r							--лампочка режима
+local wnd_mask
+
+local counter_tema = 0				--количество введенных символов строки темы
+local counter_text_1 = 0			--количество введенных символов 1 строки текста
+local counter_text_2 = 0			--количество введенных символов 2 строки текста
+local counter_text_3 = 0			--количество введенных символов 3 строки текста
+local counter_text_4 = 0			--количество введенных символов 4 строки текста
+local counter_text_5 = 0			--количество введенных символов 5 строки текста
+local counter_text_6 = 0			--количество введенных символов 6 строки текста
+local counter_text_7 = 0			--количество введенных символов 7 строки текста
+local counter_text_8 = 0			--количество введенных символов 8 строки текста
+local counter_text_9 = 0			--количество введенных символов 9 строки текста
+local counter_text_10 = 0			--количество введенных символов 10 строки текста
+local counter_text_11 = 0			--количество введенных символов 11 строки текста
+local counter_text_12 = 0			--количество введенных символов 12 строки текста
+local counter_text_13 = 0			--количество введенных символов 13 строки текста
+local counter_text_14 = 0			--количество введенных символов 14 строки текста
+
+local number_current_line = 0		--номер текущей строки
+local flag_shift = false			--флаг шифта (маленькие/большие буквы)
+local sms_tbl = {}					--таблица сообщений
+local flag_sms = ""					--[["n"-новая заметка, 
+									"nw" -новая заметка из режима просмотра
+									"r" - редактирование существующей заметки
+									"w" - просмотр заголовков]]--
+local tbl_sap = 0					--номер текущей записи
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+	self:Init(196,25,700,561)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_klava.xml")
+	xml:InitStatic("background", self)
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")
+	self:Register(xml:Init3tButton("btn_4", self),"btn_4")
+	self:Register(xml:Init3tButton("btn_5", self),"btn_5")
+	self:Register(xml:Init3tButton("btn_6", self),"btn_6")
+	self:Register(xml:Init3tButton("btn_7", self),"btn_7")
+	self:Register(xml:Init3tButton("btn_8", self),"btn_8")
+	self:Register(xml:Init3tButton("btn_9", self),"btn_9")
+	self:Register(xml:Init3tButton("btn_0", self),"btn_0")
+	self:Register(xml:Init3tButton("btn_shift", self),"btn_shift")
+	self:Register(xml:Init3tButton("btn_sps", self),"btn_sps")
+	self:Register(xml:Init3tButton("btn_zn_vop", self),"btn_zn_vop")
+	self:Register(xml:Init3tButton("btn_z", self),"btn_z")
+	self:Register(xml:Init3tButton("btn_x", self),"btn_x")
+	self:Register(xml:Init3tButton("btn_c", self),"btn_c")
+	self:Register(xml:Init3tButton("btn_v", self),"btn_v")
+	self:Register(xml:Init3tButton("btn_b", self),"btn_b")
+	self:Register(xml:Init3tButton("btn_n", self),"btn_n")
+	self:Register(xml:Init3tButton("btn_m", self),"btn_m")
+	self:Register(xml:Init3tButton("btn_an", self),"btn_an")
+	self:Register(xml:Init3tButton("btn_am", self),"btn_am")
+	self:Register(xml:Init3tButton("btn_zpt", self),"btn_zpt")
+	self:Register(xml:Init3tButton("btn_tchk", self),"btn_tchk")
+	self:Register(xml:Init3tButton("btn_zn_vos", self),"btn_zn_vos")
+	self:Register(xml:Init3tButton("btn_a", self),"btn_a")
+	self:Register(xml:Init3tButton("btn_s", self),"btn_s")
+	self:Register(xml:Init3tButton("btn_d", self),"btn_d")
+	self:Register(xml:Init3tButton("btn_f", self),"btn_f")
+	self:Register(xml:Init3tButton("btn_g", self),"btn_g")
+	self:Register(xml:Init3tButton("btn_h", self),"btn_h")
+	self:Register(xml:Init3tButton("btn_j", self),"btn_j")
+	self:Register(xml:Init3tButton("btn_k", self),"btn_k")
+	self:Register(xml:Init3tButton("btn_l", self),"btn_l")
+	self:Register(xml:Init3tButton("btn_ak", self),"btn_ak")
+	self:Register(xml:Init3tButton("btn_al", self),"btn_al")
+	self:Register(xml:Init3tButton("btn_def", self),"btn_def")
+	self:Register(xml:Init3tButton("btn_q", self),"btn_q")
+	self:Register(xml:Init3tButton("btn_w", self),"btn_w")
+	self:Register(xml:Init3tButton("btn_e", self),"btn_e")
+	self:Register(xml:Init3tButton("btn_r", self),"btn_r")
+	self:Register(xml:Init3tButton("btn_t", self),"btn_t")
+	self:Register(xml:Init3tButton("btn_y", self),"btn_y")
+	self:Register(xml:Init3tButton("btn_u", self),"btn_u")
+	self:Register(xml:Init3tButton("btn_i", self),"btn_i")
+	self:Register(xml:Init3tButton("btn_o", self),"btn_o")
+	self:Register(xml:Init3tButton("btn_p", self),"btn_p")
+	self:Register(xml:Init3tButton("btn_ap", self),"btn_ap")
+	self:Register(xml:Init3tButton("btn_bsp", self),"btn_bsp")
+	self:Register(xml:Init3tButton("btn_ent", self),"btn_ent")
+	self:Register(xml:Init3tButton("btn_new", self),"btn_new") 
+	self:Register(xml:Init3tButton("btn_edit", self),"btn_edit")
+	self:Register(xml:Init3tButton("btn_open", self),"btn_open")
+	self:Register(xml:Init3tButton("btn_save", self),"btn_save")
+	self:Register(xml:Init3tButton("btn_del", self),"btn_del")
+	self:Register(xml:Init3tButton("btn_cls", self),"btn_cls")
+	self:Register(xml:Init3tButton("btn_pup", self),"btn_pup")
+	self:Register(xml:Init3tButton("btn_prev", self),"btn_prev")
+	self:Register(xml:Init3tButton("btn_next", self),"btn_next")
+	self:Register(xml:Init3tButton("btn_pdown", self),"btn_pdown")
+	sms_tbl = vergas_lib.read_messages()
+	if vergas_masks.get_flag_mask() then
+		wnd_mask = CUIStatic()
+		wnd_mask:SetAutoDelete(true)
+		wnd_mask:SetStretchTexture(true)
+		self:AttachChild(wnd_mask)
+		wnd_mask:Init(-196,-25,1024,768)
+		wnd_mask:InitTexture("verg\\masks\\hud_mas_0_0.dds")
+	end
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self)
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self)
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED, self.btn_5, self)
+	self:AddCallback("btn_6", ui_events.BUTTON_CLICKED, self.btn_6, self)
+	self:AddCallback("btn_7", ui_events.BUTTON_CLICKED, self.btn_7, self)
+	self:AddCallback("btn_8", ui_events.BUTTON_CLICKED, self.btn_8, self)
+	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED, self.btn_9, self)
+	self:AddCallback("btn_0", ui_events.BUTTON_CLICKED, self.btn_0, self)
+	self:AddCallback("btn_shift", ui_events.BUTTON_CLICKED, self.btn_shift, self)
+	self:AddCallback("btn_sps", ui_events.BUTTON_CLICKED, self.btn_sps, self)
+	self:AddCallback("btn_zn_vop", ui_events.BUTTON_CLICKED, self.btn_zn_vop, self)
+	self:AddCallback("btn_z", ui_events.BUTTON_CLICKED, self.btn_z, self)
+	self:AddCallback("btn_x", ui_events.BUTTON_CLICKED, self.btn_x, self)
+	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED, self.btn_c, self)
+	self:AddCallback("btn_v", ui_events.BUTTON_CLICKED, self.btn_v, self)
+	self:AddCallback("btn_b", ui_events.BUTTON_CLICKED, self.btn_b, self)
+	self:AddCallback("btn_n", ui_events.BUTTON_CLICKED, self.btn_n, self)
+	self:AddCallback("btn_m", ui_events.BUTTON_CLICKED, self.btn_m, self)
+	self:AddCallback("btn_an", ui_events.BUTTON_CLICKED, self.btn_an, self)
+	self:AddCallback("btn_am", ui_events.BUTTON_CLICKED, self.btn_am, self)
+	self:AddCallback("btn_zpt", ui_events.BUTTON_CLICKED, self.btn_zpt, self)
+	self:AddCallback("btn_tchk", ui_events.BUTTON_CLICKED, self.btn_tchk, self)
+	self:AddCallback("btn_zn_vos", ui_events.BUTTON_CLICKED, self.btn_zn_vos, self)
+	self:AddCallback("btn_a", ui_events.BUTTON_CLICKED, self.btn_a, self)
+	self:AddCallback("btn_s", ui_events.BUTTON_CLICKED, self.btn_s, self)
+	self:AddCallback("btn_d", ui_events.BUTTON_CLICKED, self.btn_d, self)
+	self:AddCallback("btn_f", ui_events.BUTTON_CLICKED, self.btn_f, self)
+	self:AddCallback("btn_g", ui_events.BUTTON_CLICKED, self.btn_g, self)
+	self:AddCallback("btn_h", ui_events.BUTTON_CLICKED, self.btn_h, self)
+	self:AddCallback("btn_j", ui_events.BUTTON_CLICKED, self.btn_j, self)
+	self:AddCallback("btn_k", ui_events.BUTTON_CLICKED, self.btn_k, self)
+	self:AddCallback("btn_l", ui_events.BUTTON_CLICKED, self.btn_l, self)
+	self:AddCallback("btn_ak", ui_events.BUTTON_CLICKED, self.btn_ak, self)
+	self:AddCallback("btn_al", ui_events.BUTTON_CLICKED, self.btn_al, self)
+	self:AddCallback("btn_def", ui_events.BUTTON_CLICKED, self.btn_def, self)
+	self:AddCallback("btn_q", ui_events.BUTTON_CLICKED, self.btn_q, self)
+	self:AddCallback("btn_w", ui_events.BUTTON_CLICKED, self.btn_w, self)
+	self:AddCallback("btn_e", ui_events.BUTTON_CLICKED, self.btn_e, self)
+	self:AddCallback("btn_r", ui_events.BUTTON_CLICKED, self.btn_r, self)
+	self:AddCallback("btn_t", ui_events.BUTTON_CLICKED, self.btn_t, self) 
+	self:AddCallback("btn_y", ui_events.BUTTON_CLICKED, self.btn_y, self)
+	self:AddCallback("btn_u", ui_events.BUTTON_CLICKED, self.btn_u, self) 
+	self:AddCallback("btn_i", ui_events.BUTTON_CLICKED, self.btn_i, self)
+	self:AddCallback("btn_o", ui_events.BUTTON_CLICKED, self.btn_o, self)
+	self:AddCallback("btn_p", ui_events.BUTTON_CLICKED, self.btn_p, self)
+	self:AddCallback("btn_ap", ui_events.BUTTON_CLICKED, self.btn_ap, self)
+	self:AddCallback("btn_bsp", ui_events.BUTTON_CLICKED, self.btn_bsp, self)
+	self:AddCallback("btn_ent", ui_events.BUTTON_CLICKED, self.btn_ent, self)
+	self:AddCallback("btn_new", ui_events.BUTTON_CLICKED, self.btn_new, self) 
+	self:AddCallback("btn_edit", ui_events.BUTTON_CLICKED, self.btn_edit, self)
+	self:AddCallback("btn_open", ui_events.BUTTON_CLICKED, self.btn_open, self)
+	self:AddCallback("btn_save", ui_events.BUTTON_CLICKED, self.btn_save, self)
+	self:AddCallback("btn_del", ui_events.BUTTON_CLICKED, self.btn_del, self)
+	self:AddCallback("btn_cls", ui_events.BUTTON_CLICKED, self.btn_cls, self)	
+	self:AddCallback("btn_pup", ui_events.BUTTON_CLICKED, self.btn_pup, self)
+	self:AddCallback("btn_prev", ui_events.BUTTON_CLICKED, self.btn_prev, self)
+	self:AddCallback("btn_next", ui_events.BUTTON_CLICKED, self.btn_next, self)
+	self:AddCallback("btn_pdown", ui_events.BUTTON_CLICKED, self.btn_pdown, self)
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+	end
+	return true
+end
+
+function cheat:on_quit()
+	vergas_lib.save_messages(sms_tbl)
+	self:clearing()
+	bind_stalker.restore_weapon()
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.spawn_item_in_inv("klava",true)
+end
+
+function cheat:clearing()
+	self:del_windows()
+	self:clear_variables()
+end
+
+function cheat:btn_stop()
+	self:on_quit()
+end
+
+function cheat:print_message(symbol)
+	if flag_sms~="n" and flag_sms~="nw" and flag_sms~="r" then
+		return
+	end
+	if number_current_line==1 then
+		self:print_line_tema(symbol)
+	elseif number_current_line==2 then
+		self:print_line_text_1(symbol)
+	elseif number_current_line==3 then
+		self:print_line_text_2(symbol)
+	elseif number_current_line==4 then
+		self:print_line_text_3(symbol)
+	elseif number_current_line==5 then
+		self:print_line_text_4(symbol)
+	elseif number_current_line==6 then
+		self:print_line_text_5(symbol)
+	elseif number_current_line==7 then
+		self:print_line_text_6(symbol)
+	elseif number_current_line==8 then
+		self:print_line_text_7(symbol)
+	elseif number_current_line==9 then
+		self:print_line_text_8(symbol)
+	elseif number_current_line==10 then
+		self:print_line_text_9(symbol)
+	elseif number_current_line==11 then
+		self:print_line_text_10(symbol)
+	elseif number_current_line==12 then
+		self:print_line_text_11(symbol)
+	elseif number_current_line==13 then
+		self:print_line_text_12(symbol)
+	elseif number_current_line==14 then
+		self:print_line_text_13(symbol)
+	elseif number_current_line==15 then
+		self:print_line_text_14(symbol)
+	end
+	self:snd_klik(1)
+end
+
+function cheat:print_line_tema(symbol)
+	if counter_tema <45 then
+		if message=="|" or message=="" then
+			local str = ""
+			str = vergas_lib.return_time(3)	
+			if string.len (str)==1 then
+				message = "0"..str.."/"
+			else
+				message = str.."/"
+			end
+			counter_tema = counter_tema + 3
+			str = vergas_lib.return_time(2)
+			if string.len (str)==1 then
+				message = message.."0"..str.."/"
+			else
+				message = message..str.."/"
+			end
+			counter_tema = counter_tema + 3
+			str = string.sub (vergas_lib.return_time(1),3)
+			message = message..str
+			counter_tema = counter_tema + 2
+			str = vergas_lib.return_time(4)
+			if string.len (str)==1 then
+				message = message.."(0"..str..":"
+			else
+				message = message.."("..str..":"
+			end
+			counter_tema = counter_tema + 4
+			str = vergas_lib.return_time(5)
+			if string.len (str)==1 then
+				message = message.."0"..str..")"
+			else
+				message = message..str..") "
+			end
+			counter_tema = counter_tema + 4
+		end
+		if wnd_0~=nil then
+			self:DetachChild(wnd_0)
+			wnd_0 = nil
+		end
+		if wnd_0~=nil then
+			self:DetachChild(wnd_0)
+			wnd_0 = nil
+		end
+		if symbol~="&" then
+			message = message ..symbol
+		end
+		wnd_0 = CUIStatic()
+		wnd_0:SetAutoDelete(true)
+		self:AttachChild(wnd_0)
+		wnd_0:SetWndRect(165,92-2-2,475,40)
+		wnd_0:SetFont(GetFontLetterica18Russian())
+		wnd_0:SetTextColor(255, 255, 250, 205)
+		if symbol~="&" then
+			wnd_0:SetText(message.."|")
+		else
+			wnd_0:SetText(message)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_tema = counter_tema + 1
+		end
+	end
+end
+
+function cheat:print_line_text_1(symbol)
+	if counter_text_1 <55 then
+		if wnd_1~=nil then
+			self:DetachChild(wnd_1)
+			wnd_1 = nil
+		end
+		if symbol~="&" then
+			message_1 = message_1 ..symbol
+		end
+		wnd_1 = CUIStatic()
+		wnd_1:SetAutoDelete(true)
+		self:AttachChild(wnd_1)
+		wnd_1:SetWndRect(115,130-10,100,33)
+		wnd_1:SetFont(GetFontLetterica18Russian())
+		wnd_1:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_1:SetText(message_1.."|")
+		else
+			wnd_1:SetText(message_1)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_1 = counter_text_1 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_2(symbol)
+	if counter_text_2 <55 then
+		if wnd_2~=nil then
+			self:DetachChild(wnd_2)
+			wnd_2 = nil
+		end
+		if symbol~="&" then
+			message_2 = message_2 ..symbol
+		end
+		wnd_2 = CUIStatic()
+		wnd_2:SetAutoDelete(true)
+		self:AttachChild(wnd_2)
+		wnd_2:SetWndRect(100+15,160-25,100,33)
+		wnd_2:SetFont(GetFontLetterica18Russian())
+		wnd_2:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_2:SetText(message_2.."|")
+		else
+			wnd_2:SetText(message_2)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_2 = counter_text_2 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_3(symbol)
+	if counter_text_3 <55 then
+		if wnd_3~=nil then
+			self:DetachChild(wnd_3)
+			wnd_3 = nil
+		end
+		if symbol~="&" then
+			message_3 = message_3 ..symbol
+		end
+		wnd_3 = CUIStatic()
+		wnd_3:SetAutoDelete(true)
+		self:AttachChild(wnd_3)
+		wnd_3:SetWndRect(100+15,190-25-15,100,33)
+		wnd_3:SetFont(GetFontLetterica18Russian())
+		wnd_3:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_3:SetText(message_3.."|")
+		else
+			wnd_3:SetText(message_3)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_3 = counter_text_3 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_4(symbol)
+	if counter_text_4 <55 then
+		if wnd_4~=nil then
+			self:DetachChild(wnd_4)
+			wnd_4 = nil
+		end
+		if symbol~="&" then
+			message_4 = message_4 ..symbol
+		end
+		wnd_4 = CUIStatic()
+		wnd_4:SetAutoDelete(true)
+		self:AttachChild(wnd_4)
+		wnd_4:SetWndRect(115,220-25-30,100,33)
+		wnd_4:SetFont(GetFontLetterica18Russian())
+		wnd_4:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_4:SetText(message_4.."|")
+		else
+			wnd_4:SetText(message_4)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_4 = counter_text_4 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_5(symbol)
+	if counter_text_5 <55 then
+		if wnd_5~=nil then
+			self:DetachChild(wnd_5)
+			wnd_5 = nil
+		end
+		if symbol~="&" then
+			message_5 = message_5 ..symbol
+		end
+		wnd_5 = CUIStatic()
+		wnd_5:SetAutoDelete(true)
+		self:AttachChild(wnd_5)
+		wnd_5:SetWndRect(100+15,250-25-45,100,33)
+		wnd_5:SetFont(GetFontLetterica18Russian())
+		wnd_5:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_5:SetText(message_5.."|")
+		else
+			wnd_5:SetText(message_5)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_5 = counter_text_5 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_6(symbol)
+	if counter_text_6 <55 then
+		if wnd_6~=nil then
+			self:DetachChild(wnd_6)
+			wnd_6 = nil
+		end
+		if symbol~="&" then
+			message_6 = message_6 ..symbol
+		end
+		wnd_6 = CUIStatic()
+		wnd_6:SetAutoDelete(true)
+		self:AttachChild(wnd_6)
+		wnd_6:SetWndRect(100+15,280-25-60,100,33)
+		wnd_6:SetFont(GetFontLetterica18Russian())
+		wnd_6:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_6:SetText(message_6.."|")
+		else
+			wnd_6:SetText(message_6)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_6 = counter_text_6 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_7(symbol)
+	if counter_text_7 <55 then
+		if wnd_7~=nil then
+			self:DetachChild(wnd_7)
+			wnd_7 = nil
+		end
+		if symbol~="&" then
+			message_7 = message_7 ..symbol
+		end
+		wnd_7 = CUIStatic()
+		wnd_7:SetAutoDelete(true)
+		self:AttachChild(wnd_7)
+		wnd_7:SetWndRect(100+15,310-25-75,100,33)
+		wnd_7:SetFont(GetFontLetterica18Russian())
+		wnd_7:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_7:SetText(message_7.."|")
+		else
+			wnd_7:SetText(message_7)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_7 = counter_text_7 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_8(symbol)
+	if counter_text_8 <55 then
+		if wnd_8~=nil then
+			self:DetachChild(wnd_8)
+			wnd_8 = nil
+		end
+		if symbol~="&" then
+			message_8 = message_8 ..symbol
+		end
+		wnd_8 = CUIStatic()
+		wnd_8:SetAutoDelete(true)
+		self:AttachChild(wnd_8)
+		wnd_8:SetWndRect(100+15,310-25-75+15,100,33)
+		wnd_8:SetFont(GetFontLetterica18Russian())
+		wnd_8:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_8:SetText(message_8.."|")
+		else
+			wnd_8:SetText(message_8)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_8 = counter_text_8 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_9(symbol)
+	if counter_text_9 <55 then
+		if wnd_9~=nil then
+			self:DetachChild(wnd_9)
+			wnd_9 = nil
+		end
+		if symbol~="&" then
+			message_9 = message_9 ..symbol
+		end
+		wnd_9 = CUIStatic()
+		wnd_9:SetAutoDelete(true)
+		self:AttachChild(wnd_9)
+		wnd_9:SetWndRect(100+15,310-25-75+30,100,33)
+		wnd_9:SetFont(GetFontLetterica18Russian())
+		wnd_9:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_9:SetText(message_9.."|")
+		else
+			wnd_9:SetText(message_9)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_9 = counter_text_9 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_10(symbol)
+	if counter_text_10 <55 then
+		if wnd_10~=nil then
+			self:DetachChild(wnd_10)
+			wnd_10 = nil
+		end
+		if symbol~="&" then
+			message_10 = message_10 ..symbol
+		end
+		wnd_10 = CUIStatic()
+		wnd_10:SetAutoDelete(true)
+		self:AttachChild(wnd_10)
+		wnd_10:SetWndRect(100+15,310-25-75+45,100,33)
+		wnd_10:SetFont(GetFontLetterica18Russian())
+		wnd_10:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_10:SetText(message_10.."|")
+		else
+			wnd_10:SetText(message_10)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_10 = counter_text_10 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_11(symbol)
+	if counter_text_11 <55 then
+		if wnd_11~=nil then
+			self:DetachChild(wnd_11)
+			wnd_11 = nil
+		end
+		if symbol~="&" then
+			message_11 = message_11 ..symbol
+		end
+		wnd_11 = CUIStatic()
+		wnd_11:SetAutoDelete(true)
+		self:AttachChild(wnd_11)
+		wnd_11:SetWndRect(100+15,310-25-75+60,100,33)
+		wnd_11:SetFont(GetFontLetterica18Russian())
+		wnd_11:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_11:SetText(message_11.."|")
+		else
+			wnd_11:SetText(message_11)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_11 = counter_text_11 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_12(symbol)
+	if counter_text_12 <55 then
+		if wnd_12~=nil then
+			self:DetachChild(wnd_12)
+			wnd_12 = nil
+		end
+		if symbol~="&" then
+			message_12 = message_12 ..symbol
+		end
+		wnd_12 = CUIStatic()
+		wnd_12:SetAutoDelete(true)
+		self:AttachChild(wnd_12)
+		wnd_12:SetWndRect(100+15,310-25-75+75,100,33)
+		wnd_12:SetFont(GetFontLetterica18Russian())
+		wnd_12:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_12:SetText(message_12.."|")
+		else
+			wnd_12:SetText(message_12)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_12 = counter_text_12 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_13(symbol)
+	if counter_text_13 <55 then
+		if wnd_13~=nil then
+			self:DetachChild(wnd_13)
+			wnd_13 = nil
+		end
+		if symbol~="&" then
+			message_13 = message_13 ..symbol
+		end
+		wnd_13 = CUIStatic()
+		wnd_13:SetAutoDelete(true)
+		self:AttachChild(wnd_13)
+		wnd_13:SetWndRect(100+15,310-25-75+90,100,33)
+		wnd_13:SetFont(GetFontLetterica18Russian())
+		wnd_13:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_13:SetText(message_13.."|")
+		else
+			wnd_13:SetText(message_13)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_13 = counter_text_13 + 1
+		end
+	end
+end
+
+function cheat:print_line_text_14(symbol)
+	if counter_text_14 <55 then
+		if wnd_14~=nil then
+			self:DetachChild(wnd_14)
+			wnd_14 = nil
+		end
+		if symbol~="&" then
+			message_14 = message_14 ..symbol
+		end
+		wnd_14 = CUIStatic()
+		wnd_14:SetAutoDelete(true)
+		self:AttachChild(wnd_14)
+		wnd_14:SetWndRect(100+15,310-25-75+105,100,33)
+		wnd_14:SetFont(GetFontLetterica18Russian())
+		wnd_14:SetTextColor(255, 255, 255, 255)
+		if symbol~="&" then
+			wnd_14:SetText(message_14.."|")
+		else
+			wnd_14:SetText(message_14)
+		end
+		if symbol~="" and symbol~="&" then
+			counter_text_14 = counter_text_14 + 1
+		end
+	end
+end
+
+function cheat:btn_1()
+	self:print_message("1")
+end
+
+function cheat:btn_2()
+	self:print_message("2")
+end
+
+function cheat:btn_3()
+	self:print_message("3")
+end
+
+function cheat:btn_4()								-- Кнопка 4
+	self:print_message("4")
+end
+
+function cheat:btn_5()								-- Кнопка 5
+	self:print_message("5")
+end
+
+function cheat:btn_6()								-- Кнопка 6
+	self:print_message("6")
+end
+
+function cheat:btn_7()								-- Кнопка 7
+	self:print_message("7")
+end
+
+function cheat:btn_8()								-- Кнопка 8
+	self:print_message("8")
+end
+
+function cheat:btn_9()								-- Кнопка 9
+	self:print_message("9")
+end
+
+function cheat:btn_0()								-- Кнопка 0
+	self:print_message("0")
+end
+
+function cheat:btn_shift()							-- Кнопка шифт
+	if flag_shift then
+		flag_shift = false
+		if wnd_l~=nil then
+			self:DetachChild(wnd_l)
+			wnd_l = nil
+		end
+	else
+		flag_shift = true
+		wnd_l = CUIStatic()
+		wnd_l:SetAutoDelete(true)
+		self:AttachChild(wnd_l)
+		wnd_l:SetStretchTexture(true)
+		wnd_l:InitTexture("ui_klava_light")	
+		wnd_l:SetWndRect(56,64,12,13)
+	end
+	self:snd_klik(1)
+end
+
+function cheat:btn_sps()							-- Кнопка пробел
+	self:print_message(" ")
+end
+
+function cheat:btn_zn_vop()							-- Кнопка ?
+	self:print_message("?")
+end
+
+function cheat:btn_z()								-- Кнопка Я
+	if flag_shift then
+		self:print_message("Я")
+	else
+		self:print_message("я")
+	end
+end
+
+function cheat:btn_x()								-- Кнопка Ч
+	if flag_shift then
+		self:print_message("Ч")
+	else
+		self:print_message("ч")
+	end
+end
+
+function cheat:btn_c()								-- Кнопка С
+	if flag_shift then
+		self:print_message("С")
+	else
+		self:print_message("с")
+	end
+end
+
+function cheat:btn_v()								-- Кнопка М
+	if flag_shift then
+		self:print_message("М")
+	else
+		self:print_message("м")
+	end
+end
+
+function cheat:btn_b()								-- Кнопка И
+	if flag_shift then
+		self:print_message("И")
+	else
+		self:print_message("и")
+	end
+end
+
+function cheat:btn_n()								-- Кнопка Т
+	if flag_shift then
+		self:print_message("Т")
+	else
+		self:print_message("т")
+	end
+end
+
+function cheat:btn_m()								-- Кнопка Ь
+	if flag_shift then
+		self:print_message("Ь")
+	else
+		self:print_message("ь")
+	end
+end
+
+function cheat:btn_an()								-- Кнопка Б
+	if flag_shift then
+		self:print_message("Б")
+	else
+		self:print_message("б")
+	end
+end
+
+function cheat:btn_am()								-- Кнопка Ю
+	if flag_shift then
+		self:print_message("Ю")
+	else
+		self:print_message("ю")
+	end
+end
+
+function cheat:btn_zpt()							-- Кнопка запятая
+	self:print_message(",")
+end
+
+function cheat:btn_tchk()							-- Кнопка точка
+	self:print_message(".")
+end
+
+function cheat:btn_zn_vos()							-- Кнопка !
+	self:print_message("!")
+end
+
+function cheat:btn_a()								-- Кнопка Ф
+	if flag_shift then
+		self:print_message("Ф")
+	else
+		self:print_message("ф")
+	end
+end
+
+function cheat:btn_s()								-- Кнопка Ы
+	if flag_shift then
+		self:print_message("Ы")
+	else
+		self:print_message("ы")
+	end
+end
+
+function cheat:btn_d()								-- Кнопка В
+	if flag_shift then
+		self:print_message("В")
+	else
+		self:print_message("в")
+	end
+end
+
+function cheat:btn_f()								-- Кнопка А
+	if flag_shift then
+		self:print_message("А")
+	else
+		self:print_message("а")
+	end
+end
+
+function cheat:btn_g()								-- Кнопка П
+	if flag_shift then
+		self:print_message("П")
+	else
+		self:print_message("п")
+	end
+end
+
+function cheat:btn_h()								-- Кнопка Р
+	if flag_shift then
+		self:print_message("Р")
+	else
+		self:print_message("р")
+	end
+end
+
+function cheat:btn_j()								-- Кнопка О
+	if flag_shift then
+		self:print_message("О")
+	else
+		self:print_message("о")
+	end
+end
+
+function cheat:btn_k()								-- Кнопка Л
+	if flag_shift then
+		self:print_message("Л")
+	else
+		self:print_message("л")
+	end
+end
+
+function cheat:btn_l()								-- Кнопка Д
+	if flag_shift then
+		self:print_message("Д")
+	else
+		self:print_message("д")
+	end
+end
+
+function cheat:btn_ak()								-- Кнопка Ж
+	if flag_shift then
+		self:print_message("Ж")
+	else
+		self:print_message("ж")
+	end
+end
+
+function cheat:btn_al()								-- Кнопка Э
+	if flag_shift then
+		self:print_message("Э")
+	else
+		self:print_message("э")
+	end
+end
+
+function cheat:btn_def()							-- Кнопка ДЕФИС
+	self:print_message("-")
+end
+
+function cheat:btn_q()								-- Кнопка Й
+	if flag_shift then
+		self:print_message("Й")
+	else
+		self:print_message("й")
+	end
+end
+
+function cheat:btn_w()								-- Кнопка Ц
+	if flag_shift then
+		self:print_message("Ц")
+	else
+		self:print_message("ц")
+	end
+end
+
+function cheat:btn_e()								-- Кнопка У
+	if flag_shift then
+		self:print_message("У")
+	else
+		self:print_message("у")
+	end
+end
+
+function cheat:btn_r()								-- Кнопка К
+	if flag_shift then
+		self:print_message("К")
+	else
+		self:print_message("к")
+	end
+end
+
+function cheat:btn_t()								-- Кнопка Е
+	if flag_shift then
+		self:print_message("Е")
+	else
+		self:print_message("е")
+	end
+end
+
+function cheat:btn_y()								-- Кнопка Н
+	if flag_shift then
+		self:print_message("Н")
+	else
+		self:print_message("н")
+	end
+end
+
+function cheat:btn_u()								-- Кнопка Г
+	if flag_shift then
+		self:print_message("Г")
+	else
+		self:print_message("г")
+	end
+end
+
+function cheat:btn_i()								-- Кнопка Ш
+	if flag_shift then
+		self:print_message("Ш")
+	else
+		self:print_message("ш")
+	end
+end
+
+function cheat:btn_o()								-- Кнопка Щ
+	if flag_shift then
+		self:print_message("Щ")
+	else
+		self:print_message("щ")
+	end
+end
+
+function cheat:btn_p()								-- Кнопка З
+	if flag_shift then
+		self:print_message("З")
+	else
+		self:print_message("з")
+	end
+end
+
+function cheat:btn_ap()								-- Кнопка Х
+	if flag_shift then
+		self:print_message("Х")
+	else
+		self:print_message("х")
+	end
+end
+
+function  cheat:btn_bsp()							-- Кнопка  Backspace
+	if  number_current_line==1 then
+		--строка темы
+		counter_tema = counter_tema - 1
+		message = string.sub (message, 1 ,counter_tema)
+		self:print_message("")
+	elseif	number_current_line==2 then
+		if counter_text_1==0 then
+			self:print_message("&")
+			number_current_line = 1
+		else
+			counter_text_1  = counter_text_1 - 1
+			message_1 = string.sub (message_1, 1 ,counter_text_1)
+			self:print_message("&")
+			self:print_message("")
+		end
+	elseif	number_current_line==3 then
+		if counter_text_2==0 then
+			self:print_message("&")
+			number_current_line = 2
+		else
+			counter_text_2  = counter_text_2 - 1
+			message_2 = string.sub (message_2, 1 ,counter_text_2)
+			self:print_message("")
+		end
+	elseif	number_current_line==4 then
+		if counter_text_3==0 then
+			self:print_message("&")
+			number_current_line = 3
+		else
+			counter_text_3  = counter_text_3 - 1
+			message_3 = string.sub (message_3, 1 ,counter_text_3)
+			self:print_message("")
+		end
+	elseif	number_current_line==5 then
+		if counter_text_4==0 then
+			self:print_message("&")
+			number_current_line = 4
+		else
+			counter_text_4  = counter_text_4 - 1
+			message_4 = string.sub (message_4, 1 ,counter_text_4)
+			self:print_message("")
+		end
+	elseif	number_current_line==6 then
+		if counter_text_5==0 then
+			self:print_message("&")
+			number_current_line = 5
+		else
+			counter_text_5  = counter_text_5 - 1
+			message_5 = string.sub (message_5, 1 ,counter_text_5)
+			self:print_message("")
+		end
+	elseif	number_current_line==7 then
+		if counter_text_6==0 then
+			self:print_message("&")
+			number_current_line = 6
+		else
+			counter_text_6  = counter_text_6 - 1
+			message_6 = string.sub (message_6, 1 ,counter_text_6)
+			self:print_message("")
+		end
+	elseif	number_current_line==8 then
+		if counter_text_7==0 then
+			self:print_message("&")
+			number_current_line = 7
+		else
+			counter_text_7  = counter_text_7 - 1
+			message_7 = string.sub (message_7, 1 ,counter_text_7)
+			self:print_message("")
+		end
+	elseif	number_current_line==9 then
+		if counter_text_8==0 then
+			self:print_message("&")
+			number_current_line = 8
+		else
+			counter_text_8  = counter_text_8 - 1
+			message_8 = string.sub (message_8, 1 ,counter_text_8)
+			self:print_message("")
+		end
+	end
+end
+
+function  cheat:btn_ent()							-- Кнопка  Enter
+	if number_current_line < 15 then
+		self:print_message("&")
+		number_current_line = number_current_line + 1
+		self:print_message("")
+	end
+end
+
+function  cheat:btn_cls()							-- Кнопка  Выход
+	self:on_quit()
+end
+
+function cheat:btn_pup()							-- Кнопка Перемотка на первую
+	if flag_sms~="w" then
+		return
+	end
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	tbl_sap = 1
+	local fl_1 = true 
+	local fl_2 = true
+	while fl_1 do
+		if sms_tbl[tbl_sap]=="" then
+			--первая запись потерта, двигаем на следующую
+			tbl_sap = tbl_sap + 1
+			if tbl_sap==table.getn(sms_tbl) then
+				--ну нету больше записей
+				fl_1 = false
+				fl_2 = false
+				flag_sms = ""		-- режима работы нет. Нечего показывать
+				self:show_mode()
+			end
+		else
+			--запись есть, надо вылезть из цикла.
+			fl_1 = false
+		end
+	end	
+	if fl_2 then
+		self:show_sms(1)
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_prev()							-- Кнопка Перемотка на предыдущую
+	if flag_sms~="w" then
+		return
+	end
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	if tbl_sap==1 or tbl_sap==0 then
+		return
+	end
+	local fl_1 = true 
+	local fl_2 = true
+	while fl_1 do
+		tbl_sap = tbl_sap - 1
+		if tbl_sap >0 then
+			if sms_tbl[tbl_sap]~="" then
+				--запись есть, надо вылезть из цикла.
+				fl_1 = false
+			end
+		else
+			--ну нету больше записей
+			fl_1 = false
+			fl_2 = false
+			flag_sms = ""		-- режима работы нет. Нечего показывать
+			self:show_mode()
+		end
+	end
+	if fl_2 then
+		self:show_sms(tbl_sap)
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_next()							-- Кнопка Перемотка на следующую
+	if flag_sms~="w" then
+		return
+	end
+	if table.getn(sms_tbl)==0 or tbl_sap==table.getn(sms_tbl) then
+		return
+	end
+	if tbl_sap==table.getn(sms_tbl) then
+		return
+	end
+	local fl_1 = true 
+	local fl_2 = true
+	while fl_1 do
+		tbl_sap = tbl_sap + 1
+		if tbl_sap <= table.getn(sms_tbl) then
+			if sms_tbl[tbl_sap]~="" then
+				--запись есть, надо вылезть из цикла.
+				fl_1 = false
+			end
+		else
+			--ну нету больше записей
+			fl_1 = false
+			fl_2 = false
+			flag_sms = ""		-- режима работы нет. Нечего показывать
+			self:show_mode()
+		end
+	end
+	if fl_2 then
+		self:show_sms(tbl_sap)
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_pdown()							-- Кнопка Перемотка на последнюю
+	if flag_sms~="w" then
+		return
+	end
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	tbl_sap = table.getn(sms_tbl)
+	local fl_1 = true 
+	local fl_2 = true
+	while fl_1 do
+		if sms_tbl[tbl_sap]=="" then
+			--последняя запись потерта, двигаем на предыдущую
+			tbl_sap = tbl_sap - 1
+			if tbl_sap==0 then
+				--ну нету больше записей
+				fl_1 = false
+				fl_2 = false
+				flag_sms = ""		-- режима работы нет. Нечего показывать
+				self:show_mode()
+			end
+		else
+			--запись есть, надо вылезть из цикла.
+			fl_1 = false
+		end
+	end	
+	if fl_2 then
+		self:show_sms(tbl_sap)
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_new()							-- Кнопка Новая запись 
+	if flag_sms~="" and flag_sms~="w" then
+		return
+	end
+
+	self:clearing()
+	
+	if flag_sms=="" then
+		flag_sms = "n"								--режим новой записи из пустого режима
+	elseif 	flag_sms=="w" then
+		flag_sms = "nw"								--режим новой записи из режима просмотра
+	end
+	
+	number_current_line = 1
+	
+	wnd_0 = CUIStatic()
+	wnd_0:SetAutoDelete(true)
+	self:AttachChild(wnd_0)
+	wnd_0:SetWndRect(105+25+100,77+10+5,475,40)
+	wnd_0:SetFont(GetFontLetterica18Russian())
+	wnd_0:SetTextColor(255, 54, 54, 54)
+	wnd_0:SetText("ВВЕДИТЕ ТЕКСТ ЗАГОЛОВКА ЗАМЕТКИ")
+	self:show_mode()
+	self:snd_klik(2)
+end
+
+function cheat:btn_edit()							-- Кнопка Редактировать запись 
+	if flag_sms~="w" then
+		return
+	end
+	
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	
+	if tbl_sap==0 then
+		return
+	end
+
+	flag_sms = "r"		--редактирование записи
+	self:show_mode()
+	local str_tmp = vergas_lib.str_explode("|",sms_tbl[tbl_sap],true)
+	if str_tmp[1]~=" " then
+		message = str_tmp[1]
+	else
+		message = ""
+	end
+	if str_tmp[2]~=" " then
+		message_1 = str_tmp[2]
+	else
+		message_1 = ""
+	end
+	if str_tmp[3]~=" " then
+		message_2 = str_tmp[3]
+	else
+		message_2 = ""
+	end
+	if str_tmp[4]~=" " then
+		message_3 = str_tmp[4]
+	else
+		message_3 = ""
+	end
+	if str_tmp[5]~=" " then
+		message_4 = str_tmp[5]
+	else
+		message_4 = ""
+	end
+	if str_tmp[6]~=" " then
+		message_5 = str_tmp[6]
+	else
+		message_5 = ""
+	end
+	if str_tmp[7]~=" " then
+		message_6 = str_tmp[7]
+	else
+		message_6 = ""
+	end
+	if str_tmp[8]~=" " then
+		message_7 = str_tmp[8]
+	else
+		message_7 = ""
+	end
+	counter_tema = string.len(message) 				--количество введенных символов строки темы
+	if string.len(message_1)==0 then				--количество введенных символов 1 строки текста
+		counter_text_1 = 0
+	else
+		counter_text_1 = string.len(message_1)
+	end
+	if string.len(message_2)==0 then				--количество введенных символов 2 строки текста
+		counter_text_2 = 0
+	else
+		counter_text_2 = string.len(message_2)
+	end
+	if string.len(message_3)==0 then				--количество введенных символов 3 строки текста
+		counter_text_3 = 0
+	else
+		counter_text_3 = string.len(message_3)
+	end
+	if string.len(message_4)==0 then				--количество введенных символов 4 строки текста
+		counter_text_4 = 0
+	else
+		counter_text_4 = string.len(message_4)
+	end
+	if string.len(message_5)==0 then				--количество введенных символов 5 строки текста
+		counter_text_5 = 0
+	else
+		counter_text_5 = string.len(message_5)
+	end
+	if string.len(message_6)==0 then				--количество введенных символов 6 строки текста
+		counter_text_6 = 0
+	else
+		counter_text_6 = string.len(message_6)
+	end
+	if string.len(message_7)==0 then				--количество введенных символов 7 строки текста
+		counter_text_7 = 0
+	else
+		counter_text_7 = string.len(message_7)
+	end
+
+	if string.len(message_8)==0 then				--количество введенных символов 8 строки текста
+		counter_text_8 = 0
+	else
+		counter_text_8 = string.len(message_8)
+	end
+
+	-- Вывожу сообщение
+	number_current_line = 9	
+
+	--Тема сообщения
+	if wnd_0~=nil then
+		self:DetachChild(wnd_0)
+		wnd_0 = nil
+	end
+	wnd_0 = CUIStatic()
+	wnd_0:SetAutoDelete(true)
+	self:AttachChild(wnd_0)
+	wnd_0:SetWndRect(165,82+8+2,475,40)
+	wnd_0:SetFont(GetFontLetterica18Russian())
+	wnd_0:SetTextColor(255, 255, 250, 205)
+	wnd_0:SetText(message)
+	
+	--Первая строка сообщения
+	if wnd_1~=nil then
+		self:DetachChild(wnd_1)
+		wnd_1 = nil
+	end
+	wnd_1 = CUIStatic()
+	wnd_1:SetAutoDelete(true)
+	self:AttachChild(wnd_1)
+	wnd_1:SetWndRect(100+15,130,100,33)
+	wnd_1:SetFont(GetFontLetterica18Russian())
+	wnd_1:SetTextColor(255, 255, 255, 255)
+	wnd_1:SetText(message_1)
+	
+	--Вторая строка сообщения
+	if wnd_2~=nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil
+	end
+	wnd_2 = CUIStatic()
+	wnd_2:SetAutoDelete(true)
+	self:AttachChild(wnd_2)
+	wnd_2:SetWndRect(100+15,160,100,33)
+	wnd_2:SetFont(GetFontLetterica18Russian())
+	wnd_2:SetTextColor(255, 255, 255, 255)
+	wnd_2:SetText(message_2)
+	
+	--Третья строка сообщения
+	if wnd_3~=nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil
+	end
+	wnd_3 = CUIStatic()
+	wnd_3:SetAutoDelete(true)
+	self:AttachChild(wnd_3)
+	wnd_3:SetWndRect(100+15,190,100,33)
+	wnd_3:SetFont(GetFontLetterica18Russian())
+	wnd_3:SetTextColor(255, 255, 255, 255)
+	wnd_3:SetText(message_3)
+	
+	--Четвертая строка сообщения
+	if wnd_4~=nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil
+	end
+	wnd_4 = CUIStatic()
+	wnd_4:SetAutoDelete(true)
+	self:AttachChild(wnd_4)
+	wnd_4:SetWndRect(100+15,220,100,33)
+	wnd_4:SetFont(GetFontLetterica18Russian())
+	wnd_4:SetTextColor(255, 255, 255, 255)
+	wnd_4:SetText(message_4)
+	
+	--Пятая строка сообщения
+	if wnd_5~=nil then
+		self:DetachChild(wnd_5)
+		wnd_5 = nil
+	end
+	wnd_5 = CUIStatic()
+	wnd_5:SetAutoDelete(true)
+	self:AttachChild(wnd_5)
+	wnd_5:SetWndRect(100+15,250,100,33)
+	wnd_5:SetFont(GetFontLetterica18Russian())
+	wnd_5:SetTextColor(255, 255, 255, 255)
+	wnd_5:SetText(message_5)
+	
+	--Шестая строка сообщения
+	if wnd_6~=nil then
+		self:DetachChild(wnd_6)
+		wnd_6 = nil
+	end
+	wnd_6 = CUIStatic()
+	wnd_6:SetAutoDelete(true)
+	self:AttachChild(wnd_6)
+	wnd_6:SetWndRect(100+15,280,100,33)
+	wnd_6:SetFont(GetFontLetterica18Russian())
+	wnd_6:SetTextColor(255, 255, 255, 255)
+	wnd_6:SetText(message_6)
+	
+	--Седьмая строка сообщения
+	if wnd_7~=nil then
+		self:DetachChild(wnd_7)
+		wnd_7 = nil
+	end
+	wnd_7 = CUIStatic()
+	wnd_7:SetAutoDelete(true)
+	self:AttachChild(wnd_7)
+	wnd_7:SetWndRect(100+15,310,100,33)
+	wnd_7:SetFont(GetFontLetterica18Russian())
+	wnd_7:SetTextColor(255, 255, 255, 255)
+	wnd_7:SetText(message_7.."|")
+	
+	self:snd_klik(2)
+end
+
+function cheat:btn_del()							--Кнопка Удалить запись
+	if flag_sms~="w" then
+		--удалять можно только из режима просмотра заголовков
+		return
+	end
+
+	sms_tbl[tbl_sap] = ""
+
+	if table.getn(sms_tbl) > 1 then
+		if tbl_sap==table.getn(sms_tbl) then
+			--удалена последняя запись
+			tbl_sap = tbl_sap - 2
+		--else
+			--tbl_sap = tbl_sap + 1
+		end
+		self:btn_next()
+	else 
+		--была всего одна запись
+		self:clearing()
+		--self:clear_variables()
+		--self:del_windows()
+	end
+end
+
+function cheat:btn_open()							-- Кнопка Просмотр записей 
+	if flag_sms~="" then
+		return
+	end
+	
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	--очищаю переменные
+	self:clearing()
+	--self:clear_variables()
+	--self:del_windows()
+	
+	flag_sms = "w"									--режим просмотра записей
+	self:show_mode()
+
+	wnd_0 = CUIStatic()
+	wnd_0:SetAutoDelete(true)
+	self:AttachChild(wnd_0)
+	wnd_0:SetWndRect(105+25+100,77+10+5,475,40)
+	wnd_0:SetFont(GetFontLetterica18Russian())
+	wnd_0:SetTextColor(255, 54, 54, 54)
+	wnd_0:SetText("ПРОСМОТР ЗАМЕТОК")
+	
+	self:snd_klik(2)
+	
+end
+
+function cheat:btn_save()							-- Кнопка Сохранить запись
+	if flag_sms~="n" and flag_sms~="nw" and flag_sms~="r" then
+		return
+	end
+	
+	local str = ""
+	local fl_sms = true
+	--загоняю сообщение в таблицу
+	if message_1=="" then
+		message_1 = " "
+	end
+	if message_2=="" then
+		message_2 = " "
+	end
+	if message_3=="" then
+		message_3 = " "
+	end
+	if message_4=="" then
+		message_4 = " "
+	end
+	if message_5=="" then
+		message_5 = " "
+	end
+	if message_6=="" then
+		message_6 = " "
+	end
+	if message_7=="" then
+		message_7 = " "
+	end
+	if message_8=="" then
+		message_8 = " "
+	end
+	if message_9=="" then
+		message_9 = " "
+	end
+	
+	str = message.."|"..message_1.."|"..message_2.."|"..message_3.."|"..message_4.."|"..message_5.."|"..message_6.."|"..message_7
+	if flag_sms=="n" then
+		--сохраняю новую запись
+		if counter_tema~=0 then
+			table.insert(sms_tbl,str)
+		else 
+			fl_sms = false
+		end
+		flag_sms = ""
+		self:show_mode()
+	elseif flag_sms=="r" and tbl_sap~=0 then 
+		--сохраняю отредактированную запись
+		if counter_tema~=0 then
+			if counter_text_1~=0 or counter_text_2~=0 or counter_text_3~=0 or
+				counter_text_4~=0 or counter_text_5~=0 or counter_text_6~=0 or counter_text_7~=0 then
+				sms_tbl[tbl_sap] = str
+			else	
+				fl_sms = false
+			end
+		else
+			fl_sms = false
+		end
+	end
+	
+	--очищаю переменные
+	self:clearing()
+	wnd_0 = CUIStatic()
+	wnd_0:SetAutoDelete(true)
+	self:AttachChild(wnd_0)
+	wnd_0:SetWndRect(105+25+100,77+10+5,475,40)
+	wnd_0:SetFont(GetFontLetterica18Russian())
+	wnd_0:SetTextColor(255, 54, 54, 54)
+	if fl_sms then
+		wnd_0:SetText("ЗАМЕТКА  СОХРАНЕНА")
+	else
+		wnd_0:SetText("ЗАМЕТКА НЕ СОХРАНЕНА")
+	end
+	
+	if flag_sms=="n" then
+		flag_sms = ""
+		self:show_mode()
+	elseif flag_sms=="nw" or flag_sms=="r" then
+		flag_sms = "w"
+		self:show_mode()
+	end
+	self:snd_klik(2)
+end
+
+function cheat:del_windows()
+	if wnd_0~=nil then
+		self:DetachChild(wnd_0)
+		wnd_0 = nil
+	end
+
+	if wnd_1~=nil then
+		self:DetachChild(wnd_1)
+		wnd_1 = nil
+	end
+
+	if wnd_2~=nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil
+	end
+
+	if wnd_3~=nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil
+	end
+
+	if wnd_4~=nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil
+	end
+
+	if wnd_5~=nil then
+		self:DetachChild(wnd_5)
+		wnd_5 = nil
+	end
+
+	if wnd_6~=nil then
+		self:DetachChild(wnd_6)
+		wnd_6 = nil
+	end
+
+	if wnd_7~=nil then
+		self:DetachChild(wnd_7)
+		wnd_7 = nil
+	end
+
+	if wnd_8~=nil then
+		self:DetachChild(wnd_8)
+		wnd_8 = nil
+	end
+	if wnd_9~=nil then
+		self:DetachChild(wnd_9)
+		wnd_9 = nil
+	end
+
+	if wnd_10~=nil then
+		self:DetachChild(wnd_10)
+		wnd_10 = nil
+	end
+
+	if wnd_11~=nil then
+		self:DetachChild(wnd_11)
+		wnd_11 = nil
+	end
+
+	if wnd_12~=nil then
+		self:DetachChild(wnd_12)
+		wnd_12 = nil
+	end
+
+	if wnd_13~=nil then
+		self:DetachChild(wnd_13)
+		wnd_13 = nil
+	end
+	
+	if wnd_14~=nil then
+		self:DetachChild(wnd_14)
+		wnd_14 = nil
+	end
+	
+	if wnd_l~=nil then
+		self:DetachChild(wnd_l)
+		wnd_l = nil
+	end
+	
+	if wnd_r~=nil then
+		self:DetachChild(wnd_r)
+		wnd_r = nil
+	end
+	
+	if wnd_mask~=nil then
+		self:DetachChild(wnd_mask)
+		wnd_mask = nil
+	end
+	
+	
+end
+
+function cheat:snd_klik(n)
+	if n==1 then
+		vergas_lib.s_play([[device\dairy_click]])
+	elseif n==2 then
+		vergas_lib.s_play([[device\dairy_click_1]])
+	end
+end
+
+function cheat:show_sms(zap)
+	
+	local str	
+	
+	sms_tmp = vergas_lib.str_explode("|",sms_tbl[zap],true)
+	
+	if wnd_0~=nil then
+		self:DetachChild(wnd_0)
+		wnd_0 = nil
+	end
+	
+	--заголовок
+	wnd_0 = CUIStatic()
+	wnd_0:SetAutoDelete(true)
+	self:AttachChild(wnd_0)
+	wnd_0:SetWndRect(165,77+10+5,475,40)
+	wnd_0:SetFont(GetFontLetterica18Russian())
+	wnd_0:SetTextColor(255, 54, 54, 54)
+	wnd_0:SetText(sms_tmp[1])
+	
+	--Первая строка сообщения
+	if wnd_1~=nil then
+		self:DetachChild(wnd_1)
+		wnd_1 = nil
+	end
+	wnd_1 = CUIStatic()
+	wnd_1:SetAutoDelete(true)
+	self:AttachChild(wnd_1)
+	wnd_1:SetWndRect(100+15,130,100,33)
+	wnd_1:SetFont(GetFontLetterica18Russian())
+	wnd_1:SetTextColor(255, 238, 232, 205)
+	wnd_1:SetText(sms_tmp[2])
+	
+	--Вторая строка сообщения
+	if wnd_2~=nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil
+	end
+	wnd_2 = CUIStatic()
+	wnd_2:SetAutoDelete(true)
+	self:AttachChild(wnd_2)
+	wnd_2:SetWndRect(100+15,160,100,33)
+	wnd_2:SetFont(GetFontLetterica18Russian())
+	wnd_2:SetTextColor(255, 238, 232, 205)
+	wnd_2:SetText(sms_tmp[3])
+	
+	--Третья строка сообщения
+	if wnd_3~=nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil
+	end
+	wnd_3 = CUIStatic()
+	wnd_3:SetAutoDelete(true)
+	self:AttachChild(wnd_3)
+	wnd_3:SetWndRect(100+15,190,100,33)
+	wnd_3:SetFont(GetFontLetterica18Russian())
+	wnd_3:SetTextColor(255, 238, 232, 205)
+	wnd_3:SetText(sms_tmp[4])
+	
+	--Четвертая строка сообщения
+	if wnd_4~=nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil
+	end
+	wnd_4 = CUIStatic()
+	wnd_4:SetAutoDelete(true)
+	self:AttachChild(wnd_4)
+	wnd_4:SetWndRect(100+15,220,100,33)
+	wnd_4:SetFont(GetFontLetterica18Russian())
+	wnd_4:SetTextColor(255, 238, 232, 205)
+	wnd_4:SetText(sms_tmp[5])
+	
+	--Пятая строка сообщения
+	if wnd_5~=nil then
+		self:DetachChild(wnd_5)
+		wnd_5 = nil
+	end
+	wnd_5 = CUIStatic()
+	wnd_5:SetAutoDelete(true)
+	self:AttachChild(wnd_5)
+	wnd_5:SetWndRect(100+15,250,100,33)
+	wnd_5:SetFont(GetFontLetterica18Russian())
+	wnd_5:SetTextColor(255, 238, 232, 205)
+	wnd_5:SetText(sms_tmp[6])
+	
+	--Шестая строка сообщения
+	if wnd_6~=nil then
+		self:DetachChild(wnd_6)
+		wnd_6 = nil
+	end
+	wnd_6 = CUIStatic()
+	wnd_6:SetAutoDelete(true)
+	self:AttachChild(wnd_6)
+	wnd_6:SetWndRect(100+15,280,100,33)
+	wnd_6:SetFont(GetFontLetterica18Russian())
+	wnd_6:SetTextColor(255, 238, 232, 205)
+	wnd_6:SetText(sms_tmp[7])
+	
+	--Седьмая строка сообщения
+	if wnd_7~=nil then
+		self:DetachChild(wnd_7)
+		wnd_7 = nil
+	end
+	wnd_7 = CUIStatic()
+	wnd_7:SetAutoDelete(true)
+	self:AttachChild(wnd_7)
+	wnd_7:SetWndRect(100+15,310,100,33)
+	wnd_7:SetFont(GetFontLetterica18Russian())
+	wnd_7:SetTextColor(255, 238, 232, 205)
+	wnd_7:SetText(sms_tmp[8])
+	
+end
+
+function cheat:clear_variables()
+	message = ""
+	message_1 = ""
+	message_2 = ""
+	message_3 = ""
+	message_4 = ""
+	message_5 = ""
+	message_6 = ""
+	message_7 = ""
+	message_8 = ""
+	counter_tema = 0
+	counter_text_1 = 0
+	counter_text_2 = 0
+	counter_text_3 = 0
+	counter_text_4 = 0
+	counter_text_5 = 0
+	counter_text_6 = 0
+	counter_text_7 = 0
+	counter_text_8 = 0
+	number_current_line = 0
+	flag_sms = ""
+	flag_shift = false
+	tbl_sap = 0
+end
+function cheat:show_mode()
+	if wnd_r~=nil then
+		self:DetachChild(wnd_r)
+		wnd_r = nil
+	end
+
+	if flag_sms~="" then
+		wnd_r = CUIStatic()
+		wnd_r:SetAutoDelete(true)
+		self:AttachChild(wnd_r)
+		wnd_r:SetStretchTexture(true)
+		if flag_sms=="n" or flag_sms=="nw" then
+			wnd_r:InitTexture("ui_klava_ico_new")
+		elseif 	flag_sms=="w" then
+			wnd_r:InitTexture("ui_klava_ico_open")
+		elseif 	flag_sms=="r" then
+			wnd_r:InitTexture("ui_klava_ico_edit")
+		end	
+		wnd_r:SetWndRect(50,92,23,20)
+	end
+
+end

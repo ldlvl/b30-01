@@ -1,0 +1,258 @@
+if xray_dma == nil then
+ _G.xray_dma = {}
+end
+
+_G.strpos = string.find
+
+
+
+function get_CObject(id)
+  if id then
+    id = tonumber(id)
+  else
+    id = 0 -- [single player] = actor
+  end
+  local lobj = client_obj(id)  -- lua object
+  
+  if lobj then
+    -- read userdata as pointer from userdata 
+    local pval = ReadPtr(lobj)
+    if pval ~= nil then
+       -- from CScriptGameObject structure retrieve pointer to instance
+       local  cobj = pval ^ 4
+       return cobj  -- instance
+    end
+  end
+  return nil
+end
+
+function get_SObject(id)
+  if id then
+    id = tonumber(id)
+  else
+    id = 0 -- [single player] = actor (if all.spawn made classical)
+  end  
+  local sobj = nil    
+  sobj = server_obj(id)
+  if sobj then -- read userdata as pointer (lua_topointer logic) 
+    return ReadPtr(sobj)
+  end  
+  return nil
+end
+
+function get_SObjectExt (id) -- получени€ смещени€ дополнительной части серверного объекта (дл€ сталкеров смещаетс€)
+ local pval = get_SObject(id)   
+ if pval ~= nil then
+          
+   local pval2 = pval + 96 
+   local cid = pval2:read (coord_params.se_obj_params2.clsid_word, 'word')          
+   if ( cid == clsid.script_stalker ) then
+      -- wprintf(' %d is stalker and selector == 2', id)    
+      pval = pval2
+   end   
+ end
+ 
+ return pval 
+end -- get_SObjectExt
+
+
+
+function var_type(vname)
+ local vtype = "float"
+ if strpos(vname, "_int")  then vtype = "int" end
+ if strpos(vname, "_ptr")  then vtype = "ptr" end
+ if strpos(vname, "_byte") then vtype = "byte" end
+ if strpos(vname, "_word") then vtype = "word" end
+ if strpos(vname, "_ansi") then vtype = "ansi" end 
+ -- if strpos(vname, "ss_")   then vtype = "shared_str" end 
+ return vtype
+end
+
+
+function xray_dma.ReadMemValue(addr, offset, vname) -- чтение значени€ с тегом
+ 
+ if subpos(vname, "ss_") == 1 then
+   local src = CalcPtr(addr, offset, '+')
+   return get_shared_str ( src ) 
+ elseif strpos(vname, "_v3f") then
+   return xray_dma.ReadVectorDMA(addr, offset)
+ else
+   local vtype = var_type(vname) 
+   return ReadDMA(addr, offset, vtype)
+ end   
+end
+
+function xray_dma.WriteMemValue(addr, offset, new_val, vname) -- запись значени€ с тегом
+ if new_val == nil then 
+	new_val = 1
+ end
+
+ if subpos(vname, "ss_") == 1 then 
+   local dst = CalcPtr(addr, offset, '+')
+   wprintf (' writing string %s, %s at %s ',vname, new_val, dst:format()) 
+   
+   return set_shared_str ( dst, new_val ) 
+ elseif strpos(vname, "_v3f") then
+   return xray_dma.WriteVectorDMA(addr, offset, new_val)
+ else
+   local vtype = var_type(vname)
+   return WriteDMA(addr, offset, new_val, vtype)
+ end   
+end
+
+
+function xray_dma.ReadVectorDMA(addr, offset)
+ if offset and offset ~= 0 then 
+    addr = CalcPtr(addr, offset, '+')
+ end  
+
+ local v = vector()
+ 
+ if addr.valid then 
+   local dst = ReadPtr(v)
+   CopyDMA(dst, addr, 12)
+ end
+   
+ return v
+end
+
+function xray_dma.WriteVectorDMA(addr, offset, v)
+ if offset and offset ~= 0 then 
+    addr = CalcPtr(addr, offset, '+')
+ end
+  
+ if addr.valid then
+    local src = ReadPtr(v)
+    CopyDMA(addr, src, 12) -- 3 * 4 byte
+ end
+   
+ return 12   
+end
+
+function xray_dma.ReadMatrixDMA(addr, offset)
+ if offset and offset ~= 0 then 
+    addr = CalcPtr(addr, offset, '+')
+ end
+  
+ local m = matrix()
+ if addr.valid then 
+    local dst = ReadPtr(m) 
+    CopyDMA(dst, addr, 64)
+ end
+      
+ return m 
+end
+
+function xray_dma.WriteMatrixDMA(addr, offset, m)
+ if offset and offset ~= 0 then 
+    addr = CalcPtr(addr, offset, '+')
+ end
+ 
+ if addr.valid then
+    local src = ReadPtr(m) 
+    CopyDMA (addr, src, 64)
+ end    
+end
+
+
+function obj_clsid(id) -- same as get_clsid, but
+ if id then
+    id = tonumber(id)
+ else
+    id = 0 -- [single player] = actor
+ end
+
+ local lobj = client_obj(id)
+ local ci = nil
+ -- опознание класса объекта
+ if (lobj ~= nil) and (lobj.clsid) then
+    ci = lobj:clsid()
+ end
+
+ return ci
+end
+
+function xray_dma.GetFieldAddr (id, key, tables)
+ -- поиск по табличной схеме смещени€, самого подход€щего под запрос. ¬ыдача адреса соответствующего объекта и найденного смещени€ 
+ for i, t in ipairs(tables) do
+  local ofs = t[key] 
+  local cvt = t.convert_func  -- id to pointer callback convertor
+  if cvt == nil then
+    wprintf('[~T].~C0C #FATAL: convert_func not defined in table %d ~C0F \n %s ~C07', i, debug.traceback ( '', 2 ) )
+    break
+  end        
+  if ofs then     
+      local  addr = cvt(id)  
+      return addr, ofs, i
+  end -- if
+ end -- for 
+ return nil, nil, 0       
+end
+
+
+
+function xray_dma.ReadParamValue(id, key, tables)
+ -- универсальна€ читалка параметров, по табличной схеме смещений
+ -- TODO: можно придумать разные оповещени€ о проблемах
+ -- wprintf('[~T]. #DBG(ReadParamValue): reading value for obj %d, key %s, tables count %d ', id, key, #tables)
+ 
+ local addr, ofs, iter = xray_dma.GetFieldAddr (id, key, tables)
+ if addr and ofs then
+    -- wprintf('[~T]. #DBG: trying read at %s + %s ', FormatPtr(addr), ofs)
+    return xray_dma.ReadMemValue (addr, ofs, key)
+ else   
+    if addr == nil then
+       -- wprintf('[~T].~C0C #WARN(ReadParamValue): object %d addr == nil, last iteration %d ~C07', id, iter)
+    end 
+    if ofs == nil then                                                                                                             
+       wprintf('[~T].~C0C #WARN(ReadParamValue): key not found %s, last iteration %d ~C07\n %s', key, iter, debug.traceback ('', 2))       
+    end    
+    return nil
+ end          
+end
+
+
+function xray_dma.WriteParamValue(id, vname, value, tables)
+ -- универсальна€ записывалка параметров, по табличной схеме смещений
+ -- TODO: можно придумать разные оповещени€ о проблемах
+ local addr, ofs, iter = xray_dma.GetFieldAddr (id, vname, tables)
+ if addr and ofs then
+    xray_dma.WriteMemValue (addr, ofs, value, vname)
+ else
+    wprintf ('[~T].~C0C #ERROR: WriteParamValue wrong params (id = %d, vname = %s): addr = %s, ofs = %s, iter = %d\n %s ~C07', id, vname, FormatPtr(addr), FormatPtr(ofs), iter, debug.traceback ('', 2))     
+ end -- for 
+end
+
+
+function xray_dma.enable_write(context)
+ local tested = {}
+ tested [2945] = true
+ tested [3312] = true
+ if tested[xr_build_id or 0] then
+    RunCommand('MW_ENABLE', context)
+ else
+    wprintf("[~T].~C0C #ERROR_DMA:~C07 build not tested~C0D %d~C07, context =~C0F %s~C07", xr_build_id, context or 'nil')   
+ end   
+ 
+end
+
+function init()
+ -- TODO: заменить на цикл экспорта
+ _G.get_CObject = get_CObject
+ _G.get_SObject = get_SObject
+ _G.get_SObjectExt = get_SObjectExt
+ _G.ReadMemValue = xray_dma.ReadMemValue
+ -- _G.WriteMemValue = xray_dma.WriteMemValue
+ _G.obj_clsid = obj_clsid
+ _G.ReadVectorDMA  = xray_dma.ReadVectorDMA
+ -- _G.WriteVectorDMA = xray_dma.WriteVectorDMA
+ _G.ReadMatrixDMA  = xray_dma.ReadMatrixDMA
+ -- _G.WriteMatrixDMA = xray_dma.WriteMatrixDMA
+  
+ _G.GetFieldAddr     = xray_dma.GetFieldAddr 
+ _G.ReadParamValue   = xray_dma.ReadParamValue
+ -- _G.WriteParamValue  = xray_dma.WriteParamValue
+ RunCommand("INIT_DMA")
+end
+
+init()

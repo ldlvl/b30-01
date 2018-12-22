@@ -1,0 +1,42 @@
+function TexStrPtr()
+	local func = GetProcAddr("xr_3da.exe", "?LoadBegin@CApplication@@QAEXXZ") 
+	return ReadDMA(func, '$4C', "safe_ptr")  
+end
+
+function SetUILoadTex(tex)
+    local fs = getFS()
+    local file = fs:update_path("$game_textures$", "ui\\"..tex..".dds")
+	if not fs:exist(file) then    
+       wprintf("[~T].~C0C #ERROR: not found target texture file =~C0F %s ~C07", file) 
+	   return
+    end    
+
+    if xr_build_id > 5500 then
+       if get_application then
+          get_application():set_load_texture("ui\\"..tex)
+          -- get_application():set_load_texture("ui\\load_rnd")
+       end
+       return
+    end
+
+    xray_dma.enable_write('SetUILoadTex') 
+ 
+	local pstr = TexStrPtr()
+	
+	if pstr == nil then return end
+	--ODS("[~T]. #DBG: current ui_load ptr = "..FormatPtr(pstr) )
+	--ODS("[~T]. #DBG: current texture file = "..ReadDMA(pstr, 0, "ansi") ) 
+	 
+    WriteDMA(pstr, 0, "ui\\"..tex, "ansi")
+	    
+   
+end
+
+function RandomUILoadTex()
+  local r_sc=lua_random(111,217)
+  -- ODS("[~T]. #DBG: RandomUILoadTex ~C0F "..r_sc.."~C07" )
+  if ElapsedTime(-19) > 5000 then   
+     SetUILoadTex("ui_l"..r_sc)
+     ElapsedTime(19)
+  end     
+end

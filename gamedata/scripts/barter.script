@@ -1,0 +1,91 @@
+function isBarter_Sidor()
+	if isBarterAvailable(76, 3) then return true end
+	return false
+end
+
+function isBarter_Kuzya()
+	if isBarterAvailable(68, 2) then return true end
+	return false
+end
+
+function isBarter_Sherstuk()
+	if isBarterAvailable(66, 4) then return true end
+	return false
+end
+
+function isBarter_Zhila()
+	if isBarterAvailable(76, 5) then return true end
+	return false
+end
+
+function isBarter_Barman()
+	if isBarterAvailable(76, 6) then return true end
+	return false
+end
+
+function isBarter_Petrenko()
+	if isBarterAvailable(66, 7) then return true end
+	return false
+end
+
+function isBarter_Shinkar()
+	if isBarterAvailable(76, 8) then return true end
+	return false
+end
+
+function isBarter_Vahtang()
+	if isBarterAvailable(76, 10) then return true end
+	return false
+end
+
+function isBarter_Lesnik()
+	if isBarterAvailable(76, 11) then return true end
+	return false
+end
+
+function isBarter_Mihalych()
+	if isBarterAvailable(76, 12) then return true end
+	return false
+end
+
+function isBarterAvailable( treshold, npc_koeff )
+	local day = timers.Get_Game_Days() or 1
+	local unique_koeff = ( amk_vars.r_task_reward + amk_vars.r_treas_items ) or 1
+    math.randomseed( day + npc_koeff + unique_koeff )
+    if day > 45 then day = 45 end
+    math.random()
+    math.random()
+    local chance = math.random( 80 - day, 100 )
+    wprintf( "------ DAY : "..day.." ----------- ROLL: "..chance.." ----------".. " TRESHOLD: "..treshold.."-------" )
+    if  chance >= treshold then return true end
+    return false
+end
+
+function noBarterAvailable( treshold, npc_koeff )
+  return not isBarterAvailable( treshold, npc_koeff )
+end
+
+function isBarterAvailable_test(npc_koeff)
+	local day = 3
+	local bart = ""
+    local unique_koeff = (amk_vars.r_task_reward + amk_vars.r_treas_items) or 1
+    math.randomseed(day+npc_koeff+unique_koeff)
+    if npc_koeff > 45 then npc_koeff = 45 end
+    math.random()
+    math.random()
+    local chance = math.random(80-npc_koeff, 100)
+    if  chance >= 77 then bart = "SUCCESS!" else bart = "FAIL!" end
+    wprintf("------ DAY : "..npc_koeff.." ----------------- ROLL: "..chance.." --------------- "..bart.." ------------")
+end
+
+function check_barter()
+	for i = 1, 92 do
+		isBarterAvailable_test( i )
+	end
+end
+
+function check_vars()
+	local m = amk_vars.r_task_reward or 1234
+	local n = amk_vars.r_treas_items or 5678
+	wprintf("----------------- TASK_ITEMS: "..m.." ----------------- TREASURE_ITEMS: "..n.." ----------------")
+end

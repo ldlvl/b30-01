@@ -1,0 +1,302 @@
+if const == nil then 
+  _G.const = {}
+end
+
+level_vertices = {
+  l01_escape          = 595499,  l02_garbage       = 382663,  l03_agroprom      = 437421,  l03u_agr_underground  = 4932, 
+  l04_darkvalley      = 390125,  l04u_labx18       = 7581,    l05_bar           = 99539,   l06_rostok            = 67713,
+  l08_yantar          = 141471,  l08u_brainlab     = 8008,    l07_military      = 418268,  l10_radar             = 227189,
+  l11_pripyat         = 261219,  l12_stancia       = 477923,  l12u_sarcofag     = 10672,   l12u_control_monolith = 3982,
+  l12_stancia_2       = 264577,  l10u_bunker       = 8821,    atp_for_test22    = 0,       peshera               = 0,
+  puzir               = 0,       aver              = 1788845, av_peshera        = 172637,  limansk               = 61524,
+  hospital            = 7865,    generators        = 752337,  warlab            = 7776,    red_forest            = 166431,
+  lost_village        = 49127,   marsh             = 528961,  labx8             = 6856,    labx10                = 13420,
+  deadcity            = 389616,  k01_darkscape     = 1085863, l12_stancia_new   = 412194,  l12_stancia_2_new     = 608126
+}
+
+level_number = {
+  l01_escape          = 1,       l02_garbage       = 2,       l03_agroprom      = 3,       l03u_agr_underground  = 4,
+  l04_darkvalley      = 5,       l04u_labx18       = 6,       l05_bar           = 7,       l06_rostok            = 8,
+  l08_yantar          = 9,       l08u_brainlab     = 10,      l07_military      = 11,      l10_radar             = 13, 
+  l11_pripyat         = 14,      l12_stancia       = 15,      l12u_sarcofag     = 16,      l12u_control_monolith = 17,
+  l12_stancia_2       = 19,      l10u_bunker       = 20,      atp_for_test22    = 22,      peshera               = 23,
+  puzir               = 24,      aver              = 25,      av_peshera        = 26,      limansk               = 27,
+  hospital            = 28,      generators        = 29,      warlab            = 30,      red_forest            = 31,
+  lost_village        = 32,      marsh             = 33,      labx8             = 34,      labx10                = 35,
+  deadcity            = 36,      k01_darkscape     = 37,      l12_stancia_new   = 38,      l12_stancia_2_new     = 39,
+  total               = 39
+}
+
+game_vertices = {
+  l01_escape            = { 0,    251  },   l02_garbage           = { 252,  415  },   l03_agroprom        = { 416,  702  },
+  l03u_agr_underground  = { 703,  810  },   l04_darkvalley        = { 811,  1108 },   l04u_labx18         = { 1109, 1167 },
+  l05_bar               = { 1168, 1307 },   l06_rostok            = { 1308, 1437 },   l08_yantar          = { 1438, 1528 },
+  l08u_brainlab         = { 1529, 1544 },   l07_military          = { 1545, 1861 },   l10_radar           = { 1862, 2116 },
+  l11_pripyat           = { 2117, 2272 },   l12_stancia           = { 2273, 2401 },   l12u_sarcofag       = { 2402, 2466 },
+  l12u_control_monolith = { 2467, 2516 },   l12_stancia_2         = { 2517, 2660 },   l10u_bunker         = { 2661, 2791 },
+  atp_for_test22        = { 2792, 2861 },   peshera               = { 2862, 2880 },   puzir               = { 2881, 2885 },
+  aver                  = { 2886, 2908 },   av_peshera            = { 2909, 2987 },   limansk             = { 2988, 3027 },
+  hospital              = { 3028, 3075 },   generators            = { 3076, 3152 },   warlab              = { 3153, 3223 },
+  red_forest            = { 3224, 3323 },   lost_village          = { 3324, 3336 },   marsh               = { 3337, 3581 },
+  labx8                 = { 3582, 3607 },   labx10                = { 3608, 3729 },   deadcity            = { 3730, 3930 },
+  k01_darkscape         = { 3931, 4174 },   l12_stancia_new       = { 4175, 4289 },   l12_stancia_2_new   = { 4290, 4543 }
+}
+                   
+ground_levels = {
+  l01_escape          = true,    l02_garbage        = true,   l03_agroprom      = true,     l03u_agr_underground  = false,
+  l04_darkvalley      = true,    l04u_labx18        = false,  l05_bar           = true,     l06_rostok            = true,
+  l08_yantar          = true,    l08u_brainlab      = false,  l07_military      = true,     l10_radar             = true,
+  l11_pripyat         = true,    l12_stancia        = false,  l12u_sarcofag     = false,    l12u_control_monolith = false,
+  l12_stancia_2       = false,   l10u_bunker        = false,  atp_for_test22    = true,     peshera               = false,
+  puzir               = false,   aver               = true,   av_peshera        = false,    limansk               = true,
+  hospital            = true,    generators         = true,   warlab            = false,    red_forest            = true,
+  lost_village        = true,    marsh              = true,   labx8             = false,    labx10                = false,
+  deadcity            = true,    k01_darkscape      = true,   l12_stancia_new   = true,     l12_stancia_2_new     = false
+}  
+
+function const.low_level_init()
+  const.vertices_file = "$app_data_root$\\vertices.ltx"
+  const.xr_3da_size   = GetModuleSize( 'xr_3da.exe' )
+  const.xrGame_size   = GetModuleSize( 'xrGame.dll' ) 
+  const.xr_3daVer     = '3312rls?'
+  const.xrGameVer     = '3312rls?'
+  if     const.xrGame_size == 6344704 then const.xrGameVer  = '3312rls'
+  elseif const.xrGame_size == 6348800 then const.xrGameVer  = '2947dbg'
+  end
+  wprintf( 'xr_3da.exe size = %d, xrGame.dll size = %d', const.xr_3da_size, const.xrGame_size )
+  local test = GetProcAddr( "xrGame.dll", "?g_ai_space@@3PAVCAI_Space@@A" )
+  if #test <= 9 then
+    const.g_ai_space = ReadPtr( test )
+    -- wprintf("[~T]. #DBG: g_ai_space exported by xrGame = [%s] = %s ", test, const.g_ai_space:format())       
+  else 
+    if const.xrGameVer == '3312rls' then
+       const.g_ai_space = ReadDMA( 'xrGame.dll', '$5602B0', 'safe_ptr' )
+    elseif const.xrGameVer == '2947dbg' then
+       const.g_ai_space = ReadDMA( 'xrGame.dll', '$5612B0', 'safe_ptr' )
+    end
+  end      
+  if xr_build_id == 3312 then  
+     const.level_graph    = ReadDMA( const.g_ai_space,  12, 'safe_ptr' )
+     const.vertices_count = ReadDMA( const.level_graph, 16, 'int'      )
+     wprintf(
+             '[~T]. #DBG: g_ai_space = %s, level_graph = %s, vertices = %d ',
+             FormatPtr( const.g_ai_space  ),
+             FormatPtr( const.level_graph ),
+             const.vertices_count
+     )
+  else   
+     local lname = level.name()
+     if level.get_graph then
+        const.vertices_count = level.get_graph().vertices_count
+     end     
+  end       
+end  
+
+function best_game_vertex( pos, lname )
+  if lname == nil then lname = level.name() end   
+  local gv_range = game_vertices[ lname ]     
+  local best     = 1
+  local min_dist = 100000
+  local gg       = game_graph()
+  for test = gv_range[ 1 ], gv_range[ 2 ] do 
+    local gpt  = gg:vertex( test ):level_point()   
+    local dist = gpt:distance_to( pos )
+    if dist < min_dist then 
+       min_dist = dist 
+       best     = test
+    end    
+  end
+ return best
+end
+
+function level_gv_range()
+  return game_vertices[ level.name() ]
+end
+
+function random_level_point( lname )
+  if lname == nil then lname = level.name() end   
+  local lv_count = level_vertices[ lname ]
+  if lv_count == 0 or underground( lname ) then 
+     return nil, nil 
+  end     
+  lvid = lua_random( 1, lv_count )
+  return lvid, level.vertex_position( lvid ) 
+end
+
+function const.update_consts( display_code )
+  local v = vector():set( -242.360, -19.918, -152.364 )
+  local vxdb = misc.vxdb_file()    
+  local lvid, gvid, tvid 
+  local gg = game_graph()
+  local fs = getFS()  
+  local rd = fs:r_open( "$game_data$", "game.graph" )
+  local level_map = {}
+  local lvid_map = {}
+  if rd == nil then return false end
+  local ver = rd:r_u8()
+  local vertex_cnt = rd:r_u16()
+  local edge_cnt   = rd:r_u32()
+  local lpt_cnt    = rd:r_u32()
+  rd:r_advance( 16 )
+  local max_lvl_id = 0
+  local level_cnt = rd:r_u8()
+  wprintf(
+          " game_graph version =~C0D %d~C07, vertex_cnt = %d, edge_cnt = %d, lpt_cnt =~C0F %d~C07, level_count = %d ",
+          ver, vertex_cnt, edge_cnt, lpt_cnt, level_cnt
+  )
+  const.level_number.total = level_cnt
+  for lvl = 1, level_cnt do
+    local lvl_name = rd:r_stringZ()
+    local g_offset = vector()
+    rd:r_vec3( g_offset )
+    local lvl_id   = rd:r_u8()
+    local sec_name = rd:r_stringZ()
+    level_map[ lvl_id ] = lvl_name
+    lvid_map[  lvl_id ] = { gvids = {} } 
+    const.game_vertices[ lvl_name  ] = { 65535, 0 } -- inverted range
+    const.level_vertices[ lvl_name ] = vertex_dump.level_vertex_count( lvl_name )
+    rd:r_advance( 16 ) -- skip GUID
+    max_lvl_id = math.max( max_lvl_id, lvl_id )
+    -- wprintf(" level ~C0A %-32s~C07 offset =~C0F %40s~C07, id = %3d, section_name =~C0E %s~C07, level_vertices =~C0D %7d~C07", '"'..lvl_name..'"', misc.pos2str(g_offset), lvl_id, sec_name, const.level_vertices[lvl_name])       
+  end -- for each level
+  local cl_name       = level.name() 
+  local cl_vertices   = const.level_vertices[ cl_name ]
+  if ( cl_vertices and cl_vertices ~= const.vertices_count ) then
+    wprintf(
+            "[~T].~C0C #ERROR:~C07 const.vertices_count =~C0D %d~C07,~C0E const.level_vertices.%s~C0B =~C0D %d~C07",
+            const.vertices_count, cl_name, cl_verticescl_name
+    )
+    const.vertices_count = cl_vertices
+  end
+  local vertex_size   = 42
+  local edge_size     = 6
+  local lpt_size      = 20
+  local vertex_offset = rd:r_tell()
+  local edge_offset   = vertex_offset + vertex_size * vertex_cnt   -- пропуск массива вертексов
+  local lpt_offset    = edge_offset + edge_size * edge_cnt         -- пропуск границ
+  wprintf(
+          " vertex_offset =~C0D $%X~C07, edge_offset =~C0B $%X~C07, lpt_offset =~C0E $%X~C07 ",
+          vertex_offset, edge_offset, lpt_offset
+  )
+  local pt            = vector()
+  local lpt           = vector()
+  local gpt           = vector()
+  for gvid = 0, vertex_cnt - 1 do
+    rd:r_seek( vertex_offset + gvid * vertex_size )
+    rd:r_vec3( lpt )
+    rd:r_vec3( gpt )
+    local lvid        = rd:r_u32()       
+    lvl_id            = bit_and( lvid, 255 )
+    lvid              = ( lvid - lvl_id ) / 256
+    local vx_type     = rd:r_u32()       
+    local e_ofs       = rd:r_u32()
+    local p_ofs       = rd:r_u32() + vertex_offset -- использовать смещение от начала файла
+    local e_cnt       = rd:r_u8()
+    local p_cnt       = rd:r_u8()
+    local lname       = level_map[ lvl_id ]                
+    const.level_number[ lname ] = lvl_id
+    local range       = const.game_vertices[ lname ] or { 65535, 0 }
+    range[ 1 ]        = math.min( range[1], gvid )
+    range[ 2 ]        = math.max( range[2], gvid ) 
+    const.game_vertices[ lname ] = range   
+    if gvid % 100 == 0 then 
+      -- wprintf(" gvid =~C0D %3d~C07, lvid =~C0D %7d~C07, level =~C0A %33s~C07, p_ofs =~C0E $%07X~C07, p_cnt =~C0D %d~C07", gvid, lvid, lname, p_ofs, p_cnt)
+    end     
+  end
+  fs:r_close( rd )   
+  rd = nil 
+  local code_lv = "level_vertices = { "
+  local code_ln = "level_number   = { "
+  local code_gv = "game_vertices  = { "
+  local prefix = ""
+  local suffix = " "
+  local add = ""
+  local cnt = 0 
+  local pattern = "%-40s"
+  for lvl_id = 1, max_lvl_id do
+    local lname = level_map[lvl_id]
+    if lname ~= nil then 
+      cnt = cnt + 1
+      if lvl_id < max_lvl_id then
+        suffix  = ","               
+      else
+        suffix  = ""
+        pattern = "%s"
+      end
+      prefix = ""
+      if cnt % 4 == 3 then
+         prefix = "\n\t\\t "                 
+      end
+      add         = sprintf( "%s = %d", lname, const.level_vertices[ lname ] or 0 ) .. suffix     
+      code_lv     = code_lv .. prefix .. sprintf( pattern, add ) 
+      add         = sprintf( "%s = %d", lname, const.level_number[ lname ] ) .. suffix 
+      code_ln     = code_ln .. prefix .. sprintf( pattern, add )            
+      local range = const.game_vertices[ lname ] or { 65534, 0 }
+      add         = sprintf("%s = { %d, %d }", lname, range[ 1 ], range[ 2 ] ) .. suffix
+      code_gv     = code_gv .. prefix .. sprintf( pattern, add )
+    end                    
+  end
+  code_ln = code_ln .. sprintf( ", total = %d", level_cnt )
+  if display_code then    
+    wprintf( "# const.script automatic generated code " )
+    wprintf( "%s }", code_lv )
+    wprintf( "%s }", code_ln )
+    wprintf( "%s }", code_gv )  
+  end                  
+end  
+
+function init_module()
+  -- level.set_load_title("#const_init_module_1")
+  const.low_level_init()  
+  -- level.set_load_title("#const_init_module_2")
+  const.update_consts( false )
+  -- level.set_load_title("#const_init_module_3")
+  local lname = level.name()  
+  WriteIni( const.vertices_file, 'count_by_level', lname, sprintf( '%d', const.vertices_count ) )
+  -- reload & update
+  local t = const.level_vertices    
+  for ln,vc in pairs( t ) do
+    local vcn = ReadIni( const.vertices_file, 'count_by_level', ln )
+    -- обновить ненулевые вертексы
+    if ( vcn ~= '' ) and ( vc  ~= 0  ) then
+      vcn = tonumber ( vcn )
+      if ( vcn > 0 ) and ( vcn ~= vc ) then
+        wprintf(
+               '~C0C #WARN(vertices):~C07 for level~C0A %s~C07 in script value~C0D %d~C07 vs file~C0D %d ~C07',
+               ln, vc, vcn
+        ) 
+        const.level_vertices[ ln ] = vcn 
+      end      
+    end    
+  end 
+  local fs = getFS()
+  local sn =  fs:update_path( "$game_scripts$", "vertex_dump.script" )    
+  if _G.vertex_dump and vertex_dump.dump then    
+    vertex_dump.dump( false )
+    -- vertex_dump.improve()
+  elseif fs:exist( sn ) then
+    dofile( sn )             
+    vertex_dump.dump( false )                    
+  else
+    wprintf( 'not found script %s', sn )                
+  end   
+  if const.level_vertices[ lname ] ~= 0 then
+    const.level_vertices[ lname ] = const.vertices_count
+  end 
+  local cnt = 0 
+  for i, v in pairs( _G ) do cnt = cnt + 1 end             
+  wprintf( '[~T]. #DBG: table _G items count = %d', cnt )  
+end
+
+function late_init()
+  -- vertex_dump.improve()
+end
+
+function underground( lname )
+  if nil == lname then abort( "lname == nil" ) end
+  if ground_levels[ lname ] ~= nil then
+    return not ground_levels[ lname ]
+  else
+    abort( "Not set const.ground_levels for ".. lname )
+  end       
+end

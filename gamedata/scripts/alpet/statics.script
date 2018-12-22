@@ -1,0 +1,54 @@
+
+
+function get_minimap()
+   local wnd = get_main_window()
+   if wnd then 
+     local back     = wnd:GetStatic("minimap:background")
+     local frame    = wnd:GetStatic("minimap:level_frame")     
+     local center   = wnd:GetStatic("minimap:center")     
+     local compass  = wnd:GetStatic("minimap:compass")
+     local minimap  = wnd:GetStatic("minimap")
+     
+     return minimap, back, frame, center, compass   
+   else
+     return nil, nil, nil, nil, nil
+   end  
+
+end
+
+function move_point (point, left, top)
+   point:write ( 00, left )
+   point:write ( 04, top )
+end
+
+function move_rect (rect, left, top, right, bottom)
+   move_point ( rect, left, top )  
+   rect:write ( 08, right )
+   rect:write ( 12, bottom )      
+end
+
+function move_rect_wh (rect, left, top, width, height)
+   move_rect (rect, left, top, left + width - 1, top + height - 1)
+end
+
+function resize_rect (rect, width, height)
+   local left = rect:read ( 00 )
+   local top  = rect:read ( 04 )
+   rect:write ( 08, left + width - 1 )
+   rect:write ( 12, left + height - 1 )     
+end
+
+
+
+function test_bgs()
+end
+
+function move_bgs(left, top)
+ --
+ local bg = get_main_window():GetStatic("minimap:background")
+ if bg then
+    bg:SetWndPos(left, top)
+ end    
+end
+
+ 

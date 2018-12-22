@@ -1,0 +1,339 @@
+--автоматическое управление модулями
+local know_modules = 'bind_stalker,d,hud_params,linker,savemgmt'
+
+
+function dofile(script)
+ if LuaSafeCall ~= nil then
+    local res = LuaSafeCall(script, "#file:^dbg")
+    if strpos(res, "error") then 
+       abort("Exec script %s failed: %s ", script, res)
+    else
+       wprintf("[~T]. #DOFILE: result = %s", res)
+    end    
+ end   
+end
+
+
+function get_namespace(file)
+  local ns = file:gsub(".script", ""):gsub(".lua", "")
+  local p = strposx(ns, "\\")
+  while p do
+     ns = ns:sub(p + 1, ns:len())
+     p = strposx(ns, "\\")
+  end
+  return ns   
+end
+
+
+function lookup_script(name)
+ name = get_namespace(name)
+ local fs = getFS()
+ local fname = db.script_files[name] or fs:update_path("$game_scripts$", name..".script") 
+ if fs:exist(fname) then 
+    return fname
+ else
+    return false
+ end 
+end
+
+function script_get_age (name)
+ local fs = getFS()
+ local fname = lookup_script(name)                                   
+ return fs:get_file_age_str(fname)  
+end
+
+function check_script_module(namespace)
+ if (namespace == "lua_help") or -- (file == "zones_editor") or 
+       namespace:find(" ") ~= nil then 
+    return
+ end
+ if strposx(namespace, "\\") then
+    wprintf("~C0C #ERROR:~C07 invalid namespace~C0A %s~C07", namespace)
+    return 
+ end
+ 
+
+ SetDbgVar('check_module', namespace)
+ prefetch(namespace)
+ 
+ local env = _G[namespace]
+  
+ if ( env == nil ) then
+     local fname = lookup_script(namespace)  
+     if fname then  
+        wprintf("[~T].~C0C #WARN:~C07 script~C0F %s~C07 didnt autoloaded, trying force...", namespace)        
+        dofile (fname) -- для вvявления грубых ошибок синтаксиса Lua
+     end                
+ end 
+  
+ if ( env == nil ) or ( type(env) ~= 'table' ) then return end
+ 
+ if ( type (env.init_module) == 'function' ) and (env.init_module ~= _G.init_module) then
+   local env = _G[namespace]
+   md_list[namespace] = true
+   local mt = tostring(env.script_modified) or script_get_age(namespace)     
+   wprintf ('[~T].~C0F #DBG: Проверка на модуль сценария~C0A %-30s ~C0E %s~C0B = модуль~C07, init_priority =~C0D %d~C07', 
+   				 namespace, mt, env.init_priority or -1)
+ else  
+   -- wprintf ('[~T].~C0F #DBG: Проверка на модуль сценария~C0A %-30s ~C0F = скрипт~C07', namespace)
+ end
+  
+ --SetDbgVar('check_module', nil)
+end
+
+function nosub(s, sub)
+ return ( string.find(s, sub) == nil ) 
+end
+
+function no_subs(s, list) 
+ local t = SplitStr(list, ',')
+ for i,ss in pairs(t) do
+  if string.find(s, ss)  then               
+     -- ODS ( string.format("\t\t\t#DBG: ~C0A %30s~C07 sieved by~C0F %10s~C07 ", s, ss) )   
+     return false
+  end -- if
+ end -- for
+ return true
+end -- func 
+
+local mlocked = {}
+
+
+function invoke_module_func(mname, func, param, dump)
+ if type(_G[mname]) == 'table' and (not mlocked[mname]) then
+    mlocked[mname] = true
+    wprintf("$#CONTEXT: invoke_module_func('%s.%s')", mname, func)
+    local m = _G[mname]
+    local ff = m[func]
+    if nil == ff then
+       mlocked[mname] = false
+       return
+    end
+    -- wprintf("[~T/~B]. #DBG: invoke_module_func~C0F %s.%s~C07", mname, func)
+    if ( type ( ff ) == 'function' ) and ( ff ~= _G[func] ) then
+       local cb = mname .. '.' .. func
+       if dump then
+          ODS('[~T]. #DBG: performing call~C0A '..cb..'~C07')
+       end
+       SetDbgVar("invoke_func", cb)             
+       LuaSafeCall(cb, '#func', param)
+    end
+ end
+ mlocked[mname] = false
+end
+
+
+function invoke_all(func, param, dump, sort_cmp) 
+ local mlist = {}     
+ if md_list == nil then
+    init_modules()  
+ end
+
+ for mname,t in pairs(md_list) do
+  if t and mname ~= '_G' and mname ~= 'modmgmt' then
+     table.insert (mlist, mname)    
+  end       
+ end
+ 
+ local msg = table.concat(mlist, ',')      
+ if dump then
+    wprintf('[~T]. #DBG: trying invoke~C0A %s~C07 for modules ~C0F %s ~C07', func, msg)
+ end
+
+ if sort_cmp then                  
+    table.sort(mlist, sort_cmp)
+ else
+    table.sort(mlist)
+ end
+ for i,mn in ipairs(mlist) do 
+   invoke_module_func(mn, func, param, dump)
+ end
+ -- ProcessCommands()
+end
+
+function on_before_save_game()
+ invoke_all('on_before_save')
+end
+
+function on_removed_objects(id_list)
+ -- ODS('[~T]. #DBG: on_removed_objects processing ids table. Size = '..tostring(#id_list))
+ if misc.debug_remove then
+    wprintf(" on_removed_objects callback: ")
+    dump_table(id_list)
+ end
+ 
+ -- reentrancy protection
+ _G.on_removed_objects = function() end
+ invoke_all('on_removed_objs', id_list, false)
+ _G.on_removed_objects = on_removed_objects
+end
+
+_G.on_removed_objects = on_removed_objects
+
+g_script_list = false
+
+function modmgmt.open_scripts() 
+  
+end
+
+function modmgmt.search_scripts(path)
+ local fs = getFS() 
+ local folders = fs:file_list_open(path, FS.FS_ListFolders )
+ local f_cnt = folders:Size()
+  
+ for it = 0, f_cnt - 1 do
+   local fldr = path .. folders:GetAt(it)
+   modmgmt.search_scripts(fldr) 
+ end
+
+ folders:Free()      
+ table.insert(db.script_dirs, path)   
+ wprintf("[~T]. #DBG(modmgmt): searching scripts in~C0A %s~C07", path)
+ local files = fs:file_list_open(path, FS.FS_ListFiles)
+ local f_cnt = files:Size()
+ for it = 0, f_cnt - 1 do
+   local fname = files:GetAt(it)
+   local ns = get_namespace(fname)   
+   if strposx(fname, ".script") then        
+      fname = path .. fname
+      db.script_files[ns] = fname
+   end          
+ end                      
+ files:Free() 
+ 
+end
+
+function modmgmt.check_scripts(check_module) 
+ if db.actor == nil then
+    abort("db.actor == nil")
+ end
+ 
+ -- LuaSafeCall("modmgmt.open_scripts", "#func^dbg")
+ db.script_dirs  = {}
+ db.script_files = {}
+ local root = getFS():update_path("$game_scripts$", "") 
+ modmgmt.search_scripts(root)
+ -- misc.dump_table(db.script_files)                                         
+ 
+ local f_cnt = 0
+ for namespace, file in pairs(db.script_files) do
+  f_cnt = f_cnt + 1
+  local filt = no_subs(file, 'gulag_,mob_,se_,sr_,ph_,ui_,_g,bug_,ce_new,modmgmt,monster_script')  
+  if strpos (file, '.script') and filt then     
+     -- wprintf("[~T/~U]. #DBG: check_scripts processing~C0F %s~C07", file)
+     if check_module then
+     	LuaSafeCall('modmgmt.check_script_module', '#func', namespace)
+     elseif not strposx(namespace, "\\") then
+      	prefetch(namespace)
+     end        
+  end -- if script 
+ end -- for  
+ wprintf("[~T]. #DBG: modmgmt.check_scripts processed~C0D %d~C07 scripts from~C0D %d~C07 folders ", f_cnt, #db.script_dirs)
+ -- collectgarbage("collect")      
+end
+
+function get_init_p(mname)
+ local f = md_list[mname]
+ local t = _G[mname]
+ if f and t and type(t) == "table" then
+    return t.init_priority or 0
+ else
+    return -1
+ end
+end
+
+function cmp_init_priority(m1, m2)
+ local p1 = get_init_p(m1)
+ local p2 = get_init_p(m2)
+ if p1 == p2 then
+    return m1 < m2
+ else  
+    return p1 > p2  -- последними будут в списке модули с меньшим приоритетом
+ end
+end
+
+function test_level_change()
+ local list = stored_table("lc_history", true) -- список переходов по уровням в данном прохождении
+
+ local lname = level.name()
+ local count = 1
+ local last  = #list
+ -- проверка, что переход состоялся
+ if (last == 0) or (lname ~= list[last]) then
+   if last > 0 then
+      wprintf("[~T]. #DBG: level change detected from~C0A %s~C07 to~C0A %s~C07 ", list[last], lname)
+   end
+   table.insert(list, lname)
+   nlc_vars.lc_history = list
+ else
+   return
+ end
+
+
+ -- подсчет, сколько раз был переход на этот уровень.
+ for i, ln in ipairs(list) do
+  if ln == lname then count = count + 1 end
+ end
+
+ invoke_all("come_"..lname, count, true) -- вызывать функцию типа come_l01_escape
+end
+
+function modmgmt.init_modules()  
+ _G.md_list = {}
+
+ level.set_load_title("#init_modules") 
+
+ local fs = getFS()
+ local fname = fs:update_path('$game_config$', 'db_version.ltx')
+ 
+ while fs:exist(fname) do     
+   local ini = ini_file(fname) -- load default configuration
+   if not ( ini:load(fname) and ini:section_exist('version') ) then
+      break
+   end
+   
+   local st = ini:r_string('version', 'timestamp')
+   wprintf("~CF0[~T]. #DBG(modmgmt): db_version.timestamp =~CF1 %s~CF0 -----------------------------------~C07", st)  
+   break 
+ end 
+
+ check_scripts(true)
+ -- дополнительная проверка искусственнvх environment
+ for indx, t in pairs(_G) do
+   if ( type(t) == 'table' ) and ( type (t.init_module) == 'function' ) and ( t.init_module ~= _G.init_module ) then 
+      md_list[indx] = true
+   end -- if
+ end    
+ 
+ _G.new_game_status = GetGlobalVar("new_game") or "nope" 
+ SetGlobalVar("new_game", "in_the_past")
+ db.modules = _G.md_list
+ invoke_all('init_module', 1, true, cmp_init_priority)
+ test_level_change()
+end
+
+function modmgmt.stop_modules()
+ invoke_all('stop_module', 1, true)
+end
+
+function modmgmt.late_init_all()
+ -- вvзов поздних инциализаций
+ level.set_load_title("#late_init_all")  
+ UpdateRegistry()
+ invoke_all('late_init', 1, true)
+ if xray_vars then 
+    xray_vars.loaded_saves = tonumber(xray_vars.loaded_saves or '0') + 1  -- сколько сохраненок бvло загружено в серии
+    wprintf("[~T]. #DBG: loaded saves count = %s", xray_vars.loaded_saves or 'nil?!')
+ end      
+end
+
+function modmgmt.set_all_kcb()
+ -- обновление клавиатурнvх колбеков
+ wprintf('[~T]. #DBG: updating all keyboard callbacks...')
+ RunCommand('CLEAR_KCB_LIST')
+ invoke_all('init_kcb', 1, true)
+end
+
+_G.on_cl_spawned = function(list)
+ invoke_all('on_cl_spawned', list, false)
+end

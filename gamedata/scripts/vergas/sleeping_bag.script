@@ -1,0 +1,68 @@
+--[[
+Спальный мешок
+Vergas
+© NLC 6.0
+]]--
+
+local flag_bag
+local bag
+local flag_sleep
+
+function add_sleep_zone(obj)
+  local obj_i = g_sim:object(obj:id())
+
+  if obj_i ~= nil and obj_i.parent_id == BAD_OBJ_ID and obj:section()=="sleeping_bag" then  --мешок выложен именно на землю
+    flag_bag = true
+    bag      = obj
+  end
+end
+
+function remove_sleep_zone()
+  if flag_bag then
+    local radius_zone_dream  = vergas_lib.set_pr_from_config("sleeping_bag","radius_zone_dream")
+    local radius_start_dream = vergas_lib.set_pr_from_config("sleeping_bag","radius_start_dream")
+    local apos = db.actor:position()
+    if g_sim:object(bag:id())==nil or bag:position() == nil then return end
+    if bag:parent() then return end -- мешок был подобран, или помещен в контейнер?
+
+    if  bag:position():distance_to(apos) < radius_start_dream then
+      --запускаю диалог сна
+      vergas_lib.s_play([[device\sleeping_bag\sleep_bag_down]])
+      level.add_pp_effector("black.ppe", 2002, true)  --затемнение экрана
+      flag_sleep = true
+      amk_mod.test_for_need_sleep_matras(bag)
+      flag_bag = false
+      bag = nil
+    elseif bag:position():distance_to(apos) >= radius_zone_dream then
+      flag_bag = false
+      bag = nil
+    end
+  end
+
+end
+
+function stop_pp(param)
+  level.remove_pp_effector(param)
+end
+
+function take_bag(obj)
+  if flag_bag then
+    if obj:section()=="sleeping_bag" and obj:id()==bag:id() then
+        flag_bag = false
+      bag = nil
+    end
+  end
+end
+
+function set_flag_sleep(mode)
+  if mode==1 then
+    return flag_sleep
+  elseif mode==2 then
+    flag_sleep = false
+  end
+end
+
+function no_sleep()
+  stop_pp(2002)
+  vergas_lib.s_play([[device\sleeping_bag\sleep_cancel]])
+end

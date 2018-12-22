@@ -1,0 +1,538 @@
+--[[
+Медецинская резинка
+Vergas
+© NLC-6.0
+]]--
+
+local lost_id_m = -1		--для простой аптечки
+local lost_id_a = -1		--для армейской аптечки
+local lost_id_s = -1		--для армейской аптечки
+local lost_id_b = -1	--для бинтов
+local lost_id_ed = -1	--для энергетика
+local lost_id_ar = -1	--для антирада
+local lost_id_sv = -1	--для сыворотки
+local lost_id_mx = -1	--микстура 
+
+local post_eff = 1		--для простой аптечки
+local flag_med = false	--флаг запуска лечения.
+local flag_fig = 0	--флаг запрета запуска лечения, при уже запущенном лечении
+local set_med 			--таблица с настройками лечения
+local delta_time		--осталось времени до полного излечения
+local delta_health		--порция здоровья в еденицу времени
+local delta_power		--порция потери энергии в еденицу времени
+local end_power=-0.95	--порция потери энергии в еденицу времени
+local delta_radiation	--порция снятия радиации в еденицу времени
+local delta_wounds		--порция заживления раны в еденицу времени
+--local delta_alcohol		--порция вывода алкоголя в единицу времени
+local time_sec_old			--секунды, при предыдущем обращении к функции show_time_med()
+local timer_set = nil	-- стринг показаний таймера лечения(ЧЧ:ММ)
+local mr_show			-- выводить или нет на худ(true, false)
+local flag_not_r = -1
+local flag_not_p = -1
+local sec
+local schek
+local sound_t
+local delta_t
+local schek_snd
+local af_set
+local obj_name
+local wnd_ar
+
+function set_not_flag(param_1,param_2)
+	if param_1=="r" then
+		flag_not_r = param_2
+	elseif param_1=="p" then
+		flag_not_p = param_2
+	end
+end
+
+function return_not_flag(param)
+	if param=="r" then
+		return flag_not_r
+	elseif param=="p" then
+		return flag_not_p
+	end
+	local flag_not_t = nlc_vars.flag_not_var or 0
+	if flag_not_t > 0 then
+		flag_not = flag_not_t
+	else
+		flag_not = -1
+	end
+	return flag_not
+end
+
+function lose_item(obj)
+	if obj:section()=="medkit" then
+		obj_name = "medkit"
+		lost_id_m = obj:id()
+	elseif obj:section()=="medkit_army" then	
+		obj_name = "medkit_army"
+		lost_id_a = obj:id()
+	elseif obj:section()=="medkit_scientic" then	
+		obj_name = "medkit_scientic"
+		lost_id_s = obj:id()
+	elseif obj:section()=="bandage" then	
+		obj_name = "bandage"
+		lost_id_b = obj:id()
+	elseif obj:section()=="energy_drink" then	
+		obj_name = "energy_drink"
+		lost_id_ed = obj:id()
+	elseif obj:section()=="energy_drink_new" then	
+		obj_name = "energy_drink_new"
+		lost_id_ed = obj:id()
+	elseif obj:section()=="antirad" then	
+		obj_name = "antirad"
+		lost_id_ar = obj:id()
+	elseif obj:section()=="suvorotka" then	
+		obj_name = "suvorotka"
+		lost_id_sv = obj:id()
+	elseif obj:section()=="mixture" then	
+		obj_name = "mixture"
+		lost_id_mx = obj:id()
+	end
+end
+
+function used_item()
+	if obj_name~=nil then
+		if flag_med then
+			if obj_name=="medkit" then
+				if alife():object(lost_id_m)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_m = -1 
+			elseif obj_name=="medkit_army" then
+				if alife():object(lost_id_a)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_a = -1
+			elseif obj_name=="medkit_scientic" then
+				if alife():object(lost_id_s)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_s = -1
+			elseif obj_name=="bandage" then
+				if alife():object(lost_id_b)==nil then
+					obj_name = nil
+				end
+				lost_id_b = -1
+			elseif obj_name=="energy_drink" then
+				if alife():object(lost_id_ed)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name, true)
+					obj_name = nil
+				end
+				lost_id_ed = -1
+			elseif obj_name=="energy_drink_new" then
+				if alife():object(lost_id_ed)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_ed = -1
+			elseif obj_name=="antirad" then
+				if alife():object(lost_id_ar)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_ar = -1
+			elseif obj_name=="suvorotka" then
+				if alife():object(lost_id_sv)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_sv = -1
+			elseif obj_name=="mixture" then
+				if alife():object(lost_id_mx)==nil then
+					flag_fig = 5
+					vergas_lib.spawn_item_in_inv(obj_name,true)
+					obj_name = nil
+				end
+				lost_id_mx = -1
+			end
+		end
+	end
+	if (lost_id_m > 0) and(alife():object(lost_id_m)==nil) then 
+		if flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_m = -1
+			schek = "m"
+			obj_name = nil
+			snd_eat_med(1)
+			used_med("medkit")
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_a > 0) and(alife():object(lost_id_a)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_a = -1
+			schek = "a"
+			obj_name = nil
+			snd_eat_med(7)
+			used_med("medkit_army")
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_s > 0) and(alife():object(lost_id_s)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_s = -1
+			schek = "s"
+			obj_name = nil
+			snd_eat_med(8)
+			used_med("medkit_scientic")
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_b > 0) and(alife():object(lost_id_b)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_b = -1
+			schek = "b"
+			obj_name = nil
+			snd_eat_med(4)
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_ed > 0) and(alife():object(lost_id_ed)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_ed = -1
+			schek = "ed"
+			obj_name = nil
+			used_med("energy_drink")
+			snd_eat_med(2)
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_ed > 0) and(alife():object(lost_id_ed)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_ed = -1
+			schek = "ed"
+			obj_name = nil
+			used_med("energy_drink_new")
+			snd_eat_med(2)
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_mx > 0) and(alife():object(lost_id_mx)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_mx = -1
+			schek = "ed"
+			obj_name = nil
+			used_mixture("mixture")
+			snd_eat_med(2)
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_ar > 0) and(alife():object(lost_id_ar)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_ar = -1
+			schek = "ar"
+			obj_name = nil
+			used_med("antirad")
+			snd_eat_med(9)
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	elseif (lost_id_sv > 0) and(alife():object(lost_id_sv)==nil) then
+		if	flag_not_r==-1 and flag_not_p==-1 then
+			lost_id_sv = -1
+			schek = "sv"
+			obj_name = nil
+			used_med("suvorotka")
+		else
+			if flag_not_r==1 then
+				set_not_flag("r",-1)
+			end
+			if flag_not_p==1 then
+				set_not_flag("p",-1)
+			end
+		end
+	end
+end
+
+function used_med(section)
+	if	not flag_med then
+		delta_time = vergas_lib.set_pr_from_config(section,"mr_time")
+		delta_health = vergas_lib.set_pr_from_config(section,"mr_eat_health")/delta_time/60
+		delta_power = vergas_lib.set_pr_from_config(section,"mr_eat_power")/delta_time/20
+		delta_radiation = vergas_lib.set_pr_from_config(section,"mr_eat_radiation")/delta_time/60
+		post_eff = vergas_lib.set_pr_from_config(section,"post_eff")
+		flag_med = true
+		time_sec_old = vergas_lib.return_time(6)
+		sec = 59
+		delta_time = delta_time-1
+		delta_t = 10
+		sound_t = 0
+		schek_snd = 1
+		post_eff_eat(post_eff)
+	end
+end
+function used_mixture(section)
+if	not flag_med then
+		delta_time = vergas_lib.set_pr_from_config(section,"mr_time")
+		params.psy_health_v_add(20)
+		flag_med = true
+		time_sec_old = vergas_lib.return_time(6)
+		sec = 59
+		delta_time = delta_time-1
+		delta_t = 10
+		sound_t = 0
+		schek_snd = 1
+	end
+
+end
+local snd_eff={
+"scripts\\inv_medkit",
+"scripts\\inv_softdrink",
+"scripts\\inv_pills",
+"scripts\\inv_bandage",
+"device\\tiski_avto_2",
+"device\\tiski_bronik_2"
+}
+function snd_eat_med(tips)
+	local snd_obj = xr_sound.get_safe_sound_object(snd_eff[tips])
+	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+local vis_post_eff={
+"intoxication_1.ppe",
+"intoxication_2.ppe",
+"intoxication_3.ppe",
+"psychic.ppe",
+"escape.ppe",
+"noise.ppe",
+"brighten.ppe"
+}
+function post_eff_eat(eff)
+	level.add_pp_effector(vis_post_eff[eff], 1021, true)
+end
+
+function show_med()
+	if flag_med then
+		if not flag_med then
+			flag_fig = 0
+			return
+		end
+		local time_sec = vergas_lib.return_time(6)
+		if time_sec_old~=time_sec then
+			sec = sec - 1
+			flag_fig = flag_fig - 1
+			time_sec_old = time_sec
+			treatment()
+			if sec < 0 then
+				delta_time = delta_time-1
+				sec = 60 + sec
+				if delta_time < 0 then
+					flag_med = false
+					params.psy_health_v_add(1)
+					level.remove_pp_effector(1021)
+					return
+				end
+			end
+		end
+		if mr_show then
+			local str = timer_str(delta_time , sec)
+			if flag_fig > 0 then
+
+			else
+				flag_fig = 0
+			end
+		end
+	end
+end
+
+function timer_str(m, s)
+	local ms_str
+	if m < 10 then
+		if s < 10 then
+			ms_str = string.format("0%d:0%d", m, s)
+		else
+			ms_str = string.format("0%d:%d", m, s)
+		end
+	else
+		if s < 10 then
+			ms_str = string.format("%d:0%d", m, s)
+		else
+			ms_str = string.format("%d:%d", m, s)
+		end
+	end
+	return ms_str
+end
+
+
+function treatment(mode)
+		db.actor.health = delta_health
+		db.actor.power = delta_power
+		db.actor.radiation = delta_radiation
+end 
+
+function medik_zapret(remove_item)
+	if remove_item:section()=="medkit" 
+		or remove_item:section()=="medkit_army" 
+		or remove_item:section()=="medkit_scientic" 
+		or remove_item:section()=="bandage" 
+		or remove_item:section()=="energy_drink" 
+		or remove_item:section()=="antirad" 
+		or remove_item:section()=="mixture"
+		or remove_item:section()=="suvorotka" then
+		set_not_flag("p",1)
+	end
+end
+
+function save(packet)
+	if flag_med	then
+		nlc_vars.flag_med_var=flag_med
+		nlc_vars.sec_var=sec
+		nlc_vars.time_sec_old_var=time_sec_old
+		nlc_vars.delta_time_var=delta_time
+		nlc_vars.delta_health_var=delta_health
+		nlc_vars.delta_power_var=delta_power
+		nlc_vars.delta_radiation_var=delta_radiation
+		nlc_vars.schek_var=schek
+		nlc_vars.delta_alcohol_var=delta_alcohol
+		nlc_vars.delta_t_var=delta_t
+		nlc_vars.sound_t_var=sound_t
+		nlc_vars.schek_snd_var=schek_snd
+	end
+end
+
+function load(reader)
+	local flag_m = nlc_vars.flag_med_var
+	local sec_m = nlc_vars.sec_var
+	local t_old = nlc_vars.time_sec_old_var
+	local t_delta = nlc_vars.delta_time_var
+	local t_health = nlc_vars.delta_health_var
+	local t_power = nlc_vars.delta_power_var
+	local t_radiation = nlc_vars.delta_radiation_var
+	local t_schek = nlc_vars.schek_var
+	local t_delta_alcohol = nlc_vars.delta_alcohol_var
+	local t_delta_t = nlc_vars.delta_t_var
+	local t_sound_t = nlc_vars.sound_t_var
+	local t_schek_snd = nlc_vars.schek_snd_var
+	if flag_m~=nil then
+		flag_med = flag_m													
+		nlc_vars.flag_med_var= nil
+		sec = sec_m													
+		nlc_vars.sec_var= nil
+		time_sec_old = t_old													
+		nlc_vars.time_sec_old_var= nil
+		delta_time = t_delta													
+		nlc_vars.delta_time_var= nil
+		delta_health = t_health													
+		nlc_vars.delta_health_var= nil
+		delta_power = t_power													
+		nlc_vars.delta_power_var= nil
+		delta_radiation = t_radiation													
+		nlc_vars.delta_radiation_var= nil
+		schek = t_schek													
+		nlc_vars.schek_var= nil
+		delta_alcohol = t_delta_alcohol													
+		nlc_vars.delta_alcohol_var= nil
+		delta_t = t_delta_t													
+		nlc_vars.delta_t_var= nil
+		sound_t = t_sound_t													
+		nlc_vars.sound_t_var= nil
+		schek_snd = t_schek_snd													
+		nlc_vars.schek_snd_var= nil
+	end
+	
+end
+
+
+function use_antirad()
+	if db.actor:object("antirad") ~= nil then
+		db.actor:eat(db.actor:object("antirad"))
+		get_hud():AddCustomStatic("hud_show_ar_net",true)
+		wnd_ar = get_hud():GetCustomStatic("hud_show_ar_net")
+		timers.start_timer("antirad_timer",4,"medkit_use.end_antirad_timer()")					--запускаю таймер
+		wnd_ar:wnd():SetText("Использовано: антирад")
+	else
+		sak.send_tip("А ведь нету антирада", "Тудыть твою железа мать!", 1, 10, "g_g", "sak", "red")
+		vergas_lib.s_play([[device\antirad_no]],1)
+	end
+end
+
+function use_energy()
+	if db.actor:object("energy_drink") ~= nil then
+		db.actor:eat(db.actor:object("energy_drink"))
+		get_hud():AddCustomStatic("hud_show_ar_net",true)
+		wnd_ar = get_hud():GetCustomStatic("hud_show_ar_net")
+		timers.start_timer("antirad_timer",4,"medkit_use.end_antirad_timer()")
+		wnd_ar:wnd():SetText("Использовано: энергетик")
+	else
+		sak.send_tip("Нету энергетика!", "Едрён-батон!", 1, 10, "g_g", "sak", "red")
+		vergas_lib.s_play([[device\antirad_no]],1)
+	end
+end
+
+function end_antirad_timer()
+	get_hud():RemoveCustomStatic("hud_show_ar_net")	
+	wnd_ar = nil
+end
+
+function _G.caption_use(num, id)
+ local obj = client_obj(id or BAD_OBJ_ID)
+ if (nil == id) or (nil == obj) then
+    return "st_use_"..tostring(num)
+ end
+ 
+ local sn = obj:section()
+ if strpos(sn, 'bandage') or strpos(sn, 'medkit') or strpos(sn, 'antirad') or sn == 'batt_torch' then 
+    return 'st_use_'..tostring(num) 
+ end
+ 
+ if strpos(sn, "pda") then
+    local cd = vergas_pda.get_pda_cdata(id)
+    if cd then
+       local info = SplitStr(cd, '|')
+       local serial = info[4] or '?'..sn
+       return 'ПДА №' .. serial
+    end
+ end
+ 
+ return game.translate_string("st_use")..sprintf (" %d", id) 
+end

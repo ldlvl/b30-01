@@ -1,0 +1,67 @@
+-- для сложения смещений, целочисленный формат
+-- 2945 = $0200, 1.0004 = 504
+
+art_main_ofs = 504
+art_offsets = {
+  cost				=	"-$0038",
+  inv_weight			=	"-$0034",
+  --inv_grid_x			=	"-$0034?",
+  --inv_grid_y			=	"-$0034?",
+  inv_grid_width		=	"-$0058",
+  inv_grid_height		=	"-$008C",
+  animation_slot		=	"$01E0",
+--animation_slot		=	"$0270?",
+--trail_light_color_red       = 524,
+--trail_light_color_green   	= 528,
+--trail_light_color_blue      = 532,
+--trail_light_range           = 536,
+  health_restore_speed        = "$022C",
+  radiation_restore_speed     = "$0230",
+  satiety_restore_speed       = "$0234",
+  power_restore_speed         = "$0238",
+  bleeding_restore_speed      = "$023C",
+  burn_immunity               = "$0244",
+  shock_immunity              = "$0248",
+  strike_immunity             = "$024C",
+  wound_immunity              = "$0250",
+  radiation_immunity          = "$0254",
+  telepatic_immunity          = "$0258",
+  chemical_burn_immunity      = "$025C",
+  explosion_immunity          = "$0260",
+  fire_wound_immunity         = "$0264",
+  wound_2_immunity            = "$0268",
+  physic_strike_immunity      = "$026C",  
+  jump_height                 = "$02E0"
+}
+art_param_restore = {
+  health_restore_speed        = "$022C",
+  radiation_restore_speed     = "$0230",
+  satiety_restore_speed       = "$0234",
+  power_restore_speed         = "$0238",
+  bleeding_restore_speed      = "$023C"
+}
+
+art_param_immunity = {
+  burn_immunity               = "$0244",
+  shock_immunity              = "$0248",
+  strike_immunity             = "$024C",
+  wound_immunity              = "$0250",
+  radiation_immunity          = "$0254",
+  telepatic_immunity          = "$0258",
+  chemical_burn_immunity      = "$025C",
+  explosion_immunity          = "$0260",
+  fire_wound_immunity         = "$0264"
+-- ЗАКОМЕНТИРОВАНО ДЛЯ ИСКЛЮЧЕНИЯ ВЫЛЕТОВ. Скрипты пытаются читать эти свойства из настроек артов (ini)
+--  wound_2_immunity            = "$0268",   
+--  physic_strike_immunity      = "$026C"
+}
+
+function art_prop(id, key)
+ local obj = client_obj(id) -- game_object
+ local aobj = obj:get_artefact()
+ if aobj then 
+    return update_prop(aobj, key, newval)
+ end    
+ return 0
+end
+

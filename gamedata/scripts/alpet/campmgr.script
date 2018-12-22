@@ -1,0 +1,585 @@
+
+if campmgr.flame_map == nil then
+   campmgr.flame_map = {}
+   campmgr.flame_by_lvid = {}
+   campmgr.unused_anoms = {}
+   campmgr.outdoor_map = {} 
+   campmgr.markers_map = {}
+   campmgr.campfire_map = {}
+   campmgr.ticks = 0
+   campmgr.handle_camps = false
+end
+
+g_fixed_count = 0
+target_pos = {}
+ 
+
+local function spawn_rastopka(gi)
+ local sp = "nil"
+ if gi.pos then sp = misc.pos2str(gi.pos) end                          
+ --- wprintf("[~T]. #DBG: rastopka target position gvid =~C0D %d~C07, lvid =~C0D %d~C07, pos =~C0F %s~C07", gi.gv, gi.lv, sp)
+ local result = misc.spawn_obj("rastopka", gi) 
+ return result
+end
+
+
+function campmgr.check_camp_charged(ids)
+ local ref = db.actor:position()
+ 
+ local ras_ids = misc.find_around(ref, "rastopka", 5);
+ if #ras_ids > 0 then return true end
+ 
+ local flame_ids = misc.find_around(ref, "zone_flame_sak_small_self", 5)
+ if #flame_ids == 0 then return false end -- аномалии пламени нет, нечего зажигать попросту
+ for i, id in ipairs(flame_ids) do
+    if client_obj(id) then return true end -- аномалия уже "горит", незачем зажигать
+ end 
+   
+ for i, id in ipairs(ids) do
+   local obj = client_obj(id)
+   if obj and obj:position():distance_to(ref) < math.pi then
+      local gi = misc.object_pos(obj)
+      local sobj = spawn_rastopka(gi);
+      misc.process_spawn()
+      obj = client_obj(sobj.id)
+      if obj then campmgr.fix_it(sobj.id, true) end  
+   end 
+ end
+ return false
+end
+
+
+function ignite_match()
+ ----wprintf('trying ignite_match')
+ local m = sak.load_matches() 
+ if m then
+    bind_stalker.hide_weapon()
+    db.actor:eat (m)    
+    local delay = sak.scratch_match_sound()    
+    local light_time = lua_random(3000, 5000)
+    schedule.add ("matches_flame", "params.spawn_matches_flame("..light_time..")", delay)
+    schedule.add ("restore_wpn", "bind_stalker.restore_weapon()", delay + light_time + 1500)
+ else
+    db.actor:give_game_news( "Ых, а спичек-то нету!", "ui\\ui_iconsTotal", Frect():set(498,280,83,47), 0, 3000 )   
+ end  
+end
+
+function campmgr.try_ignite()
+ local apos = db.actor:position()
+ -- поискать костровые маркеры около гг
+ UpdateRegistry()
+ local pho_ids = registry.sc_objects('physic_object', false, 7)
+ campmgr.check_camp_charged(pho_ids) -- добавление растопки в погашенный костер
+ 
+ 
+ local rpk_ids = registry.sc_objects('rastopka', false, 7)
+ schedule.add ("restor_wpn", "sak.restore_weap()", 1800)
+ 
+ if table.getn(pho_ids) == 0 then
+    ODS('[~T].~C0C #ERROR: not found physic_objects around actor ~C07')
+    return 
+ end
+ 
+ schedule.add ("matches_flame", "params.spawn_matches_flame(1000)", 50)
+ 
+ if table.getn(rpk_ids) == 0 then
+    --wprintf('[~T].~C0C #ERROR: not found rastopka on level. ')    
+    local msgs = { "Не судьба :(", "Черт, тут нечего поджигать!", "Эх, сюда-бы растопку или бензину..." } 
+    local msg = msgs [lua_random(1, #msgs)]
+    db.actor:give_game_news( msg,"ui\\ui_iconsTotal", Frect():set(498,280,83,47), 0, 3000 )
+    return
+ end
+ local ph_objects = registry.convert_ids (pho_ids, client_obj) 
+ local rt_objects = registry.convert_ids (rpk_ids, client_obj)
+ local kcnt = 0
+  
+ for i,marker in ipairs (ph_objects) do
+   local mpos = marker:position()
+   local mdist = mpos:distance_to(apos)  
+   -- теперь нужно отобрать маркеры костров из всех физ-объектов 
+   if strpos ( marker:name(), "_koster_", 3, true ) and ( mdist < 2 ) then
+     kcnt = kcnt + 1     
+     local pos  = marker:position()
+     local lvid = marker:level_vertex_id()     
+     local rt = misc.nearest_obj(pos, lvid, rt_objects, 1)
+     if ( rt ~= nil ) and ( rt.hit ) then     
+   
+        -- попытка спалить растопку
+        local rt_id = rt:id()       
+        local code = sprintf('campmgr.test_rastopka(%d)', rt_id)
+        schedule.add ("test_rastopka", code, 1500)         
+        
+        campmgr.campfire_map[rt_id] = marker:id()        
+     
+        local h_factor = 1
+        -- на уровнях с сильной загазованностью разжечь костёр сложнее 
+        local h_diff_by_level = balance.level_poisoned[ level.name() ] or 1 
+        local range = 9
+        if xr_build_id == 3312 then
+           local vid, obj_id
+           vid, range, obj_id = RayTrace ( pos, vector():set(0, 1, 0), 200, 2 ) -- детект наличия потолка над кострищем
+        else
+           -- ray_pick(const vector&, const vector&, number, enum collide::rq_target, rq_result&, game_object*);
+           local RP = ray_pick (pos, vector():set(0, 1, 0), 200, rq_target.rqtStatic, nil);
+           if RP:query() then
+              range = RP:get_distance()
+           end     
+        end        
+        if range > 8 then -- под открытым небом или капает с высокого потолка, обычно все крыши все равно дырявые                
+           h_factor = h_factor + level.rain_factor() * 20
+        end         
+        h_factor = h_factor + tonumber( level.get_game_difficulty() ) -- мастерам этот костер зажечь тяжелее будет
+        local h = hit()
+		h.impulse = 0
+		h.draftsman = rt
+		h.direction = vector():set(0,0,0)      
+		h.power = balance.matches.hit_power + ( ( 5 * lua_random() ) /  h_factor ) / ( h_diff_by_level * 1.3 )
+		h.type = hit.burn
+        --sak.send_tip( "Хит: " .. h.power .. " Фактор: ".. h_factor .. " ", "", 2, 20, "uniq", "sak", "green" )
+        --wprintf ( "[~T]. #MSG: проба поджига %d случайным хитом = %.3f, h_diff_by_level = %.3f ", rt_id, h.power, h_diff_by_level )    
+		rt:hit(h)        
+        break
+     else
+       --wprintf('[~T].~C0C #ERROR: not found rastopka around %s ~C07', marker:name() )       
+     end
+   end -- if                  
+ end -- for
+ 
+ if kcnt == 0 then 
+    --wprintf('[~T].~C0C #ERROR: not found object *_koster_* around actor ~C07')
+ end
+ 
+end
+
+
+function campmgr.fix_it(id, fast)
+ local id = tonumber(id)
+ local obj = client_obj(tonumber(id))
+ if obj then
+    local ps   = obj:get_physics_shell()
+    local geo  = target_pos[id]
+    if geo and geo.pos then
+       obj:set_position(geo.pos)           
+    end
+    
+    if ps then
+       local e = ps:get_element_by_order(0)
+       if e then 
+          e:fix()          
+          local prefix = "~C0A #SUCCESS_SLOW"
+          if fast then            
+             prefix = "~C0A #SUCCESS_FAST"   
+          end
+          -- wprintf("[~T].%s:~C07 object ~C0D %d~C07 was fixed at~C0F %s~C07", prefix, id, misc.pos2str(obj:position()))    
+        end
+    end -- if ps
+ elseif g_sim:object(id) then 
+   g_sim:set_switch_online  ( id, true )
+   g_sim:set_switch_offline ( id, false ) 
+   schedule.add ("fix_rastopka2_"..id, "campmgr.fix_it("..id..")", 500 ) 
+ end -- if obj
+end
+
+function campmgr.on_cl_spawned(list)
+ for i, id in ipairs(list) do
+   local obj = client_obj(id)
+   if obj and obj:section() == "rastopka" then
+      campmgr.fix_it(id, true)
+   end
+ end
+end
+
+
+function campmgr.force_off(flame_id)
+ amk_anoms.set_online_anomaly_status (flame_id, 'off')
+end
+
+
+function campmgr.awake_flame_anoms()
+
+  local zfs_ids = registry.sc_objects("zone_flame_sak_small_self", true, 15)
+  local in_level = 0  
+  
+  campmgr.flame_map = {}
+  
+  local gvn,gvx,lvx = vertex_dump.range() 
+  for i,id in ipairs(zfs_ids) do
+   local sobj = g_sim:object(id)
+   local gv = sobj.m_game_vertex_id or -1
+   local lv = sobj.m_level_vertex_id or -1
+   
+   if sobj and ( gv >= gvn ) and ( gv <= gvx ) then
+      in_level = in_level + 1        
+         
+      if lv >= 0 then      
+         if campmgr.flame_by_lvid [lv] and campmgr.flame_by_lvid [lv] ~= id then
+           -- ещё один претендует на занятый вертекс - под топор его         
+           wprintf('[~T].~C0C #WARN:~C07 duplicate flame anomaly %s (%d), lvid = %d', sobj:name(), id, lv) 
+           misc.release_obj(id)
+         else           
+           -- wprintf('[~T]. #DBG: found flame anomaly %s (%d), lvid = %d', sobj:name(), id, lv)       
+           campmgr.flame_by_lvid [lv] = id
+           campmgr.unused_anoms[id] = true
+           misc.force_offline(id)  
+         end
+      else
+        -- wprintf("~C0C #WARN~C07: flame_id = %d, level_vertex_id = %d ", id, lv)    
+      end
+      
+      --  misc.force_online(id) -- чтобы успела проснуться
+                       
+   end      
+   
+  end 
+  
+  wprintf('[~T]. #DBG: total flame anomalies in game = %d, in_level = %d', #zfs_ids, in_level)
+end
+
+
+function campmgr.init_level_camps()
+  -- получить физ-объекты
+  wprintf("[~T/~B]. #DBG:campmgr.init_level_camps() called")
+  UpdateRegistry()
+  
+  local apos = db.actor:position()
+  
+  local spawn_cnt = 0
+  local need_fix = {}
+  
+  local pho_ids = registry.sc_objects("physic_object", true, 7)
+  local zfs_ids = registry.sc_objects("zone_flame_sak_small_self", true, 7)  
+  local rpk_ids = registry.sc_objects("rastopka", false, 7)
+  
+  local ph_objects = registry.convert_ids (pho_ids, client_obj)  
+  local zf_objects = registry.convert_ids (zfs_ids, client_obj)
+  local rt_objects = registry.convert_ids (rpk_ids, client_obj)
+
+  if #pho_ids <= 0 then
+     abort("~C0C #FATAL (campmgr): no physic objects on level~C07")
+     return nil
+  end
+  
+  if GetVerbosity() >= 5 then
+     local lvcnt = 0
+     for lvid, id in pairs(campmgr.flame_by_lvid) do
+       lvcnt = lvcnt + 1
+     end
+     wprintf('[~T]. #DBG: online flame anomalies %d, total on level %d ', #zfs_ids, lvcnt )
+  end
+    
+  for n,obj in ipairs(ph_objects) do
+    -- отобрать маркеры кострищ
+    if obj.name and strpos( obj:name(), "_koster_", 1, true ) then
+       local pos  = vector()
+       local name = obj:name()                     
+       
+       local gi = misc.geo_info(obj)       
+       
+       --wprintf (" checking marker = %s (%d) lvid = %d, gvid = %d ", name, obj:id(), gi.lv, gi.gv  )
+                
+       pos = gi.pos
+              
+       local dist = apos:distance_to_xz(pos)              
+              
+       -- если рядом нет аномалии костра, надо её заспавнить
+       local flame = misc.nearest_obj ( gi.pos, gi.lv, zf_objects, 5 )
+       local flame_id = campmgr.flame_by_lvid[gi.lv] or 0     
+       
+       
+       if ( flame == nil ) and ( flame_id <= 0 ) then          
+          flame = misc.easy_anom ("zone_flame_sak_small_self", gi, 0 )
+          flame_id = flame.id
+          local sobj = g_sim:object(flame_id)
+          if sobj and sobj.m_level_vertex_id then
+             campmgr.flame_by_lvid [sobj.m_level_vertex_id] = flame_id
+             -- wprintf("[~T]. #DBG: new flame lvid = %d ", sobj.m_level_vertex_id)
+          end    
+          -- wprintf ("[~T].~C0C #WARN:~C0F added flame anomaly~C0D %d~C07, dist_to_actor =~C0D %.3f ~C07", flame_id, dist )
+          misc.force_offline(flame_id)
+          schedule.add("camp_to_off", sprintf("misc.force_offline(%d)", flame_id), 500)  
+          spawn_cnt = spawn_cnt + 1
+       elseif ( flame ~= nil ) and ( flame_id == 0 ) then      
+          flame_id = flame:id()
+          wprintf ("[~T].~C0A #DBG:~C07 exist flame anomaly %d, dist_to_actor =~C0D %.3f ~C07", flame_id, dist )                     
+       elseif ( flame_id > 0 ) then   
+          -- wprintf('[~T].~C0A #DBG:~C07 flame anomaly %d retrieved by lvid ', flame_id)          
+       end
+       --
+       if client_obj(flame_id) then      
+          amk_anoms.set_online_anomaly_status (flame_id, 'off')
+          -- misc.force_offline(flame_id)
+       end
+                               
+       campmgr.unused_anoms[flame_id] = nil -- чтобы аномалию не убил сборщик аномального мусора
+       schedule.add("force_off_anom", sprintf("campmgr.force_off(%d)", flame_id), 1500)
+            
+       local rastopka = misc.nearest_obj ( pos, gi.lv, rt_objects, 1 )
+       local r_id = 0
+       if rastopka == nil then
+          --gi.pos.y = gi.pos.y + 0.5
+          rastopka = spawn_rastopka ( gi )
+          r_id = rastopka.id                                                               
+          local color = "~C0D "
+          if dist < 5 then
+             color = "~CED*"
+          elseif dist < 50 then
+             color = "~C0F "
+          end
+          
+          -- wprintf ("[~T]. #DBG: added rastopka~C0D %d~C07 at~C0F %25s~C07, dist_to_actor =%s%.3f ~C07", r_id, misc.pos2str(rastopka.position), color, dist )
+       else   
+          r_id = rastopka:id()          
+          wprintf ("[~T]. #DBG: found rastopka~C0D %d~C07 at~C0F %25s~C07, dist_to_actor =~C0D %.3f ~C07, condition =~C0D %.5f~C07",
+                                     r_id, misc.pos2str(rastopka:position()), dist, rastopka:condition() )
+          rastopka:set_condition(1)
+          
+       end
+       
+       misc.force_online(r_id)
+       table.insert(need_fix, r_id)
+       --wprintf('[~T].~C0A #DBG:~C07 fix_rastopka ') 
+       target_pos[r_id] = gi       
+       --               
+       campmgr.flame_map   [r_id] = flame_id
+       campmgr.markers_map [r_id] = obj:id()   
+       campmgr.outdoor_map [r_id] = false -- #TODO: как определить, что костер на улице?
+       
+       -- снять флаг сохраняемости объекта
+       coord_params.se_flags (r_id, 'm_flags', global_flags.flCanSave, false)              
+    end -- if
+  end -- for 
+   
+  local unused_cnt = 0
+  for id,flag in pairs (campmgr.unused_anoms) do
+   if flag then unused_cnt = unused_cnt + 1 end
+  end
+  
+  if table.getn(need_fix) > 0 then
+     g_fixed_count = 0               
+     misc.process_spawn(need_fix[1])
+     
+     -- level.on_frame()     
+     if g_fixed_count < table.getn(need_fix) then
+       for i, r_id in ipairs(need_fix) do
+          local robj = client_obj(r_id)
+          local sobj = server_obj(r_id)
+          if robj then
+             campmgr.fix_it(r_id, true)           
+          else
+             local ps = ""
+             if sobj then
+                ps = misc.pos2str(sobj.position)
+             end                                                                                                                              
+             wprintf("[~T].~C0C #FAIL:~C07 rastopka~C0D %d~C07 not going online for fix, server object pos =~C0F %s~C07", r_id, ps)
+             schedule.add("force_online_rastopka", sprintf("misc.force_online(%d)", r_id), 200)
+             schedule.add ("fix_rastopka"..r_id, "campmgr.fix_it("..r_id..", false)", 250)
+          end -- if online      
+       end
+     end  
+  end
+  
+  
+  if ( unused_cnt > 0 ) then 
+    wprintf('[~T].~C0C #WARN:~C07 На уровне имеется %d лишних и наспавнено %d костровых аномалий. Оно вам вообще надо?', unused_cnt, spawn_cnt)  
+    -- f.kill_around('monster') -- только заради предупреждения вылета на рестрикторе (чтоб его!)
+    for id,flag in pairs (campmgr.unused_anoms) do
+     if ( id > 0 ) and ( flag ) then 
+       local sobj = g_sim:object(id)
+       local lv = sobj.m_level_vertex_id or -1
+       
+       wprintf(' #DBG: removing unused anom %d, lvid = %d ', id, lv )
+       campmgr.force_off (id) -- выключение
+       schedule.add('kill_anom', sprintf("misc.release_obj(%d, 'remove_unused', false)", id), 1000)          
+     end -- if  
+    end -- for  
+    campmgr.unused_anoms = {}
+  end   
+  campmgr.discharge_candles() 
+  campmgr.handle_camps = true
+end
+
+function campmgr.debug_init() 
+ campmgr.awake_flame_anoms()
+ SetVerbosity(5)
+ campmgr.init_level_camps()
+ SetVerbosity(3)
+end
+
+function campmgr.discharge_candles()
+  -- гашение свечей/лампад
+  local  ids = registry.sc_objects  ("zone_flame_candle_self", false, 7)  
+  for i,id in ipairs(ids) do
+    amk_anoms.set_online_anomaly_status (id, 'off')
+  end
+end	
+
+function filter_near(objs, pos, max_dist)
+ local r = {}
+ for i, obj in ipairs(objs) do
+  local rp = obj:position()
+  if rp:distance_to_xz(pos) < max_dist then
+     table.insert(r, obj)
+  end
+ end 
+ return r
+end
+
+
+function campmgr.npc_fire_rastopka()
+ -- получить неписей 
+ 
+ -- UpdateRegistry(false)
+ 
+ -- alpet: ограничивается поиск 30 метровой зоной от ГГ, что снижает квадратическую нагрузку на алгоритм
+ local apos = db.actor:position()
+ 
+ SetVerbosity(1)
+ local t = profile_timer()
+ t:start()
+ 
+ local us_coef = 1.0 / 1000.0 
+ -- зажечь растопку рядом с неписями
+ 
+ local cl_ids = registry.all_objects(true, 7) 
+
+ t:stop()
+ local elps = t:time() * us_coef
+ t:start()
+ if elps > 10 then
+    wprintf("[~T/~U/~B]. #PERF_WARN: npc_fire_rastopka#1 elapsed =~C0D %.1f~C07 ms, objects =~C0D %d~C07 ", elps, #cl_ids)
+ end 
+
+ local cl_objs = registry.convert_ids (cl_ids, client_obj)
+
+ --  local rpk_ids = registry.level_objects("rastopka", true, 7)
+ local rt_objects = {}
+ local st_objects = {}
+ -- registry.convert_ids (rpk_ids, client_obj)              
+ -- rt_objects = filter_near(rt_objects, db.actor:position(), 30)
+ for i, obj in ipairs(cl_objs) do
+   local sc   = obj:section()
+   local cid  = obj:clsid()
+         
+   if (sc == "rastopka") or ( CLID_STALKER == cid ) and ( obj.is_alive ) then
+     local dist = apos:distance_to_xz(obj:position()) 
+     if dist < 30 then   
+      if CLID_STALKER == cid then
+         table.insert(st_objects, obj)
+      else
+         table.insert(rt_objects, obj)        
+      end     
+     end -- if dist
+   end -- if sc ==  
+ end -- for
+   
+ if #rt_objects == 0 then
+    SetVerbosity(3)
+    return
+ end
+ 
+ 
+   
+ -- registry.clsid_objects ( clsid.stalker, clsid.script_stalker, true, client_obj, 7 )
+ 
+ t:stop()
+ local elps = t:time() * us_coef
+ t:start()
+ if elps > 10 then
+    wprintf("[~T/~U/~B]. #PERF_WARN: npc_fire_rastopka#2 elapsed =~C0D %.1f~C07 ms, st_objects =~C0D %d~C07 ", elps, #st_objects) 
+ end
+ 
+ st_objects = filter_near(st_objects, db.actor:position(), 30)
+ if #st_objects == 0 then 
+    SetVerbosity(3)
+    return
+ end
+ 
+ 
+ 
+ 
+ local ap = db.actor:position()
+ local loops = 0
+ 
+ for i, npc in ipairs(st_objects) do
+   local pos = npc:position()   
+   if npc:alive() then             
+     for n, rto in ipairs(rt_objects) do
+      loops = loops + 1
+      local sc = rto:section()
+      local rtp = rto:position()
+      local dist = rtp:distance_to(pos)    -- дистанция от неписи до растопки             
+      if dist < 10 then
+	     -- wprintf(" dist between rastopka %d & npc %s = %.1f ", rto:id(), npc:name(), dist)
+	  end       
+             
+      if ( dist < 4 ) and ( sc == 'rastopka' )  then
+         wprintf (' npc %d hit rastopka~C0A "%s"~C07 section = "%s" ', npc:id(), rto:name(), sc )
+         flamethrower.burn_hit(rto, 0.5, npc)                
+      end -- if
+     end -- for inner
+   else
+     -- wprintf("~C0C #WARN:~C07 npc %s not alive ", npc:name())  
+     
+   end     
+ end -- for outer
+ 
+ t:stop()
+ local elps = t:time() * us_coef
+ if elps > 10 then 
+    wprintf("[~T/~U/~B].~CE0 #PERF_WARN:~C0E npc_fire_rastopka#3 elapsed =~C0D %.1f~C07 ms, loops =~C0D %d~C07 ", elps, loops)
+ end    
+ SetVerbosity(3)
+end
+
+function campmgr.test_rastopka(id)
+  local cond = params.obj_condition(id)  
+  if ( cond > 0 ) then
+       sak.actor_grumble()                           
+       --wprintf ( '[~T]. #DBG: состояние растопки = %.5f', cond )
+  end -- if
+end
+
+function campmgr.control_level_camps()
+  
+  if not campmgr.handle_camps then return end
+  
+  if device():frame_elapsed() > 10 then return end
+  
+  SetVerbosity(2)
+    
+  local rpk_ids, rcnt = registry.level_objects("rastopka", true, 7)
+  
+  for n,id in ipairs(rpk_ids) do
+   local rto = client_obj (id)
+   -- проверка только онлайновых объектов
+   if rto then               
+     local cond = params.obj_condition(id)
+     if cond <= 0.001 then
+        wprintf("~C0F #DBG:~C07 rastopka~C0D #%5d~C07 condition = %.5f, passed for destroy... ", id, cond)
+        misc.release_obj (id, 'control_level_camps', false)
+     end  
+   end   
+      
+   
+  end -- for                        
+  
+  campmgr.ticks = campmgr.ticks + 1  
+  
+  SetVerbosity(4)
+end
+
+function init_module()
+ savemgmt.verbosity = 3 
+end
+
+function late_init()
+ campmgr.handle_camps = true
+ AddRegularTask("control_level_camps", campmgr.control_level_camps, nil, 0, 500)
+ AddRegularTask("npc_fire_camps", campmgr.npc_fire_rastopka, nil, 0, 2000) 
+ _G.ignite_match = ignite_match 
+ -- SetKbdCallback ("ignite_match", 119) -- F8 
+end
+ 
+function stop_module()
+ campmgr.handle_camps = false
+end

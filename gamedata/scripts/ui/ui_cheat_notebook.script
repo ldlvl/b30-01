@@ -1,0 +1,129 @@
+--[[
+Блокнот художника
+Vergas
+© NLC-6.0
+]]--
+
+class "cheat"(CUIScriptWnd)
+local wnd
+local wnd_mask
+local paths = "notebook\\"
+local sum_page = vergas_lib.set_pr_from_config("notebook_of_artist","sum_page")
+local current_page = 1
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+	-- Положение и размеры окна
+	self:Init(128,96,768,576)
+	--self:Init(256,192,512,384)
+	
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_notebook.xml")
+	
+	xml:InitStatic("background", self)				--Подложка блокнота
+	
+	
+	self:Register(xml:Init3tButton("f_btn", self),"f_btn")	--Фальш-кнопка
+
+	wnd = CUIStatic()
+	wnd:SetAutoDelete(true)
+	self:AttachChild(wnd)
+	wnd:SetStretchTexture(true)
+	wnd:SetWndRect(0,0,768,576)
+	wnd:InitTexture(paths.."page_"..current_page..".dds")
+	
+	--вывожу маску костюма
+	if vergas_masks.get_flag_mask() then
+		wnd_mask = CUIStatic()
+		wnd_mask:SetAutoDelete(true)
+		wnd_mask:SetStretchTexture(true)
+		self:AttachChild(wnd_mask)
+		wnd_mask:Init(-128,-96,1024,768)
+		wnd_mask:InitTexture("verg\\masks\\hud_mas_0_0.dds")
+	end
+
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("f_btn", ui_events.BUTTON_CLICKED, self.f_btn, self) 		-- Фальш-кнопка
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			--выход по Esc
+			current_page = 1
+			self:on_quit()
+		elseif 	dik==DIK_keys.MOUSE_1 or dik==DIK_keys.DIK_LEFT then
+			self:page_up()
+		elseif 	dik==DIK_keys.MOUSE_2 or dik==DIK_keys.DIK_RIGHT then
+			self:page_down()
+		end
+	end
+	return true
+end
+
+function cheat:on_quit()
+	if wnd~=nil then
+		self:DetachChild(wnd)
+		wnd = nil
+	end
+	
+	if wnd_mask~=nil then
+		self:DetachChild(wnd_mask)
+		wnd_mask = nil
+	end
+	
+	bind_stalker.restore_weapon()		--восстанавливаю руки и оружие на худе
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.spawn_item_in_inv("notebook_of_artist",true)
+	if current_page~=1 then
+		vergas_lib.s_play([[device\notebook\notepad_close]],1)
+	end
+end
+
+function cheat:f_btn()
+	--фальш-кнопка
+end
+
+function cheat:page_up()
+	local old_page = current_page
+	if current_page < sum_page then
+		current_page = current_page + 1
+	end
+	
+	wnd:InitTexture(paths.."page_"..current_page..".dds")
+	--wnd:SetText("стр "..tostring(current_page))
+	if current_page==2 then
+		vergas_lib.s_play([[device\notebook\notepad_open]],1)
+	else	
+		if old_page~=sum_page then
+			vergas_lib.s_play([[device\notebook\notepad_page_up]],1)
+		end
+	end
+end
+
+function cheat:page_down()
+	local old_page = current_page
+	if current_page > 1 then
+		current_page = current_page - 1
+		wnd:InitTexture(paths.."page_"..current_page..".dds")
+		wnd:SetText("стр "..tostring(current_page))
+		
+	end
+	
+	if old_page==2 then
+		vergas_lib.s_play([[device\notebook\notepad_close]],1)
+	elseif old_page~=1 then
+		vergas_lib.s_play([[device\notebook\notepad_page_down]],1)
+	end
+	
+end

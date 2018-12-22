@@ -1,0 +1,280 @@
+--[[
+PDA npc
+Vergas
+© NLC 6.0
+]]--
+
+class "cheat"(CUIScriptWnd)
+
+local sn				--служебный номер ПДА
+local wnd_bg			--окно подложки
+local wnd_sn			--окно служебного номера
+local wnd_mask
+local wnd_steklo		--окно стекла
+local ratio_mode
+local mode_r			--1-режим перебора  2-режим разряженного ПДА
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+    wprintf("~CF0 ui_cheat_pda_menu.script - __init complete, traceback:\n~C0A %s~C07", lua_traceback(' '))
+end
+
+function cheat:InitControls()
+
+	-- Положение и размеры окна
+	ratio_mode = vergas_pda.set_ratio_mode()
+
+	if ratio_mode == 4 then
+		self:Init(0,0,1024,768)				--1280х1024
+	elseif ratio_mode == 3 then
+		self:Init(256,192-64,768,576)		--1024x768
+	elseif ratio_mode == 2 then
+		self:Init(420,263-88,604,505)		--1680x1050
+	elseif ratio_mode == 1 then
+		self:Init(400,225-75,624,543)		--1600x900
+	end
+	
+	--определяюсь со стеклами
+	steklo_ok = vergas_pda.set_steklo()
+	steklo_bad = vergas_pda.set_steklo()
+	--определяю служебный номер
+	sn = vergas_pda.get_pda_sn()
+	--вывожу ПДА
+	mode_r = 1
+	self:set_wnd_bg(1)
+	
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_pda_npc.xml")
+	
+	--xml:InitStatic("background", self)				--Подложка меню
+	if ratio_mode == 4 then
+		self:Register(xml:Init3tButton("btn_start_4", self),"btn_start")		-- Кнопка Вкл
+	elseif ratio_mode == 3 then
+		self:Register(xml:Init3tButton("btn_start_3", self),"btn_start")		-- Кнопка Вкл
+	elseif ratio_mode == 2 then
+		self:Register(xml:Init3tButton("btn_start_2", self),"btn_start")		-- Кнопка Вкл
+	elseif ratio_mode == 1 then
+		self:Register(xml:Init3tButton("btn_start_1", self),"btn_start")		-- Кнопка Вкл
+	end
+	
+	if ratio_mode == 4 then
+		self:Register(xml:Init3tButton("btn_search_4", self),"btn_search")		-- Кнопка Перебор
+	elseif ratio_mode == 3 then
+		self:Register(xml:Init3tButton("btn_search_3", self),"btn_search")		-- Кнопка Перебор
+	elseif ratio_mode == 2 then	
+		self:Register(xml:Init3tButton("btn_search_2", self),"btn_search")		-- Кнопка Перебор
+	elseif ratio_mode == 1 then	
+		self:Register(xml:Init3tButton("btn_search_1", self),"btn_search")		-- Кнопка Перебор
+	end
+	
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_start", ui_events.BUTTON_CLICKED, self.btn_start, self) 		-- Кнопка Вкл
+	self:AddCallback("btn_search", ui_events.BUTTON_CLICKED, self.btn_search, self) 	-- Кнопка Перебор
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+			if mode_r == 1 then
+				self:btn_stop()
+			else
+				mode_r = 1
+				self:set_wnd_bg(1)
+			end
+		elseif 	dik == DIK_keys.DIK_G then
+			--выбрасываю ПДА
+			self:drop_pda()
+			end
+			end
+	return true
+		end
+
+function cheat:btn_stop()								-- Кнопка Выкл
+	
+	self:del_windows()
+	vergas_pda.set_info_pda_nil()
+	vergas_pda.set_tbl_sn_nil()
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	bind_stalker.restore_weapon()		--восстанавливаю руки и оружие на худе
+
+end
+
+
+function cheat:btn_start()
+	if mode_r == 2 then
+		return
+	end
+
+	if tonumber(string.sub (sn, 13 , 13)) == 2 then
+		mode_r = 2
+		self:set_wnd_bg(2)			--вывод разряженного ПДА
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_start_pda"),1)
+	elseif tonumber(string.sub (sn, 13 , 13)) == 1 then
+		local n = vergas_pda.get_number_pda()
+		vergas_pda.set_number_record(n)
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_start_pda"),1)
+		self:del_windows()
+		self:GetHolder():start_stop_menu (self,true)
+		local spwn=ui_cheat_pda.cheat(get_hud())
+		level.start_stop_menu(spwn,true)
+	end
+end
+
+function cheat:btn_search()
+	
+	self:del_windows()
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_select_pda_down"),1)
+	schedule.add("stop_chow_pda", "vergas_pda.start_search_pda(1)", 500)
+	self:GetHolder():start_stop_menu (self,true)
+
+end
+
+function cheat:drop_pda()
+	self:del_windows()
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_pda.start_search_pda_after_drop()
+end
+
+function cheat:set_wnd_bg(mode)
+--mode=1-перебор  mode=2-разряженный ПДА
+	local textur
+
+	if wnd_bg ~= nil then
+		self:DetachChild(wnd_bg)
+		wnd_bg = nil
+	end
+	
+	wnd_bg = CUIStatic()
+	wnd_bg:SetAutoDelete(true)
+	self:AttachChild(wnd_bg)
+	wnd_bg:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_bg:SetWndRect(0,0,1024,768)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_bg:SetWndRect(0,0,768,576)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_bg:SetWndRect(0,0,604,505)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_bg:SetWndRect(0,0,624,543)		--1600x900
+	end
+	--определяю состояние ПДА
+	local n = tonumber(string.sub (sn, 13 , 13))
+	
+	if mode == 1 then
+		if n == 1 or n == 2 then
+			--целый ПДА накладываю только целое стекло
+			textur = true
+		else
+			--битый ПДА. Накладываю битое стекло
+			textur = false
+		end
+		wnd_bg:InitTexture("ui\\ui_pda_off")
+	else
+		--батарея разряжена. накладываю только целое стекло
+		textur = true
+		wnd_bg:InitTexture("ui\\ui_pda_bad_ok")	--сам ПДА
+	end
+	
+	self:set_wnd_steklo(textur)
+	self:set_wnd_sn(sn)
+	--vergas_lib.s_play([[razgruzka\all_scroll]],1)
+	
+end
+
+function cheat:set_wnd_steklo(textur)
+	local steklo
+	local number = vergas_pda.get_number_pda()
+	local steklo_n = math.fmod(number,9)
+	if steklo_n == 0 then
+		steklo_n = 9
+	end
+	
+	if wnd_steklo ~= nil then
+		self:DetachChild(wnd_steklo)
+		wnd_steklo = nil
+	end
+	
+	--определяю текстуру стекла
+	if textur then
+		steklo = "ui_pda_steklo_ok_"..string.sub(steklo_ok,steklo_n,steklo_n)
+	else
+		steklo = "ui_pda_steklo_bad_"..string.sub(steklo_bad,steklo_n,steklo_n)
+	end
+	
+	vergas_pda.set_get_steklo(steklo)
+	
+	wnd_steklo = CUIStatic()
+	wnd_steklo:SetAutoDelete(true)
+	self:AttachChild(wnd_steklo)
+	wnd_steklo:SetStretchTexture(true)
+	
+	if ratio_mode == 4 then
+		wnd_steklo:SetWndRect(100,77,781,540)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_steklo:SetWndRect(75,58,583,403)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_steklo:SetWndRect(58,52,463,358)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_steklo:SetWndRect(60,51,476,382)		--1600x900
+	end
+	
+	wnd_steklo:InitTexture(steklo)
+	
+end
+
+function cheat:set_wnd_sn(s_n)
+	if wnd_sn ~= nil then
+		self:DetachChild(wnd_sn)
+		wnd_sn = nil
+	end
+	
+	wnd_sn = CUIStatic()
+	wnd_sn:SetAutoDelete(true)
+	self:AttachChild(wnd_sn)
+	wnd_sn:SetStretchTexture(true)
+	
+	if ratio_mode == 4 then						
+		wnd_sn:SetWndRect(76,43,38,18)			--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_sn:SetWndRect(61,31,38,18)			--1024x768
+	elseif ratio_mode == 2 then
+		wnd_sn:SetWndRect(48,25,38,18)			--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_sn:SetWndRect(64,30,38,18)			--1600x900
+	end
+	wnd_sn:SetTextColor(255, 28, 28, 28)		--225
+	wnd_sn:SetFont(GetFontLetterica16Russian())
+	wnd_sn:SetText("№ "..s_n)
+
+end
+
+function cheat:del_windows()
+	if wnd_bg ~= nil then
+		self:DetachChild(wnd_bg)
+		wnd_bg = nil
+	end
+	
+	if wnd_sn ~= nil then
+		self:DetachChild(wnd_sn)
+		wnd_sn = nil
+	end
+
+	if wnd_mask ~= nil then
+		self:DetachChild(wwnd_mask)
+		wnd_mask = nil
+	end
+
+	if wnd_steklo ~= nil then
+		self:DetachChild(wnd_steklo)
+		wnd_steklo = nil
+	end
+	
+end

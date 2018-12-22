@@ -1,0 +1,2436 @@
+--[[
+Электронная записная книжка v 2
+Vergas
+© NLC 6.0
+]]--
+
+class "cheat" (CUIScriptWnd)
+
+local sms_tbl = {}					--таблица сообщений
+local flag_sms = ""					--[["n"-новая заметка, 
+									"nw" -новая заметка из режима просмотра
+									"r" - редактирование существующей заметки
+									"w" - просмотр заметки]]--
+local flag_shift = false			--флаг шифта (маленькие/большие буквы)
+local flag_tema = false				--флаг работы с заголовком
+local flag_ins	= true
+local msg_tema						--текст темы записи
+local msg_text = ""					--текст самой записи
+local symbol						--вводимый символ
+local cursor						--символ курсора
+local pos_cursor					--текущая позиция курсора
+local tbl_sap = 0					--номер текущей записи
+
+
+local wnd_0							--текст темы заметки
+local wnd_1							--текст заметки: строка 1 
+local wnd_2							--текст заметки: строка 2 
+local wnd_3							--текст заметки: строка 3
+local wnd_4							--текст заметки: строка 4
+local wnd_5							--текст заметки: строка 5
+local wnd_6							--текст заметки: строка 6
+local wnd_7							--текст заметки: строка 7
+local wnd_8							--текст заметки: строка 8
+local wnd_9							--текст заметки: строка 9
+local wnd_10						--текст заметки: строка 10
+local wnd_11						--текст заметки: строка 11
+local wnd_12						--текст заметки: строка 12
+local wnd_13						--текст заметки: строка 13
+local wnd_14						--текст заметки: строка 14
+local wnd_l							--лампочка шифта
+local wnd_r							--лампочка режима
+local wnd_mask
+local wnd_btn						--нажатая клавиша при ручном вводе
+									
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+	-- Положение и размеры окна
+	self:Init(196,25,700,561)
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_klava.xml")
+	
+	xml:InitStatic("background", self)     	--Собственно рамка
+	
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")				-- Кнопка 1 
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")				-- Кнопка 2 
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")				-- Кнопка 3 
+	self:Register(xml:Init3tButton("btn_4", self),"btn_4")				-- Кнопка 4 
+	self:Register(xml:Init3tButton("btn_5", self),"btn_5")				-- Кнопка 5 
+	self:Register(xml:Init3tButton("btn_6", self),"btn_6")				-- Кнопка 6 
+	self:Register(xml:Init3tButton("btn_7", self),"btn_7")				-- Кнопка 7 
+	self:Register(xml:Init3tButton("btn_8", self),"btn_8")				-- Кнопка 8 
+	self:Register(xml:Init3tButton("btn_9", self),"btn_9")				-- Кнопка 9 
+	self:Register(xml:Init3tButton("btn_0", self),"btn_0")				-- Кнопка 0 
+	self:Register(xml:Init3tButton("btn_shift", self),"btn_shift")		-- Кнопка шифт
+	self:Register(xml:Init3tButton("btn_sps", self),"btn_sps")			-- Кнопка пробел
+	
+	self:Register(xml:Init3tButton("btn_zn_vop", self),"btn_zn_vop")	-- Кнопка ?
+	self:Register(xml:Init3tButton("btn_z", self),"btn_z")				-- Кнопка Я
+	self:Register(xml:Init3tButton("btn_x", self),"btn_x")				-- Кнопка Ч
+	self:Register(xml:Init3tButton("btn_c", self),"btn_c")				-- Кнопка C
+	self:Register(xml:Init3tButton("btn_v", self),"btn_v")				-- Кнопка М
+	self:Register(xml:Init3tButton("btn_b", self),"btn_b")				-- Кнопка И
+	self:Register(xml:Init3tButton("btn_n", self),"btn_n")				-- Кнопка Т
+	self:Register(xml:Init3tButton("btn_m", self),"btn_m")				-- Кнопка Ь
+	self:Register(xml:Init3tButton("btn_an", self),"btn_an")			-- Кнопка Б
+	self:Register(xml:Init3tButton("btn_am", self),"btn_am")			-- Кнопка Ю
+	self:Register(xml:Init3tButton("btn_zpt", self),"btn_zpt")			-- Кнопка запятая
+	self:Register(xml:Init3tButton("btn_tchk", self),"btn_tchk")		-- Кнопка точка
+	
+	self:Register(xml:Init3tButton("btn_zn_vos", self),"btn_zn_vos")	-- Кнопка !
+	self:Register(xml:Init3tButton("btn_a", self),"btn_a")				-- Кнопка Ф
+	self:Register(xml:Init3tButton("btn_s", self),"btn_s")				-- Кнопка Ы
+	self:Register(xml:Init3tButton("btn_d", self),"btn_d")				-- Кнопка В
+	self:Register(xml:Init3tButton("btn_f", self),"btn_f")				-- Кнопка А
+	self:Register(xml:Init3tButton("btn_g", self),"btn_g")				-- Кнопка П
+	self:Register(xml:Init3tButton("btn_h", self),"btn_h")				-- Кнопка Р
+	self:Register(xml:Init3tButton("btn_j", self),"btn_j")				-- Кнопка О
+	self:Register(xml:Init3tButton("btn_k", self),"btn_k")				-- Кнопка Л
+	self:Register(xml:Init3tButton("btn_l", self),"btn_l")				-- Кнопка Д
+	self:Register(xml:Init3tButton("btn_ak", self),"btn_ak")			-- Кнопка Ж
+	self:Register(xml:Init3tButton("btn_al", self),"btn_al")			-- Кнопка Э
+
+	self:Register(xml:Init3tButton("btn_def", self),"btn_def")			-- Кнопка ДЕФИС
+	self:Register(xml:Init3tButton("btn_q", self),"btn_q")				-- Кнопка Й
+	self:Register(xml:Init3tButton("btn_w", self),"btn_w")				-- Кнопка Ц
+	self:Register(xml:Init3tButton("btn_e", self),"btn_e")				-- Кнопка У
+	self:Register(xml:Init3tButton("btn_r", self),"btn_r")				-- Кнопка К
+	self:Register(xml:Init3tButton("btn_t", self),"btn_t")				-- Кнопка Е
+	self:Register(xml:Init3tButton("btn_y", self),"btn_y")				-- Кнопка Н
+	self:Register(xml:Init3tButton("btn_u", self),"btn_u")				-- Кнопка Г
+	self:Register(xml:Init3tButton("btn_i", self),"btn_i")				-- Кнопка Ш
+	self:Register(xml:Init3tButton("btn_o", self),"btn_o")				-- Кнопка Щ
+	self:Register(xml:Init3tButton("btn_p", self),"btn_p")				-- Кнопка З
+	self:Register(xml:Init3tButton("btn_ap", self),"btn_ap")			-- Кнопка Х
+
+	self:Register(xml:Init3tButton("btn_bsp", self),"btn_bsp")			-- Кнопка Backspace 
+	self:Register(xml:Init3tButton("btn_ent", self),"btn_ent")			-- Кнопка Enter 
+	self:Register(xml:Init3tButton("btn_new", self),"btn_new")			-- Кнопка Новая запись 
+	self:Register(xml:Init3tButton("btn_edit", self),"btn_edit")		-- Кнопка Редактировать запись
+	self:Register(xml:Init3tButton("btn_open", self),"btn_open")		-- Кнопка Просмотр записей
+	self:Register(xml:Init3tButton("btn_save", self),"btn_save")		-- Кнопка Сохранить запись
+	self:Register(xml:Init3tButton("btn_del", self),"btn_del")			-- Кнопка Удалить запись
+	self:Register(xml:Init3tButton("btn_cls", self),"btn_cls")			-- Кнопка Выход 
+	
+	self:Register(xml:Init3tButton("btn_pup", self),"btn_pup")			-- Кнопка Перемотка на первую
+	self:Register(xml:Init3tButton("btn_prev", self),"btn_prev")		-- Кнопка Перемотка на предыдущую
+	self:Register(xml:Init3tButton("btn_next", self),"btn_next")		-- Кнопка Перемотка на следующую
+	self:Register(xml:Init3tButton("btn_pdown", self),"btn_pdown")		-- Кнопка Перемотка на последнюю
+	
+	--заполняю таблицу сообщений и хню всякую
+	--sms_tbl = self:set_sms_tbl_test()
+	sms_tbl = vergas_lib.read_messages()
+	
+	self:instructions_from_vergas()
+	
+	if flag_ins then
+		cursor = "©"
+	end
+	
+	--вывожу маску костюма
+	if vergas_masks.get_flag_mask() then
+		wnd_mask = CUIStatic()
+		wnd_mask:SetAutoDelete(true)
+		wnd_mask:SetStretchTexture(true)
+		self:AttachChild(wnd_mask)
+		wnd_mask:Init(-196,-25,1024,768)
+		wnd_mask:InitTexture("verg\\masks\\hud_mas_0_0.dds")
+	end
+	
+end
+
+function cheat:InitCallBacks()
+	
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 				-- Кнопка 1 
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 				-- Кнопка 2 
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self) 				-- Кнопка 3 
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self) 				-- Кнопка 4 
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED, self.btn_5, self) 				-- Кнопка 5 
+	self:AddCallback("btn_6", ui_events.BUTTON_CLICKED, self.btn_6, self) 				-- Кнопка 6 
+	self:AddCallback("btn_7", ui_events.BUTTON_CLICKED, self.btn_7, self) 				-- Кнопка 7 
+	self:AddCallback("btn_8", ui_events.BUTTON_CLICKED, self.btn_8, self) 				-- Кнопка 8 
+	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED, self.btn_9, self) 				-- Кнопка 9 
+	self:AddCallback("btn_0", ui_events.BUTTON_CLICKED, self.btn_0, self) 				-- Кнопка 0 
+	self:AddCallback("btn_shift", ui_events.BUTTON_CLICKED, self.btn_shift, self) 		-- Кнопка шифт 
+	self:AddCallback("btn_sps", ui_events.BUTTON_CLICKED, self.btn_sps, self) 			-- Кнопка пробел 
+	
+	self:AddCallback("btn_zn_vop", ui_events.BUTTON_CLICKED, self.btn_zn_vop, self) 	-- Кнопка ? 
+	self:AddCallback("btn_z", ui_events.BUTTON_CLICKED, self.btn_z, self) 				-- Кнопка Я 
+	self:AddCallback("btn_x", ui_events.BUTTON_CLICKED, self.btn_x, self) 				-- Кнопка Ч 
+	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED, self.btn_c, self) 				-- Кнопка C 
+	self:AddCallback("btn_v", ui_events.BUTTON_CLICKED, self.btn_v, self) 				-- Кнопка М 
+	self:AddCallback("btn_b", ui_events.BUTTON_CLICKED, self.btn_b, self) 				-- Кнопка И 
+	self:AddCallback("btn_n", ui_events.BUTTON_CLICKED, self.btn_n, self) 				-- Кнопка Т 
+	self:AddCallback("btn_m", ui_events.BUTTON_CLICKED, self.btn_m, self) 				-- Кнопка Ь 
+	self:AddCallback("btn_an", ui_events.BUTTON_CLICKED, self.btn_an, self) 			-- Кнопка Б 
+	self:AddCallback("btn_am", ui_events.BUTTON_CLICKED, self.btn_am, self) 			-- Кнопка Ю 
+	self:AddCallback("btn_zpt", ui_events.BUTTON_CLICKED, self.btn_zpt, self) 			-- Кнопка запятая 
+	self:AddCallback("btn_tchk", ui_events.BUTTON_CLICKED, self.btn_tchk, self) 		-- Кнопка точка
+	
+	self:AddCallback("btn_zn_vos", ui_events.BUTTON_CLICKED, self.btn_zn_vos, self) 	-- Кнопка ! 
+	self:AddCallback("btn_a", ui_events.BUTTON_CLICKED, self.btn_a, self) 				-- Кнопка Ф 
+	self:AddCallback("btn_s", ui_events.BUTTON_CLICKED, self.btn_s, self) 				-- Кнопка Ы 
+	self:AddCallback("btn_d", ui_events.BUTTON_CLICKED, self.btn_d, self) 				-- Кнопка В 
+	self:AddCallback("btn_f", ui_events.BUTTON_CLICKED, self.btn_f, self) 				-- Кнопка А 
+	self:AddCallback("btn_g", ui_events.BUTTON_CLICKED, self.btn_g, self) 				-- Кнопка П 
+	self:AddCallback("btn_h", ui_events.BUTTON_CLICKED, self.btn_h, self) 				-- Кнопка Р 
+	self:AddCallback("btn_j", ui_events.BUTTON_CLICKED, self.btn_j, self) 				-- Кнопка О 
+	self:AddCallback("btn_k", ui_events.BUTTON_CLICKED, self.btn_k, self) 				-- Кнопка Л 
+	self:AddCallback("btn_l", ui_events.BUTTON_CLICKED, self.btn_l, self) 				-- Кнопка Д 
+	self:AddCallback("btn_ak", ui_events.BUTTON_CLICKED, self.btn_ak, self) 			-- Кнопка Ж 
+	self:AddCallback("btn_al", ui_events.BUTTON_CLICKED, self.btn_al, self) 			-- Кнопка Э
+
+	self:AddCallback("btn_def", ui_events.BUTTON_CLICKED, self.btn_def, self) 			-- Кнопка дефис 
+	self:AddCallback("btn_q", ui_events.BUTTON_CLICKED, self.btn_q, self) 				-- Кнопка Й 
+	self:AddCallback("btn_w", ui_events.BUTTON_CLICKED, self.btn_w, self) 				-- Кнопка Ц 
+	self:AddCallback("btn_e", ui_events.BUTTON_CLICKED, self.btn_e, self) 				-- Кнопка У 
+	self:AddCallback("btn_r", ui_events.BUTTON_CLICKED, self.btn_r, self) 				-- Кнопка К 
+	self:AddCallback("btn_t", ui_events.BUTTON_CLICKED, self.btn_t, self) 				-- Кнопка Е 
+	self:AddCallback("btn_y", ui_events.BUTTON_CLICKED, self.btn_y, self) 				-- Кнопка Н 
+	self:AddCallback("btn_u", ui_events.BUTTON_CLICKED, self.btn_u, self) 				-- Кнопка Г 
+	self:AddCallback("btn_i", ui_events.BUTTON_CLICKED, self.btn_i, self) 				-- Кнопка Ш 
+	self:AddCallback("btn_o", ui_events.BUTTON_CLICKED, self.btn_o, self) 				-- Кнопка Щ 
+	self:AddCallback("btn_p", ui_events.BUTTON_CLICKED, self.btn_p, self) 				-- Кнопка З 
+	self:AddCallback("btn_ap", ui_events.BUTTON_CLICKED, self.btn_ap, self) 			-- Кнопка Х
+
+	self:AddCallback("btn_bsp", ui_events.BUTTON_CLICKED, self.btn_bsp, self) 			-- Кнопка Backspace 
+	self:AddCallback("btn_ent", ui_events.BUTTON_CLICKED, self.btn_ent, self) 			-- Кнопка Enter 
+	self:AddCallback("btn_new", ui_events.BUTTON_CLICKED, self.btn_new, self) 			-- Кнопка Новая запись 
+	self:AddCallback("btn_edit", ui_events.BUTTON_CLICKED, self.btn_edit, self) 		-- Кнопка Редактировать запись
+	self:AddCallback("btn_open", ui_events.BUTTON_CLICKED, self.btn_open, self) 		-- Кнопка Просмотр записей
+	self:AddCallback("btn_save", ui_events.BUTTON_CLICKED, self.btn_save, self) 		-- Кнопка Сохранить запись
+	self:AddCallback("btn_del", ui_events.BUTTON_CLICKED, self.btn_del, self) 			-- Кнопка Удалить запись
+	self:AddCallback("btn_cls", ui_events.BUTTON_CLICKED, self.btn_cls, self) 			-- Кнопка Выход
+	
+	self:AddCallback("btn_pup", ui_events.BUTTON_CLICKED, self.btn_pup, self) 			-- Кнопка Перемотка на первую
+	self:AddCallback("btn_prev", ui_events.BUTTON_CLICKED, self.btn_prev, self) 		-- Кнопка Перемотка на предыдущую
+	self:AddCallback("btn_next", ui_events.BUTTON_CLICKED, self.btn_next, self) 		-- Кнопка Перемотка на следующую
+	self:AddCallback("btn_pdown", ui_events.BUTTON_CLICKED, self.btn_pdown, self) 		-- Кнопка Перемотка на последнюю
+	
+end
+
+-----------------------------------------------------КНОПКИ УПРАВЛЕНИЯ-----------------------------------------------------------
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		elseif 	dik == DIK_keys.DIK_1 then
+			if flag_shift then
+				
+				self:btn_zn_vos()					-- Кнопка !
+			else	
+				self:press_key("ui_klava_1_h",146,536,42,37)
+				self:btn_1()						-- Кнопка  1
+			end	
+		elseif 	dik == DIK_keys.DIK_2 then
+			self:btn_2()							-- Кнопка  2
+		elseif 	dik == DIK_keys.DIK_3 then
+			self:btn_3()							-- Кнопка  3
+		elseif 	dik == DIK_keys.DIK_4 then
+			self:btn_4()							-- Кнопка  4
+		elseif 	dik == DIK_keys.DIK_5 then
+			self:btn_5()							-- Кнопка  5
+		elseif 	dik == DIK_keys.DIK_6 then
+			self:btn_6()							-- Кнопка  6
+		elseif 	dik == DIK_keys.DIK_7 then
+			if flag_shift then
+				self:btn_zn_vop()					-- Кнопка ?
+				self:btn_shift()
+			else
+				self:btn_7()						-- Кнопка  7
+			end
+		elseif 	dik == DIK_keys.DIK_8 then
+			self:btn_8()							-- Кнопка  8
+		elseif 	dik == DIK_keys.DIK_9 then
+			self:btn_9()							-- Кнопка  9
+		elseif 	dik == DIK_keys.DIK_0 then
+			self:btn_0()							-- Кнопка  0
+		elseif 	dik == DIK_keys.DIK_LSHIFT then
+			self:btn_shift()						-- Кнопка  шифт левый
+		elseif 	dik == DIK_keys.DIK_RSHIFT then
+			self:btn_shift()						-- Кнопка  шифт правый
+		elseif 	dik == DIK_keys.DIK_SPACE then
+			self:btn_sps()							-- Кнопка  пробел
+		elseif 	dik == DIK_keys.DIK_Z then
+			self:btn_z()							-- Кнопка  Я
+		elseif 	dik == DIK_keys.DIK_X then
+			self:btn_x()							-- Кнопка  Ч
+		elseif 	dik == DIK_keys.DIK_C then
+			self:btn_c()							-- Кнопка  C
+		elseif 	dik == DIK_keys.DIK_V then
+			self:btn_v()							-- Кнопка  М
+		elseif 	dik == DIK_keys.DIK_B then
+			self:btn_b()							-- Кнопка  И
+		elseif 	dik == DIK_keys.DIK_N then
+			self:btn_n()							-- Кнопка  Т
+		elseif 	dik == DIK_keys.DIK_M then
+			self:btn_m()							-- Кнопка  Ь
+		elseif 	dik == DIK_keys.DIK_COMMA then
+			self:btn_an()							-- Кнопка  Б
+		elseif 	dik == DIK_keys.DIK_PERIOD then
+			self:btn_am()							-- Кнопка  Ю
+		elseif 	dik == DIK_keys.DIK_SLASH then
+			if flag_shift then
+				self:btn_zpt()						-- Кнопка  "запятая"
+			else
+				self:btn_tchk()						-- Кнопка  "точка"
+			end
+		elseif 	dik == DIK_keys.DIK_A then
+			self:btn_a()							-- Кнопка  Ф
+		elseif 	dik == DIK_keys.DIK_S then
+			self:btn_s()							-- Кнопка  Ы
+		elseif 	dik == DIK_keys.DIK_D then
+			self:btn_d()							-- Кнопка  В
+		elseif 	dik == DIK_keys.DIK_F then
+			self:btn_f()							-- Кнопка  А
+		elseif 	dik == DIK_keys.DIK_G then
+			self:btn_g()							-- Кнопка  П
+		elseif 	dik == DIK_keys.DIK_H then
+			self:btn_h()							-- Кнопка  Р
+		elseif 	dik == DIK_keys.DIK_J then
+			self:btn_j()							-- Кнопка  О
+		elseif 	dik == DIK_keys.DIK_K then
+			self:btn_k()							-- Кнопка  Л
+		elseif 	dik == DIK_keys.DIK_L then
+			self:btn_l()							-- Кнопка  Д
+		elseif 	dik == DIK_keys.DIK_SEMICOLON then
+			self:btn_ak()							-- Кнопка  Ж
+		elseif 	dik == DIK_keys.DIK_APOSTROPHE then
+			self:btn_al()							-- Кнопка  Э
+		elseif 	dik == DIK_keys.DIK_MINUS then
+			self:btn_def()							-- Кнопка  ДЕФИС
+		elseif 	dik == DIK_keys.DIK_Q then
+			self:btn_q()							-- Кнопка  Й
+		elseif 	dik == DIK_keys.DIK_W then
+			self:btn_w()							-- Кнопка  Ц
+		elseif 	dik == DIK_keys.DIK_E then
+			self:btn_e()							-- Кнопка  У
+		elseif 	dik == DIK_keys.DIK_R then
+			self:btn_r()							-- Кнопка  К
+		elseif 	dik == DIK_keys.DIK_T then
+			self:btn_t()							-- Кнопка  Е
+		elseif 	dik == DIK_keys.DIK_Y then
+			self:btn_y()							-- Кнопка  Н
+		elseif 	dik == DIK_keys.DIK_U then
+			self:btn_u()							-- Кнопка  Г
+		elseif 	dik == DIK_keys.DIK_I then
+			self:btn_i()							-- Кнопка  Ш
+		elseif 	dik == DIK_keys.DIK_O then
+			self:btn_o()							-- Кнопка  Щ
+		elseif 	dik == DIK_keys.DIK_P then
+			self:btn_p()							-- Кнопка  З
+		elseif 	dik == DIK_keys.DIK_LBRACKET then
+			self:btn_ap()							-- Кнопка  Х
+		elseif 	dik == DIK_keys.DIK_RETURN then
+			--self:btn_ent()							-- Кнопка  Enter
+		end
+	end
+	return true
+end
+
+function  cheat:btn_cls()							-- Кнопка  Выход
+	self:on_quit()
+end
+
+function  cheat:btn_bsp()							-- Кнопка  Backspace
+	if flag_shift then
+		--клавиша работает как DEL
+		if flag_tema then
+			--курсор в заголовке
+			msg_tema = string.sub (msg_tema, 1 ,pos_cursor)..string.sub (msg_tema,pos_cursor+2,40).." "
+		else
+			--курсор в тексте
+			if pos_cursor ~= 630 then
+				if pos_cursor == 629 then
+					msg_text = string.sub (msg_text, 1 ,pos_cursor).." "
+				else
+					msg_text = string.sub (msg_text, 1 ,pos_cursor)..string.sub (msg_text,pos_cursor+2,630).." "
+				end
+			end
+		end
+	else
+		--клавиша работает как Backspace
+		if flag_tema then
+			--курсор в заголовке
+			if pos_cursor > 16 then
+				msg_tema = string.sub (msg_tema, 1 ,pos_cursor-2)..cursor..string.sub (msg_tema,pos_cursor+1,40).." "
+				pos_cursor = pos_cursor - 1
+			end
+		else
+			if pos_cursor == 1 then
+				--перехожу на заголовок
+				flag_tema = true
+				msg_tema = string.sub (msg_tema, 1 ,39)..cursor
+				pos_cursor = 40
+				msg_text = string.sub (msg_text, 2 ,629).." "
+				self:set_only_tema_text()
+				self:print_text(self:set_str_text())
+			elseif pos_cursor then
+				msg_text = string.sub (msg_text, 1 ,pos_cursor-2)..cursor..string.sub (msg_text, pos_cursor+1,630).." "
+				pos_cursor = pos_cursor - 1
+			end
+		end
+		
+	end
+	
+	if not self:search_of_error("Кнопка Backspace") then return end
+	
+	self:set_only_tema_text()
+	self:print_text(self:set_str_text())
+end
+
+function cheat:btn_ent()							-- Кнопка  Enter
+
+	local hvost
+
+	if flag_sms == "n" or flag_sms == "nw" or flag_sms == "r" then
+		--колупаемся в заметке
+		if flag_tema then
+			--курсор в заголовке
+			hvost = self:del_trailer_space(string.sub (msg_tema, pos_cursor+1 ,40))
+			msg_tema = string.sub (msg_tema, 1 ,pos_cursor-1)..string.rep (" ", 40 - (pos_cursor-1))
+			flag_tema = false
+			pos_cursor = 1
+			--курсор уходит на первую строку текста
+			if hvost ~= "" then
+				local str_on  = 1
+				local str_off = 45
+				local msg_text_tmp = self:del_trailer_space(cursor..hvost..string.sub (msg_text,str_on,str_off))
+				if string.len(msg_text_tmp) < 45 then
+					msg_text_tmp = msg_text_tmp..string.rep(" ", 45-string.len(msg_text_tmp))
+					msg_text = msg_text_tmp..string.sub (msg_text,46,630)
+					hvost = ""
+				elseif string.len(msg_text_tmp) == 45 then
+					msg_text = msg_text_tmp..string.sub (msg_text,46,630)
+					hvost = ""
+				elseif string.len(msg_text_tmp) > 45 then
+					hvost = self:del_trailer_space(string.sub (msg_text_tmp, 46 ,string.len(msg_text_tmp)))
+					msg_text_tmp = string.sub (msg_text_tmp,1,45)												--новая первая строка текста
+					--формирую остальной текст
+					msg_text = msg_text_tmp..cheat:dumping_of_text_tail(hvost,string.sub (msg_text,46,630))
+				end
+				
+			else
+				msg_text = cursor..string.sub (msg_text, 1 ,629)
+			end
+		else
+			--курсор в тексте
+			local str_on, str_off = self:set_on_off()
+			local msg_text_tmp = ""						--собираю обновленный текст
+			local str_msg = ""							--строка текста
+			if pos_cursor < 586 then					--это явно не последняя строка
+				if pos_cursor <= 45 then
+					--это первая строка - текущая
+					if pos_cursor == 1 then
+						msg_text_tmp = string.rep(" ", 45)
+					elseif 	pos_cursor == 45 then
+						msg_text_tmp = string.sub (msg_text, 1 ,pos_cursor-1).." "
+					else
+						msg_text_tmp = string.sub (msg_text, 1 ,pos_cursor-1)..string.rep(" ", 45 - pos_cursor+1)
+					end
+					hvost = self:del_trailer_space(string.sub (msg_text, pos_cursor+1 ,45))
+					
+					-- обрабатываю следующую за текущей (вторую)
+					str_msg = cursor..hvost..string.sub (msg_text, 46 ,90)
+					hvost = self:del_trailer_space(string.sub (str_msg, 46 ,string.len(str_msg)))
+					msg_text_tmp = msg_text_tmp..string.sub (str_msg, 1 ,45)
+					pos_cursor = 46
+					str_on 	= 91
+					str_off = 135
+				else
+					--это любая строка от 2 до 13
+					
+					--собираю строки до текущей
+					msg_text_tmp = string.sub (msg_text, 1 ,str_on-1)
+					--обрабатываю текущую строку
+					msg_text_tmp = msg_text_tmp..string.sub (msg_text, str_on ,pos_cursor-1)..string.rep(" ", str_off - pos_cursor+1)
+					hvost = self:del_trailer_space(string.sub (msg_text, pos_cursor+1 ,str_off))
+					str_on  = str_on  + 45
+					str_off = str_off + 45
+					
+					-- обрабатываю следующую за текущей
+					str_msg = cursor..hvost..string.sub (msg_text, str_on ,str_off)
+					hvost = self:del_trailer_space(string.sub (str_msg, 46 ,string.len(str_msg)))
+					msg_text_tmp = msg_text_tmp..string.sub (str_msg, 1 ,45)
+					pos_cursor = str_on
+					str_on  = str_on  + 45
+					str_off = str_off + 45
+				end
+				
+				--последовательно переношу хвост по оставшимся строкам и присоеденяю строки к новому тексту
+				if hvost == "" then
+					msg_text = msg_text_tmp..string.sub (msg_text,str_on,630)
+				else
+					msg_text_tmp = msg_text_tmp..cheat:dumping_of_text_tail(hvost,string.sub (msg_text,str_on,630))
+
+					if string.len(msg_text_tmp) > 630 then
+						msg_text = string.sub(msg_text_tmp, 1,630)
+					else
+						msg_text = msg_text_tmp
+					end
+				end
+			end
+		end
+		if not self:search_of_error("Кнопка Enter") then return end
+		
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+
+end
+
+function cheat:btn_pup()							-- Кнопка Перемотка на первую
+	if flag_sms == "n" or flag_sms == "nw" or flag_sms == "r" then
+		--колупаемся в заметке
+		if flag_shift then
+			if flag_tema then
+				--двигаю курсор на первый символ заголовка
+				if pos_cursor ~= 16 then
+					if pos_cursor ~= 40 then
+						--курсор не последний символ заголовка
+						msg_tema = string.sub (msg_tema, 1 ,15)..cursor..string.sub (msg_tema, 17 ,pos_cursor-1)..string.sub (msg_tema, pos_cursor+1,40)
+					else
+						--курсор последний символ заголовка
+						msg_tema = string.sub (msg_tema, 1 ,15)..cursor..string.sub (msg_tema, 17 ,39)
+					end	
+					pos_cursor = 16
+				end
+			else
+				--двигаю курсор на первый символ текста
+				if pos_cursor ~= 1 then
+					if pos_cursor ~= 630 then
+						msg_text = cursor..string.sub (msg_text, 1 ,pos_cursor-1)..string.sub (msg_text, pos_cursor+1,630)
+					else
+						msg_text = cursor..string.sub (msg_text, 1 ,pos_cursor-1)
+					end
+					--убираю пробелы в начале строк
+					--self:del_initial_space()
+					pos_cursor = 1
+				end
+			end
+		else
+			if flag_tema then
+				--двигаю курсор на первый символ заголовка
+				if pos_cursor ~= 16 then
+					msg_tema = string.sub (msg_tema, 1 ,15)..cursor..string.sub (msg_tema, 16 ,pos_cursor-1)..string.sub (msg_tema, pos_cursor+1,40)
+					pos_cursor = 16
+				end
+			else
+				--двигаю курсор на первый символ текущей строки
+				local str_on, str_off = self:set_on_off()
+				if pos_cursor ~= str_on then
+					if str_on == 1 then
+						--это первая строка
+						msg_text = cursor..string.sub (msg_text, 1 ,pos_cursor-1)..string.sub (msg_text, pos_cursor+1,630)
+						pos_cursor = 1
+					else
+						--это любая строка от 2 до 14
+						msg_text = string.sub (msg_text, 1 , str_on-1)..cursor..string.sub (msg_text,str_on,pos_cursor-1)..string.sub (msg_text,pos_cursor+1,630)
+						pos_cursor = str_on
+					end
+				end
+			end	
+		end
+		
+		if not self:search_of_error("Кнопка Перемотка на первую") then return end
+		
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+
+	if flag_sms == "w" then
+		--листаем заметки
+		if table.getn(sms_tbl)==0 then
+			return
+		end
+
+		if tbl_sap == 1 then
+			return
+		end
+		
+		tbl_sap = 1
+		
+		self:show_sms(tbl_sap)
+	end
+	
+	if flag_sms == nil then
+		--кнопка не работает
+		return
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_prev()							-- Кнопка Перемотка на предыдущую
+	
+	local str_on, str_off
+	local symbol_end = ""						--последний "выдавленный" курсором символ из предыдущей строки
+	local msg_text_tmp = ""
+	
+	if flag_sms == "n" or flag_sms == "nw" or flag_sms == "r" then
+		--колупаемся в заметке
+		str_on, str_off = self:set_on_off()
+		if flag_shift then
+			--работает курсором "стрелка вверх"
+			if not flag_tema then
+				--курсор в тексте
+				if str_on == 1 then
+					--первая строка текста. Надо перекидывать курсор в заголовок
+					symbol_end = string.sub(msg_tema,40,40)
+					msg_tema = string.sub(msg_tema,1,15)..cursor..string.sub(msg_tema,16,39)
+					if symbol_end ~= " " then
+						if pos_cursor == str_on then
+							--курсор в первой позиции строки
+							msg_text = symbol_end..string.sub(msg_text,2,630)
+						else
+							-- курсор в промежуточной позиции строки
+							msg_text = symbol_end..string.sub(msg_text,1,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,630)
+						end
+					else
+						msg_text = string.sub(msg_text,1,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,630).." "
+					end
+					pos_cursor = 16
+					flag_tema = true
+				else
+					if pos_cursor == 630 then
+						--курсор последний символ текста
+						msg_text = string.sub(msg_text,1,pos_cursor-46)..cursor..string.sub(msg_text,pos_cursor-45,629)
+					else
+						msg_text = string.sub(msg_text,1,pos_cursor-46)..cursor..string.sub(msg_text,pos_cursor-45,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,630)
+					end
+					pos_cursor = pos_cursor - 45
+				end
+			end
+		else
+			--работает курсором "стрелка влево"
+			if flag_tema then
+				--курсор в заголовке
+				if pos_cursor > 16 then
+					if pos_cursor == 40 then
+						msg_tema = string.sub(msg_tema,1,pos_cursor-2)..cursor..string.sub (msg_tema,pos_cursor-1,pos_cursor-1)
+					else
+						msg_tema = string.sub(msg_tema,1,pos_cursor-2)..cursor..string.sub (msg_tema,pos_cursor-1,pos_cursor-1)..string.sub (msg_tema,pos_cursor+1,40)
+					end
+					pos_cursor = pos_cursor - 1
+				end
+			else
+				--курсор в тексте
+				if pos_cursor == 1 then
+					--перекидываю курсор в конец заголовка
+					symbol_end = string.sub(msg_tema,40,40)
+					msg_tema = string.sub(msg_tema,1,39)..cursor
+					if symbol_end ~= " " then
+						msg_text = symbol_end..string.sub (msg_text,2, 630)
+					else
+						msg_text = string.sub (msg_text,2, 630).." "
+					end
+					pos_cursor = 40
+					flag_tema = true
+				elseif pos_cursor == 630 then
+					--курсор последний символ текста
+					msg_text = string.sub(msg_text,1,pos_cursor-2)..cursor..string.sub(msg_text,pos_cursor-1,pos_cursor-1)
+					pos_cursor = pos_cursor - 1
+				else
+					msg_text = string.sub(msg_text,1,pos_cursor-2)..cursor..string.sub(msg_text,pos_cursor-1,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,630)
+					pos_cursor = pos_cursor - 1
+				end
+			end
+		end
+
+		if not self:search_of_error("Кнопка Перемотка на предыдущую") then return end
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+	
+	if flag_sms == "w" then
+		--листаем заметки
+		if table.getn(sms_tbl)==0 then
+			return
+		end
+
+		tbl_sap = tbl_sap - 1
+		
+		if tbl_sap < 1 then
+			tbl_sap = table.getn(sms_tbl)
+		end
+
+		self:show_sms(tbl_sap)
+	end
+	
+	if flag_sms == nil then
+		--кнопка не работает
+		return
+	end
+
+	self:snd_klik(2)
+end
+
+function cheat:btn_next()							-- Кнопка Перемотка на следующую
+	
+	local str_on, str_off
+	local msg_text_tmp = ""
+	local stroka = ""
+	local symbol_end = ""						--последний "выдавленный" курсором символ из предыдущей строки
+
+	if flag_sms == "n" or flag_sms == "nw" or flag_sms == "r" then
+		--колупаемся в заметке
+		str_on, str_off = self:set_on_off()
+		if flag_shift then
+			--работает курсором "стрелка вниз"
+			if flag_tema then
+				--курсор в заголовке
+				msg_tema = string.sub(msg_tema,1,pos_cursor - 1)..string.sub(msg_tema,pos_cursor + 1,40).." "
+				symbol_end = string.sub(msg_text,45,45) 					--выдавленный символ первой строки текста
+				msg_text_tmp = cursor..string.sub(msg_text,1,44)			--новая первая строка
+				if symbol_end ~= " " then
+					msg_text = msg_text_tmp..self:dumping_of_text_tail(symbol_end,string.sub(msg_text,46,630))
+				else
+					msg_text = msg_text_tmp..string.sub(msg_text,46,630)
+				end
+				flag_tema = false
+				pos_cursor = 1
+			else
+				--Курсор в тексте
+				if pos_cursor < 586 then
+					--курсор не в последней строке
+					if pos_cursor == 1 then
+						--курсор первый символ текста
+						msg_text = string.sub(msg_text,2,46)..cursor..string.sub(msg_text,47,630)
+					else
+						msg_text = string.sub(msg_text,1,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,pos_cursor +45)..cursor..string.sub(msg_text,pos_cursor +46,630)
+					end
+					pos_cursor = pos_cursor + 45
+				end
+				
+			end
+		else
+			--работает курсором "стрелка вправо"
+			if flag_tema then
+				--курсор в заголовке
+				if pos_cursor == 40 then
+					--курсор - последний символ заголовка
+					msg_tema = string.sub(msg_tema,1,39).." "
+					--перекидываю курсор на первый символ текста
+					msg_text_tmp = cursor..string.sub(msg_text,1,44)			--первыя строка текста
+					symbol_end = string.sub(msg_text,45,45)						--выдавленный последний символ 1 строки текста
+					if symbol_end ~= " " then
+						msg_text = msg_text_tmp..self:dumping_of_text_tail(symbol_end,string.sub(msg_text,46,630))	--окончательный текст
+					else
+						msg_text = msg_text_tmp..string.sub(msg_text,46,630)	--окончательный текст
+					end
+					flag_tema = false
+					pos_cursor = 1
+				else
+					--курсор не последний символ заголовка
+					if pos_cursor < 38 then
+						msg_tema = string.sub(msg_tema,1,pos_cursor-1)..string.sub(msg_tema,pos_cursor+1,pos_cursor+1)..cursor..string.sub(msg_tema,pos_cursor+2,40)
+					elseif pos_cursor == 38 then
+						msg_tema = string.sub(msg_tema,1,pos_cursor-1)..string.sub(msg_tema,pos_cursor+1,pos_cursor+1)..cursor..string.sub(msg_tema,40,40)
+					else
+						msg_tema = string.sub(msg_tema,1,pos_cursor-1)..string.sub(msg_tema,pos_cursor+1,pos_cursor+1)..cursor
+					end
+					pos_cursor = pos_cursor + 1
+				end
+			else
+				--курсор в тексте
+				if pos_cursor ~= 630 then
+					if pos_cursor ~= 1 then
+						--формирую текст до текущей строки
+						msg_text_tmp = string.sub(msg_text,1,pos_cursor-1)
+					end
+					
+					if pos_cursor < 628 then
+						msg_text = msg_text_tmp..string.sub(msg_text,pos_cursor+1,pos_cursor+1)..cursor..string.sub(msg_text,pos_cursor+2,630)
+					elseif pos_cursor == 628 then
+						msg_tema = msg_text_tmp..string.sub(msg_text,pos_cursor+1,pos_cursor+1)..cursor..string.sub(msg_tema,630,630)
+					else
+						msg_tema = msg_text_tmp..string.sub(msg_text,pos_cursor+1,pos_cursor+1)..cursor
+					end
+					pos_cursor = pos_cursor + 1
+				end
+			end
+		end
+		
+		if not self:search_of_error("Кнопка Перемотка на следующую") then return end
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+	
+	if flag_sms == "w" then
+		--листаем заметки
+		if table.getn(sms_tbl)==0 then
+			return
+		end
+
+		tbl_sap = tbl_sap + 1
+		if tbl_sap > table.getn(sms_tbl) then
+			tbl_sap = 1
+		end
+
+		self:show_sms(tbl_sap)
+	end
+	
+	if flag_sms == nil then
+		--кнопка не работает
+		return
+	end
+
+	self:snd_klik(2)
+
+end
+
+function cheat:btn_pdown()							-- Кнопка Перемотка на последнюю
+	
+	local str_on, str_off
+	local msg_text_tmp = ""
+	
+	if flag_sms == "n" or flag_sms == "nw" or flag_sms == "r" then
+		--колупаемся в заметке
+		str_on, str_off = self:set_on_off()
+		if flag_shift then
+			--гоню курсор на последний символ текста
+			if flag_tema then
+				--курсор в заголовке
+				if pos_cursor == 40 then
+					--курсор в последней позиции заголовка
+					msg_tema = string.sub(msg_tema,1,39).." "
+				else
+					msg_tema = string.sub(msg_tema,1,pos_cursor-1)..string.sub(msg_tema,pos_cursor+1,40).." "
+				end
+				msg_text = string.sub(msg_text,1,629)..cursor
+				flag_tema = false
+			else
+				--курсор в тексте
+				if pos_cursor ~= 630 then
+					if pos_cursor ~= 1 then
+						msg_text = string.sub(msg_text,1,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,630)..cursor
+					else
+						msg_text = string.sub(msg_text,2,630)..cursor
+					end
+				end
+			end
+			pos_cursor = 630	
+		else
+			--гоню курсор на последний символ текущей строки
+			if flag_tema then
+				--курсор в заголовке
+				if pos_cursor ~= 40 then
+					msg_tema = string.sub(msg_tema,1,pos_cursor-1)..string.sub(msg_tema,pos_cursor+1,40)..cursor
+				end
+				pos_cursor = 40
+			else
+				--курсор в тексте
+				if pos_cursor ~= 630 then
+					if str_on ~= 1 then
+						--формирую текст до текущей строки
+						msg_text_tmp = string.sub(msg_text,1,str_on-1)
+					end
+					--обрабатываю текущую строку
+					if pos_cursor ~= str_off then
+						--курсор не последний символ строки
+						if pos_cursor == str_on then
+							--курсор в первой позиции строки
+							msg_text_tmp = msg_text_tmp..string.sub(msg_text,str_on+1,str_off)..cursor		--текущая строка
+						elseif pos_cursor < str_off then
+							--курсор не первый и не последний символ текущей строки
+							msg_text_tmp = msg_text_tmp..string.sub(msg_text,str_on,pos_cursor-1)..string.sub(msg_text,pos_cursor+1,str_off)..cursor		--текущая строка
+						end
+					end
+					--формирую окончательный текст
+					if str_on == 586 then
+						--последняя строка - текущая
+						msg_text = msg_text_tmp
+					else
+						msg_text = msg_text_tmp..string.sub(msg_text,str_on+45,630)
+					end
+				end
+				pos_cursor = str_off
+			end
+		end
+		
+		if not self:search_of_error("Кнопка Перемотка на последнюю") then return end
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+	
+	
+	if flag_sms == "w" then
+		--листаем заметки
+		if table.getn(sms_tbl)==0 then
+			return
+		end
+		
+		if tbl_sap == table.getn(sms_tbl) then
+			return
+		end
+		
+		tbl_sap =  table.getn(sms_tbl)
+
+		self:show_sms(tbl_sap)
+	end
+	
+	if flag_sms == nil then
+		--кнопка не работает
+		return
+	end
+
+	self:snd_klik(2)
+end
+
+function cheat:btn_new()							-- Кнопка Новая запись 
+	if flag_sms~="" and flag_sms~="w" then
+		return
+	end
+
+	self:clearing()
+	
+	if flag_sms=="" then
+		flag_sms = "n"								--режим новой записи из пустого режима
+	elseif 	flag_sms=="w" then
+		flag_sms = "nw"								--режим новой записи из режима просмотра
+	end
+	
+	pos_cursor = 0
+	flag_tema = true
+	msg_tema = string.rep(" ", 40)
+	msg_text = string.rep(" ", 630)
+	--формирую основу заголовка
+	self:set_tema_msg()
+	self:show_mode()
+	self:snd_klik(2)
+end
+
+function cheat:btn_edit()							-- Кнопка Редактировать запись
+	local flag_resolve = true
+
+	if tbl_sap == 1 or tbl_sap == 2 or tbl_sap == 3 then
+		flag_resolve = false
+	end
+	
+	if flag_sms =="w" then
+		if flag_resolve then
+			flag_sms = "r"
+			pos_cursor = 630
+			msg_text = string.sub(msg_text,1,629)..cursor
+			self:show_mode()
+			flag_tema = false
+		else
+			self:clearing()
+			if 	wnd_0 == nil then
+				wnd_0 = CUIStatic()
+				wnd_0:SetAutoDelete(true)
+				self:AttachChild(wnd_0)
+				wnd_0:SetWndRect(160,88,475,40)
+				wnd_0:SetFont(GetFontLetterica18Russian())
+				wnd_0:SetTextColor(255, 54, 54, 54)
+			end
+			wnd_0:SetText("РЕДАКТИРОВАНИЕ ЗАПРЕЩЕНО!")
+			
+			flag_sms = "w"									--режим просмотра записей
+			self:show_mode()
+		end
+	elseif 	flag_sms =="n" or flag_sms =="nw" or flag_sms =="r" then
+		--изменение режима ввода
+		if flag_ins then
+			flag_ins = false
+			cursor = "®"
+		else
+			flag_ins = true
+			cursor = "©"
+		end
+		--ищу и заменяю курсор
+		if flag_tema then
+			--курсор в заголовке
+			msg_tema = string.sub(msg_tema,1,pos_cursor-1)..cursor..string.sub(msg_tema,pos_cursor+1,40)
+		else
+			--курсор в тексте
+			msg_text = string.sub(msg_text,1,pos_cursor-1)..cursor..string.sub(msg_text,pos_cursor+1,630)
+		end
+	end
+
+	if flag_resolve then
+		if not self:search_of_error("Кнопка Редактировать запись") then return end
+		self:set_only_tema_text()
+		self:print_text(self:set_str_text())
+	end
+	self:snd_klik(2)
+end
+
+function cheat:btn_del()							--Кнопка Удалить запись
+	if flag_sms~="w" then
+		--удалять можно только из режима просмотра
+		return
+	end
+	
+	
+	local tbl_tmp = {}
+	local i
+	local flag_resolve = true
+	
+	if tbl_sap == 1 or tbl_sap == 2 or tbl_sap == 3 then
+		flag_resolve = false
+	end
+	
+	if flag_resolve then
+		for i = 1, table.getn(sms_tbl) do
+			if tbl_sap ~= i then
+				table.insert(tbl_tmp,sms_tbl[i])
+			end
+		end
+	end
+	
+	self:clearing()
+	
+	if 	wnd_0 == nil then
+		wnd_0 = CUIStatic()
+		wnd_0:SetAutoDelete(true)
+		self:AttachChild(wnd_0)
+		wnd_0:SetWndRect(160,88,475,40)
+		wnd_0:SetFont(GetFontLetterica18Russian())
+		wnd_0:SetTextColor(255, 54, 54, 54)
+	end
+	
+	if flag_resolve then
+		wnd_0:SetText("ЗАПИСЬ УДАЛЕНА")
+	else
+		wnd_0:SetText("УДАЛЕНИЕ ЗАПРЕЩЕНО!")
+	end
+	
+	if flag_resolve then
+		if table.getn(sms_tbl) == 1 then
+			--была всего одна запись
+			sms_tbl = {}
+		else 
+			if tbl_sap == table.getn(sms_tbl) then
+				tbl_sap = tbl_sap - 1
+			end
+			sms_tbl = tbl_tmp
+			flag_sms = "w"									--режим просмотра записей
+			self:show_mode()
+		end
+	else
+		flag_sms = "w"									--режим просмотра записей
+		self:show_mode()
+	end
+	
+	self:snd_klik(2)
+	
+end
+
+function cheat:btn_open()							-- Кнопка Просмотр записей
+	if flag_sms~="" then
+		return
+	end
+	
+	if table.getn(sms_tbl)==0 then
+		return
+	end
+	--очищаю переменные
+	--self:clearing()
+	
+	flag_sms = "w"									--режим просмотра записей
+	self:show_mode()
+
+	if 	wnd_0 == nil then
+		wnd_0 = CUIStatic()
+		wnd_0:SetAutoDelete(true)
+		self:AttachChild(wnd_0)
+		wnd_0:SetWndRect(160,88,475,40)
+		wnd_0:SetFont(GetFontLetterica18Russian())
+		wnd_0:SetTextColor(255, 54, 54, 54)
+	end
+	wnd_0:SetText("ПРОСМОТР ЗАПИСЕЙ")
+	
+	self:snd_klik(2)
+	
+end
+
+function cheat:btn_save()							-- Кнопка Сохранить запись
+	
+	local pos 
+	
+	if flag_sms~="n" and flag_sms~="nw" and flag_sms~="r" then
+		return
+	end
+	
+	--удаляю курсор из записи
+	if flag_tema then
+		--курсор в заголовке
+		pos = string.find (msg_tema, "©")
+		if pos == nil then
+			pos = string.find (msg_tema, "®")
+		end
+		if pos == 40 then
+			msg_tema = string.sub(msg_tema,1,pos-1).." "
+		else
+			msg_tema = string.sub(msg_tema,1,pos-1)..string.sub(msg_tema,pos+1,40).." "
+		end
+	else
+		--курсор в тексте
+		pos = string.find (msg_text, "©")
+		if pos == nil then
+			pos = string.find (msg_text, "®")
+		end
+		pos_cursor = pos
+		local str_on, str_off = self:set_on_off()
+		if pos == 1 then
+			msg_text = string.sub(msg_text,pos+1,str_off).." "..string.sub(msg_text,str_off+1,630)
+		elseif pos == 630 then
+			msg_text = string.sub(msg_text,1,pos-1).." "
+		else
+			msg_text = string.sub(msg_text,1,pos-1)..string.sub(msg_text,pos+1,str_off).." "..string.sub(msg_text,str_off+1,630)
+		end
+	end
+	
+	local message = msg_tema..msg_text
+	message = vergas_lib.archiving_records(message)
+	
+	if flag_sms == "n" or flag_sms == "nw" then
+		table.insert(sms_tbl,message)
+		if flag_sms == "nw" then
+			tbl_sap = table.getn(sms_tbl)
+		end
+	elseif flag_sms == "r" then
+		sms_tbl[tbl_sap] = message
+	end
+
+	--очищаю переменные
+	self:clearing()
+
+	if 	wnd_0 == nil then
+		wnd_0 = CUIStatic()
+		wnd_0:SetAutoDelete(true)
+		self:AttachChild(wnd_0)
+		wnd_0:SetWndRect(160,88,475,40)
+		wnd_0:SetFont(GetFontLetterica18Russian())
+		wnd_0:SetTextColor(255, 54, 54, 54)
+	end
+	wnd_0:SetText("ЗАПИСЬ  СОХРАНЕНА")
+	
+	if flag_sms=="n" then
+		flag_sms = ""
+		self:show_mode()
+	elseif flag_sms=="nw" or flag_sms=="r" then
+		flag_sms = "w"
+		self:show_mode()
+	end
+	self:snd_klik(2)
+end
+
+--------------------------------КНОПКИ ВВОДА-------------------------------------------------------------------------------
+function cheat:btn_1()								-- Кнопка 1
+	self:print_message("1")
+	self:clear_press_key()
+end
+
+function cheat:btn_2()								-- Кнопка 2
+	self:print_message("2")
+end
+
+function cheat:btn_3()								-- Кнопка 3
+	self:print_message("3")
+end
+
+function cheat:btn_4()								-- Кнопка 4
+	self:print_message("4")
+end
+
+function cheat:btn_5()								-- Кнопка 5
+	self:print_message("5")
+end
+
+function cheat:btn_6()								-- Кнопка 6
+	self:print_message("6")
+end
+
+function cheat:btn_7()								-- Кнопка 7
+	self:print_message("7")
+end
+
+function cheat:btn_8()								-- Кнопка 8
+	self:print_message("8")
+end
+
+function cheat:btn_9()								-- Кнопка 9
+	self:print_message("9")
+end
+
+function cheat:btn_0()								-- Кнопка 0
+	self:print_message("0")
+end
+
+function cheat:btn_shift()							-- Кнопка шифт
+	if flag_shift then
+		flag_shift = false
+		if wnd_l~=nil then
+			self:DetachChild(wnd_l)
+			wnd_l = nil
+		end
+	else
+		flag_shift = true
+		wnd_l = CUIStatic()
+		wnd_l:SetAutoDelete(true)
+		self:AttachChild(wnd_l)
+		wnd_l:SetStretchTexture(true)
+		wnd_l:InitTexture("ui_klava_light")	
+		wnd_l:SetWndRect(56,64,12,13)
+	end
+	self:snd_klik(1)
+end
+
+function cheat:btn_sps()							-- Кнопка пробел
+	self:print_message(" ")
+end
+
+function cheat:btn_zn_vop()							-- Кнопка ?
+	self:print_message("?")
+end
+
+function cheat:btn_z()								-- Кнопка Я
+	if flag_shift then
+		self:print_message("Я")
+		self:btn_shift()
+	else
+		self:print_message("я")
+	end
+end
+
+function cheat:btn_x()								-- Кнопка Ч
+	if flag_shift then
+		self:print_message("Ч")
+		self:btn_shift()
+	else
+		self:print_message("ч")
+	end
+end
+
+function cheat:btn_c()								-- Кнопка С
+	if flag_shift then
+		self:print_message("С")
+		self:btn_shift()
+	else
+		self:print_message("с")
+	end
+end
+
+function cheat:btn_v()								-- Кнопка М
+	if flag_shift then
+		self:print_message("М")
+		self:btn_shift()
+	else
+		self:print_message("м")
+	end
+end
+
+function cheat:btn_b()								-- Кнопка И
+	if flag_shift then
+		self:print_message("И")
+		self:btn_shift()
+	else
+		self:print_message("и")
+	end
+end
+
+function cheat:btn_n()								-- Кнопка Т
+	if flag_shift then
+		self:print_message("Т")
+		self:btn_shift()
+	else
+		self:print_message("т")
+	end
+end
+
+function cheat:btn_m()								-- Кнопка Ь
+	if flag_shift then
+		self:print_message("Ь")
+		self:btn_shift()
+	else
+		self:print_message("ь")
+	end
+end
+
+function cheat:btn_an()								-- Кнопка Б
+	if flag_shift then
+		self:print_message("Б")
+		self:btn_shift()
+	else
+		self:print_message("б")
+	end
+end
+
+function cheat:btn_am()								-- Кнопка Ю
+	if flag_shift then
+		self:print_message("Ю")
+		self:btn_shift()
+	else
+		self:print_message("ю")
+	end
+end
+
+function cheat:btn_zpt()							-- Кнопка запятая
+	self:print_message(",")
+end
+
+function cheat:btn_tchk()							-- Кнопка точка
+	self:print_message(".")
+end
+
+function cheat:btn_zn_vos()							-- Кнопка !
+	self:print_message("!")
+end
+
+function cheat:btn_a()								-- Кнопка Ф
+	if flag_shift then
+		self:print_message("Ф")
+		self:btn_shift()
+	else
+		self:print_message("ф")
+	end
+end
+
+function cheat:btn_s()								-- Кнопка Ы
+	if flag_shift then
+		self:print_message("Ы")
+		self:btn_shift()
+	else
+		self:print_message("ы")
+	end
+end
+
+function cheat:btn_d()								-- Кнопка В
+	if flag_shift then
+		self:print_message("В")
+		self:btn_shift()
+	else
+		self:print_message("в")
+	end
+end
+
+function cheat:btn_f()								-- Кнопка А
+	if flag_shift then
+		self:print_message("А")
+		self:btn_shift()
+	else
+		self:print_message("а")
+	end
+end
+
+function cheat:btn_g()								-- Кнопка П
+	if flag_shift then
+		self:print_message("П")
+		self:btn_shift()
+	else
+		self:print_message("п")
+	end
+end
+
+function cheat:btn_h()								-- Кнопка Р
+	if flag_shift then
+		self:print_message("Р")
+		self:btn_shift()
+	else
+		self:print_message("р")
+	end
+end
+
+function cheat:btn_j()								-- Кнопка О
+	if flag_shift then
+		self:print_message("О")
+		self:btn_shift()
+	else
+		self:print_message("о")
+	end
+end
+
+function cheat:btn_k()								-- Кнопка Л
+	if flag_shift then
+		self:print_message("Л")
+		self:btn_shift()
+	else
+		self:print_message("л")
+	end
+end
+
+function cheat:btn_l()								-- Кнопка Д
+	if flag_shift then
+		self:print_message("Д")
+		self:btn_shift()
+	else
+		self:print_message("д")
+	end
+end
+
+function cheat:btn_ak()								-- Кнопка Ж
+	if flag_shift then
+		self:print_message("Ж")
+		self:btn_shift()
+	else
+		self:print_message("ж")
+	end
+end
+
+function cheat:btn_al()								-- Кнопка Э
+	if flag_shift then
+		self:print_message("Э")
+		self:btn_shift()
+	else
+		self:print_message("э")
+	end
+end
+
+function cheat:btn_def()							-- Кнопка ДЕФИС
+	self:print_message("-")
+end
+
+function cheat:btn_q()								-- Кнопка Й
+	if flag_shift then
+		self:print_message("Й")
+		self:btn_shift()
+	else
+		self:print_message("й")
+	end
+end
+
+function cheat:btn_w()								-- Кнопка Ц
+	if flag_shift then
+		self:print_message("Ц")
+		self:btn_shift()
+	else
+		self:print_message("ц")
+	end
+end
+
+function cheat:btn_e()								-- Кнопка У
+	if flag_shift then
+		self:print_message("У")
+		self:btn_shift()
+	else
+		self:print_message("у")
+	end
+end
+
+function cheat:btn_r()								-- Кнопка К
+	if flag_shift then
+		self:print_message("К")
+		self:btn_shift()
+	else
+		self:print_message("к")
+	end
+end
+
+function cheat:btn_t()								-- Кнопка Е
+	if flag_shift then
+		self:print_message("Е")
+		self:btn_shift()
+	else
+		self:print_message("е")
+	end
+end
+
+function cheat:btn_y()								-- Кнопка Н
+	if flag_shift then
+		self:print_message("Н")
+		self:btn_shift()
+	else
+		self:print_message("н")
+	end
+end
+
+function cheat:btn_u()								-- Кнопка Г
+	if flag_shift then
+		self:print_message("Г")
+		self:btn_shift()
+	else
+		self:print_message("г")
+	end
+end
+
+function cheat:btn_i()								-- Кнопка Ш
+	if flag_shift then
+		self:print_message("Ш")
+		self:btn_shift()
+	else
+		self:print_message("ш")
+	end
+end
+
+function cheat:btn_o()								-- Кнопка Щ
+	if flag_shift then
+		self:print_message("Щ")
+		self:btn_shift()
+	else
+		self:print_message("щ")
+	end
+end
+
+function cheat:btn_p()								-- Кнопка З
+	if flag_shift then
+		self:print_message("З")
+		self:btn_shift()
+	else
+		self:print_message("з")
+	end
+end
+
+function cheat:btn_ap()								-- Кнопка Х
+	if flag_shift then
+		self:print_message("Х")
+		self:btn_shift()
+	else
+		self:print_message("х")
+	end
+end
+
+
+-------------------------------------СЛУЖЕБНЫЕ ФУНКЦИИ-------------------------------------------------------
+function cheat:on_quit()
+	-- подготовка к выходу из записной книжки
+	--сбрасываю заметки на винт
+	vergas_lib.save_messages(sms_tbl)
+	--всё вычищаю
+	self:clearing()
+	sms_tbl = {}
+	flag_tema = false
+	flag_shift = false
+	flag_ins = true
+	bind_stalker.restore_weapon()		--восстанавливаю руки и оружие на худе
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.spawn_item_in_inv("klava",true)
+	local lname=level.name()
+	if lname=="aver" then 
+	level.set_time_factor(system_ini():r_float("alife","time_factor")*5)
+	else
+	level.set_time_factor(system_ini():r_float("alife","time_factor"))
+	end
+end
+
+function cheat:set_tema_msg()
+	--формирование заголовка (обработка одного введенного символа)
+	if 	wnd_0 == nil then
+		wnd_0 = CUIStatic()
+		wnd_0:SetAutoDelete(true)
+		self:AttachChild(wnd_0)
+		wnd_0:SetWndRect(160,88,475,40)
+		wnd_0:SetFont(GetFontLetterica18Russian())
+		wnd_0:SetTextColor(255, 54, 54, 54)
+	end
+	
+	if pos_cursor == 0 then
+		msg_tema = self:set_data()
+	else
+		if string.sub (msg_tema, 17 ,32) == "ВВЕСТИ ЗАГОЛОВОК" then
+			msg_tema = string.sub (msg_tema, 1 ,16)..string.rep (" ", 24)
+		end
+		if flag_ins then
+			--режим "сдвиг"
+			msg_tema =  string.sub (msg_tema, 1 ,pos_cursor-1)..symbol..cursor..string.sub (msg_tema, pos_cursor+1,string.len(msg_tema))
+		else
+			--режим "забой"
+			msg_tema =  string.sub (msg_tema, 1 ,pos_cursor-1)..symbol..cursor..string.sub (msg_tema, pos_cursor+2,string.len(msg_tema))
+		end
+		pos_cursor = pos_cursor + 1
+	end
+	
+	wnd_0:SetText(msg_tema)
+	
+	--а не достиг ли я конца заголовка?
+	if pos_cursor > 40 then
+		flag_tema = false
+		pos_cursor = 1
+		if msg_text == nil then
+			msg_text = cursor..string.rep (" ", 629)
+		end
+		local tbl = self:set_str_text()
+		
+		if not self:search_of_error("set_tema_msg") then return end
+		self:print_text(tbl)
+	end
+end
+
+function cheat:show_sms(number)
+	
+	local i
+	local tbl_tmp = self:str_explode_klava("|",sms_tbl[number])
+
+	--формирую заголовок
+	if tbl_tmp[2] ~= "0" then
+		msg_tema = tbl_tmp[1]..string.rep(" ", tonumber(tbl_tmp[2]))
+	else
+		msg_tema = tbl_tmp[1]
+	end
+	if string.len(msg_tema) < 40 then
+		msg_tema = msg_tema..string.rep(" ", 40-string.len(msg_tema))
+	end
+	
+	--формирую текст
+	msg_text = ""
+	for i = 3,30,2 do
+		if tbl_tmp[i+1] == "45" then
+			--это пустая строка
+			msg_text = msg_text..string.rep(" ", 45)
+		elseif tbl_tmp[i+1] == "0" then
+			msg_text = msg_text..tbl_tmp[i]
+		else
+			msg_text = msg_text..tbl_tmp[i]..string.rep(" ", tonumber(tbl_tmp[i+1]))
+		end
+	end
+	
+	if string.len(msg_text) < 630 then
+		msg_text = msg_text..string.rep(" ", 630-string.len(msg_text))
+	end
+	self:set_only_tema_text()
+	self:print_text(self:set_str_text())
+end
+
+function cheat:str_explode_klava(separator,line)
+	--сохроняет впереди идущие пробелы
+	local i
+	local symbol = ""
+	local phrase = ""
+	local tbl_tmp = {}
+	
+	for i = 1, string.len(line) do
+		symbol = string.sub(line,i,i)
+		if symbol ~= separator then
+			phrase = phrase ..symbol
+		else
+			table.insert(tbl_tmp,phrase)
+			phrase = ""
+		end
+	end
+	
+	table.insert(tbl_tmp,phrase)
+	
+	return tbl_tmp
+end
+
+function cheat:set_only_tema_text()
+	-- вывод заголовка на экран
+	wnd_0:SetText(msg_tema)
+end
+
+function cheat:set_text_msg()
+	--формирование текста (обработка одного введенного символа)
+	if pos_cursor == 630 then
+		return
+	end
+	
+	if flag_ins then
+		--режим "сдвиг"
+		msg_text = string.sub (msg_text, 1 ,pos_cursor-1)..symbol..cursor..string.sub (msg_text, pos_cursor+1,629)
+	else
+		--режим "забой"
+		msg_text = string.sub (msg_text, 1 ,pos_cursor-1)..symbol..cursor..string.sub (msg_text, pos_cursor+2,630)
+	end
+	pos_cursor = pos_cursor + 1
+
+	local tbl = self:set_str_text()
+	
+	if not self:search_of_error("set_text_msg") then return end
+	self:print_text(tbl)
+end
+
+function cheat:set_str_text()
+	--разбивка текста на строки
+	local i
+	local j = 1
+	local k = 45
+	local tbl_str = {}
+	
+	for i = 1, 14 do 
+		table.insert (tbl_str, string.sub(msg_text,j,k))
+		j = j + 45
+		k = k + 45
+	end
+
+		return tbl_str
+end
+
+function cheat:print_text(tbl)
+	--вывод текста на экран
+	if wnd_1 == nil then
+		wnd_1 = CUIStatic()
+		wnd_1:SetAutoDelete(true)
+		self:AttachChild(wnd_1)
+		wnd_1:SetWndRect(115,120,100,33)
+		wnd_1:SetFont(GetFontLetterica18Russian())
+	end
+	wnd_1:SetText(tbl[1])
+	
+	if wnd_2 == nil then
+		wnd_2 = CUIStatic()
+		wnd_2:SetAutoDelete(true)
+		self:AttachChild(wnd_2)
+		wnd_2:SetWndRect(115,135,100,33)
+		wnd_2:SetFont(GetFontLetterica18Russian())
+	end
+	wnd_2:SetText(tbl[2])
+
+	if wnd_3 == nil then
+		wnd_3 = CUIStatic()
+		wnd_3:SetAutoDelete(true)
+		self:AttachChild(wnd_3)
+		wnd_3:SetWndRect(115,150,100,33)
+		wnd_3:SetFont(GetFontLetterica18Russian())
+		wnd_3:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_3:SetText(tbl[3])
+	
+	if wnd_4 == nil then
+		wnd_4 = CUIStatic()
+		wnd_4:SetAutoDelete(true)
+		self:AttachChild(wnd_4)
+		wnd_4:SetWndRect(115,165,100,33)
+		wnd_4:SetFont(GetFontLetterica18Russian())
+		wnd_4:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_4:SetText(tbl[4])
+
+	if wnd_5 == nil then
+		wnd_5 = CUIStatic()
+		wnd_5:SetAutoDelete(true)
+		self:AttachChild(wnd_5)
+		wnd_5:SetWndRect(115,180,100,33)
+		wnd_5:SetFont(GetFontLetterica18Russian())
+		wnd_5:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_5:SetText(tbl[5])
+
+	if wnd_6 == nil then
+		wnd_6 = CUIStatic()
+		wnd_6:SetAutoDelete(true)
+		self:AttachChild(wnd_6)
+		wnd_6:SetWndRect(115,195,100,33)
+		wnd_6:SetFont(GetFontLetterica18Russian())
+		wnd_6:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_6:SetText(tbl[6])
+
+	if wnd_7 == nil then
+		wnd_7 = CUIStatic()
+		wnd_7:SetAutoDelete(true)
+		self:AttachChild(wnd_7)
+		wnd_7:SetWndRect(115,210,100,33)
+		wnd_7:SetFont(GetFontLetterica18Russian())
+		wnd_7:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_7:SetText(tbl[7])
+
+	if wnd_8 == nil then
+		wnd_8 = CUIStatic()
+		wnd_8:SetAutoDelete(true)
+		self:AttachChild(wnd_8)
+		wnd_8:SetWndRect(115,225,100,33)
+		wnd_8:SetFont(GetFontLetterica18Russian())
+		wnd_8:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_8:SetText(tbl[8])
+
+	if wnd_9 == nil then
+		wnd_9 = CUIStatic()
+		wnd_9:SetAutoDelete(true)
+		self:AttachChild(wnd_9)
+		wnd_9:SetWndRect(115,240,100,33)
+		wnd_9:SetFont(GetFontLetterica18Russian())
+		wnd_9:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_9:SetText(tbl[9])
+
+	if wnd_10 == nil then
+		wnd_10 = CUIStatic()
+		wnd_10:SetAutoDelete(true)
+		self:AttachChild(wnd_10)
+		wnd_10:SetWndRect(115,255,100,33)
+		wnd_10:SetFont(GetFontLetterica18Russian())
+		wnd_10:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_10:SetText(tbl[10])
+
+	if wnd_11 == nil then
+		wnd_11 = CUIStatic()
+		wnd_11:SetAutoDelete(true)
+		self:AttachChild(wnd_11)
+		wnd_11:SetWndRect(115,270,100,33)
+		wnd_11:SetFont(GetFontLetterica18Russian())
+		wnd_11:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_11:SetText(tbl[11])
+
+	if wnd_12 == nil then
+		wnd_12 = CUIStatic()
+		wnd_12:SetAutoDelete(true)
+		self:AttachChild(wnd_12)
+		wnd_12:SetWndRect(115,285,100,33)
+		wnd_12:SetFont(GetFontLetterica18Russian())
+		wnd_12:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_12:SetText(tbl[12])
+
+	if wnd_13 == nil then
+		wnd_13 = CUIStatic()
+		wnd_13:SetAutoDelete(true)
+		self:AttachChild(wnd_13)
+		wnd_13:SetWndRect(115,300,100,33)
+		wnd_13:SetFont(GetFontLetterica18Russian())
+		wnd_13:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_13:SetText(tbl[13])
+
+	if wnd_14 == nil then
+		wnd_14 = CUIStatic()
+		wnd_14:SetAutoDelete(true)
+		self:AttachChild(wnd_14)
+		wnd_14:SetWndRect(115,315,100,33)
+		wnd_14:SetFont(GetFontLetterica18Russian())
+		wnd_14:SetTextColor(255, 255, 255, 255)
+	end
+	wnd_14:SetText(tbl[14])
+	
+end
+
+function cheat:set_data()
+	--формирование даты в заголовке
+	
+	local message = vergas_lib.set_data_string()
+
+	pos_cursor = 16
+	--добавляю курсор
+	message = message..cursor.."ВВЕСТИ ЗАГОЛОВОК"..string.rep(" ", 8)
+	
+	return message
+end
+
+function cheat:show_mode()
+	--вывод иконки режима работы
+	if wnd_r~=nil then
+		self:DetachChild(wnd_r)
+		wnd_r = nil
+	end
+
+	if flag_sms~="" then
+		wnd_r = CUIStatic()
+		wnd_r:SetAutoDelete(true)
+		self:AttachChild(wnd_r)
+		wnd_r:SetStretchTexture(true)
+		if flag_sms=="n" or flag_sms=="nw" then
+			wnd_r:InitTexture("ui_klava_ico_new")
+		elseif 	flag_sms=="w" then
+			wnd_r:InitTexture("ui_klava_ico_open")
+		elseif 	flag_sms=="r" then
+			wnd_r:InitTexture("ui_klava_ico_edit")
+		end	
+		wnd_r:SetWndRect(50,92,23,20)
+	end
+
+end
+
+function cheat:print_message(param)
+	--выбор формирования заголовка или текста
+	if flag_sms~="n" and flag_sms~="nw" and flag_sms~="r" then
+		return
+	end
+
+	symbol = param
+	--заголовок или нет?
+	if flag_tema then
+		--это заголовок
+		self:set_tema_msg()
+	else
+		--это текст
+		self:set_text_msg()
+	end
+end
+
+function cheat:snd_klik(n)
+	--вывод звуков
+	if n==1 then
+		vergas_lib.s_play([[device\dairy_click]])
+	elseif n==2 then
+		vergas_lib.s_play([[device\dairy_click_1]])
+	end
+end
+
+function cheat:clearing()
+	--очистка переменных и окон
+	self:del_windows()
+	self:clear_variables()
+end
+
+function cheat:del_windows()
+	--очистка окон
+	if wnd_0~=nil then
+		self:DetachChild(wnd_0)
+		wnd_0 = nil
+	end
+
+	if wnd_1~=nil then
+		self:DetachChild(wnd_1)
+		wnd_1 = nil
+	end
+
+	if wnd_2~=nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil
+	end
+
+	if wnd_3~=nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil
+	end
+
+	if wnd_4~=nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil
+	end
+
+	if wnd_5~=nil then
+		self:DetachChild(wnd_5)
+		wnd_5 = nil
+	end
+
+	if wnd_6~=nil then
+		self:DetachChild(wnd_6)
+		wnd_6 = nil
+	end
+
+	if wnd_7~=nil then
+		self:DetachChild(wnd_7)
+		wnd_7 = nil
+	end
+
+	if wnd_8~=nil then
+		self:DetachChild(wnd_8)
+		wnd_8 = nil
+	end
+	if wnd_9~=nil then
+		self:DetachChild(wnd_9)
+		wnd_9 = nil
+	end
+
+	if wnd_10~=nil then
+		self:DetachChild(wnd_10)
+		wnd_10 = nil
+	end
+
+	if wnd_11~=nil then
+		self:DetachChild(wnd_11)
+		wnd_11 = nil
+	end
+
+	if wnd_12~=nil then
+		self:DetachChild(wnd_12)
+		wnd_12 = nil
+	end
+
+	if wnd_13~=nil then
+		self:DetachChild(wnd_13)
+		wnd_13 = nil
+	end
+	
+	if wnd_14~=nil then
+		self:DetachChild(wnd_14)
+		wnd_14 = nil
+	end
+	
+	if wnd_l~=nil then
+		self:DetachChild(wnd_l)
+		wnd_l = nil
+	end
+	
+	if wnd_r~=nil then
+		self:DetachChild(wnd_r)
+		wnd_r = nil
+	end
+	
+	if wnd_mask~=nil then
+		self:DetachChild(wnd_mask)
+		wnd_mask = nil
+	end
+
+	if wnd_btn~=nil then
+		self:DetachChild(wnd_btn)
+		wnd_btn = nil
+	end
+	
+end
+
+function cheat:press_key(ttr,a,b,c,d)
+
+	if wnd_btn~=nil then
+		self:DetachChild(wnd_btn)
+		wnd_btn = nil
+	end
+
+	wnd_btn = CUIStatic()
+	wnd_btn:SetAutoDelete(true)
+	self:AttachChild(wnd_btn)
+	wnd_btn:SetStretchTexture(true)
+	wnd_btn:InitTexture(ttr)	
+	wnd_btn:SetWndRect(a,b,c,d)
+end
+
+function cheat:clear_press_key()
+	if wnd_btn~=nil then
+		self:DetachChild(wnd_btn)
+		wnd_btn = nil
+	end
+end
+
+function cheat:clear_variables()
+	--очистка переменных
+	--sms_tbl = {}					
+	flag_sms = ""					
+	pos_cursor = 0					
+	flag_tema = false
+	flag_ins = true	
+	msg_tema = ""						
+	msg_text = ""						
+	symbol = ""
+	tbl_sap = 0
+end
+
+function cheat:del_trailer_space(str)
+	--удоляю концевые пробелы строки (это для хвостов)
+	local i = 1
+	local j = 0
+	local sum_symbol = string.len (str)
+	local symbol
+	local flag = false
+	
+	str = string.reverse (str)		--перевернул строку
+	
+	while true do
+		if string.sub (str,1,1) == " " then
+			if string.len(str) > 1 then
+				str = string.sub(str,2,string.len(str))
+			else
+				str = ""
+				flag = true
+			end
+		else
+			flag = true
+		end
+		if flag then
+			if str ~= "" then
+				str = string.reverse (str)		--перевернул строку
+			end
+			break
+		end
+	end
+	
+	return str
+end	
+	
+function cheat:del_initial_space()
+	--удаляю пробелы в начале строк
+	local i
+	local j = 46
+	local k = 90
+	for i = 2, 14 do
+		local symbol = string.sub (msg_text, j ,j)
+		if symbol == " " then
+			msg_text = string.sub (msg_text,1,j-1)..string.sub (msg_text, j+1 ,k).." "..string.sub (msg_text, k+1 ,630)
+		end
+		j = j + 45
+		k = k + 45
+	end
+end	
+	
+function cheat:del_superfluous_space(msg)
+	--удаляю лишние концевые пробелы  в  переданном тексте
+	--msg - строка текста или заголовка
+	local i
+	local j = 0
+	local flag = false						--закончен или нет поиск пробелов
+	local sum_sim = string.len(msg)			--количество символов в поступившем тексте
+	local tmp_msg = string.reverse(msg)		--перевернутый поступивший текст (пробелы впереди)
+	
+	for i = 1, sum_sim do
+		if string.sub(tmp_msg,i,i) == " " then
+			j = j + 1
+		else
+			flag = true
+		end
+		
+		if flag then
+			break
+		end
+	end
+	
+	tmp_msg =  string.sub(tmp_msg,j+1,sum_sim)	
+
+	return string.reverse( tmp_msg)
+end
+	
+function cheat:set_on_off()
+	--определяю начало и конец строки с курсором
+	local str_on
+	local str_off
+	
+	if flag_tema then
+		str_on = 16
+		str_off = 40
+	else
+		if pos_cursor <= 45 then
+			str_on = 1
+			str_off = 45
+		elseif pos_cursor <= 90 then	
+			str_on = 46
+			str_off = 90
+		elseif pos_cursor <= 135 then	
+			str_on = 91
+			str_off = 135
+		elseif pos_cursor <= 180 then	
+			str_on = 136
+			str_off = 180
+		elseif pos_cursor <= 225 then	
+			str_on = 181
+			str_off = 225
+		elseif pos_cursor <= 270 then	
+			str_on = 226
+			str_off = 270
+		elseif pos_cursor <= 315 then	
+			str_on = 271
+			str_off = 315
+		elseif pos_cursor <= 360 then	
+			str_on = 316
+			str_off = 360
+		elseif pos_cursor <= 405 then	
+			str_on = 361
+			str_off = 405
+		elseif pos_cursor <= 450 then	
+			str_on = 406
+			str_off = 450
+		elseif pos_cursor <= 495 then	
+			str_on = 451
+			str_off = 495
+		elseif pos_cursor <= 540 then	
+			str_on = 496
+			str_off = 540
+		elseif pos_cursor <= 585 then	
+			str_on = 541
+			str_off = 585
+		elseif pos_cursor <= 630 then	
+			str_on = 586
+			str_off = 630
+		end
+	end
+	
+	
+	return str_on, str_off
+end	
+	
+function cheat:dumping_of_text_tail(local_hvost,text_ostatok)
+	--последовательно переношу хвост по оставшимся строкам и присоеденяю строки к новому тексту
+	local local_on = 1
+	local local_off = local_on + 44
+	local i
+	local flag = false
+	local stroka = ""
+	local text_end = ""
+	
+	local_hvost = self:del_superfluous_space(local_hvost)
+	
+	for i = 1,string.len(text_ostatok),45 do
+		stroka = self:del_superfluous_space(local_hvost..string.sub(text_ostatok, local_on ,local_off))
+		if string.len(stroka) == 45 then
+			text_end = text_end..stroka..string.sub(text_ostatok, local_on+45 ,string.len(text_ostatok))
+			flag = true
+			local_hvost = ""
+		elseif string.len(stroka) < 45 then
+			text_end = text_end..stroka..string.rep(" ",45-string.len(stroka))..string.sub(text_ostatok, local_on+45 ,string.len(text_ostatok))
+			flag = true
+			local_hvost = ""
+		else
+			text_end = text_end..string.sub(stroka, 1,45)
+			local_hvost = self:del_trailer_space(string.sub(stroka, 46,string.len(stroka)))
+			local_on  =  local_on  + 45
+			local_off =  local_off + 45
+		end	
+		if flag then
+			break
+		end
+	end
+	
+	return text_end
+end
+
+function cheat:search_of_error(param)
+	--проверка длины заголовка и текста
+	if not msg_tema then return false end
+	if string.len(msg_tema) ~= 40 then
+		vergas_lib.logmsg("ЗАГОЛОВОК".."("..param..")".." НЕ ВЕРЕН = "..string.len(msg_tema))
+		return false
+	end
+	
+	if string.len(msg_text) ~= 630 then
+		vergas_lib.logmsg("ТЕКСТ".."("..param..")".." НЕ ВЕРЕН = "..string.len(msg_text))
+		return false
+	end
+	return true
+end
+
+function cheat:instructions_from_vergas()
+	
+	local flag_1 = false
+	local flag_2 = false
+	local flag_3 = false
+	
+	--проверяю наличие инструкций
+	if table.getn(sms_tbl) >= 3 then
+		if string.sub(sms_tbl[1],1,10 ) == "Инструкция" then
+			flag_1 = true
+		end
+
+		if string.sub(sms_tbl[2],1,26 ) == "Инструкция (продолжение 1)" then
+			flag_2 = true
+		end
+
+		if string.sub(sms_tbl[3],1,26 ) == "Инструкция (продолжение 2)" then
+			flag_3 = true
+		end
+		
+		if flag_1 and flag_2 and flag_3 then
+			return
+		end
+	end
+	
+	local tbl_instr = {
+						"Инструкция от Вергаса",
+						"Функциональные кнопки:",
+						"Кнопка [+] - создать новую запись.",
+						"Кнопка [-] - удалить запись (только в режиме",
+						"просмотра записей).",
+						"Кнопка [папка] - режим просмотра записей.",
+						"Кнопка [дискета] - сохранить запись.",
+						"Кнопка [<=] - Backspace",
+						"Кнопка [кривая стрелка] - Enter",
+						"Кнопка [стрелка вверх] - Shift",
+						"Кнопка [Х] - закрыть гаджет",
+						"     ",
+						"В режиме редактирования записи:",
+						"Курсор [©] - режим ввода: сдвиг текста",
+						"Курсор [®] - режим ввода: забой текста",
+						"Инструкция (продолжение 1)",
+						"Режим просмотра записей:",
+						"Кнопка [<<=] - на первую запись",
+						"Кнопка [<=] - на предыдущую запись",
+						"Кнопка [карандаш] - редактирование записи",
+						"Кнопка [=>] - на следующую запись",
+						"Кнопка [=>>] - на последнюю запись",
+						"В режиме редактирования записи:",
+						"[<<=] - в начало строки", 
+						"[Shift]+ [<<=] - в начало текста",
+						"[<=] - сдвиг курсора влево",
+						"[Shift]+[<=] - сдвиг на строку вверх",  
+						"[карандаш] - переключатель режима ввода",
+						"[=>] - сдвиг курсора вправо",
+						"[Shift]+[=>] - сдвиг на строку вниз",
+						"Инструкция (продолжение 2)",
+						"[=>>] - в конец строки",
+						"[Shift]+[=>>] - в конец текста",
+						"[Shift]+ [Backspace] = Delete",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"     ",
+						"									 Вергас."
+						}
+	
+	local tbl_tmp = sms_tbl
+	sms_tbl = {}
+	local stroka = ""
+	local i
+	
+	--формирую первую запись	
+	stroka = tbl_instr[1]..string.rep(" ",40-string.len(tbl_instr[1]))		--заголовок					
+	for i = 2,15 do
+		stroka = stroka..tbl_instr[i]..string.rep(" ",45-string.len(tbl_instr[i]))
+	end
+	
+	table.insert(sms_tbl,vergas_lib.archiving_records(stroka))
+	
+	--формирую вторую запись	
+	stroka = tbl_instr[16]..string.rep(" ",40-string.len(tbl_instr[16]))		--заголовок					
+	for i = 17,30 do
+		stroka = stroka..tbl_instr[i]..string.rep(" ",45-string.len(tbl_instr[i]))
+	end
+	
+	table.insert(sms_tbl,vergas_lib.archiving_records(stroka))
+	
+	--формирую вторую запись	
+	stroka = tbl_instr[31]..string.rep(" ",40-string.len(tbl_instr[31]))		--заголовок					
+	for i = 32,45 do
+		stroka = stroka..tbl_instr[i]..string.rep(" ",45-string.len(tbl_instr[i]))
+	end
+	
+	table.insert(sms_tbl,vergas_lib.archiving_records(stroka))
+	
+	--присоеденяю существующие записи
+	if table.getn(tbl_tmp) ~= o then
+		for i = 1,table.getn(tbl_tmp) do
+			table.insert(sms_tbl,tbl_tmp[i])
+		end
+	end
+end
+-------------------------------------------------------ТЕСТОВЫЕ ФУНКЦИИ--------------------------------------
+function cheat:set_sms_tbl_test()
+	local tbl_n =  {"001","002","003","004","005",
+					"006","006_1","006_2","006_3","006_4","006_5","006_6","006_7","006_8","006_9",
+					"007","007_1","007_2","007_3","007_4","007_5","007_6",
+					"008","008_1","008_2","008_3","008_4",
+					"009","009_1","009_2","009_3","009_4","009_5",
+					"010","010_1","010_2","010_3","010_4","010_5","010_6","010_7","010_8","010_9","010_10",
+					"011","011_1","011_2","011_3","011_4","011_5","011_6","011_7","011_8","011_9","011_10","011_11","011_12","011_13",
+					"012","012_1","012_2","012_3","012_4","012_5","012_6","012_7","012_8",
+					"013","013_1","013_2","013_3","013_4","013_5","013_6","013_7","013_8","013_9","013_10","013_11","013_12",
+					"014","014_1","014_2","014_3","014_4","014_5","014_6","014_7","014_8","014_9","014_10","014_11",
+					"015","015_1","015_2","015_3","015_4","015_5","015_6","015_7","015_8","015_9","015_10","015_11","015_12",
+					"015","016_1","016_2","016_3","016_4","016_5","016_6","016_7","016_8","016_9","016_10","016_11","016_12","016_13",
+					"017","017_1","017_2","017_3","017_4","017_5","017_6","017_7","017_8","017_9",
+					"018","018_1","018_2","018_3","018_4","018_5","018_6","018_7","018_8","018_9","018_10","018_11","018_12","018_13","018_14","018_15","018_16","018_17","018_18","018_19",
+					"019","019_1","019_2","019_3","019_4","019_5","019_6","019_7","019_8","019_9","019_10","019_11",
+					"020","020_1","020_2","020_3","020_4","020_5","020_6","020_7","020_8","020_9","020_10","020_11","020_12","020_13",
+					"021","021_1","021_2","021_3","021_4","021_5","021_6","021_7","021_8","021_9"}
+
+	local i
+	local tbl_p = {}		--промежуточная таблица
+	local tbl_k = {}		--конечная таблица
+	local str = ""
+	local tbl_a = {}		--архивированная таблица
+
+	for i = 1, table.getn(tbl_n) do
+		str ="stalker_"..tbl_n[i]
+		table.insert(tbl_p,self:read_message(str))
+	end
+
+	for i = 1,table.getn(tbl_p) do
+		table.insert(tbl_k,self:transfer_to_format_zk(tbl_p[i]))
+	end
+	
+	--архивация записей
+	for 
+	i = 1,table.getn(tbl_k) do
+		table.insert(tbl_a,vergas_lib.archiving_records(tbl_k[i]))
+	end
+
+	--сбрасываю заметки в файл
+	vergas_lib.save_messages(tbl_a)
+end
+
+function cheat:read_message(msg_id)
+
+	local text = ""
+	local doc, node
+	local file_msg = "$app_data_root$\\resource\\xml\\pda_msg_test.xml"
+	--text = ""
+	doc = OpenXMLDoc (file_msg)
+	
+	node = FindXMLNode (doc, nil, "string", "id", msg_id )
+ 
+	if CheckPtr (node) then
+		text = GetXMLNodeText (node)       
+	end 
+  
+	CloseXMLDoc (doc)
+	
+	return text
+	
+end
+
+function cheat:transfer_to_format_zk(message)
+	--перевозу сообщение в формат ЗК
+	local tbl_tmp = {}
+	local tbl_m = {}
+	local i
+	
+	tbl_tmp = vergas_lib.str_explode("|",message,true)
+
+	--довожу количество символов в строке до кондиции
+	if string.len(tbl_tmp[1]) < 40 then
+		table.insert(tbl_m,tbl_tmp[1]..string.rep(" ", 40-string.len(tbl_tmp[1])))
+	end	
+	for i = 2,table.getn(tbl_tmp) do
+		if string.len(tbl_tmp[i]) < 45 then
+			table.insert(tbl_m,tbl_tmp[i]..string.rep(" ", 45-string.len(tbl_tmp[i])))
+		elseif string.len(tbl_tmp[i]) == 45 then
+			table.insert(tbl_m,tbl_tmp[i])
+		else
+			local flag = false
+			table.insert(tbl_m,string.sub(tbl_tmp[i],1,45))
+			local hvost = string.sub(tbl_tmp[i],46,string.len(tbl_tmp[i]))
+			while true do
+				if string.len(hvost) > 45 then
+					table.insert(tbl_m,string.sub(hvost,1,45))
+					hvost = string.sub(hvost,46,string.len(hvost))
+				elseif string.len(hvost) == 45 then
+					table.insert(tbl_m,hvost)
+					flag = true
+				else
+					table.insert(tbl_m,string.sub(hvost,1,string.len(hvost))..string.rep(" ", 45-string.len(hvost)))
+					flag = true
+				end
+				if flag then
+					break
+				end
+			end
+		end	
+	end
+	
+	tbl_tmp = tbl_m
+	
+	--довожу количество записей до 15
+	if table.getn(tbl_tmp) < 15 then
+		for i = 1,15-table.getn(tbl_tmp) do
+			table.insert(tbl_tmp,string.rep(" ", 45))
+		end
+	end
+	
+	--собираю сообщение 
+	message = ""
+	for i = 1,15 do
+		message = message..tbl_tmp[i]
+	end
+	return message
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

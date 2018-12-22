@@ -1,0 +1,52 @@
+---------------------------------------------------------------------------------
+-- Mob alife manager
+---------------------------------------------------------------------------------
+
+disable_scheme = 1
+reset_scheme = 2
+continue_execution = 3
+
+function cfg_get_mode(ini, section, npc)
+	local alife = {}
+	alife.actor_friendly  = utils.cfg_get_bool(ini, section, "actor_friendly", npc, false)
+	alife.npc_friendly    = utils.cfg_get_bool(ini, section, "npc_friendly", npc, false)
+	alife.friendly        = utils.cfg_get_bool(ini, section, "friendly", npc, false)
+	alife.braindead       = utils.cfg_get_bool(ini, section, "braindead", npc, false)
+	return alife
+end
+
+function issue_combat_event(obj)
+	local st = db.storage[obj:id()]
+	if st.mob_combat then
+		xr_logic.issue_event(obj, st.mob_combat, "combat_callback")
+	end
+end
+
+function alife_control(obj, actor, mode)
+	if not obj:alive() then xr_logic.mob_release(obj) return true end
+	local enemy = obj:get_enemy()
+	if enemy then
+		if not mode.braindead and
+		   not mode.friendly and
+		   (not mode.actor_friendly or enemy:id () ~= actor:id ()) and
+		   (not mode.npc_friendly or enemy:id() == actor:id()) then
+			issue_combat_event(obj)
+			xr_logic.mob_release(obj)
+			return true
+		end
+	end
+	local h = obj:get_monster_hit_info()
+	if h.who and h.time ~= 0 then
+		if mode.braindead then
+			return false
+		end
+		if h.who:id() == actor:id() and mode.actor_friendly then
+			mode.actor_friendly = false
+		end
+		issue_combat_event(obj)
+		xr_logic.mob_release(obj)
+		return true
+	end
+	return false
+end
+

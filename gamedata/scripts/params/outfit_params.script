@@ -1,0 +1,87 @@
+local outfit_offsets = {
+    power_loss					=	"$01E0",  
+    additional_inventory_weight	=	"$01F4",
+    additional_inventory_weight2=	"$01F8"     
+}
+
+local prot_offsets = {
+  burn_protection			=	"$01B0",
+  shock_protection			=	"$01B4",
+  strike_protection			=	"$01B8",
+  wound_protection			=	"$01BC",
+  radiation_protection		=	"$01C0",
+  telepatic_protection		=	"$01C4",
+  chemical_burn_protection	=	"$01C8",
+  explosion_protection		=	"$01CC",
+  fire_wound_protection		=	"$01D0",
+  wound_2_protection        =   "$01D4",
+  physic_strike_protection  =   "$01D8"  
+}
+
+
+
+function outfit_prop(id, key, newval)
+local obj = client_obj(id) -- game_object
+ if obj == nil then 
+    wprintf("[~T].~C0C #ERROR:~C07 client_obj returned nil for id = %d", id)
+    return nil
+ end                                            
+ local outfit = obj:get_outfit ()
+ if outfit then
+    return update_prop(outfit, key, newval)
+ else
+    wprintf("[~T].~C0C #ERROR:~C07 get_outfit returned nil for id = %d", id)   
+ end    
+ return 0
+end
+
+
+function dump_protection(id)
+ for key, ofs in pairs(prot_offsets) do
+   local v = outfit_prop(id, key)
+   wprintf("~C0F %-30s~C0B = ~C0D %.3f ~C07", key, v or -1)
+ end
+
+end
+
+
+function _G.actor_hit_target (outfit, who, hit_type, hit_power)
+ -- wprintf("[~T]. #DBG: ~C0F actor_hit_target(%d, %d, %d, %.3f)~C07", outfit, who, hit_type, hit_power)
+ if (who <= 0 or who >= 65535) then return 15 end
+ outfit = client_obj(outfit) -- для оценки наличия скажем маски 
+ local obj = client_obj(who)
+ if obj then
+    local rval = lua_random() * 100
+    local name = obj:name()
+    local clid = obj:clsid()
+    wprintf("  outfit_name =~C0E %s~C07, hit_source =~C0F %s~C07, hit_power =~C0D %.3f~C07 ", outfit:name(), name, hit_power)
+ 
+    if (clid == CLID_CAT or clid == CLID_TUSHKANO or strpos(name, "buzz")) then return 32 end -- хит только по нижней половине тела 
+    
+    if (clid == CLID_DOG) then
+      if rval > 90     then return 1 -- 10% вероятность укуса в горло/голову
+      elseif rval > 50 then return 2 -- 40% вероятность укуса в туловище
+      else return 4 + 8 end          -- 50% что пострадают руки или ноги 
+    end
+ 
+    if (clid == CLID_BLOODSUCKER) then
+     if rval > 50 then 
+        return 16 -- попадания по голове, туловищу, рукам
+     else
+        return 1 -- часто лупит по голове    
+     end   
+    end
+      
+    if (clid == CLID_BOAR) then
+     if rval > 70 then
+        return 8      -- 30% вероятность повреждения ног 
+     else
+        return 2 + 4  -- 70% вероятность попадания в брюхо или руки
+     end    
+    end
+ end -- if obj 
+ 
+
+
+ return 15 
+end

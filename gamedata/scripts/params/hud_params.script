@@ -1,0 +1,371 @@
+
+local swic_patched = false
+
+function get_hudmgr(method)
+ -- ReadDMA("$4FFD90", 0, "safe_ptr")
+ if g_pGameLevel == nil then 
+    update_imports()
+ end
+ 
+ local m = method or 0
+ 
+ local lvl = g_pGameLevel
+  
+ local ofs = GetProcAddr ('xr_3da.exe', '?g_hud@@3PAVCCustomHUD@@A')
+ if ( #ofs > 9 ) or ( m == 1 ) then    
+    -- ODS('[~T]. #WARN: exported name not found!!!')    
+    ofs = CalcPtr(lvl, '$148', '+')    
+    --- ofs = CalcPtr ('xr_3da.exe', '$10BB88', '+')   
+ end 
+ return ReadDMA(ofs, 0, 'safe_ptr')                                    
+end
+
+local hud = get_hud()
+local g_hud = get_hudmgr()
+local hobj  = get_hudmgr(1) --  ReadDMA(hud, 0, "safe_ptr")
+local lvl = g_pGameLevel
+
+----- нулевая инициализация
+-- ODS("[~T]. #DBG: g_pGameLevel = "..FormatPtr(lvl) )
+-- ODS("[~T]. #DBG: hud(lua) = "..FormatPtr(hobj)..", g_hud = "..FormatPtr(g_hud))
+-- xray_dma.enable_write('hud_params')
+-- 2945 offsets
+  -- local set_wic = CalcPtr('xrGame.dll', '$39B3ED', '+')
+  -- local set_all = CalcPtr('xrGame.dll', '$39B44A', '+')
+-- 3312 offsets  
+local set_wic = CalcPtr('xrGame.dll', '$3D1E60', '+')
+local set_all = CalcPtr('xrGame.dll', '$3D1ED0', '+')
+
+if xr_build_id < 5500 then
+
+    local dump = ReadDMA(set_all, 0, 'dump', 3) 
+    UnlockDMA(set_all, 0)
+    
+    swic_patched = true
+    
+    if dump == '8B 44 24' then
+       ODS('[~T]. #DBG: patching CUIMainIngameWnd::SetWarningIconColor_0 for 2945')   
+       WriteDMA(set_all, 0, 'C2 08 00', 'dump')      
+    elseif dump == '83 F8 07' then
+       ODS('[~T]. #DBG: patching CUIMainIngameWnd::SetWarningIconColor_0 for 3312ru')   
+       WriteDMA(set_all, 0, 'C2 04 00', 'dump')
+    elseif (dump == 'C2 08 00') or (dump == 'C2 04 00') then   
+       ODS('[~T]. #DBG: CUIMainIngameWnd::SetWarningIconColor_0 already patched ')
+    else
+       ODS('[~T].~C0C #ERROR: CUIMainIngameWnd::SetWarningIconColor_0 wrong ending~C0F '..dump..'~C07' )
+       swic_patched = false      
+    end                    
+
+else
+   swic_patched = false  
+end                    
+
+
+local function get_static_ptr (n)
+  n = tonumber(n)
+  g_hud = get_hudmgr()
+  local cui = ReadDMA(g_hud, '$18', 'safe_ptr')  -- CHUDManager::GetUI universal for 2945-3312
+  if cui ~= nil then
+    local main_wnd = ReadDMA(cui, '$38', 'safe_ptr')
+    -- ODS('[~T]. #DBG: CUI = '..FormatPtr(cui) .. ' MainInGameWnd = '..FormatPtr(mw)) -- CUI = $10E19A80 MainInGameWnd = $11053760    
+    local icons = { '$2A90', '$2BE8', '$2D40', '$2E98', '$2FF0', '$3148', '$32A0' } 
+    -------------------- 1 ------ 2 ------ 3 ------ 4 ------ 5 ------ 6 ------ 7 ------ 8 ------ 9 ------ A ------ B ------ C ------ D ------ E ------ F
+    local slist = { '$005C', '$01B4', '$030C', '$0464', '$2520', '$2678', '$27D0', '$2928', '$2A90', '$2BE8', '$2D40', '$2E98', '$2FF0', '$3148', '$32A0' }     
+    local ofs = icons[n] 
+    if ofs ~= nil then
+       return CalcPtr(main_wnd, ofs, '+'), main_wnd
+    else
+       ODS('[~T]. #ERROR(get_static_ptr): bad index '..tostring(n)) 
+    end
+  end 
+  return nil, nil
+end
+
+local icon_w = 196
+local icon_h = icon_w + 4
+local icon_x = icon_w + 8
+local icon_y = icon_w + 12
+local icon_r = icon_w + 16
+local icon_b = icon_w + 20
+local icon_f = icon_w + 32  
+local icon_c = icon_w + 56 -- color $AARRGGBB
+local icon_sw = icon_w + 140
+local icon_sh = icon_sw + 4
+-- texture? shader      = static[$90]
+-- highlight color      = static[$98]
+-- texture clipper on   = static[$B0] as ByteBool 
+-- texture object (?)   = static[$B4]
+-- texture offset       =  static [$128], 2 x int, typical = 0, 0
+
+-- DrawTexture checks bytes $B2, $B3 ~= 0
+
+function set_icon_color(n, color)
+ if setup_game_icon then 
+    local c = color
+    if type(c) ~= 'number' then
+       c = CastToInt (c, true) -- unsigned value need
+    end
+    if c > 16777216 * 10 then
+       -- wprintf(" set_icon_color ( %s = 0x%x ) ", color, c);
+    end    
+    return setup_game_icon(n, c, 0, 0 )
+ end                                      
+
+  local static,main_wnd = get_static_ptr(n) 
+  if main_wnd and static and swic_patched then       
+    --ODS('[~T]. #DBG: static = ' ..FormatPtr(static) .. ' func = ' .. FormatPtr(set_wic) )  
+    BinThisCall ( main_wnd, set_wic, 'EAX='..tostring(color), 'ESI='..FormatPtr(static), 'EDI='.. FormatPtr(main_wnd) )
+    -- WriteDMA ( static, 178, 1, 'byte' ) -- flag for DrawTexture    
+    -- WriteDMA ( static, 5, 1, 'byte' )  -- SetTextureVisible     
+    -- WriteDMA ( static, 86, 1, 'byte' )  -- CUIWindow::Enable (1)     
+    -- WriteDMA ( static, 240, 442055088, 'int' ) -- UI ref...
+    -- WriteDMA ( static, 244, 957, 'float' )
+    -- WriteDMA ( static, 248, 491, 'float' )
+    -- WriteDMA ( static, 348, 0, 'int' )
+    -- WriteDMA ( static, icon_f, 3, 'byte' )  
+  end    
+end -- function
+
+ 
+function set_icon_size(n, w, h, st)
+ if setup_game_icon then
+    return setup_game_icon(n, tonumber(st), w, h)
+ end                                      
+
+ local static = get_static_ptr(n)  
+ if static and w and h and swic_patched then
+   w = tonumber(w)
+   h = tonumber(h) 
+   ODS( string.format(' static = %s, w = %f, h = %f ', FormatPtr(static), w, h ) )
+   WriteDMA(static, icon_w, w, 'float')
+   WriteDMA(static, icon_h, h, 'float')
+   WriteDMA(static, icon_sw, w, 'float')
+   WriteDMA(static, icon_sh, h, 'float')
+   if st ~= nil then
+      WriteDMA(static, 85, st, 'byte') -- stretch
+   end          
+   
+ end
+end
+
+function icon_position(n, x, y)
+ local static = get_static_ptr(n)
+  
+ if static and swic_patched then       
+    local cx = ReadDMA(static, icon_x, 'float')
+    local cy = ReadDMA(static, icon_y, 'float')
+    local cw = ReadDMA(static, icon_w, 'float')
+    local ch = ReadDMA(static, icon_h, 'float')    
+    
+    if x and y then    
+       x = tonumber(x)
+       y = tonumber(y)
+       WriteDMA(static, icon_x, x, 'float')
+       WriteDMA(static, icon_y, y, 'float')
+       WriteDMA(static, icon_r, x + cw, 'float')
+       WriteDMA(static, icon_b, y + ch, 'float')       
+    end
+    
+    return cx, cy 
+ end
+ return 0, 0
+end
+
+hud_params.set_icon_size = set_icon_size 
+hud_params.set_icon_color = set_icon_color
+hud_params.icon_position = icon_position
+
+function test(n, hide)
+ if n == nil then 
+    n = 1
+ end
+ if hide ~= nil then
+   set_icon_color(n, '$00AABBFF')
+ else
+   set_icon_color(n, '$FFAABBFF')
+ end  
+end
+
+hud_params.test = test
+
+function hud_params.init_module()
+ -- для регистрации в мм 
+end
+
+function hud_params.late_init()
+ ODS('[~T]. #DBG: hud_params.late_init performing...')
+ test(6, 0) -- выключить иконку GOD mode 
+end
+
+function hud_params.trace()
+ AddRegularTask("find_target", find_target, nil, 0, 300)
+end
+
+function visible_target()
+  g_hud = get_hudmgr()
+  if xr_build_id > 5500 then
+     return nil, 0 -- TODO: incomplete
+  end
+  
+  -- local tab = ReadDMA(lvl, "$124", "safe_ptr")
+  local tab = ReadDMA(g_hud, "$34", "safe_ptr")
+  -- ODS("[~T]. #DBG: CHUDTarget = "..FormatPtr(tab))
+  tab = CalcPtr(tab, 12, "+")
+  if tab ~= nil then
+     local tgo = ReadDMA(tab, 0, "safe_ptr")  -- CGameObject typicaly
+     local tgd = ReadDMA(tab, 4, "float")
+     local obj = nil
+     local id = -1     
+     if tgo and tgo.valid then
+        id = ReadDMA (tgo, coord_params.object_params.id_word, 'word')
+     end     
+     if id > 0 then
+        obj = client_obj(id)
+     end      
+     return obj,id
+  else
+     return nil,0     
+  end   
+end
+
+hud_params.visible_target = visible_target
+
+
+function find_target()
+
+ local obj,id = visible_target()
+     
+  if obj == nil then
+     return
+  end
+    
+ local pos,dir 
+ local hdist = tgd
+ local npos = obj:position() 
+ 
+ pos = device().cam_pos
+ dir = device().cam_dir       
+
+  
+ if obj.bone_position then
+    npos = obj:bone_position('bip01_head')
+    hdist = pos:distance_to(npos) 
+ end
+
+ pos:add ( dir:mul(hdist) )       
+ 
+ local miss = pos:distance_to( npos )       
+ if miss < 1 then
+    --wprintf("[~T]. #DBG: Target object = %s (%d), distance = %.3f, to_head = %.3f, position = %s ", obj:name(), id, tgd, hdist, misc.pos2str(npos) )
+    --wprintf( "\t Traced position = %s, miss = %.3f ", misc.pos2str(pos), miss)
+ end
+end
+
+hud_params.find_target = find_target
+
+
+function point_in_sector(point, wpos, hdir, pdir, max_angle, max_dist)
+
+  local rdist = point:distance_to(wpos)
+  if ( rdist > 0 ) and ( rdist < max_dist ) then  
+    local lvid, range, obj_id  = RayTrace ( wpos, wdir, max_dist, 3 )   
+      
+    if range < rdist * 0.999 then 
+       return false, rdist  -- точку загораживает некое ближнее препятствие!        
+    end       
+ 
+    local dir = vector()
+    -- разница между векторами, деленная на дистанцию = вектор направления
+    dir = point:sub (wpos)
+    dir = dir:div(rdist)
+    
+    local h = dir:getH() 
+    local hdiff = math.abs( hdir - h ) 
+    
+    local p = dir:getP() 
+    local pdiff = math.abs( pdir - p )        
+    
+    if ( hdiff <= max_angle ) and ( pdiff <= max_angle ) then
+    
+    
+       -- wprintf (" testing %s ", obj:name() )
+       -- wprintf (" h_ang diff = [%.3f - %3f] = %.3f ", hdir, h, hdiff ) 
+       -- wprintf (" p_ang diff = [%.3f - %3f] = %.3f ", pdir, p, pdiff )
+       return true, rdist        
+    end
+              
+  end -- if rdist
+
+  return false, rdist
+end
+
+hud_params.point_in_sector = point_in_sector
+
+function see_objects ( who_id, max_angle, dist )
+ local who = client_obj (who_id)
+ local result = {}  
+ if who == nil then return result end
+ 
+ max_angle = max_angle / 180.0 * math.pi
+ 
+ --wprintf('[~T/~B].~C0F #PERF: see_objects, scaning around.~C07')
+ 
+ UpdateRegistry()
+ 
+ local wpos = who:position()
+ local wdir = who:direction()
+ local ids = misc.find_around ( wpos, '', dist )
+ 
+ 
+  
+ if type(ids) ~= 'table' then
+    --wprintf('[~T].~C0C #FATAL: misc.find_around returned %s = %s ~C07', type(ids), tostring(ids)) 
+    return result
+ end
+ --wprintf('[~T/~B]. #PERF: see_objects, tracing %d targets ', #ids)
+ 
+ local objs = registry.convert_ids ( ids, client_obj ) 
+ if #objs == 0 then 
+    return result
+ end   
+
+ local hdir = wdir:getH()
+ local pdir = wdir:getP()
+ 
+ 
+ for i, obj in ipairs(objs) do  
+  -- working only with online, not inventory objects
+  if obj and obj.id and ( obj:id() ~= who_id ) and ( obj:parent() == nil ) then
+     local pos = obj:position()
+     local id = obj:id()     
+     
+     -- проверка вхождения центра объекта в сектор расширенный в 10 раз
+     local add, rdist = point_in_sector(pos, wpos, hdir, pdir, max_angle * 10, dist)
+     
+     if add then     
+       -- уточнение попадание центра объекта в сектор
+       add, rdist = point_in_sector(pos, wpos, hdir, pdir, max_angle, dist)     
+       -- попадание костей объекта в сектор
+       if ( not add ) and ( obj.bone_position ) then
+       
+         local blist = bones.GetObjectBones ( id )           
+         for i,bname in ipairs(blist) do
+          local bp = obj:bone_position(bname)
+          add = add or point_in_sector(bp, wpos, hdir, pdir, max_angle, dist)        
+          if add then break end          
+         end -- for bones
+       end 
+            
+       if add then
+          table.insert (result, id) 
+       end  
+     end  
+  end -- if obj     
+ end -- for objs
+
+ --wprintf('[~T/~B]. #PERF: see_objects complete.')
+
+ return result
+end
+
+hud_params.see_objects = see_objects

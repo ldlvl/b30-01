@@ -1,0 +1,1056 @@
+phrase = {
+  intro          = {},
+  cool_info      = {},
+  action_info    = {},
+  strelok_info   = {},
+  prizrak_info   = {},
+  jokes_info     = {},
+  cars_info      = {},
+  black_tip_info = {},
+  exchange_info  = {},
+  chang_pda_info = {},
+  treasure       = {},
+  help_thanks    = {}
+}
+selected_phrase_by_id = nil
+
+local category_selected = nil
+local category_saved = {
+  [1] = "intro",
+  [2] = "cool_info",
+  [3] = "action_info",
+  [4] = "jokes_info",
+  [5] = "cars_info",
+  [6] = "black_tip_info",
+  [7] = "strelok_info",
+  [8] = "prizrak_info",
+  [9] = "exchange_info"
+}
+
+local intro_id = 100
+local i,id,idx,k,v,kk,vv 
+
+function init()
+  category_selected = {}
+  for _,v in ipairs(category_saved) do
+    table.insert(category_selected, v)
+  end
+  table.insert(category_selected, "treasure")
+  table.insert(category_selected, "chang_pda_info")
+  selected_phrase_by_id = {}
+  for _,v in ipairs(category_selected) do
+    selected_phrase_by_id[v] = {}
+  end
+  bInit = true
+end
+
+Dlg_AddPhrase = function (oDlg, sPhase, idPhase, idParent, ...)
+  return oDlg:AddPhrase(sPhase, idPhase, idParent, ...)
+end
+
+if script_server_object_version() <= 6 then
+  Dlg_AddPhrase = function (oDlg, sPhase, idPhase, idParent, ...)
+    return oDlg:AddPhrase(sPhase, tonumber(idPhase), tonumber(idParent) or -1, ...)
+  end
+end
+
+function get_id()
+  intro_id = intro_id +1
+  return intro_id
+end
+function gen_phrase_id_str()
+  return tostring(get_id())
+end
+
+function fill_phrase_table()
+  if not bInit then this.init() end
+  local phrase_ini = ini_file("misc\\dialog_manager.ltx")
+  if not phrase_ini:section_exist("list") then
+    abort("There is no section [list] in dialog_manager.ltx")
+  end
+  local n = phrase_ini:line_count("list")
+  local id, value = "",""
+  local category = ""
+  
+  for i=0,n-1 do
+    result, id, value  = phrase_ini:r_line("list",i,"","")
+    
+    if not phrase_ini:section_exist(id) then
+      abort("There is no section [%s] in dialog_manager.ltx", id)
+    end
+    if not phrase_ini:line_exist(id, "category") then
+      abort("Dialog manager error: not categoried section [%s]", id)
+    end
+    category = phrase_ini:r_string(id, "category")
+    local tt = {}
+    tt.name = id
+    if phrase_ini:line_exist(id, "community") then
+      tt.community = phrase_ini:r_string(id, "community")
+    end
+    if phrase_ini:line_exist(id, "npc_community") then
+      tt.npc_community = phrase_ini:r_string(id, "npc_community")
+    end
+    if phrase_ini:line_exist(id, "relation") then
+      tt.relation = phrase_ini:r_string(id, "relation")
+    end
+    if phrase_ini:line_exist(id, "npc_rank") then
+      tt.npc_rank = phrase_ini:r_u32(id, "npc_rank")
+    end
+    if phrase_ini:line_exist(id, "level") then
+      tt.level = phrase_ini:r_string(id, "level")
+    end
+    if phrase_ini:line_exist(id, "condlist") then
+      tt.condlist = xr_logic.parse_condlist(db.actor, "dialog_manager", "condlist", phrase_ini:r_string(id, "condlist"))
+    end
+    if phrase_ini:line_exist(id, "smart_terrain") then
+      tt.smart_terrain = phrase_ini:r_string(id, "smart_terrain")
+    end
+    if phrase_ini:line_exist(id, "cost") then
+      tt.price = phrase_ini:r_u32(id, "cost")
+    end
+    if phrase_ini:line_exist(id, "article_info") then
+      tt.article_info = parse_names(phrase_ini:r_string(id, "article_info"))
+    end
+    if phrase_ini:line_exist(id, "treasure") then
+      tt.treasure = phrase_ini:r_string(id, "treasure")
+    end
+    if phrase_ini:line_exist(id, "wounded") then
+      tt.wounded = phrase_ini:r_string(id, "wounded")
+    else
+      tt.wounded = "false"
+    end
+    tt.phr_id = gen_phrase_id_str()
+    tt.phr_id2 = gen_phrase_id_str()
+    phrase[category][tt.phr_id] = tt
+  end
+  if xr_build_id >= 5820 then phrase_ini:release() end
+end
+
+function init_intro_dialog(dlg)
+  local phr = Dlg_AddPhrase(dlg, "","0","",-10000)
+  
+  phr = Dlg_AddPhrase(dlg, "","1","0",-10000)
+  for _,v in pairs(phrase.intro) do
+    phr = Dlg_AddPhrase(dlg, v.name, v.phr_id, "1", -10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_intro")
+      phrase_script:AddAction("dialog_manager.no_trade_traders")
+      if v.wounded=="false" then
+        phrase_script:AddAction("dialog_manager.phrase_action_intro")  
+        phrase_script:AddAction("sak.can_trade_break")
+        --phrase_script:AddAction("dialogs.yes_trade")
+        
+      --else
+        --phrase_script:AddAction("dialogs.no_trade_trader")
+      end
+    end
+  end
+end
+
+function init_cool_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_cool_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_cool_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_cool_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.cool_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_cool_info")
+      phrase_script:AddAction("dialog_manager.cool_info_treasure")
+      phrase_script:AddAction("dialog_manager.phrase_action_cool_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_action_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_action_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_action_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_action_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.action_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_action_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_action_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_jokes_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_jokes_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_jokes_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_jokes_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.jokes_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_jokes_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_jokes_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_cars_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_cars_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_cars_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_cars_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.cars_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_cars_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_cars_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_strelok_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_strelok_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_strelok_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_strelok_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.strelok_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_strelok_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_strelok_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_prizrak_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_prizrak_info"..rand,"0","",-10000)
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_prizrak_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_prizrak_info_no_more")
+
+  local k,v,kk,vv = 0,0,0,0
+  for k,v in pairs(phrase.prizrak_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_prizrak_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_prizrak_info")
+      
+      if v.article_info~=nil then
+        phr = Dlg_AddPhrase(dlg, "",v.phr_id2,v.phr_id,-10000)
+        phrase_script = phr:GetPhraseScript()
+        for kk,vv in pairs(v.article_info) do
+          phrase_script:AddGiveInfo(vv)
+        end
+      end
+    end
+  end
+end
+function init_exchange_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_exchange_info"..rand,"0","",-10000)
+  local phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_exchange_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_exchange_info_no_more")
+
+  local k,v = 0,0
+  for k,v in pairs(phrase.exchange_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_exchange_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_exchange_info")
+    end
+    phr=Dlg_AddPhrase(dlg, "Да давай попробуем, может договоримся!","25",v.phr_id,-10000)
+    phr=Dlg_AddPhrase(dlg, "Ну смотри сам...","60",v.phr_id,-10000) 
+  end
+  --phr=Dlg_AddPhrase(dlg, "Ну не знаю, вроде мне ничего не нужно...","26","25",-10000)
+  
+  --phr=Dlg_AddPhrase(dlg, "Да ладно! Вдруг что понадобиться!","2","26",-10000)
+  --phrase_script = phr:GetPhraseScript()
+  --phrase_script:AddAction("sak.precondition_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Нет! И хватит меня доставать!","10","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну покажи, что есть у тебя...","11","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Три простых аптечки у меня есть..","12","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.medkit3_have")
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Пяток аптечек. Армейских!","17","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.medkit5_army_have")
+  phrase_script:AddAction("sak.precondition_25_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Антирад мог бы предложить","13","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.antirad_have")
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Бинтов у меня куча! Могу обменять","14","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.bandage20_have")
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Пяток бинтов есть, может, нужны?","15","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.bandage5_have")
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Извини. Я что-то передумал...","16","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("dialogs.break_dialog")
+  
+  phr=Dlg_AddPhrase(dlg, "Нет, не нужны мне твои аптеки","44","12",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, за три простых, дам армейскую...","31","12",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Нет, у меня есть у самого сколько нужно!","45","17",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, армейские аптечки нормальные, вояки неплохую там химию забодяжили... Артефакт возьмёшь за них?","32","17",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи...","48","31",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_3medkit")
+  
+  phr=Dlg_AddPhrase(dlg, "Согласен, согласен! Бери вот...","49","32",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_5medkit_army")
+  
+  phr=Dlg_AddPhrase(dlg, "Антирад? Да на кой он мне... У меня водка есть!","43","13",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Что же, давай свой антирад... У меня есть армейская аптечка за него...","33","13",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи....","46","33",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_antirad")
+  
+  phr=Dlg_AddPhrase(dlg, "Куча бинтов... Обмотайся ими. У меня у самого такая же куча!","42","14",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Бинтов много не бывает! Давай, поменяю на антирад...","34","14",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи...","47","34",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_20bandage")
+  
+  phr=Dlg_AddPhrase(dlg, "Нет, брат, оставь себе свои бинты...","41","15",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Иногда без бинтов никуда, давай, поменяю на аптечку...","21","15",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи...","22","21",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_5bandage")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи, аптечка иногда жизнь спасёт...","51","22",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.add_medkit")
+  phr=Dlg_AddPhrase(dlg, "Держи вот, не абы что, конечно, но всё-таки...","56","49",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_minigame.take_aart")
+  phr=Dlg_AddPhrase(dlg, "Армейская аптечка гораздо лучше обычной! Поверь...","52","46",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.add_1medkit_army")
+  phr=Dlg_AddPhrase(dlg, "Держи антирад. Сам-то я водочкой лечусь чаще...","53","47",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.add_1antirad")
+  phr=Dlg_AddPhrase(dlg, "Вояки сумели сделать хорошую вещь! Что само по себе удивительно...","54","48",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.add_1medkit_army")
+  phr=Dlg_AddPhrase(dlg, "Давай, топай себе... Медицины ему подавай...","55","60",-10000)
+end
+
+function init_chang_pda_info_dialog(dlg)
+  local rand=lua_random(1,3)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_chang_pda_info"..rand,"0","",-10000)
+  local phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  local phr_def = Dlg_AddPhrase(dlg, "dm_general_chang_pda_info_no_more"..rand,"1","0",-10000)
+  local phrase_script = phr_def:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_chang_pda_info_no_more")
+
+  local k,v = 0,0
+  for k,v in pairs(phrase.chang_pda_info) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_chang_pda_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_chang_pda_info")
+    end
+    phr=Dlg_AddPhrase(dlg, "Да давай попробуем, может, договоримся!","25",v.phr_id,-10000)
+    phr=Dlg_AddPhrase(dlg, "Ну смотри сам...","60",v.phr_id,-10000) 
+  end
+  
+  phr=Dlg_AddPhrase(dlg, "Нет! И хватит меня доставать!","10","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну покажи, что есть у тебя...","11","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Три ПДА.","17","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("mike.PDA_3_have")
+  phrase_script:AddAction("sak.precondition_25_percent")
+
+  phr=Dlg_AddPhrase(dlg, "Извини. Я что-то передумал...","16","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("dialogs.break_dialog")
+  
+  phr=Dlg_AddPhrase(dlg, "Нет, не нужны мне твои ПДА.","45","17",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, три твоих на один мой сменяю...","32","17",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Согласен, согласен! Бери вот...","49","32",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("mike.give_3PDA")
+
+  phr=Dlg_AddPhrase(dlg, "Держи вот, не абы что, конечно, но всё-таки...","56","49",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("mike.add_1_pda_npc")
+
+  phr=Dlg_AddPhrase(dlg, "Давай, топай себе... ПДА ему подавай...","55","60",-10000)
+end
+
+function init_black_tip_info_dialog(dlg)
+  local phr
+  local phrase_script
+  local rand=lua_random(0,4)
+  phr=Dlg_AddPhrase(dlg, "dm_general_black_tip_info_"..rand,"0","",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak.precondition_black_tip")
+        
+  phr = Dlg_AddPhrase(dlg, "dm_general_black_tip_info_no_more_"..rand,"50","0",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("dialog_manager.precondition_black_tip_info_no_more")
+  
+  local k,v = 0,0
+  for k,v in pairs(phrase.black_tip_info) do
+    phr=Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      local phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_black_tip_info")
+      phrase_script:AddAction("dialog_manager.phrase_action_black_tip_info")
+      phrase_script:AddAction("sak_dialog.low_repa")
+    end
+  phr=Dlg_AddPhrase(dlg, "Ну, может, возьмешь? Я денег дам!","25",v.phr_id,-10000)
+  end
+  --phr=Dlg_AddPhrase(dlg, "Да какие деньги! Здоровье дороже!","26","25",-10000)
+  
+  --phr=Dlg_AddPhrase(dlg, "Я много дам!","2","26",-10000)
+  --phrase_script = phr:GetPhraseScript()
+  --phrase_script:AddAction("sak.precondition_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Да иди ты!","10","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "A сколько дашь?","11","25",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Пять тысяч","12","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.actor_5000_have")
+  phrase_script:AddAction("sak.precondition_10_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Десять тысяч","13","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.actor_10000_have")
+  phrase_script:AddAction("sak.precondition_25_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Двадцать тысяч","14","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.actor_20000_have")
+  phrase_script:AddAction("sak.precondition_50_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Пятьдесят тысяч","15","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddPrecondition("sak_dialog.actor_50000_have")
+  phrase_script:AddAction("sak.precondition_80_percent")
+  
+  phr=Dlg_AddPhrase(dlg, "Ничего не дам!","16","11",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("dialogs.break_dialog")
+  
+  phr=Dlg_AddPhrase(dlg, "Да иди ты !","44","12",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, давай деньги ","31","12",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи...    ","48","31",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_5000_money")
+  phrase_script:AddAction("sak_dialog.out_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Да иди ты  !","43","13",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, давай деньги  ","33","13",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи....","46","33",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_10000_money")
+  phrase_script:AddAction("sak_dialog.out_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Да иди ты!","42","14",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, давай деньги   ","34","14",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи...  ","47","34",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_20000_money")
+  phrase_script:AddAction("sak_dialog.out_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Да иди ты    !","41","15",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_no")
+  
+  phr=Dlg_AddPhrase(dlg, "Ладно, давай деньги","21","15",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddHasInfo("black_tip_yes")
+  
+  phr=Dlg_AddPhrase(dlg, "Ну держи... ","22","21",-10000)
+  phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("sak_dialog.give_50000_money")
+  phrase_script:AddAction("sak_dialog.out_black_tip")
+  
+  phr=Dlg_AddPhrase(dlg, "Не переживай! Знаю, что делаю...","51","22",-10000)
+  phr=Dlg_AddPhrase(dlg, "Не переживай! Знаю, что делаю...","52","46",-10000)
+  phr=Dlg_AddPhrase(dlg, "Не переживай! Знаю, что делаю...","53","47",-10000)
+  phr=Dlg_AddPhrase(dlg, "Не переживай! Знаю, что делаю...","54","48",-10000)
+end
+function init_help_wounded_medkit_dialog(dlg)
+  local phr = Dlg_AddPhrase(dlg, "dm_general_help_medkit","0","",-10000)
+  local phrase_script = phr:GetPhraseScript()
+  phrase_script:AddAction("dialogs.transfer_medkit")
+  
+  local k,v = 0,0
+  for k,v in pairs(phrase.help_thanks) do
+    phr = Dlg_AddPhrase(dlg, v.name,v.phr_id,"0",-10000)
+    if phr then
+      phrase_script = phr:GetPhraseScript()
+      phrase_script:AddPrecondition("dialog_manager.precondition_help_thanks")
+    end
+  end
+end
+
+function no_trade_traders(npc, actor, p1, p2)
+  if is_good_stalker(actor, npc) then 
+    return end
+  dialogs.no_trade(actor, npc)
+end
+function phrase_action_intro(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.intro, p2)
+end
+function phrase_action_cool_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.cool_info, p2, true)
+end
+function phrase_action_action_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.action_info, p2, true)
+end
+function phrase_action_jokes_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.jokes_info, p2, true)
+end
+function phrase_action_cars_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.cars_info, p2, true)
+end
+function phrase_action_strelok_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.strelok_info, p2, true)
+end
+function phrase_action_prizrak_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.prizrak_info, p2, true)
+end
+function phrase_action_black_tip_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.black_tip_info, p2, true)
+end
+function phrase_action_exchange_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.exchange_info, p2, true)
+end
+function phrase_action_chang_pda_info(npc, actor, p1, p2)
+  phrase_action(npc, actor, selected_phrase_by_id.chang_pda_info, p2, true)
+end
+function cool_info_treasure(npc, actor, p1, p2)
+  for k,v in pairs(phrase.cool_info) do
+    if v.phr_id==tostring(p2) then
+      if v.treasure==nil then
+        return
+      end
+      treasure_manager.get_treasure_manager():give_treasure(v.treasure)
+    end
+  end
+end
+function black_tip_info_out(npc, actor, p1, p2)
+  for k,v in pairs(phrase.black_tip_info) do
+    if v.phr_id==tostring(p2) then
+      sak_dialog.give_black_tip()
+    end
+  end
+end
+function action_low_repa(npc, actor, p1, p2)
+  for k,v in pairs(phrase.black_tip_info) do
+    if v.phr_id==tostring(p2) then
+      npc:change_goodwill(-100, actor)
+      actor:change_character_reputation(-50)
+    end
+  end
+end
+function phrase_action(npc, actor, sel_tbl, p2, one_time)
+  local cc = 0
+  if one_time==true then
+    if sel_tbl[npc:id()]~=nil then
+      cc = sel_tbl[npc:id()].count + 1
+    else
+      cc = 1
+    end
+  end
+  sel_tbl[npc:id()] = {phrase = tostring(p2), count = cc}
+end
+
+
+function precondition_intro(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.intro, selected_phrase_by_id.intro, p1, p2, p3)
+end
+function precondition_no_trade(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.no_trade, selected_phrase_by_id.no_trade, p1, p2, p3)
+end
+function precondition_cool_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.cool_info, selected_phrase_by_id.cool_info, p1, p2, p3)
+end
+function precondition_action_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.action_info, selected_phrase_by_id.action_info, p1, p2, p3)
+end
+function precondition_jokes_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.jokes_info, selected_phrase_by_id.jokes_info, p1, p2, p3)
+end
+function precondition_cars_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.cars_info, selected_phrase_by_id.cars_info, p1, p2, p3)
+end
+function precondition_strelok_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.strelok_info, selected_phrase_by_id.strelok_info, p1, p2, p3)
+end
+function precondition_prizrak_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.prizrak_info, selected_phrase_by_id.prizrak_info, p1, p2, p3)
+end
+function precondition_cool_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.cool_info==nil or selected_phrase_by_id.cool_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.cool_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_action_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.action_info==nil or selected_phrase_by_id.action_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.action_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_jokes_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.jokes_info==nil or selected_phrase_by_id.jokes_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.jokes_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_cars_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.cars_info==nil or selected_phrase_by_id.cars_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.cars_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_strelok_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.strelok_info==nil or selected_phrase_by_id.strelok_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.strelok_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_prizrak_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.prizrak_info==nil or selected_phrase_by_id.prizrak_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.prizrak_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_black_tip_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.black_tip_info, selected_phrase_by_id.black_tip_info, p1, p2, p3)
+end
+function precondition_black_tip_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.black_tip_info==nil or selected_phrase_by_id.black_tip_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.black_tip_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_exchange_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.exchange_info, selected_phrase_by_id.exchange_info, p1, p2, p3)
+end
+function precondition_exchange_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.exchange_info==nil or selected_phrase_by_id.exchange_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.exchange_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_chang_pda_info(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.chang_pda_info, selected_phrase_by_id.chang_pda_info, p1, p2, p3)
+end
+function precondition_chang_pda_info_no_more(npc, actor, p1, p2, p3)
+  if selected_phrase_by_id.chang_pda_info==nil or selected_phrase_by_id.chang_pda_info[npc:id()]==nil then
+    return false
+  end
+  if selected_phrase_by_id.chang_pda_info[npc:id()].count >= 1 then
+    return true
+  end
+  return false
+end
+function precondition_help_thanks(npc, actor, p1, p2, p3)
+  return precondition(npc, actor, phrase.help_thanks, nil, p1, p2, p3)
+end
+
+function precondition(npc, actor, tbl, sel_tbl, p1, p2, p3)
+  local idNPC = npc:id()
+  
+  if sel_tbl and sel_tbl[idNPC] then
+    local phrase = tbl[sel_tbl[idNPC].phrase]
+    if phrase then
+      local value, number = calculate_predicate(npc, phrase)
+      if not value then
+        sel_tbl[idNPC] = nil
+      end
+    else
+      sel_tbl[idNPC] = nil
+    end
+  end
+  
+  local phrase = tbl[tostring(p3)]
+  if sel_tbl and sel_tbl[idNPC] then
+    if sel_tbl[idNPC].phrase~=phrase.phr_id then
+      return false
+    end
+    if sel_tbl[idNPC].count >= 1 then
+      return false
+    end
+  end
+  if phrase then
+    local value, number = calculate_predicate(npc, phrase)
+    return value
+  end
+  return false
+end
+
+function calculate_predicate(npc, tbl, settings)
+  if not (npc and tbl) then
+    return false,0
+  end
+  local property_num = 0
+  local k,v = 0,0
+  if tbl.community~=nil then
+    if tbl.community~=db.actor:character_community() then return false,0 end
+    property_num = property_num + 1
+  end
+  if tbl.npc_community~=nil then
+    if tbl.npc_community~=npc:character_community() then return false,0 end
+    property_num = property_num + 1
+  end
+  if tbl.relation~=nil then
+    local iRelation = npc:relation(db.actor)
+    if (tbl.relation=="friend"  and iRelation~=game_object.friend) or
+       (tbl.relation=="neutral" and iRelation~=game_object.neutral) or
+       (tbl.relation=="enemy"   and iRelation~=game_object.enemy)
+      then
+      return false,0
+    end
+    property_num = property_num + 1
+  end
+  if tbl.npc_rank~=nil then
+    if tbl.npc_rank > npc:character_rank() then return false,0 end
+    property_num = property_num + 1
+  end
+  if tbl.level~=nil then
+    if tbl.level~=level.name() then return false,0 end
+    property_num = property_num + 1
+  end
+  if tbl.condlist~=nil then
+    if xr_logic.pick_section_from_condlist(db.actor, db.actor, tbl.condlist)~="true" then return false,0 end
+    property_num = property_num + table.getn(tbl.condlist.infop_check)
+  end
+  if tbl.smart_terrain~=nil then
+    if tbl.smart_terrain~=xr_gulag.isUnderFraction(npc) then return false,0 end
+    property_num = property_num + 1
+  end
+  if tbl.wounded~=nil then
+    if tbl.wounded=="true" and not
+       (xr_wounded.is_wounded(npc) or
+       xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+       xr_wounded.is_psy_wounded_by_id(npc:id()))
+      then
+      return false,0
+    end
+    if tbl.wounded=="false" and
+       (xr_wounded.is_wounded(npc) or
+       xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+       xr_wounded.is_psy_wounded_by_id(npc:id()))
+      then
+      return false,0
+    end
+    property_num = property_num + 1
+  end
+  if tbl.price~=nil then
+    if (db.actor:money() < tbl.price) and
+       (settings==nil or settings.no_price~=true)
+      then
+      return false,0
+    end
+    
+    if tbl.article_info~=nil then
+      for k,v in pairs(tbl.article_info) do
+        if has_alife_info(v) then
+          return false,0
+        end
+      end
+    end
+  end
+  return true, property_num
+end
+function is_novice(actor, npc)
+  if npc:character_rank() and npc:character_rank() <= 300  and npc:character_community()=="stalker" then
+    return true
+  else
+    return false
+  end
+end
+
+function is_not_novice(actor, npc)
+  if npc:character_rank() and npc:character_rank() > 300 then
+    return true
+  else
+    return false
+  end
+end
+
+function is_good_stalker(actor, npc)
+  local sCommunity = npc:character_community() or ""
+  local rank = npc:character_rank()
+  if sCommunity=="ecolog" or (sCommunity=="bandit" and rank<500) or (sCommunity=="green" and rank>500) or sCommunity=="monolith" or sCommunity=="military" or sCommunity=="killer" or sCommunity=="zombied" then
+    return false
+  else
+    return true
+  end
+end
+
+function precondition_info_global(actor, npc)
+  if xr_wounded.is_wounded(npc) or
+    xr_wounded.is_heavy_wounded_by_id(npc:id()) or
+    xr_wounded.is_psy_wounded_by_id(npc:id())
+  then
+    return false
+  end
+  return true
+end
+
+function save(npc, p)
+--  ODS("[~T]. #DBG: dlg_mgr:save:NPC=["..npc:name().."],Compression=["..tostring(task_manager.bCompressionSave).."]~C07", "gfc") --/#~#
+  local idNPC = npc:id()
+  if task_manager.bCompressionSave then
+    local tPhraseSav = nil
+    for idx,v in ipairs(category_saved) do
+      if selected_phrase_by_id[v][idNPC] then
+        idPhrase = selected_phrase_by_id[v][idNPC].phrase
+--        ODS("#DBG: dlg_mgr:save:Compressed:category("..tostring(v)..")=["..idPhrase.."]", "gfc") --/#~#
+        if idPhrase~="-1" then
+          if nil == tPhraseSav then tPhraseSav = {} end
+          tPhraseSav[idx] = idPhrase
+        end
+      end
+    end
+    
+        
+    if tPhraseSav then
+       --  sPhraseSav = amk.encode_array_to_string(tPhraseSav) -- 
+           p:w_stringZ("#SVT")
+           local tobj = script_vars_create("npc_phrase", tPhraseSav)
+           script_vars_export(tobj, p)
+        else   
+           p:w_stringZ("")
+    end
+    
+        
+    
+  else
+    local idPhrase = "-1"
+    for _,v in ipairs(category_saved) do
+      idPhrase = (selected_phrase_by_id[v][idNPC] and selected_phrase_by_id[v][idNPC].phrase) or "-1"
+      p:w_stringZ(idPhrase)
+    end
+  end
+end
+
+function load(npc, reader, ver)
+  if not selected_phrase_by_id then
+    this.init()
+  end
+  local idNPC = npc:id()
+  if task_manager.bCompressionLoad then
+    local sPhraseSav = reader:r_stringZ()
+    if sPhraseSav ~= "" then                
+      local tPhraseSav = {}
+            if sPhraseSav == "#SVT" then
+               local tobj = script_vars_import(nil, reader)
+               tPhraseSav = tobj(true) -- адаптация к pairs
+               wprintf(" loaded phrase: ")
+               misc.dump_table(tPhraseSav)                         
+            else
+               tPhraseSav =  amk.decode_array_from_string(sPhraseSav) -- последнее использование кодировщика!
+            end   
+        
+      for k,v in pairs(tPhraseSav) do
+        local sCategory = category_saved[k]
+        if sCategory then
+          if v~="-1" then
+            selected_phrase_by_id[sCategory][idNPC] = { phrase=v, count=0 }
+          elseif selected_phrase_by_id[sCategory] then
+            selected_phrase_by_id[sCategory][idNPC] = nil
+          end
+        else
+          ODS("#DBG: dlg_mgr:load:Compressed:idx_cat("..tostring(k)..")=["..v.."]:Error!", "gfc") --/#~#
+        end
+      end
+    end
+  else 
+    local idPhrase = "-1"
+    for _,v in ipairs(category_saved) do
+      if ver==7 then
+        idPhrase = reader:r_stringZ()
+      else
+        idPhrase = tostring(reader:r_s16())
+      end
+      if idPhrase~="-1" then
+        selected_phrase_by_id[v][idNPC] = { phrase=idPhrase, count=0 }
+      elseif selected_phrase_by_id[v] then
+        selected_phrase_by_id[v][idNPC] = nil
+      end
+    end
+  end
+end

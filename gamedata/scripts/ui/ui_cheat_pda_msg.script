@@ -1,0 +1,149 @@
+--[[
+PDA npc
+Vergas
+© NLC 6.0
+]]--
+
+class "cheat"(CUIScriptWnd)
+
+local msg_id
+local grup
+local flag_treasure
+
+function cheat:__init(owner) 
+	super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+
+	-- ѕоложение и размеры окна
+	self:Init(100,130,770,405)
+	
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_pda_msg.xml")
+	
+	
+	xml:InitStatic("background", self)				--ѕодложка
+
+	--определ€ю стринг номера записи
+	flag_treasure = false
+	local txt_msg = ui_cheat_pda.cheat:get_info_msg()
+	--провер€ю, а не тайник ли это случаем
+	if string.find(txt_msg, "_") == nil then
+		if tonumber(txt_msg) >= 1000 then
+			-- это тайник
+			flag_treasure = true
+		end
+	end
+	
+	if flag_treasure then
+		grup = "treasure"
+		msg_id = grup.."_"..txt_msg.."_"..ReadIni(db.stor_ltx, "stor", "r_treas_items")
+	else
+		grup = ui_cheat_pda.cheat:get_community()
+		msg_id = grup.."_"..txt_msg
+	end
+	txt_msg = "text_"..msg_id
+	
+	xml:InitStatic(txt_msg, self)			--«апись
+	
+	self:Register(xml:Init3tButton("btn_u_1", self),"btn_u_1")			--  нопка "Enter/Esc"
+	self:Register(xml:Init3tButton("btn_u_2", self),"btn_u_2")			--  нопка "<=="
+	self:Register(xml:Init3tButton("btn_u_3", self),"btn_u_3")			--  нопка "конверт"
+	self:Register(xml:Init3tButton("btn_u_4", self),"btn_u_4")			--  нопка "==>"
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_u_1", ui_events.BUTTON_CLICKED, self.btn_u_1, self) 			--  нопка "Enter/Esc"
+	self:AddCallback("btn_u_2", ui_events.BUTTON_CLICKED, self.btn_u_2, self) 			--  нопка "<=="
+	self:AddCallback("btn_u_3", ui_events.BUTTON_CLICKED, self.btn_u_3, self) 			--  нопка "конверт"
+	self:AddCallback("btn_u_4", ui_events.BUTTON_CLICKED, self.btn_u_4, self) 			--  нопка "==>"
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+				self:btn_stop()
+		end
+	end
+	return true
+end
+
+function cheat:btn_stop()
+	if flag_treasure and ui_cheat_pda.cheat:get_treasure_flag() == "0" then
+		local shron=ui_cheat_pda.cheat:get_treasure_section()
+		treasure_manager.get_treasure_manager():give_treasure(shron)
+		--помечаю в кастом-дате ѕƒј тайник как установленный
+		self:set_status_pda()
+	end
+	self:GetHolder():start_stop_menu (self,true)
+end
+	
+function cheat:btn_u_1()		--  нопка "Enter/Esc"
+	self:btn_stop()
+end
+
+function cheat:btn_u_2()		--  нопка "<=="
+	self:btn_stop()
+	ui_cheat_pda.cheat:replace_record_msg(2)
+end
+
+function cheat:btn_u_3()		--  нопка "конверт"
+	
+	-- local msg_tema = ""			--заголовок сообщени€
+	-- local msg_text = ""			--текст сообщени€
+	-- local message				--полное сообщение (tema+text)
+	-- local i
+	-- local tbl_txt = {}
+	
+	--провер€ю наличие записной книжки
+	local obj = db.actor:object("klava")
+	
+	if obj then
+	else
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_send_msg_no"),1)
+		return
+	end
+	
+	vergas_lib.add_record_in_klava(msg_id)
+	
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_send_msg"),1)
+	
+end
+
+function cheat:btn_u_4()		--  нопка "==>"
+	self:btn_stop()
+	ui_cheat_pda.cheat:replace_record_msg(1)
+end
+
+function cheat:set_status_pda()
+	local i
+	local j
+	local k
+	local t = vergas_pda.get_pda_info()
+	local n = vergas_pda.get_number_record()
+	
+	for i,k in pairs(sak_inventory.eatable) do
+		if i == "device_pda_npc" then
+			for j = 1,table.getn(k) do
+				local sobj = alife():object(k[j])
+				if sobj then
+					local record = vergas_pda.get_pda_data(sobj)
+					if t[n] == record.custom then
+						record.custom = string.sub(t[1], 1 , string.len(t[1])-1).."1"
+						vergas_pda.set_pda_data(record, sobj)
+					end
+				end
+			end
+		end
+	end
+	flag_treasure=false
+	ui_cheat_pda.cheat:set_treasure_flag() 	--защита от повторной установки тайника при повторном просмотре записи в одной сессии
+end
+

@@ -1,0 +1,262 @@
+--[[
+Меню сна
+Vergas
+© NLC 6.0
+]]--
+
+class "cheat"(CUIScriptWnd)
+
+local klik_btn1
+local klik_btn2
+local klik_btn3
+local dream_number
+
+local wnd_sleep
+local wnd_btn1
+local wnd_btn2
+local wnd_btn3
+
+function cheat:__init(owner) 
+	super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:__finalize() end
+
+function cheat:InitControls()
+
+	self:Init(288,0,530,344)
+	
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_wnd.xml")
+
+	xml:InitStatic("background_0", self)
+	xml:InitStatic("background", self)
+	xml:InitStatic("background_ok_esc", self)
+	--xml:InitStatic("background_btn", self)
+
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")
+	
+	self:Register(xml:Init3tButton("btn_esc", self),"btn_esc")
+	self:Register(xml:Init3tButton("btn_ok", self),"btn_ok")
+	
+end
+
+function cheat:InitCallBacks()
+
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self)
+	self:AddCallback("btn_esc", ui_events.BUTTON_CLICKED, self.btn_esc, self)
+	self:AddCallback("btn_ok", ui_events.BUTTON_CLICKED, self.btn_ok, self)
+	
+	--info_sleep = "С О Н"
+	
+	klik_btn1 = "b"
+	klik_btn2 = "b"
+	klik_btn3 = "b"
+	dream_number = 0
+	
+	self:set_wnd_btn1("m")
+	self:set_wnd_btn2("m")
+	self:set_wnd_btn3("m")
+	self:set_wnd_sleep()
+	
+	
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:btn_esc()
+		end
+	end
+	return true
+end
+
+function cheat:btn_esc()
+	sleeping_bag.stop_pp(2002)
+	vergas_lib.s_play([[device\sleeping_bag\sleep_cancel]])
+	self:on_quit()
+end
+
+function cheat:on_quit()
+	self:del_windows()
+	self:GetHolder():start_stop_menu(self,true)
+end
+
+function cheat:btn_ok()
+	if dream_number == 0 then
+		return
+	end
+	sleeping_bag.stop_pp(2002)
+	if dream_number == 1 then
+		sleep_manager.sleep_one_hour()
+	elseif dream_number == 2 then
+		sleep_manager.sleep_three_hours()
+	elseif dream_number == 3 then
+		sleep_manager.sleep_nine_hours()
+	end
+	self:on_quit()
+end
+
+function cheat:btn_1()
+	if klik_btn1 == "m" then
+		dream_number = dream_number - 1
+	else
+		dream_number = dream_number + 1
+	end
+	self:set_wnd_btn1(klik_btn1)
+	if klik_btn1 == "m" then
+		klik_btn1 = "b"
+	else
+		klik_btn1 = "m"
+	end
+end
+
+function cheat:btn_2()
+	
+	if klik_btn2 == "m" then
+		dream_number = dream_number - 1
+	else
+		dream_number = dream_number + 1
+	end
+	
+	self:set_wnd_btn2(klik_btn2)
+	if klik_btn2 == "m" then
+		klik_btn2 = "b"
+	else
+		klik_btn2 = "m"
+	end
+end
+
+function cheat:btn_3()
+	if klik_btn3 == "m" then
+		dream_number = dream_number - 1
+	else
+		dream_number = dream_number + 1
+	end
+	self:set_wnd_btn3(klik_btn3)
+	if klik_btn3 == "m" then
+		klik_btn3 = "b"
+	else
+		klik_btn3 = "m"
+	end
+end
+
+
+function cheat:set_wnd_btn1(param)
+	if wnd_btn1 ~= nil then
+		self:DetachChild(wnd_btn1)
+		wnd_btn1 = nil
+	end
+	wnd_btn1 = CUIStatic()
+	wnd_btn1:SetAutoDelete(true)
+	self:AttachChild(wnd_btn1)
+	wnd_btn1:SetStretchTexture(true)
+	if param == "m" then
+		wnd_btn1:SetWndRect(191,281,30,30)
+		wnd_btn1:InitTexture("ui_sleeping_bag")
+	else
+		wnd_btn1:SetWndRect(189,279,34,34)
+		wnd_btn1:InitTexture("ui_sleeping_bag_light")
+	end
+	self:set_wnd_sleep()
+end
+
+function cheat:set_wnd_btn2(param)
+	if wnd_btn2 ~= nil then
+		self:DetachChild(wnd_btn2)
+		wnd_btn2 = nil
+	end
+
+	wnd_btn2 = CUIStatic()
+	wnd_btn2:SetAutoDelete(true)
+	self:AttachChild(wnd_btn2)
+	wnd_btn2:SetStretchTexture(true)
+	if param == "m" then
+		wnd_btn2:SetWndRect(249,281,30,30)
+		wnd_btn2:InitTexture("ui_sleeping_bag")
+	else
+		wnd_btn2:SetWndRect(247,279,34,34)
+		wnd_btn2:InitTexture("ui_sleeping_bag_light")
+	end
+	self:set_wnd_sleep()
+end
+
+function cheat:set_wnd_btn3(param)
+	if wnd_btn3 ~= nil then
+		self:DetachChild(wnd_btn3)
+		wnd_btn3 = nil
+	end
+
+	wnd_btn3 = CUIStatic()
+	wnd_btn3:SetAutoDelete(true)
+	self:AttachChild(wnd_btn3)
+	wnd_btn3:SetStretchTexture(true)
+	if param == "m" then
+		wnd_btn3:SetWndRect(307,281,30,30)
+		wnd_btn3:InitTexture("ui_sleeping_bag")
+	else
+		wnd_btn3:SetWndRect(305,279,34,34)
+		wnd_btn3:InitTexture("ui_sleeping_bag_light")
+	end	
+	self:set_wnd_sleep()
+end
+
+function cheat:set_wnd_sleep()
+	local info_sleep
+	if wnd_sleep ~= nil then
+		self:DetachChild(wnd_sleep)
+		wnd_sleep = nil
+	end
+
+	wnd_sleep = CUIStatic()
+	wnd_sleep:SetAutoDelete(true)
+	self:AttachChild(wnd_sleep)
+	if dream_number == 0 then
+		info_sleep = "С О Н"
+		wnd_sleep:SetWndRect(240,129,135,18)
+	elseif dream_number == 1 then
+		info_sleep = "С О Н: ".."Немного вздремнуть"
+		wnd_sleep:SetWndRect(187,129,188,18)
+	elseif dream_number == 2 then
+		info_sleep = "С О Н: ".."Поспать"
+		wnd_sleep:SetWndRect(227,129,148,18)
+	elseif dream_number == 3 then
+		info_sleep = "С О Н: ".."Отоспаться"
+		wnd_sleep:SetWndRect(217,129,158,18)
+	end
+	wnd_sleep:SetFont(GetFontLetterica18Russian())
+	wnd_sleep:SetTextColor(255, 255, 255, 0)
+	wnd_sleep:SetText(info_sleep)
+end
+
+function cheat:del_windows()
+
+	if wnd_btn1 ~= nil then
+		self:DetachChild(wnd_btn1)
+		wnd_btn1 = nil
+	end
+
+	if wnd_btn2 ~= nil then
+		self:DetachChild(wnd_btn2)
+		wnd_btn2 = nil
+	end
+
+	if wnd_btn3 ~= nil then
+		self:DetachChild(wnd_btn3)
+		wnd_btn3 = nil
+	end
+
+	if wnd_sleep ~= nil then
+		self:DetachChild(wnd_sleep)
+		wnd_sleep = nil
+	end
+	
+end

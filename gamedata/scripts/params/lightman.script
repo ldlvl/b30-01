@@ -1,0 +1,356 @@
+-- LIGHT MANAGER by alpet. 17.04.2011+NVD 13.11.2011
+
+torch_params = {
+  active_byte   =              "$01D0"
+}
+
+light_params = {
+  light_range   =              "$0064",
+  spot_angle    =              "$0068",   -- spot angle in radians
+  light_red     =              "$006C",
+  light_green   =              "$0070",
+  light_blue    =              "$0074",
+  light_alpha   =              "$0078"
+  
+}
+
+light_obj_ofs = {}
+light_obj_ofs[85] = "$1C4"
+light_obj_ofs[clsid.projector] = "$1C8"
+light_obj_ofs[clsid.hanging_lamp] = "$1D0"
+light_obj_ofs[clsid.device_torch] = "$1D4"
+light_obj_ofs[clsid.device_torch_s] = "$1D4"
+
+
+if xr_build_id > 5500 then
+   -- DEBUG: prevent access to memory
+   torch_params  = {}
+   light_obj_ofs = {}
+end
+
+function bad_obj(id)
+ local obj = client_obj(id)
+ if obj ~= nil then
+    return false
+ else
+    return true
+ end
+end
+
+
+function trace_item_state(id)
+ local cobj = get_CObject( tonumber(id) )
+ if cobj then
+    local entity = ReadDMA(cobj, "$1A4", "safe_ptr")
+    if entity then
+       local  state = ReadDMA(entity, "$88", "safe_ptr")
+       ODS ("[~T]. #DBG: item state at "..FormatPtr(state))
+       return state
+    end
+    
+ end
+ 
+ return nil
+end
+
+function light_object_clsid(id)
+ if id == nil then return 0 end
+
+ local lobj = client_obj(id)
+ local ci = lobj:clsid()
+ 
+ if ( ci == clsid.obj_phys_destroyable ) then
+    if lobj.name == nil then return nil end
+    local s_name = lobj:name()
+    if string.find(s_name, "search_light") ~= nil then ci = clsid.projector end
+    if string.find(s_name, "lights_hanging_lamp") ~= nil then ci = clsid.hanging_lamp end
+    if string.find(s_name, "device_torch") ~= nil then ci = clsid.device_torch end
+ end
+ return ci
+end
+
+
+function get_light_obj_ofs(ci)
+ return light_obj_ofs[ci]
+end
+
+
+function is_light(id, ci)
+ local ci = light_object_clsid(id)
+ if (get_light_obj_ofs(ci) ~= nil) then
+    return true
+ else
+    return false
+ end
+end
+
+
+function light_object_raw(cobj, ci)
+ if (cobj == nil) or (ci == nil) then return nil end
+
+ local light = nil
+ local ofs = get_light_obj_ofs(ci)
+
+ if ofs ~= nil then
+    light = ReadDMA(cobj,  ofs, "safe_ptr")
+ end
+ return light
+end
+
+function light_object(id, ci)
+ local cobj = get_CObject (id)
+ -- ODS("[~T]. #DBG: CObject for lamp "..FormatPtr(cobj))
+ if ci == nil then
+    ci = light_object_clsid(id)
+ end
+ return light_object_raw(cobj,ci)
+end
+
+function get_lobj_prop(id, key, test)
+ if bad_obj(id) or (key == nil) then return 0 end
+ 
+ local ci = obj_clsid(id)
+ if ci == nil then return 0 end
+
+ local addr = nil
+ local ofs = 0
+ local value = 0
+ local lobj = client_obj(id)
+
+ if is_light(id, ci) then
+     addr = light_object(id, ci)
+     ofs = light_params[key]
+     if addr and ofs then
+        value = ReadMemValue(addr, ofs, key)
+        
+        if test ~= nil then
+           ODS( string.format("[~T]. #DBG: light CObject for %d = %s, ofs = %s, %s = %.5f ", id, FormatPtr(addr), key, ofs, value) )
+        end
+        
+        return value
+     end
+ else
+    return coord_params.get_obj_prop(id, key)
+ end
+ return nil
+end
+
+function set_lobj_prop(id, key, newval)
+ if bad_obj(id) or (key == nil) then return false end
+
+ local ci = obj_clsid(id)
+ if ci == nil then return 0 end
+
+ local result = false
+ local addr = nil
+ local ofs = 0
+ local value = 0
+
+ if is_light(id, ci) then
+    addr = light_object(id, ci)
+    ofs = light_params[key]
+    if addr and ofs and newval then
+       -- ODS("[~T]. #DBG: light object = "..FormatPtr(addr))
+       WriteMemValue(addr, ofs, tonumber(newval), key)
+       return true
+    end
+ else
+    return  coord_params.set_obj_prop(id, key, newval)
+ end
+
+ return nil
+end
+
+
+
+function get_lamp_prop(id, key, test)
+
+ local cobj = get_CObject(id)
+ if (cobj == nil) or (key == nil) then return 0 end
+
+ local ofs = torch_params[key]
+ 
+ if ofs then
+    local value = ReadMemValue (cobj, ofs, key)
+    if test ~= nil then
+       ODS( string.format("[~T]. #DBG: torch CObject for %d = %s, %s = %.5f ", id, FormatPtr(cobj), key, value) )
+    end
+    return value
+ end
+ 
+ local lobj = client_obj(id)
+ 
+ ofs = light_params[key]
+ 
+ if lobj and lobj.get_hanging_lamp and ofs then
+    local hlvar = lobj:get_hanging_lamp()
+    local lamp = nil
+    if hlvar then lamp = ReadDMA(hlvar, 0, "safe_ptr") end
+    if lamp then
+       local addr = light_object_raw (lamp, clsid.hanging_lamp)
+       
+       if addr then
+          local value = ReadMemValue (addr, ofs, key)
+		  ODS( string.format("[~T]. #DBG: смотрим  что там %d = %s, %s = %.5f ", id, FormatPtr(cobj), key, value) )
+          if test ~= nil then
+             ODS( string.format("[~T]. #DBG: light CObject for %d = %s, %s = %.5f ", id, FormatPtr(addr), key, value) )
+          end
+          return value
+       end
+    end
+ else
+   return get_lobj_prop(id, key, test)
+ end
+end
+
+function set_lamp_prop(id, key, newval)
+ 
+ local cobj = get_CObject(id)
+ 
+ if (cobj == nil) or (newval == nil) or (key == nil) then
+    return false
+ end
+ 
+ local ofs = torch_params[key]
+ 
+ if ofs then
+    WriteMemValue (cobj, ofs, tonumber(newval), key)
+    return true
+ end
+
+ local lobj = client_obj(id)
+ 
+ ofs = light_params[key]
+ 
+ 
+ if lobj and lobj.get_hanging_lamp and obj then
+    local hlvar = lobj:get_hanging_lamp() -- is lua_bind wrapper for hanging lamp
+    local lamp = nil
+    if hlvar then lamp = ReadDMA(hlvar, 0, "safe_ptr") end
+    if lamp then
+
+       local tmp = light_object_raw (lamp, 85) 
+       local prj = light_object_raw (lamp, clsid.projector) -- 
+       local lhl = light_object_raw (lamp, clsid.hanging_lamp) --
+       local trc = light_object_raw (lamp, clsid.device_torch) --
+       ODS( sprintf(" tmp = %s, prj = %s, lhl = %s, torch = %s ", FormatPtr(tmp), FormatPtr(prj), FormatPtr(lhl), FormatPtr(trc)) )
+
+       
+       local addr = lhl
+       
+       if addr then
+          WriteMemValue (addr, ofs, tonumber(newval), key)
+          return true
+       end
+    end
+ else
+    set_lobj_prop(id, key, newval)
+ end
+end
+
+function torch_obj(torch_id)
+  local obj = client_obj(torch_id or 0)
+  if obj and obj.get_torch then
+     return obj:get_torch()
+  end  
+  return nil       
+end
+
+
+function lamp_obj(id)       
+ local t = torch_obj(id)
+ if t then 
+    return t
+ end
+ 
+ local obj = client_obj(id)
+ if obj and obj.get_hanging_lamp then 
+    return obj:get_hanging_lamp()
+ end        
+ return nil    
+end
+
+function get_lamp_active(id)
+ local t = torch_obj(id)
+ if t then
+    if t.on then 
+       return 1
+    else
+       return 0
+    end  
+    
+ else
+    local name = "non_existed#"..tostring(id)
+    if client_obj(id) then 
+       name = client_obj(id):name()
+    end
+     
+    wprintf("~C0C #ERROR:~C07 get_lamp_active incompatible object~C0A %s~C07 ", name)
+    return 0 
+ end
+ 
+ return get_lamp_prop(id, "active_byte")
+end 
+
+
+lightman.get_lamp_active = get_lamp_active
+ 
+function set_light_range(id, range, target)
+ local lamp = lamp_obj(id) 
+ wprintf("[~T]. #DBG: set_light_range id = %d, range = %.2f, lamp = %s ", id, range, DumpVar(lamp))
+ if lamp and lamp.set_range then
+    return lamp:set_range(range, target or 0)
+ end                                    
+
+ lightman.set_lamp_prop(id,"light_range", range)
+end
+
+params.set_light_range = set_light_range
+
+function set_spot_angle(id, angle, target)
+ local lamp = lamp_obj(id)
+ if lamp and lamp.set_angle then
+    return lamp:set_angle(angle, target or 0)
+ end
+
+ lightman.set_lamp_prop(id,"spot_angle",spot)
+end
+
+params.set_spot_angle = set_spot_angle
+
+function set_lamp_rgb(id, r, g, b)
+ 
+ local lamp = lamp_obj(id)
+ if lamp and lamp.set_rgb then
+    return lamp:set_rgb(r, g, b)                                    
+ end
+
+ set_lobj_prop(id, "light_red", r)
+ set_lobj_prop(id, "light_green", g)
+ set_lobj_prop(id, "light_blue", b)
+end
+
+nv_params = {
+  ctrl_allowed = "$1EC",
+  enabled_now  = "$1ED",
+  unk_max_offset	   = "$1F0"
+}
+
+CTorch__Switch      = CalcPtr("xrGame.dll", "$2482A0", "+") --
+SwitchNightVision   = CalcPtr("xrGame.dll", "$2482F0", "+") -- SwitchNightVision_0 abs from dll at $7040000
+ 
+
+
+function init_module()
+end
+
+function late_init()
+  if xr_build_id > 5500 and db.actor.get_torch then
+     -- дл€ сохранени€ совместимости по €ркости фонар€
+     local t = db.actor:get_torch()
+     if t then
+        t:set_brightness(255)
+        t:set_rgb(0.11, 0.11, 0.1)
+     end   
+  end
+end

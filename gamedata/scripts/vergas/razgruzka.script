@@ -1,0 +1,1194 @@
+--[[
+Разгрузка v 3.0
+Vergas
+© NLC-6.0
+]]--
+open_inv_raz_pod      = false        -- флаг для Сяка (обработка содержимого инвентаря)
+spawn_in_progress     = 0            -- когда запущен спавн
+allowed_sections =  {
+  "ammo_",
+  "grenade",
+  "medkit",
+  "bandage",
+  "antirad",
+  "energy",
+  "detector",
+  "drag_cat_eyes"
+}
+active_detectors      = {}
+local inv_open_status = 0           -- признак открытого (> 0)  или закрытого (0) инвентаря.
+local count_start
+local id_item_take    = {}          -- id предметов, попавших в инвентарь (спавнится мною)
+local id_item_drop    = {}          -- id предметов, пропавших из в инвентарь (удаляется мною)
+local id_item_release = {}          -- id  предметов в инвентаре, которые нужно уничтожить
+local wnd_info
+local verb_level      = 1
+heavy_ammo_list       = {}
+DETECTOR_SLOT         = 14
+
+function not_in_quick_slot( obj )
+  local sect = obj:section()         -- детектор надо подсчитать 
+  if strpos( sect, "medkit" ) then
+    -- wprintf("[~T]. #DBG:~C0F %s~C07 item_place =~C0D %d~C07", obj:name(), obj:get_inventory_item().item_place)
+  end
+  local id = obj:id()
+  local owner = obj:parent()
+  if not owner then return true end 
+  for slot = 12, 16 do
+    local itm = owner:item_in_slot( slot )
+    if itm and itm:id() == id then return false end 
+  end -- for          
+  return true     
+end
+
+function load_mtv_content()
+  local  list_mtv = list_sect_count( "items_mtv" )     -- используется вектор с фиксированными индексами!
+  return list_mtv:load( nlc_vars, "items_mtv", DETECTOR_SLOT )
+end
+
+function load_pouch_content()
+ local  list_pouch = list_sect_count( "items_pouch" )  -- используется вектор с фиксированными индексами!
+ return list_pouch:load( nlc_vars, "items_pouch", 1 ) 
+end
+
+function set_inv_on_off( param )
+  if param then
+     inv_open_status = 1
+  end    
+end
+
+function have()
+  return db.actor:object( "razgruzka" )
+end
+
+function inventory_opened()
+  return ( inv_open_status > 0 ) or sak_inventory.inventory_visible()
+end
+
+function get_inv_hran()                               -- уже безнадежно устаревшая функция
+  return xray_vars.load_table( nlc_vars, "inv_hran", {} )
+end
+
+function save_inv_hran( tbl, context )
+  wprintf( " save shadow inventory dump, context = %s:", context or 'nil' )
+  misc.dump_table( tbl )
+  nlc_vars.inv_hran = tbl 
+end
+
+function get_hidden_items( b_map )
+  return get_shadow_inv():hidden_items( b_map ) 
+end
+
+function is_ammo( sect )
+  return sect:sub( 1, 4 ) == "ammo"
+end
+
+function is_ammo_gren( sect )
+  return ( sect == "ammo_vog-25" or sect == "ammo_vog-25p" or  sect == "ammo_m209" )
+end
+
+function is_ammo_std( sect )
+  return not is_ammo_gren( sect ) and is_ammo( sect ) 
+end
+
+function is_ammo_heavy( sect )
+  if ( sect == "ammo_og-7b" or sect == "ammo_7.62x54r" or  sect == "ammo_gaus" ) then 
+     return true
+  end
+  if table.getn( heavy_ammo_list ) == 0 then
+    heavy_ammo_list = vergas_lib.str_explode(
+      "|",
+      vergas_lib.set_pr_from_config_str( "razgruzka", "heavy_weapon_ammo" ),
+      true
+    )
+  end
+  for i, s in ipairs( heavy_ammo_list ) do
+    if s == sect then return true end
+  end
+  return false
+end
+
+function is_grenade( sect )
+  return ( sect:sub( 1 , 7 ) == "grenade" )
+end
+
+function is_medical( sect )
+  return ( sect:sub( 1 , 6 ) == "medkit"
+          or sect == "bandage"
+          or sect == "antirad"
+          or sect == "drag_cat_eyes"
+          or sect:sub (1 , 6)  == "energy"
+        )
+end
+
+function test_item_type( sect, types )
+  if type( types ) == "string" then
+    types = SplitStr( types, "," )
+  end  
+  for i, t in ipairs( types ) do
+    local func = razgruzka[ "is_" .. t ]
+    if func and func( sect ) then return true end         
+  end   
+  return false
+end 
+
+function check_detectors()
+  -- проверка активного детектора
+  -- default_detector = db.actor:object("detector_simple_fake")
+  local slots = { 8, 12, 13, 14, 15 }
+  for i, slot in ipairs( slots ) do              
+    local active = db.actor:item_in_slot( slot )  
+    if active then    
+       local name = active:name()
+       active_detectors[ slot ] = name
+       if strpos( active:section(), "detector" ) then 
+          wprintf(" active detector:~C0A %s~C07 in slot~C0D %d~C07", name, slot )          
+          break         
+       else   
+         wprintf( " not default item:~C0A %s~C07", name )
+       end       
+    else
+       wprintf( " check_detector slot~C0D %d~C07 is void ", slot )
+       active_detectors[ slot ] = false          
+    end         
+  end -- for   
+end
+
+function inventory_on_off( param, param2 )
+  reset_interactive( 1 ) 
+  if param and ( sak_inventory.inventory_visible() or inv_open_status > 0 ) then
+    wprintf( "[~T].~C0C #WARN:~C07 попытка повторно открыть инвентарь, счетчик = %d, call from:\n %s ",
+              inv_open_status,
+              lua_traceback( '   ' ) 
+           )
+    inv_open_status = inv_open_status - 1
+    return
+  end
+  if param then
+    local MSEC_COEF = 24.0 * 3600.0 * 1000.0 
+    wprintf(
+        "[~T/~B].~CF0 #DBG_razgruzka: открывается инвентарь~CFA %s.~C07",
+        DumpVar( param2 )
+           )        
+    if param2 then
+       bind_stalker.hide_weapon()
+    end
+    open_inv_raz_pod = false
+    local f = razgruzka.open_inventory
+    razgruzka.open_inventory  = function ()
+                                  ODS(
+                                    "[~T/~U/~B].~C0C #ERROR:~C07 reentrance protection signaled in inventory_on_off"
+                                     )
+                                end    
+    f() -- восстановить вообще все предметы в инвентарь
+    razgruzka.open_inventory = f                
+  else
+    if inv_open_status <= 0 then return end
+    wprintf(
+        "[~T].~CF1 #DBG_razgruzka: закрывается инвентарь~CF9 %s.~C07",
+        DumpVar( param2 )
+           )
+    check_detectors()
+    vergas_rucksack.close_inventory()
+    close_inventory()
+    open_inv_raz_pod = false  
+    bind_stalker.restore_weapon()
+    sak_inventory.belt_need_update_razgr( false )
+    sak.torch_id_norm() -- фонарь мог быть заменен
+    used_items.set_get_flag_use_gadget( 1, true )
+    inv_buttons_use.set_flag_open_inventoru( false )
+    schedule.add( "check_wpn_slots", "inv_buttons_use.check_wpn_slots()", 300 )
+  end
+end
+
+function inventory_on_off_work()
+  wprintf( "[~T].~CF4 #DBG_razgruzka: закрывается инвентарь work ~C07" )
+  vergas_rucksack.close_inventory()
+  close_inventory()
+  open_inv_raz_pod = false  
+  sak_inventory.belt_need_update_razgr( false )
+  used_items.set_get_flag_use_gadget( 1, true )
+  inv_buttons_use.set_flag_open_inventoru( false )
+  schedule.add( "check_wpn_slots", "inv_buttons_use.check_wpn_slots()", 300 )
+end
+
+function open_inv_menu()
+  ODS( "[~T]. #DBG: razgruzka.open_inv_menu()" )
+  update_avail_items( false )
+  rest_from_shadow_inv( "open_inventory" )     -- подготовка для работы с inventory_menu
+  inv_open_status = 10   
+end
+
+function open_inventory()
+  ODS( "[~T]. #DBG: razgruzka.open_inventory()" )
+  if get_shadow_inv().last_hide <= 0 then
+    update_avail_items( true )
+  end   
+  inv_open_status = 10 
+  hide_in_shadow_inv( "inventory_on_off", 1 ) -- спрятать используемые предметы в разгрузке/подсумке/НЗ  
+end
+
+function close_inventory()
+  inv_open_status =  0
+  if get_shadow_inv().last_hide <= 0 then
+     update_avail_items( false )
+  end              
+  hide_in_shadow_inv( "close_inventory", 0 )           
+  schedule.add ( "owermass", "params.tired_owermass()", 500 ) -- надо-ли? 
+end
+
+function limit_items_count( item_count, total_count )
+  total_count = ( total_count or 0 )
+  -- ограничение числа количества предметов с помощью лимитирования
+  if total_count > 0 then               
+    if
+      item_count < total_count
+    then 
+      total_count = total_count - item_count                  
+    elseif
+      item_count >= total_count
+    then
+      item_count = total_count
+      total_count = 0
+    end   
+  else
+  item_count = 0    
+  end                                             
+  return item_count, total_count -- вернуть кол-во предметов и остаток лимита
+end
+
+function limit_items_by_exists( info_t, exists )
+  local limited = false
+  for i, record in info_t:ipairs() do
+    local sect  = record.sect                          
+    if sect ~= "?" then         
+      local total_count = exists( sect ) or 0
+      local item_count  = record.count
+      -- wprintf(" checking portion~C0A %-25s~C07 =~C0D %d~C07, total =~C0D %d~C07", sect, item_count, total_count) 
+      -- проверка сколько у гг осталось таких предметов, и их вычитание
+      item_count, total_count = limit_items_count( item_count, total_count ) 
+      if item_count == 0 then               
+        -- wprintf("~C0C #WARN:~C07 no items with section~C0A %s~C07 was rest in actor inventory ", sect)
+        record.sect = '?'                   
+      else
+        -- wprintf("   rest~C0D %4d~C07 items, total_count =~C0D %d~C07", item_count, total_count)                       
+      end
+      if record.count ~= item_count then       
+        wprintf(
+                  "~C0C  Items count~C0F %s~C07 was limited to~C0D %2d~C07, total_count =~C0D %d~C07",
+                   sect, item_count, total_count
+               ) 
+        record.count = item_count                               
+        limited = true
+      end
+      exists:set( sect, total_count )                                         
+    end -- if  
+  end -- for
+  return limited
+end -- end function
+
+function update_avail_items( open_inv )    
+  local inv = get_shadow_inv()
+  -- допускается только режим полностью восстановленного инвентаря, или скрытого в режим 0    
+  if inv.last_hide > 0 then
+    wprintf(
+             "[~T].~C0C #WARN:~C07 calling update_avail_items while last_hide = %d\n %s",
+             inv.last_hide or -5,
+             lua_traceback( '   ' )
+           )
+    wprintf( " last_op_from:\n~C0F %s~C07 ", inv.last_op_from or 'nil' )
+    return
+  end
+  reset_interactive( 0 )
+  UpdateRegistry( true )
+  -- при открытии разгрузки надо лимитировать оставшиеся боеприпасы по наличию в инвентаре
+  local inv_items = nlc_container.collect_items( db.actor, not_in_quick_slot )
+  local have_items = nlc_container.collect_items_map( inv_items, true )      
+  -- обработка сохраненного в подсумке
+  if db.actor:object( "podsumok" ) ~= nil then
+    pouch_content = load_pouch_content()
+    if limit_items_by_exists( pouch_content, have_items ) then
+      pouch_content:save()
+    end      
+    inv:set_leave( "pouch", nlc_container.collect_items_map( pouch_content,  false ) )
+  else   
+    inv:set_leave( "pouch", nil )
+  end
+   -- обработка сохраненного в разгрузке
+  if db.actor:object( "razgruzka" ) ~= nil then
+    local mtv_content = load_mtv_content()
+    if verb_level > 3 then      
+       mtv_content:map( true ):dump( "~CF0 before filtering: ~C07" )
+    end
+    if limit_items_by_exists( mtv_content, have_items ) then
+       mtv_content:save()
+    end                   
+    if verb_level > 3 then                                           
+       mtv_content:map( true ):dump( "~C0F after  filtering: ~C07" )
+    end   
+    inv:set_leave( "mtv", nlc_container.collect_items_map( mtv_content, false ) )
+    -- inv.leave_avail["mtv"]:dump("debug check mtv:")
+  else
+    inv:set_leave( "mtv", nil )    
+  end
+  if open_inv then
+    -- local items = bag_on_belt_use.load_bag_content()         
+    -- inv:set_leave("er_bag", nlc_container.collect_items_map(items, true)) -- исключать отображение в инвентаре 
+  else
+    inv:set_leave( "er_bag", nil )  -- содержимое сумки прячется в рюкзак    
+  end
+end
+
+function is_same(a, b)
+ if a and b then
+    return a:id() == b:id()
+ else
+    return false
+ end
+end
+
+-- скрывает недоступные в игровом режиме предметы в рюкзаке
+-- или используемые предметы в разгрузке/подсумке/НЗ
+function hide_in_shadow_inv( context, mode ) 
+  local inv = get_shadow_inv()
+  if inv.last_hide == 0 then
+     update_avail_items( mode == 1 )
+  end      
+  local inv_ruck = inv:update_storage()
+    -- TODO: no fake - высыпать все что в рюкзаке остается
+  if nil == inv_ruck then return end
+  if inv:hide_content( mode ) then -- в инвентаре останется только содержимое разгрузки и подсумка
+    wprintf( '[~T].~C0A #SUCCESS:~C07 inv:hide_content(%d) ', mode )     
+  else
+    -- inv:drop_content()
+    wprintf( '[~T].~C0C #FAILED:~C07  inv:hide_content(%d) ', mode )
+  end   
+  -- расстановка детекторов по слотам/рюкзакам
+  local act = db.actor
+  local slots = { 8, 12, 13, 14, 15 }
+  for i, slot in ipairs( slots ) do              
+    local name = active_detectors[ slot ]
+    if name then 
+      local det = act:object( name )
+      if det then
+        wprintf( " active detector in slot~C0D %d~C07 =~C0A %s~C07", slot, name )
+        -- act:move_to_slot(det)
+      end
+    end                             
+  end
+  -- проверка левых детекторов в слотах     
+  -- local slots = { 8 }
+  -- for i, slot in ipairs(slots) do   
+  --[[    
+    local active = db.actor:item_in_slot(8)  
+    
+    if active and strpos(active:section(), "detector") and
+        not is_same(active, default_detector)  then 
+       wprintf(" 1. moved to ruck:~C0A %s~C07", active:name())
+       db.actor:move_to_ruck(active)
+    end   
+  --]]   
+  -- end -- for    
+end
+
+function rest_from_shadow_inv( context )
+   update_avail_items()
+   get_shadow_inv():restore_content()
+end   
+
+function transfer_from_hran()  -- функция играет только отладочную роль
+  nlc_vars.inv_hran = nil  
+end
+
+function transfer_in_hran()    -- функция играет только отладочную роль
+  nlc_vars.inv_hran = nil  
+end
+
+function calc_count( tbl )
+  local result = 0
+  if tbl.ipairs == nil then tbl.ipairs = ipairs end  
+  for i, rec in tbl:ipairs() do
+    if rec.sect ~= "?" then
+       result = result + 1
+    end   
+  end
+  return result
+end
+
+function make_record( s, c )
+  if type( s ) ~= "string" then s = "?" end
+  if type( c ) ~= "number" then c = 0   end
+  local rec = {
+    sect  = ( s or "?" ),
+    count = ( c or 0 )
+  } 
+  return rec  
+end
+
+function array_to_list( t )
+  local result = {}
+  for i = 1, table.getn( t ), 2 do 
+    table.insert( result, make_record( t[ i ], t[ i + 1 ] ) )
+  end 
+  return result
+end
+
+function nope_pairs( count )
+  local result = {} 
+  for i = 1, count do   
+    table.insert( result, make_record( "?" ) )
+  end  
+  return result
+end
+
+function on_absent_mtv() -- mtv == разгрузка :)
+  -- wprintf("[~T]. #WARN: military tactical vest (razgruzka) absent in inventory, clearing vars...") 
+  nlc_vars.razgruzka = nil
+end
+
+function spawn_several( sect, count, target )
+  for j = 1, count do
+    vergas_lib.spawn_item_in_inv( sect, true, target )
+  end
+end
+
+function spawn_from_list( list )
+  for i, rec in ipairs( list ) do  
+    local sect  = rec.sect or "?"
+    local count = rec.count 
+    if sect ~= "?" then
+      if is_ammo ( sect ) then
+        vergas_lib.spawn_ammo_in_inv( sect, count, true )
+      elseif sect ~= "detector_simple_fake" then
+         spawn_several( sect, count )        
+      end
+    end
+  end -- for
+  misc.process_spawn()
+  wprintf( "[~T/~B]. #DBG: spawn_from_list completed!" )
+  spawn_in_progress = PreciseTime()  
+end
+
+function spawn_from_map( tbl_items )
+  for sect, count in pairs( tbl_items ) do
+    if sect ~= "?" and ( count > 0 ) then
+      if string.sub( sect, 1, 4 ) == "ammo" then
+        vergas_lib.spawn_ammo_in_inv( sect, count, true )
+      elseif sect ~= "detector_simple_fake" then
+        spawn_several (sect, count)
+      end -- if else
+    end -- if sect
+  end -- for
+  misc.process_spawn()
+  wprintf( "[~T/~B]. #DBG: spawn_from_map completed!" )
+  spawn_in_progress = PreciseTime() 
+end
+
+function check_obj( obj )
+  if obj then
+    local id = obj:id()     
+    if g_sim:object( id ) then return true end  
+  end
+  return false
+end
+
+function test_item_section( sect, key_set, list )
+  if sect == "detector_simple_fake" then
+    return false
+  end
+  -- local list = allowed_sections
+  for i, prefix in ipairs( list ) do
+    local ss = sect:sub( 1, prefix:len() )
+    if ss == prefix then return true end 
+  end         
+  -- wprintf(" ~C0C #WARN:~C0A %-35s~C07 was sieved by prefix-list:~C0F %s~C07 ", sect, table.concat(list, ','))
+  return false
+end
+
+function reject_item_section( sect, key_set, list )
+  for i, prefix in ipairs( list ) do
+    local ss = sect:sub( 1, prefix:len() )
+    if ss == prefix then return false end 
+  end
+  return true
+end
+
+function inventory_items( exclude )
+   -- получение асосциативного списка секция=количества, с фильтрацией по секциям
+  if exclude == nil then exclude = { } end   
+  local inv = get_shadow_inv()
+  if inv.last_hide >= 0 or not inv.items_restored then
+    wprintf(
+      "[~T].~C0C #ERROR:~C07 inventory_items() expected shadow_inventory with restored items "
+    ) 
+    wprintf( " last_op_from: \n~C0F %s~C07", inv.last_op_from )
+    return std_map()  
+  end  
+  if db.actor then
+    local inv_items = nlc_container.collect_items( db.actor, not_in_quick_slot )      
+    local map = nlc_container.collect_items_map( inv_items, true ) -- поиск всего
+    map:sieve( test_item_section,   allowed_sections )
+    map:sieve( reject_item_section, exclude )
+    if verb_level > 3 then      
+      map:dump( "razgruzka.inventory_items dump:" )
+    end          
+    local used_content = load_mtv_content() + load_pouch_content() -- списки секция=count
+    local used_map = nlc_container.collect_items_map(used_content, false)
+    if verb_level > 3 then
+      used_map:dump( "used_map dump:" )
+    end   
+    -- used_content:dump(" used_content:") 
+    -- снизить количество доступных предметов, за счет нахождения оных в разгрузке
+    for sect, count in used_map:pairs() do
+      if sect ~= "?" then              
+        local rest, used = map:sub( sect, count )
+        if used > 0 then
+          wprintf(
+              "     map:sub(~C0A'%s'~C0B,~C0D %d~C07) returned~C0D %d, %d~C07 ",
+              sect, count, rest, used
+                 )
+        end
+      end          
+    end                    
+    map:optimize()       
+    return map  
+  end
+end
+
+function check_items( items, section )
+  local flag   = false
+  local number = 0
+  local i
+  if items[ section ] ~= nil then
+    flag = true
+    number = items[ section ] 
+  end
+  return flag, number
+end
+
+function drop_item_from_inventory( obj )
+  -- потеря гг предмета      
+  local flag
+  flag, id_item_drop = table_scanning( id_item_drop, obj:id() )
+  if flag then return false end
+  if inventory_opened() or bind_stalker.self_weapon_hide then
+    return true
+  end
+  return true
+end
+
+function spawn_to_inv( section, number )
+  wprintf( " spawn_to_inv~C0A %s~C07 x~C0D %d~C07", section, number )
+  --if is_ammo(section) then
+  --   number = vergas_lib.get_box_size(section) * number
+  --end
+  local act = db.actor     
+  misc.spawn_multi(
+    section,
+    act:position(),
+    act:id(),
+    number
+  )                   -- обработка тейка автоматически переместит предметы в рюкзак 
+  misc.process_spawn()
+end
+
+function save_take_obj( obj_id )
+  table.insert( id_item_take, obj_id )
+  if not client_obj( obj_id ) then
+    misc.process_spawn()
+  end   
+  local inv = get_shadow_inv()
+  inv:take_item( obj_id, not nlc_vars.inv_opened ) 
+end
+
+function save_drop_obj( obj_id )
+  table.insert( id_item_drop, obj_id )
+end
+
+function table_scanning( tbl, obj_id )
+  local flag_id = false
+  local flag = 0
+  if type( tbl ) == "userdata" then
+    abort( " not applicable tbl type " )
+  end
+  if table.getn( tbl ) ~= 0 then
+    for i = 1, table.getn( tbl ) do
+      if obj_id == tbl[ i ] then
+        tbl[ i ] = 0
+        flag_id  = true
+      end
+    end  
+    for i = 1, table.getn( tbl ) do
+      if tbl[ i ] ~= 0 then flag = 1 end
+    end
+  end
+  if flag == 0 and table.getn( tbl ) ~= 0 then
+    tbl = {}
+  end
+  return flag_id, tbl
+end
+
+function change_weight( mem, raz, pod ) -- obsolete
+-- 1  - считать вес
+-- 2 - обнулить вес
+-- 0 - не трогать
+  --[[if mem == 1 then
+    params.mem_weight_add(weight_variable_hran())
+  elseif mem == 2 then
+    params.mem_weight_add(0)
+  end
+  if raz == 1 then
+  local weight_razgruzka=weight_variable_razgruzka()
+    params.razgruzka_weight_add(weight_razgruzka)
+  elseif raz == 2 then
+    params.razgruzka_weight_add(0)
+  end
+  if pod == 1 then
+  local weight_podsumok=weight_variable_podsumok()
+    params.podsumok_weight_add(weight_podsumok)
+  elseif pod == 2 then
+    params.podsumok_weight_add(0)
+  end--]]
+end
+
+function weight_variable_podsumok()
+  local weight_var = 0      
+  return 0 -- вес всегда учтен
+end
+
+function weight_variable_razgruzka()   
+  return 0 -- вес всегда учтен
+end
+
+function weight_variable_hran()     
+  return 0 -- вес всегда учтен
+end
+
+function get_ammo_weight( section, sum_ammo )
+  local weight     = 0
+  local box_size   = vergas_lib.get_box_size( section )
+  local box_weight = vergas_lib.set_pr_from_config( section, "inv_weight" )  
+  while sum_ammo >= box_size do
+    weight   = weight + box_weight
+    sum_ammo = sum_ammo - box_size
+  end
+  if sum_ammo > 0 then
+    weight = weight + ( box_weight / box_size * sum_ammo )
+  end
+  return weight
+end
+
+function dump_map( map )
+  local result = {}
+  for i, record in ipairs( map ) do
+    table.insert( result, record.sect )
+    table.insert( result, record.count )
+  end
+  return table.concat( result, "|" ) 
+end
+
+function check_void( dump, context ) -- obsolete  
+  if
+    dump == "?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0|?|0"
+  then
+    wprintf(
+        "[~T].~C0C #WARN_razgruzka:~C07 таблица полностью чистая! context =~C0A %s~C07",
+        context or 'nil'
+           )
+    return true
+  else
+    return false
+  end   
+end
+
+function save_hran_table( tbl ) -- конвертирует list/array в map! -- obsolete
+  local result = {}
+  if table.getn(tbl) == 0 then return tbl end
+  if tbl[ 1 ] and ( type( tbl[ 1 ] ) ~= "table") then
+    wprintf(
+        " save_hran_table converting source from array to map: \n~C0F %s~C07",
+        lua_traceback( " " )
+           )
+    tbl = array_to_list( tbl )
+  end
+  for i, rec in ipairs( tbl ) do
+    if ( rec.count or 0 ) > 0 then           
+      result[rec.sect] = rec.count
+    end
+  end
+  return result
+end
+
+function object_stock_taking( section, count, tips ) -- подсчет предметов с определенной секцией
+  local count_inv  = 0
+  local count_hran = 0
+    -- перечисление что есть в инвентори
+  for i = 0, db.actor:object_count() - 1 do
+    local obj = db.actor:object(i)    
+    if check_obj( obj ) then
+      local sect = obj:section() 
+      local add  = 0
+      if tips then
+        if sect == section then add = 1 end  -- секция строго равна          
+      else
+        if strposx( sect, section ) then add = 1 end -- секция имеет вхождение образца
+      end -- 
+      if is_ammo( sect ) then
+         count_inv = count_inv + nlc_container.amount_in_batch( obj ) * add
+      else
+         count_inv = count_inv + add
+      end
+    end
+  end
+  if count_inv < count then
+    local hidden = get_hidden_items( true )        
+    for sect, cnt in hidden:pairs() do
+        if tips then
+          if (sect == section) then count_hran = count_hran + cnt  end
+        else
+          if strposx( sect, section ) then count_hran = count_hran + cnt end
+        end
+    end -- for
+  end
+  local flag_1 = false
+  local flag_2 = false
+  if count_inv + count_hran >= count then
+    flag_1 = true
+    if count_hran > 0 then flag_2 = true end
+  end
+  return flag_1, flag_2, count - count_inv
+end
+
+function clean_inventory( section, count, tips ) -- зачистка инвентаря от определенного числа предметов
+  local test_section 
+  if tips then
+    test_section  = function ( obj )         
+                      return obj:section() == section  
+                    end
+  else
+    test_section  = function ( obj )
+                      return strposx( obj:section(), section )
+                    end
+  end      
+  local items = nlc_container.collect_items( db.actor, test_section )
+  for i, rec in items:ipairs() do
+    local amount = nlc_container.amount_in_batch( rec.id )
+    if amount > count then
+      nlc_container.amount_in_batch( rec.id, count ) -- обновить патроны в пачке
+      count = 0
+    else
+      misc.release_obj( rec.id, 'clean_inventory' )
+      count = count - amount
+    end          
+  end
+  return count
+end
+
+disp_flag = false
+local exo_progr
+
+function use_info()
+  local hud = get_hud()
+  if disp_flag then end_use_info() end
+  disp_flag = true
+  move_static_weapon( 668 )
+  hud:AddCustomStatic( "hud_info", true )
+  wnd_info = hud:GetCustomStatic( "hud_info" ):wnd()          
+  local tbl_info = set_info()
+  windows.del_simple_statics( wnd_info )  
+  windows.simple_static( wnd_info, "wnd_1", { 50 + 5, 58,20,16 }, tbl_info[ 1 ] )
+  windows.simple_static( wnd_info, "wnd_2", { 50 + 5, 81,20,16 }, tbl_info[ 2 ] )
+  windows.simple_static( wnd_info, "wnd_3", { 50 + 5,106,20,16 }, tbl_info[ 3 ] )
+  windows.simple_static( wnd_info, "wnd_4", { 50 + 5,128,20,16 }, tbl_info[ 4 ] )
+  windows.simple_static( wnd_info, "wnd_5", { 50 + 5,153,20,16 }, tbl_info[ 5 ] )
+  windows.simple_static( wnd_info, "wnd_6", { 50 + 5,175,20,16 }, tbl_info[ 6 ] )
+  local delay = vergas_lib.set_pr_from_config( "razgruzka", "info_delay" )
+  local after = delay * 1000
+  wprintf( " hide after~C0D %d~C07 msec ", after )
+
+  local armor = db.actor:item_in_slot( 6 )
+  if armor ~= nil then
+    local section, id = armor:section(), armor:id()
+    if  strposx( section, "exo" ) and strposx( section, "_q_" ) then
+      local exo_progr_text = "lll|lll|lll|lll|lll"
+      local exo_charge_num = 0
+      local name, shift = timers.check_timer( "upgrade" .. id, "sak_dialog.downgrade_item("..id..")" )
+      if name then
+        exo_charge_num = math.floor( shift / 60 ) / 6 + 1
+        --wprintf( "--------------------------          " .. exo_charge_num .. "             ---------------------------" )
+        exo_progr_text = string.sub( exo_progr_text, 1, math.floor( exo_charge_num ) )
+      end
+      hud:AddCustomStatic( "exo_info", true )
+      --hud:AddCustomStatic( "exo_info_progr", true )
+      --local exo_progressbar = hud:GetCustomStatic( "exo_info_progr" ):wnd()
+      --exo_progressbar:SetOriginalRect( 150, 2034, exo_charge_num*3 , 7 )
+      --exo_progressbar:SetStretchTexture( true )
+        exo_progr = hud:GetCustomStatic( "exo_info" ):wnd()
+        windows.del_simple_statics( exo_progr )
+        windows.simple_static( exo_progr, "exo_1", { 18, 42, 20, 16 }, exo_progr_text, { 255, 0, 255, 0 } )
+    end
+  end
+  schedule.add( "info_timer", "razgruzka.end_use_info()", after )
+end
+
+function end_use_info()
+  local hud = get_hud()
+  disp_flag = false
+  move_static_weapon( -800 )
+  local static = hud:GetCustomStatic( "hud_info" )
+  local exo_static = hud:GetCustomStatic( "exo_info" )
+  --local exo_static_progr = hud:GetCustomStatic( "exo_info_progr" )
+  if static then
+    wnd_info = static:wnd()
+    wprintf( " end_use_info(), removing statics...\n~C0A %s~C07", lua_traceback(' ') )
+    windows.del_simple_statics( wnd_info )    
+    hud:RemoveCustomStatic( "hud_info" )
+  end   
+  if exo_static then
+  --if exo_static and exo_static_progr then
+    exo_progr = exo_static:wnd()
+    windows.del_simple_statics( exo_progr ) 
+    hud:RemoveCustomStatic( "exo_info" )
+    --hud:RemoveCustomStatic( "exo_info_progr" )
+  end 
+end
+
+function set_info()
+  local ammo_1, ammo_2
+  local wpn = db.actor:item_in_slot( 1 )  
+  if wpn ~= nil then
+    ammo_1 = vergas_lib.str_explode(
+      ",",
+      vergas_lib.set_pr_from_config_str( wpn:section(), "ammo_class" ),
+      true
+    )
+  else
+    ammo_1 = "?"
+  end  
+  wpn = db.actor:item_in_slot( 2 )
+  if wpn ~= nil then
+    ammo_2 = vergas_lib.str_explode(
+      ",",
+      vergas_lib.set_pr_from_config_str( wpn:section(), "ammo_class" ),
+      true
+    )
+  else
+    ammo_2 = "?"
+  end  
+  local tbl_info = {}
+  local i
+  for i = 1, 6 do
+    table.insert( tbl_info, 0 )
+  end
+  for i = 0, db.actor:object_count() - 1 do
+    local obj = db.actor:object( i )
+    if obj then
+      local sel = selection_items( ammo_1, ammo_2, obj:section() )
+      if sel >= 1 and sel <= 6 then
+         tbl_info[ sel ] = tbl_info[ sel ] + nlc_container.amount_in_batch( obj )      
+      end
+    end
+  end
+  return tbl_info
+end
+
+function selection_items( ammo_1, ammo_2, section )
+  local i
+  if section == "antirad" or section == "bandage" or section == "energy_drink" then
+    return 1
+  end
+  if string.sub( section, 1, 6 ) == "medkit" then
+    return 2
+  end
+  if is_ammo( section ) then
+    local flag = false
+    if ammo_1 ~= "?" then
+      for i = 1, table.getn( ammo_1 ) do
+        if ammo_1[ i ] == section then flag = true end
+      end
+    end
+    if flag then return 3 end
+    if ammo_2 ~= "?" then
+      for i = 1, table.getn( ammo_2 ) do
+        if ammo_2[ i ] == section then flag = true end
+      end
+    end
+    if flag then return 4 end  
+  end
+  if is_ammo_gren( section ) then return 5 end  
+  if is_grenade  ( section ) then return 6 end
+  return 0
+end
+
+function move_static_weapon( param )
+  if xr_build_id > 5500 then
+     ui_params.move_mainwnd_static( "static_weapon", nil, param )                       
+     return
+  end     
+--[[
+    local expvar = GetProcAddr("xr_3da.exe", "?g_pGameLevel@@3PAVIGame_Level@@A")
+    g_pGameLevel = nil
+    if #expvar <= 9 then -- $ + HEX
+       g_pGameLevel = ReadDMA(expvar, 0, "safe_ptr")
+    end
+    if g_pGameLevel ~= nil then
+       
+    
+       local level = CalcPtr(g_pGameLevel, "$18", "+")
+       local mgr = ReadDMA(level, "$130", "safe_ptr")
+       local ui = ReadDMA(mgr, "$18", "safe_ptr")
+       local wnd = ReadDMA(ui,"$38", "safe_ptr")
+       local rect = CalcPtr(wnd, "$2678", "+") 
+       rect = CalcPtr(rect, 5, "+")
+       if rect ~= nil then
+          WriteDMA (rect,  4, param, "float")  -- top
+       end
+    end
+--]]    
+end
+
+-- переустанавливает или добавляет количество для заданной секции
+function reset_records( tbl_tmp, section, sum ) 
+  local record, record_nil = 0, 0
+  local i
+  for i, rec in ipairs( tbl_tmp ) do
+    if rec.sect == section then
+       record = i
+    elseif rec.sect == "?" then
+      if record_nil == 0 then
+        record_nil = i
+      end
+    end
+  end
+  if record ~= 0 then
+    tbl_tmp[ record ].count = tbl_tmp[ record ].count + sum
+  else
+    if record_nil ~= 0 then
+      tbl_tmp[ record_nil ].sect  = section
+      tbl_tmp[ record_nil ].count = sum
+    else
+      table.insert( tbl_tmp, make_record( section, sum ) )      
+    end
+  end
+  return tbl_tmp
+end
+
+--  старая версия для работы с неоднородными данными в векторе
+--  Обработка таблиц при выгрузке из подсумка/разгрузки
+--  с использованием кнопок "выгрузить"
+function reset_table(tbl_tmp,section,sum) 
+  local record, record_nil = 0, 0
+  local i
+  for i = 1, table.getn( tbl_tmp ), 2 do
+    if tbl_tmp[ i ] == section then
+      record = i
+    elseif tbl_tmp[ i ] == "?" then
+      if record_nil == 0 then
+        record_nil = i
+      end
+    end
+  end
+  if record ~= 0 then
+    tbl_tmp[ record + 1 ] = tbl_tmp[ record + 1 ] + sum
+  else
+    if record_nil ~= 0 then
+      tbl_tmp[ record_nil ] = section
+      tbl_tmp[ record_nil + 1 ] = sum
+    else
+      table.insert( tbl_tmp, section )
+      table.insert( tbl_tmp, sum )
+    end
+  end
+  return tbl_tmp
+end
+
+function set_record_nil( tbl_tmp, param )
+  local i
+  for i = 1, ( param - table.getn( tbl_tmp ) ) / 2 do
+    table.insert( tbl_tmp, "?" )
+    table.insert( tbl_tmp, 0 )
+  end
+  return tbl_tmp
+end
+
+function add_nope_records( tbl_tmp, param )
+  local i
+  for i = 1, ( param - table.getn( tbl_tmp ) ) do
+    table.insert( tbl_tmp, make_record() )    
+  end
+  return tbl_tmp
+end
+
+function list_step_left( tbl, param )
+  if param and param == #tbl then return tbl end                                             
+  local rec = tbl[ 1 ]
+  wprintf( " #DBG: step_left param = %s ", param or 'nil' )
+  table.remove( tbl, 1 )    -- убрать с начала
+  table.insert( tbl, rec )  -- вставить в конец 
+  return tbl
+end
+
+function list_step_right( tbl, param )
+  if param and param == #tbl then return tbl end
+  local last = table.getn( tbl )  
+  local rec = tbl[ last ]    
+    wprintf( " #DBG: step_right param = %s ", param or 'nil' )
+    table.remove( tbl )          -- убрать с конца
+    table.insert( tbl, 1, rec )  -- вставить в начало                
+  return tbl
+end
+
+-- ротация векторов с парами значений для старых скриптов
+function step_left( tbl, param )
+  local ammo = tbl[ 1 ]
+  local sum  = tbl[ 2 ]
+  local i
+  if param ~= nil and table.getn( tbl ) == param then
+    return tbl
+  end
+  for i = 1, table.getn( tbl ) - 2, 2 do
+    tbl[ i ]     = tbl[ i + 2 ]
+    tbl[ i + 1 ] = tbl[ i + 3 ]
+  end
+  tbl[ table.getn( tbl ) - 1 ] = ammo
+  tbl[ table.getn( tbl ) ]     = sum
+  return tbl
+end
+
+function step_right( tbl, param )
+  local ammo = tbl[ table.getn( tbl ) - 1 ]
+  local sum  = tbl[ table.getn( tbl ) ]
+  local i
+  if param ~= nil and table.getn( tbl ) == param then
+    return tbl
+  end
+  for i = table.getn( tbl ) - 3, 1, -2 do
+    tbl[ i + 2 ] = tbl[ i ]
+    tbl[ i + 3 ] = tbl[ i + 1 ]
+  end
+  tbl[ 1 ] = ammo
+  tbl[ 2 ] = sum
+  return tbl
+end
+
+function get_capacity_pouch( section )
+  local max_mag = 0
+  local info_capacity = vergas_lib.str_explode(
+          "|",
+          vergas_lib.set_pr_from_config_str( "podsumok", "max_capacity" ),
+          true
+  )
+  if section:sub( 1, 4 ) == "ammo" then
+    -----------------123456789
+    --if section == "ammo_12x70_buck" or section == "ammo_12x76_zhekan" or  
+    --   section == "ammo_12x76_dart" or section == "ammo_12x70_new" then
+    if section:sub( 6, 9 ) == "12x7" then        
+      max_mag = info_capacity[ 4 ]
+    elseif is_ammo_gren( section ) then
+      max_mag = info_capacity[ 6 ]
+    elseif section == "ammo_og-7b" then
+      max_mag = info_capacity[ 7 ]
+    elseif section == "ammo_7.62x54r" then
+      max_mag = info_capacity[ 8 ]
+    elseif section == "ammo_gauss" then
+      max_mag = info_capacity[ 9 ]
+    else
+      max_mag = info_capacity[ 1 ]
+    end
+    --- ammo end ---
+  elseif section:sub( 1, 7 ) == "antirad" then
+    max_mag = info_capacity[ 10 ]
+  elseif section:sub( 1, 6 ) == "energy" then
+    max_mag = info_capacity[ 11 ] 
+  elseif is_medical( section ) then
+    if section == "bandage" then
+      max_mag = info_capacity[ 3 ]
+    elseif section == "medkit" then
+      max_mag = info_capacity[ 2 ]
+    end
+  elseif is_grenade( section ) then
+    max_mag = info_capacity[ 5 ]        
+  end
+  if 0 == max_mag then
+    wprintf( "#DBG: (get_capacity_pouch) nothing detected for~C0A %s~C07 ", sect )
+  end
+  return tonumber( max_mag )
+end
+
+function get_capacity_mtv( section, btn )
+  local max_mag = 0
+  local info_capacity = vergas_lib.str_explode(
+          "|",
+          vergas_lib.set_pr_from_config_str( "razgruzka", "max_capacity" ),
+          true
+  )
+  if is_ammo( section ) then
+    if section:sub( 6, 9 ) == "12x7" then
+      if btn <= 3 then
+        max_mag = info_capacity[ 10 ]
+      else  
+        max_mag = info_capacity[ 7 ]
+      end
+    elseif is_ammo_gren( section ) then
+      max_mag = info_capacity[ 9 ]
+    else
+      if btn <= 3 then
+        max_mag = info_capacity[ 1 ]
+      else
+        max_mag = info_capacity[ 2 ]
+      end
+    end
+  elseif section:sub( 1, 6 ) == "medkit" then
+    if section == "medkit" then
+      max_mag = info_capacity[ 3 ]
+    elseif section == "medkit_scientic" then
+      max_mag = info_capacity[ 5 ]
+    elseif section == "medkit_army" then
+      max_mag = info_capacity[ 4 ]
+    end
+  elseif   section == "bandage" then
+    max_mag = info_capacity[ 6 ]
+  elseif   section == "antirad" or section == "drag_cat_eyes" then
+    max_mag = info_capacity[ 12 ]
+  elseif   section:sub( 1, 7 ) == "grenade" then
+    max_mag = info_capacity[ 8 ]
+  elseif   section:sub( 1, 8 ) == "detector" then
+    max_mag = info_capacity[ 11 ]
+  elseif   section:sub( 1, 6 ) == "energy" then
+    max_mag = info_capacity[ 13 ]
+  else  
+    wprintf( "#DBG: (get_capacity_mtv) nothing detected for~C0A %s~C07 ", sect ) 
+  end
+  return tonumber( max_mag )
+end
+
+function init_module()
+  -- update_avail_items(false)
+  nlc_vars.razgruzka = nil
+  nlc_vars.podsumok  = nil
+end 
+
+function start_gun_reload() -- gan == gun???
+  if ( db.actor:active_slot() == 1 or db.actor:active_slot() == 2 ) then
+    schedule.add( "gun_reload", "razgruzka.end_gun_reload()", 5000 )
+    bind_flag = false
+  end
+end
+
+function end_gun_reload()
+  bind_flag = true
+end
+
+function start_cont_reload()
+  schedule.add("cont_reload", "razgruzka.end_cont_reload()", 500 )
+  bind_flag = false
+end
+
+function end_cont_reload()
+  if bind_flag then return end
+  open_inv_raz_pod = false
+  bind_flag = true
+end
+
+
+

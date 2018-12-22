@@ -1,0 +1,130 @@
+----------------------------------------------------------------------------------------------------
+-- Author: Jim
+-- ƒоработка: 2006 @ Oleg Kreptul (Haron) okreptul@yahoo.com
+-- ƒоработка: 2009 @ Gonarh генераци€ рандомного ключа ^_^
+
+----------------------------------------------------------------------------------------------------
+code_door1 = "codedoor_key_0003"
+code_door2 = "rad_code_door_keylock"
+code_door3 = "gonarh_super_button"
+code_door4 = "codedoor_key"
+
+numpad = nil
+assigned = 0
+
+class "codepad"
+
+function codepad:__init(obj, storage)
+	self.object= obj
+	self.st= storage
+end
+
+function codepad:reset_scheme()
+	self.object:set_nonscript_usable(false)
+end
+
+function codepad:update(delta)
+end
+
+function codepad:use_callback(obj, who)
+	if obj:name()==code_door1 then 
+		if trader_other_job.has_multitool() then
+			if has_alife_info(self.st.infop) then
+				all_spawn.send_tip("ƒверь заблокирована, дождитесь смены кодов доступа, это произойдет через 2-3 часа",nil,nil,15,"teleporter", "nil_osc")
+				snd_obj = xr_sound.get_safe_sound_object([[device\decoder]])
+				snd_obj:play(db.actor, 0, sound_object.s2d)
+				return
+			else
+				numpad = ui_numpad_with_oscillograph.numpad(self) 
+			end
+		else 
+			numpad = ui_numpad.numpad(self) 
+		end
+	elseif obj:name()==code_door2 then 
+		if trader_other_job.has_multitool() and has_alife_info("sakharov_quest_warlab") then
+			if has_alife_info(self.st.infop) then
+				all_spawn.send_tip("ƒверь заблокирована, дождитесь смены кодов доступа, это произойдет через 2-3 часа",nil,nil,15,"teleporter", "nil_osc")
+				snd_obj = xr_sound.get_safe_sound_object([[device\decoder]])
+				snd_obj:play(db.actor, 0, sound_object.s2d)
+				return
+			else 
+				numpad = ui_numpad_with_oscillograph.numpad(self) 
+			end
+		else 
+			numpad = ui_numpad.numpad(self) 
+		end 
+	elseif string.find(obj:name(), code_door3,1,true) then
+		if self.st.on_code then 
+			xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist) 
+		end
+		obj:set_tip_text("ѕереключение произведено")
+		return
+	elseif string.find(obj:name(), code_door4,1,true) then 
+		if has_alife_info(self.st.infop) then
+			all_spawn.send_tip("ƒверь заблокирована, дождитесь смены кодов доступа, это произойдет через 2-3 часа",nil,nil,15,"teleporter", "nil_osc")
+			snd_obj = xr_sound.get_safe_sound_object([[device\decoder]])
+			snd_obj:play(db.actor, 0, sound_object.s2d)
+			return
+		else 
+			numpad = ui_numpad_with_oscillograph.numpad(self)
+		end
+	else 
+		numpad = ui_numpad.numpad(self)
+	end
+	level.start_stop_menu(numpad,true)
+end
+
+function codepad:OnNumberReceive(text)
+	if self.st.code then
+		if tonumber(text)==self.st.code then
+			if self.st.on_code then 
+				xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist) 
+			end
+		end
+	else
+		local condlist = self.st.on_check_code[text]
+		if condlist then 
+			xr_logic.pick_section_from_condlist(db.actor, self.object, condlist)
+		end
+	end
+	assigned = 0
+end
+
+function codepad:deactivate()
+	self.object:set_tip_text("")
+end
+
+function add_to_binder(npc, ini, scheme, section, storage)
+	local new_action = codepad(npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.tips= utils.cfg_get_string(ini, section, "tips", npc, false, "", "st_codelock")
+	npc:set_tip_text(st.tips)
+	st.code = utils.cfg_get_number(ini, section, "code", npc, false)
+	if st.code then
+		st.on_code = xr_logic.cfg_get_condlist(ini, section, "on_code", npc)
+	else
+		st.on_check_code = {}
+		local i = 1
+		local cc = xr_logic.cfg_get_string_and_condlist(ini, section, "on_check_code" .. i, npc)
+		if npc:name()==code_door1 then 
+			st.on_check_code[code_door1] = cc.condlist
+			st.infop = "bunker_door_locked"
+			st.code_door = code_door1
+		elseif npc:name()==code_door2	then 
+			st.on_check_code[code_door2] = cc.condlist
+			st.infop = "radar_to_warlab_door_locked"
+			st.code_door = code_door2
+		else
+			while cc do
+				st.on_check_code[cc.v1] = cc.condlist
+				i = i + 1
+				cc = xr_logic.cfg_get_string_and_condlist(ini, section, "on_check_code" .. i, npc)
+			end
+		end
+	end
+end

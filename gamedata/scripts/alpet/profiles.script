@@ -1,0 +1,27 @@
+function profiles.bad_profile()
+ RunCommand("DETECTED_BAD_PROFILE")
+end
+
+function profiles.bad_signature()
+ db.actor:give_game_news( "Файл профиля не подписан!", "ui\\ui_iconsTotal", Frect():set(498,280,83,47), 0, 3000 )
+ profiles.bad_profile()
+end
+
+function profiles.stop_game()
+ RunCommand("DO_GAME_UNLOAD")    
+end
+
+function profiles.test_player(context)
+ RunCommand("DO_TEST_PLAYER", context)
+end
+
+function profiles.init_module()
+end                                
+
+function profiles.late_init()
+ --
+ profiles.test_player(context)   
+end
+
+-- profiles.test_player(2) 
+--]]

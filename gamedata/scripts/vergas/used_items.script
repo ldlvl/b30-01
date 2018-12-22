@@ -1,0 +1,180 @@
+--[[
+использование гаджетов
+Vergas
+© NLC 6.0
+]]--
+
+local flag_use_gadget = true 			-- true - можно использовать
+local sleep_timer						-- если не равен 0, значит таймер запущен на сон
+
+function set_get_flag_use_gadget(mode, param)
+  if param ~= nil then
+     set_use_gadget(param)
+  end
+  return flag_use_gadget
+end
+
+function set_use_gadget(flag)
+  if flag_use_gadget ~= flag then
+     wprintf(" flag_use_gadget updated to~C0F %s~C07 from:\n~C0A %s~C07", DumpVar(flag), lua_traceback(' '))
+     flag_use_gadget = flag
+  end
+end
+
+function can_use_gadget()
+  return flag_use_gadget
+end
+
+
+function used_podsumok_razgruzka(section)
+  local spwn
+  open_inv_raz_pod = false
+  if section == "podsumok" then
+    spwn=ui_cheat_podsumok.pouch_dialog(get_hud())
+  else
+    spwn=ui_cheat_razgruzka.mtv_dialog(get_hud())
+  end  
+  flag_use_gadget = false
+  level.start_stop_menu(spwn,true)
+end
+
+function used_klava()
+  local wnd = level.main_input_receiver()
+  level.start_stop_menu(wnd, false)
+  flag_use_gadget = false
+  schedule.add("us_klava", "used_items.made_used_klava()", 1000)
+end
+function made_used_klava()
+  bind_stalker.hide_weapon()
+  level.set_time_factor(0.5)
+  local spwn=vergas_klava.cheat(get_hud())
+  level.start_stop_menu(spwn,true)
+end
+
+function used_notebook_of_artist()
+  local wnd = level.main_input_receiver()
+  level.start_stop_menu(wnd, false)
+  flag_use_gadget = false
+  schedule.add("us_klava", "used_items.made_used_notebook_of_artist()", 1000)
+end
+function made_used_notebook_of_artist()
+  bind_stalker.hide_weapon()
+  local spwn=ui_cheat_notebook.cheat(get_hud())
+  level.start_stop_menu(spwn,true)
+end
+
+function used_self_made_decoder()
+  local wnd = level.main_input_receiver()
+  level.start_stop_menu(wnd, false)
+  flag_use_gadget = false
+  schedule.add("us_coder", "used_items.made_used_self_made_decoder()", 1000)
+end
+function made_used_self_made_decoder()
+  bind_stalker.hide_weapon()
+  local spwn=vergas_decoder.cheat(get_hud())
+  level.start_stop_menu(spwn,true)
+end
+
+function used_watch() 
+  flag_use_gadget = false
+  local spwn = ui_cheat_watch.watch_dialog(get_hud())
+  level.start_stop_menu(spwn, true)
+  params.cond_old=0.1
+  amk_mod.last_condition=0
+  amk_mod.check_armor()
+end
+
+-- function used_watch() 
+--   if vergas_watch.get_flag_watch_open() == true then
+--     ui_cheat_watch.watch_dialog:on_quit()
+--   else
+--     flag_use_gadget = false
+--     local spwn = ui_cheat_watch.watch_dialog(get_hud())
+--     level.start_stop_menu(spwn, true)
+--     params.cond_old=0.1
+--     amk_mod.last_condition=0
+--     amk_mod.check_armor()
+--   end
+-- end
+
+function used_items.used_pda_npc(obj_id)
+  local npc=db.actor
+  local wnd = level.main_input_receiver()
+  level.start_stop_menu(wnd, true)
+  local txt = vergas_pda.get_pda_cdata(obj_id)
+    local serial = SplitStr(txt, '|')[4] or 'nil'
+ 
+    wprintf(" trying activate PDA~C0E %s~C07", serial) 
+  local sobj = alife():create("device_pda_npc",npc:position(),npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+  vergas_pda.set_pda(sobj.id,txt)
+  vergas_pda.set_info_pda(obj_id,sobj.id)
+  vergas_pda.set_tbl_sn()
+  vergas_pda.set_active_pda(serial)
+  flag_use_gadget = false
+  bind_stalker.hide_weapon()
+  vergas_pda.start_search_pda() 
+end
+
+function used_flask_army(flag)
+  --if vergas_masks.get_flag_mask() then
+    flag_use_gadget = false
+    bind_stalker.hide_weapon()
+    local spwn
+    if flag then
+      spwn=ui_cheat_flask.cheat(get_hud())
+    else
+      spwn=ui_cheat_flask_quickly.cheat(get_hud())
+    end
+    level.start_stop_menu(spwn,true)
+  --end  
+end
+
+function used_repair_boxoutfit(obj_id)
+  local rem={}
+  local sobj = alife():object(obj_id)
+  local pk = get_netpk(sobj)
+  local data = pk:get()
+  local str=data.custom_data
+  rem = vergas_lib.str_explode(",",str,true)
+  local out=tonumber(rem[1]) or 0
+  local weap=tonumber(rem[2]) or 0
+  --sak.send_tip("В ремонтном ящике будет:\\nОружейных ремкомплектов - "..weap.." шт.\\nКомплектов для брони - "..out.." шт.",nil,2,5,"g_g","no", "green")
+  sak.repair_boxoutfit(out,weap)
+end
+
+function used_bag_on_belt(flag,flag_h)
+--flag = true - открываю с пополнением сумки
+--flag = false - открываю только на использование(по гор€чей клавише)
+--flag_h = true - руки пр€тать
+--flag_h = false - руки не пр€тать
+  flag_use_gadget = false
+  if flag_h then
+    bind_stalker.hide_weapon()
+  end
+  local spwn
+  if flag then
+    spwn=ui_cheat_bag_on_belt.bag_dialog(get_hud())
+  else
+    spwn=ui_cheat_bag_on_belt_quickly.bag_dialog(get_hud())
+  end
+  level.start_stop_menu(spwn,true)
+end
+
+function used_inventory()           
+  --db.actor:activate_slot(5)
+    --ODS("[~T]. #DBG: used_inventory()")
+  bind_stalker.hide_weapon()
+  flag_use_gadget = false
+  inv_buttons_use.imitation_opening_inventory()
+  local spwn = ui_cheat_inv_buttons.rummaged(get_hud())
+  level.start_stop_menu(spwn,true)
+  vergas_lib.flag_inventory=false
+  schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
+end
+
+function sleep_management()
+  sleeping_bag.stop_pp(2002)
+  sleep_manager.sleep_nine_hours()
+  --local spwn=ui_cheat.cheat(get_hud())
+    --level.start_stop_menu(spwn,true)
+end

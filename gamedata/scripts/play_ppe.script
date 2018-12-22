@@ -1,0 +1,91 @@
+--[[-------------------------------------------------
+File:								play_ppe.script
+Description:	script for PpeEditor
+Lasd edit:			14:21 31.05.2008
+Author:					SmanxX1
+Version:				1.0
+--------------------------------------------------]]
+class "ppe"(CUIScriptWnd)
+
+local curr_ppe=''
+
+function ppe:__init(owner,objid) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function ppe:__finalize() end
+
+function ppe:InitControls()
+	self:Init(300,200,550,450)
+	local xml=CScriptXmlInit()
+	xml:ParseFile("ui_ppe.xml")
+	xml:InitStatic("background", self)
+	self:Register(xml:Init3tButton("caption",self),"caption")
+	self:Register(xml:Init3tButton("btn_1",self),"btn_1")
+	self:Register(xml:Init3tButton("btn_2",self),"btn_2")
+	self:Register(xml:Init3tButton("btn_quit",self),"btn_quit")
+	self:Register(xml:InitEditBox("edit_box",self),"edit_box")
+	
+	self:GetEditBox("edit_box"):SetText(curr_ppe)
+end
+
+function ppe:InitCallBacks()
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.ppe_enb, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.ppe_dis, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+end
+
+function ppe:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+		if dik==DIK_keys.DIK_RETURN then
+			self:ppe_enb()
+		end
+	end
+	return true
+end
+
+
+function ppe:ppe_enb()
+	local edit_box=self:GetEditBox("edit_box")
+	local str=edit_box:GetText()
+	local qt=true
+	if self:check_game() then
+		curr_ppe=edit_box:GetText()
+		level.add_pp_effector(curr_ppe, 2009, true)
+	else
+		edit_box:SetText("Ошибка!!! Игра не загружена!")
+		qt=false
+	end
+	
+	if qt then self:on_quit() end
+end
+
+function ppe:ppe_dis()
+	if self:check_game() then
+		level.remove_pp_effector(2009)
+	end	
+end
+
+function ppe:on_quit()
+	local console = get_console()
+	self:GetHolder():start_stop_menu(self.owner, true)
+	self:GetHolder():start_stop_menu(self,true)
+	self.owner:Show	(true)
+	if self:check_game() then
+		console:execute("main_menu off")
+	end
+end
+
+function ppe:check_game()
+	if level.present() and(db.actor~=nil) and db.actor:alive() then
+		return true
+	else
+		return false
+	end
+end

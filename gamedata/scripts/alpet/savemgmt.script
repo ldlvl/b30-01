@@ -1,0 +1,50 @@
+-- alpet: второстепенные элементы сценария убраны в перехватчик. 
+ODS('[~T]. #DBG: Protected script (re)loaded...')
+
+function insert_cp(id)
+ RunCommand('INNER_CODE', 'insert_cp', id)  
+end
+
+function remove_cp(id)
+ RunCommand('INNER_CODE', 'remove_cp', id)   
+end 
+
+function savemgmt.ignite_camp(pos, gvid, lvid)
+ RunCommand('INNER_CODE', 'ignite_camp', pos, gvid, lvid)     
+end 
+
+function savemgmt.ignite_candle(pos, gvid, lvid)
+ RunCommand('INNER_CODE', 'ignite_candle', pos, gvid, lvid) 
+end
+
+function try_save() 
+ RunCommand('INNER_CODE', 'try_save')
+end
+
+_G.try_save = try_save
+
+function savemgmt.init_module()
+ RunCommand('START_CRYPTO', 'savemgr')
+ RunCommand('INNER_CODE',   'init_savemgr')
+ return true
+end
+
+function savemgmt.init_kcb()
+ hot_key = vergas_lib.set_key("bind quick_save",18,1)
+ SetKbdCallback ("try_save", hot_key)
+end
+
+function savemgmt.late_init()
+ RunCommand('INNER_CODE',   'late_init_savemgr')
+end
+
+function savemgmt.on_wakeup()
+ RunCommand('INNER_CODE', 'save_after_sleep') 
+end 
+
+function savemgmt.on_removed_objs(id_list)
+ for i,id in ipairs(id_list) do
+  remove_cp(id)
+ end
+end
+

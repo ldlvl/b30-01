@@ -1,0 +1,318 @@
+local treasure_manager = nil
+local n_rank 
+
+g_ini_file = ini_file("misc\\treasure_manager.ltx")
+
+
+function parse_spawns(line)
+	if line==nil then
+		return {}
+	end
+	local t = se_respawn.parse_names(line)
+	local n = table.getn(t)
+	local ret_table = {}
+	local k = 1
+	while k <= n do
+		local spawn = {}
+		spawn.section = t[k]
+		if t[k+1]~=nil then
+			local p = tonumber(t[k+1])
+			if p then
+				spawn.prob = p
+				k = k + 2
+			else
+				spawn.prob = 1
+				k = k + 1
+			end
+		else
+			spawn.prob = 1
+			k = k + 1
+		end
+		table.insert(ret_table, spawn)
+	end
+	return ret_table
+end
+
+
+
+
+
+class "CTreasure"
+function CTreasure:__init()
+    
+	self.ini = g_ini_file 
+	if not self.ini:section_exist("list") then
+		abort("There is no section [list] in treasure_manager.ltx")
+	end
+	local n = self.ini:line_count("list")
+	local id, value = "",""
+	local r_trs_item = ReadIni(db.stor_ltx, "stor", "r_treas_items") or "1"
+	self.treasure_info = {}
+	for i=0,n-1 do
+		result, id, value	= self.ini:r_line("list",i,"","")
+		self.treasure_info[id] = {}
+		self.treasure_info[id].target		= utils.cfg_get_number(self.ini, id, "target", nil, true)
+		self.treasure_info[id].name			= utils.cfg_get_string(self.ini, id, "name", nil, true, "")
+		self.treasure_info[id].description	= utils.cfg_get_string(self.ini, id, "description"..r_trs_item, nil, true, "")
+		self.treasure_info[id].items		= parse_spawns(utils.cfg_get_string(self.ini, id, "items"..r_trs_item, nil, true, ""))
+		local community	= parse_names(utils.cfg_get_string(self.ini, id, "community"..r_trs_item, nil, false, "", "stalker"))
+		self.treasure_info[id].community = {}
+		for k,v in pairs(community) do
+			self.treasure_info[id].community[v] = true
+		end
+		if self.treasure_info[id].items==nil then
+			abort("cant find 'items' in %s", id)
+		end
+		self.treasure_info[id].condlist		= xr_logic.parse_condlist(db.actor, "treasure_manager", "condlist", utils.cfg_get_string(self.ini, id, "condlist", nil, false, "", ""))
+		self.treasure_info[id].active = false
+		self.treasure_info[id].done = false
+	end
+	self.treasure_by_target = {}
+	for k,v in pairs(self.treasure_info) do
+		self.treasure_by_target[v.target] = k	
+	end
+end
+
+function CTreasure:offline_give_treasure(npc)
+	local res, boxlist = amk_offline_alife.give_treasure(npc)
+	if res then 
+		if boxlist and table.getn(boxlist) > 0 then
+			for iter, box_story_id in pairs(boxlist) do
+				local k = self.treasure_by_target[box_story_id]
+				if k~=nil then 
+					self.treasure_info[k].active = true
+					self.treasure_info[k].done = true
+				end
+			end
+		end
+		return true
+	end
+	return false
+end
+
+function CTreasure:use(npc,community,rang_n)
+	local shron
+	local rarets 
+	local comm
+	if npc~=nil then
+		if self:offline_give_treasure(npc) then 
+			shron = 0
+			return shron
+		end
+		comm = npc:character_community()
+		n_rank = npc:character_rank()
+	else 
+		n_rank = rang_n or 0
+		comm = community
+	end
+	local avail = {}
+	local tr_sum = 0
+	for k,v in pairs(self.treasure_info) do
+		if v.done==false and v.active==false and v.community[comm]==true then
+			local treasure_prob = xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)
+			if treasure_prob=="" or treasure_prob==nil then
+				treasure_prob = 5
+			end
+			if tonumber(treasure_prob) >= 0 and
+			v.community[comm]==true and
+			v.active==false
+			then
+				if tonumber(treasure_prob)==100 then
+					shron = k
+				else
+					table.insert(avail, {k = k, prob = treasure_prob})
+					tr_sum = tr_sum + treasure_prob
+				end
+			end
+		end
+	end
+	if tr_sum==0 or lua_random() < 0.65 then
+		shron = 0
+		return shron
+	end
+	local tr_w = lua_random(tr_sum)
+	for k,v in pairs(avail) do
+		tr_w = tr_w - v.prob
+		if tr_w <= 0 then
+			shron = v.k
+			break
+		end
+	end
+	
+	return shron
+ 
+end
+function CTreasure:check()
+	for k,v in pairs(self.treasure_info) do
+		self:give_treasure(k)
+	end
+end
+
+function CTreasure:give_treasure(k)
+	local v = self.treasure_info[k]
+	local obj = alife():story_object(v.target)
+	if obj~=nil and self.treasure_info[k].done~=true then
+		sak.send_treasure(v.name)
+		local text = "%c[255,238,155,23]"..game.translate_string(v.name).."\\n".."%c[default]"..game.translate_string(v.description)
+		local spot=lua_random(1,4)
+			level.map_add_object_spot_ser(obj.id, "crlc_big_treasure"..spot, text)
+		local b=sak.day_shmoney
+		while b>4 do b=b-4 end
+		for kk,vv in pairs(v.items) do
+			for i=1,vv.prob do
+				if vv.section=="capsule" then vv.section=sak_dialog.treasure_any_capsule() end
+				if string.find(vv.section,"^af_") and not string.find(vv.section,"_dummy_",1,true) and not string.find(vv.section,"_1",1,true) and not string.find(vv.section,"_2",1,true) and not string.find(vv.section,"_3",1,true) and not string.find(vv.section,"_4",1,true) and not string.find(vv.section,"_dyn",1,true) and not string.find(vv.section,"_new",1,true) and not string.find(vv.section,"full_akkum",1,true) then
+				vv.section=vv.section.."_dyn"..b.."d"
+				b=b+1 if b>4 then b=1 end
+				end
+				local obj_sp=alife():create(vv.section,obj.position,obj.m_level_vertex_id,obj.m_game_vertex_id,obj.id)
+				if vv.section=="arc_art_box_basic" then
+					sak_dialog.spawn_arts_cont(obj_sp)
+				end
+			end
+		end
+		self.treasure_info[k].active = true
+		self.treasure_info[k].done = true
+		local sim = alife()
+		if obj.online then
+			sim:set_switch_online(obj.id, false)
+			sim:set_switch_offline(obj.id, true)
+			amk.convert_npc[obj.id]=1
+		end
+	else
+	end
+end
+
+function CTreasure:treasure_empty(box, box_story_id)
+	local k = self.treasure_by_target[box_story_id]
+	if k==nil or self.treasure_info[k]==nil then 
+		return
+	end
+		if self.treasure_info[k].active~=false then
+		amk_offline_alife.empty_treasure(box:id())
+	end
+	self.treasure_info[k].active = false
+	if self:named_treasure(self.treasure_info[k])==false then
+		self.treasure_info[k].done = false
+	end
+	for spot=1,4 do
+	level.map_remove_object_spot(box:id(), "crlc_big_treasure"..spot)
+	end
+end
+
+function CTreasure:save(p)
+	local tmp = BAD_OBJ_ID
+	p:w_u16(tmp)
+	amk_offline_alife.save(p)
+	local size = 0
+	for k,v in pairs(self.treasure_info) do
+		size = size + 1
+	end
+	p:w_u16(size)
+	for k,v in pairs(self.treasure_info) do
+		p:w_u16(v.target)
+		p:w_bool(v.active)
+		p:w_bool(v.done)
+	end
+end
+
+function CTreasure:load(p)
+	local t = p:r_u16()
+	if t==BAD_OBJ_ID then
+		amk_offline_alife.load(p)
+		t = p:r_u16()
+	end
+	if t and t>0 then
+		for i = 1,t do
+			local k = self.treasure_by_target[p:r_u16()]
+			self.treasure_info[k].active = p:r_bool()
+			self.treasure_info[k].done = p:r_bool()
+		end
+	end
+end
+
+function CTreasure:named_treasure(v)
+ if	v.name=="agr_secret_0000_name" --Тайник Серого
+	or v.name=="bar_secret_0011_name" --Тайник Арни
+	or v.name=="esc_secret_0013_name" --Тайник Ворпала
+	or v.name=="gar_secret_0002_name" --Вещи Гризли
+	or v.name=="gar_secret_0011_name" --Склад группы Стрелка
+	or v.name=="gar_secret_0021_name" --Рюкзак Дохляка
+	or v.name=="pri_secret_0003_name" --Хабар Клыка
+	or v.name=="pri_secret_0004_name" --Запасы лидера Свободы
+	or v.name=="rad_secret_0000_name" --Клад Угрюмого
+	or v.name=="rad_secret_0004_name" --Запас группы отчаянных
+	or v.name=="ros_secret_0015_name" --Тайник Счастливчика
+	or v.name=="ros_secret_0018_name" --Ящик с медикаментами
+	or v.name=="val_secret_0028_name" --Тайник Борова
+	or v.name=="x18_secret_0000_name" --Тайник Копченого
+	or v.name=="yan_secret_0011_name" --Тайник учёного
+	or v.name=="val_secret_krysyk_name"
+	or v.name=="agr_secret_krysyk_name"
+	or v.name=="mil_secret_borov_name"
+	or v.name=="mil_secret_kruglov_name"
+	or v.name=="yan_secret_kruglov_name"
+	or v.name=="aver_secret_luber_ammunition_name"
+ then
+	return true
+ else
+	return false
+ end		
+end
+
+function get_treasure_manager()
+	if treasure_manager==nil then
+		treasure_manager = CTreasure()
+	end
+	return treasure_manager
+end
+
+function take_item_from_box(box, box_story_id)
+	get_treasure_manager():treasure_empty(box, box_story_id)
+end
+
+function save(p)
+	get_treasure_manager():save(p)
+end
+function load(p)
+	get_treasure_manager():load(p)
+end
+function clear_treasure_manager()
+	treasure_manager = nil
+end
+
+function CTreasure:dialog(npc)
+	local avail = {}
+	local tr_sum = 0
+	for k,v in pairs(self.treasure_info) do
+		if v.done==false and v.active==false and v.community[npc:character_community()]==true then
+			local treasure_prob = xr_logic.pick_section_from_condlist(db.actor, npc, v.condlist)
+			if treasure_prob=="" or treasure_prob==nil then
+				treasure_prob = 0
+			end
+			if tonumber(treasure_prob) >= 0 and
+			v.community[npc:character_community()]==true and
+			v.active==false
+			then
+				if tonumber(treasure_prob)==100 then
+					self:give_treasure(k)
+				else
+					table.insert(avail, {k = k, prob = treasure_prob})
+					tr_sum = tr_sum + treasure_prob
+				end
+			end
+		end
+	end
+	if tr_sum==0 then
+		return
+	end
+	local tr_w = lua_random(tr_sum)
+	for k,v in pairs(avail) do
+		tr_w = tr_w - v.prob
+		if tr_w <= 0 then
+			self:give_treasure(v.k)
+			WriteIni(db.stor_ltx, "stor", "npc_"..npc:id(), v.k)
+			break
+		end
+	end
+end

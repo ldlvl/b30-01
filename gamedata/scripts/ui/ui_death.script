@@ -1,0 +1,83 @@
+function death_screen()
+    local hud = death_screen_ui(get_hud())
+	level.start_stop_menu(hud, true)
+	vergas_lib.s_play([[music\game_over6]],1)
+end
+
+class "death_screen_ui" (CUIScriptWnd)
+
+function death_screen_ui:__init(owner) super()
+    self.owner = owner
+    self:InitControls()
+    self:InitCallBacks()
+end
+
+function death_screen_ui:__finalize() end
+
+function death_screen_ui:InitControls()
+    self:Init(0,0,1024,768)
+
+    local xml = CScriptXmlInit()
+    xml:ParseFile("ui_death.xml") 
+
+    xml:InitStatic("background", self)
+	xml:InitStatic("cherepuha", self)
+
+	self:Register(xml:Init3tButton("caption", self),"caption")
+    self:Register(xml:Init3tButton("btn_load_last_save", self),"btn_load_last_save") 
+    self:Register(xml:Init3tButton("btn_load", self),"btn_load") 
+    self:Register(xml:Init3tButton("btn_to_mm", self),"btn_to_mm") 
+    --if db.actor.health < 0.9 then -- если здоровье упало, то
+    --self:Register(xml:Init3tButton("btn_4", self),"btn_4") -- кнопка на выздоровления
+    --end
+end
+
+function death_screen_ui:InitCallBacks()
+    self:AddCallback("btn_load_last_save", ui_events.BUTTON_CLICKED, self.On_loadlastsave_clicked, self) 
+    self:AddCallback("btn_load", ui_events.BUTTON_CLICKED, self.On_toloadscreen_clicked, self) 
+    self:AddCallback("btn_to_mm", ui_events.BUTTON_CLICKED, self.On_tomainmenu_clicked, self) 
+    --if db.actor.health < 0.9 then
+    --self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.sleep_ui4, self) -- кнопка идет на sleep_ui4
+    --end
+end
+
+function death_screen_ui:On_loadlastsave_clicked()
+	local    c = get_console()
+	--console:execute  ("main_menu off")
+	c:execute  ("load_last_save")
+	
+end
+
+function death_screen_ui:On_toloadscreen_clicked()
+	local c = get_console()
+	--c:execute("disconnect")
+	if self.load_dlg ==nil then
+		self.load_dlg = ui_load_dialog.load_dialog()
+		self.load_dlg.owner = self
+	end
+  
+	self:GetHolder():start_stop_menu(self.load_dlg, true)
+	self:GetHolder():start_stop_menu(self, true)
+	self:Show(false)
+	
+end
+
+
+function death_screen_ui:On_tomainmenu_clicked()
+	local c = get_console()
+	c:execute("main_menu on")
+end
+
+function death_screen_ui:OnKeyboard(dik, keyboard_action)
+    CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	local bind = dik_to_bind(dik)
+	local console = get_console()
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if bind == 76 then
+			self:On_loadlastsave_clicked()
+		elseif dik == DIK_keys.DIK_ESCAPE then
+            self:On_tomainmenu_clicked()
+		end  
+	end
+  	return true
+end

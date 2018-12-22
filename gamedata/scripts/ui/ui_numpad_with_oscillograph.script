@@ -1,0 +1,272 @@
+class "numpad" (CUIScriptWnd)
+
+local v_idle= nil
+local v_sign= nil
+local c_try = nil
+local p_sign= nil
+local dbc_osc = nil
+local last_cd = nil
+
+local real_code = 0
+local counter_try = 0
+
+local idle = {}
+local sign = {}
+local crk= {}
+
+function save_wh(obj)
+	local t = {}
+	t[1] = obj:GetWidth()
+	t[2] = obj:GetHeight()
+	return t
+end
+
+function load_wh(obj,t)
+	if t==nil then obj:SetWidth(0) else obj:SetWidth(t[1]) end
+	if t==nil then obj:SetHeight(0) else obj:SetHeight(t[2]) end
+end
+
+function generate_symbol(arr, index)
+	local ngen= lua_random(1,9)
+	local found = false
+	for i = 1, index-1 do
+		if (arr[i] > 0) and (arr[i]==ngen) then
+			found = true
+			break
+		end
+	end
+	if found then 
+		return generate_symbol(arr, index)
+	end
+	return ngen
+end
+
+function generate_key()
+	local keys_array = {}
+	local key= ""
+	keys_array[1] = 0 keys_array[2] = 0 keys_array[3] = 0 keys_array[4] = 0
+	for iterator = 1, 4 do 
+		keys_array[iterator] = generate_symbol(keys_array, iterator) 
+	end
+	for iterator = 1, 4 do 
+		key = key..keys_array[iterator] 
+	end
+	return key
+end
+
+function numpad:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+	ph_code.assigned = 1
+end
+
+function numpad:__finalize() end
+
+function numpad:InitControls()
+	self:Init(175,100,596,369)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_osc_graph_wnd.xml")
+	counter_try = 10
+	real_code = generate_key()
+	xml:InitStatic("background", self)
+	v_sign = xml:InitStatic("video_signal", self)
+	sign = save_wh(v_sign)
+	v_idle = xml:InitStatic("video_standby", self)
+	idle = save_wh(v_idle)
+	edit_window = xml:InitStatic("edit_box", self)
+	xml:InitStatic("caption4", self)
+	local dummy = xml:InitStatic("caption6", self)
+	dummy:SetText("дБ")
+	last_cd = xml:InitStatic("caption7", self)
+	last_cd:SetText("")
+	dbc_osc = xml:InitStatic("caption5", self)
+	p_sign= xml:InitStatic("caption2", self)
+	c_try = xml:InitStatic("caption3", self)
+	c_try:SetText("Кол-во доступных попыток : 10")
+	self:Register(xml:Init3tButton("caption1", self),"caption1")
+	self:Register(xml:Init3tButton("crack_it", self),"crack_it")
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")
+	self:Register(xml:Init3tButton("btn_4", self),"btn_4")
+	self:Register(xml:Init3tButton("btn_5", self),"btn_5")
+	self:Register(xml:Init3tButton("btn_6", self),"btn_6")
+	self:Register(xml:Init3tButton("btn_7", self),"btn_7")
+	self:Register(xml:Init3tButton("btn_8", self),"btn_8")
+	self:Register(xml:Init3tButton("btn_9", self),"btn_9")
+	self:Register(xml:Init3tButton("btn_c", self),"btn_c")
+	self:Register(xml:Init3tButton("btn_backspase", self), "btn_backspase")
+	self:Register(xml:Init3tButton("btn_cancel", self), "btn_cancel")
+	btn_crack = self:GetButton("crack_it")
+	btn_crack:SetText("Проверить")
+	crk = save_wh(btn_crack)
+end
+
+function numpad:InitCallBacks()
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,self.OnButton_1_clicked, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,self.OnButton_2_clicked, self)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED,self.OnButton_3_clicked, self)
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED,self.OnButton_4_clicked, self)
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED,self.OnButton_5_clicked, self)
+	self:AddCallback("btn_6", ui_events.BUTTON_CLICKED,self.OnButton_6_clicked, self)
+	self:AddCallback("btn_7", ui_events.BUTTON_CLICKED,self.OnButton_7_clicked, self)
+	self:AddCallback("btn_8", ui_events.BUTTON_CLICKED,self.OnButton_8_clicked, self)
+	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED,self.OnButton_9_clicked, self)
+	self:AddCallback("btn_c", ui_events.BUTTON_CLICKED,self.OnButton_c_clicked, self)
+	self:AddCallback("crack_it",ui_events.BUTTON_CLICKED, self.crack_clicked, self)
+	self:AddCallback("btn_cancel",ui_events.BUTTON_CLICKED, self.OnButton_CANCEL_clicked, self)
+	self:AddCallback("btn_backspase", ui_events.BUTTON_CLICKED, self.OnButton_backspace_clicked, self)
+end
+
+function get_level_power(try_code)
+	if string.len(try_code) < 4 then
+		if string.len(try_code)==3 then try_code="0"..try_code end
+		if string.len(try_code)==2 then try_code="00"..try_code end
+		if string.len(try_code)==1 then try_code="000"..try_code end
+	end
+	local power_signal = 0
+	if try_code==real_code then 
+		return 400
+	else
+		for i=1, 4 do 
+			try_symbol = string.sub(try_code, i, i)
+			for j=1, 4 do
+				real_symbol = string.sub(real_code, j, j)
+				if real_symbol==try_symbol then
+					if j==i then
+						power_signal=power_signal+100 
+					else
+						power_signal=power_signal+10 
+					end
+					break
+				end
+			end
+		end
+	end
+	return power_signal
+end
+
+function numpad:vid_idle()
+	load_wh(v_idle,idle)
+	load_wh(v_sign)
+	local power_signal = get_level_power(edit_window:GetText())
+	last_cd:SetText("Протестированный код : "..edit_window:GetText())			 
+	edit_window:SetText("")
+	p_sign:SetText("Уровень сигнала : "..power_signal.." мА")
+	if power_signal==400 then
+		dimorin.to_log("Код подобран верно")
+		self.owner:OnNumberReceive("16252")
+		self:GetHolder():start_stop_menu(self, true)
+	else
+		c_try:SetText("Кол-во доступных попыток : "..counter_try)
+		if counter_try <= 0 then
+			db.actor:give_info_portion(self.owner.st.infop)
+			all_spawn.send_tip("Дверь заблокирована, дождитесь смены кодов доступа, это произойдет через 2-3 часа",nil,nil,15,"teleporter")
+			snd_obj = xr_sound.get_safe_sound_object([[device\door_servomotor]])
+			snd_obj:play(db.actor, 0, sound_object.s2d)
+			timers.start_timer("osc2",0,2,lua_random(0,59), "**("..self.owner.st.infop..")")
+			if self and self:GetHolder() then 
+				self:GetHolder():start_stop_menu(self, true) 
+			end
+		end
+	end
+	btn_crack = self:GetButton("crack_it")
+	btn_crack:SetText("Проверить")
+	load_wh(btn_crack, crk)
+	ph_code.assigned = 1
+end
+
+function numpad:level_dbc()
+	local lvl_dbc = 0
+	if ph_code.assigned==1 then 
+		lvl_dbc = lua_random(1,5) 
+	else 
+		lvl_dbc = lua_random(10,100) 
+	end
+	dbc_osc:SetText(tostring(lvl_dbc))
+end
+
+function numpad:crack_clicked()
+	snd_obj = xr_sound.get_safe_sound_object([[scripts\radio]])
+	snd_obj:play(db.actor, 0, sound_object.s2d)
+	ph_code.assigned = 2
+	btn_crack = self:GetButton("crack_it")
+	load_wh(btn_crack)
+	btn_crack:SetText("")
+	load_wh(v_idle)
+	load_wh(v_sign,sign)
+	--timers.start_timer("osc",3)
+	ph_code.numpad:vid_idle()
+	counter_try = counter_try - 1
+end
+
+function numpad:AddNumber(number)
+	local text = edit_window:GetText()
+	if text==nil then 
+		text = "" .. number
+	else
+		if string.len(text) > 3 then return end
+		if string.find(text,tostring(number),1,true) then return end
+	text = text .. number
+	end
+	edit_window:SetText(text)
+end
+
+function numpad:OnButton_backspace_clicked()
+	local text = edit_window:GetText() 
+	if text==nil then return end
+	edit_window:SetText(string.sub(text, 1, string.len(text) - 1))
+end
+
+function numpad:OnButton_c_clicked()
+	edit_window:SetText("")
+end
+
+function numpad:OnButton_1_clicked() self:AddNumber(1) end
+function numpad:OnButton_2_clicked() self:AddNumber(2) end
+function numpad:OnButton_3_clicked() self:AddNumber(3) end
+function numpad:OnButton_4_clicked() self:AddNumber(4) end
+function numpad:OnButton_5_clicked() self:AddNumber(5) end
+function numpad:OnButton_6_clicked() self:AddNumber(6) end
+function numpad:OnButton_7_clicked() self:AddNumber(7) end
+function numpad:OnButton_8_clicked() self:AddNumber(8) end
+function numpad:OnButton_9_clicked() self:AddNumber(9) end
+
+function numpad:OnButton_CANCEL_clicked()
+	self.owner:OnNumberReceive("")
+	self:GetHolder():start_stop_menu(self, true)
+end
+
+function numpad:OnKeyboard(dik, keyboard_action)--virtual function
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:GetHolder():start_stop_menu(self,true)
+		end
+		if dik==DIK_keys.DIK_1 or dik==DIK_keys.DIK_NUMPAD1 then
+			self:AddNumber(1)
+		elseif dik==DIK_keys.DIK_2 or dik==DIK_keys.DIK_NUMPAD2 then
+			self:AddNumber(2)
+		elseif dik==DIK_keys.DIK_3 or dik==DIK_keys.DIK_NUMPAD3 then
+			self:AddNumber(3)
+		elseif dik==DIK_keys.DIK_4 or dik==DIK_keys.DIK_NUMPAD4 then
+			self:AddNumber(4)
+		elseif dik==DIK_keys.DIK_5 or dik==DIK_keys.DIK_NUMPAD5 then
+			self:AddNumber(5)
+		elseif dik==DIK_keys.DIK_6 or dik==DIK_keys.DIK_NUMPAD6 then
+			self:AddNumber(6)
+		elseif dik==DIK_keys.DIK_7 or dik==DIK_keys.DIK_NUMPAD7 then
+			self:AddNumber(7)
+		elseif dik==DIK_keys.DIK_8 or dik==DIK_keys.DIK_NUMPAD8 then
+			self:AddNumber(8)
+		elseif dik==DIK_keys.DIK_9 or dik==DIK_keys.DIK_NUMPAD9 then
+			self:AddNumber(9)
+		elseif dik==DIK_keys.DIK_BACK then
+			self:OnButton_backspace_clicked()
+		elseif dik==DIK_keys.DIK_DELETE or dik==DIK_keys.DIK_NUMPADCOMMA then
+			self:OnButton_c_clicked()
+		end
+	end
+	return true
+end

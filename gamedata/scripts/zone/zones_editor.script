@@ -1,0 +1,1173 @@
+xs_netpk = xs_netpk_545
+function attach(sm)
+	sm:subscribe({signal = "on_update",   fun = this.on_update})
+	sm:subscribe({signal = "on_spawn",    fun = this.on_spawn})
+	sm:subscribe({signal = "on_destroy",  fun = this.on_destroy})
+	sm:subscribe({signal = "on_key_down", fun = this.on_key_down})
+end
+auto_attach = true
+local cact = db.actor
+local con = get_console()
+local dev = device()
+local zones = {
+	[clsid.obj_climable]        	 = "net_alife_object_climable", -- CSE_ALifeObjectClimable 
+	--
+	[clsid.script_zone] 	   	 	 = "net_alife_space_restrictor", -- CSE_ALifeSpaceRestrictor
+	[clsid.space_restrictor]    	 = "net_alife_space_restrictor", -- CSE_ALifeSpaceRestrictor
+	[clsid.script_restr] 	     	 = "net_alife_space_restrictor", -- CSE_ALifeSpaceRestrictor
+	--
+	[clsid.level_changer] 	   	 	 = "net_alife_level_changer", -- CSE_ALifeLevelChanger
+	--[clsid.team_base_zone] 	 	 = 4 -- CSE_ALifeTeamBaseZone
+	[clsid.smart_zone] 		 		 = "net_alife_smart_zone", -- CSE_ALifeSmartZone
+	[clsid.respawn] 		     	 = "net_alife_smart_zone", -- CSE_ALifeSmartZone
+	[clsid.smart_terrain]       	 = "net_alife_smart_zone", -- CSE_ALifeSmartZone
+	[clsid.zone] 			   	 	 = "net_alife_custom_zone", -- CSE_ALifeCustomZone
+	--
+	[clsid.torrid_zone] 	   	 	 = "net_alife_torrid_zone", -- CSE_ALifeTorridZone
+	[clsid.ameba_zone] 		 		 = "net_zone_anom", -- CSE_ALifeAnomalousZone 
+	[clsid.nogravity_zone] 	 		 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_dead] 		   	 	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_galantine] 	 		 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_mincer] 	   	 	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_mosquito_bald]  	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_radioactive]    	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_acid_fog] 	   	 	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_galant_s]       	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_mbald_s] 	     	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_mincer_s]       	 = "net_zone_anom", -- CSE_ALifeAnomalousZone
+	[clsid.zone_bfuzz] 		 		 = "net_zone_anom", -- CSE_ALifeZoneVisual
+	--[clsid.zone_campfire] 	   	 = true
+	[clsid.zone_rusty_hair]     	 = "net_alife_zone_visual", -- CSE_ALifeZoneVisual
+	[clsid.zone_bfuzz_s] 	     	 = "net_alife_zone_visual", -- CSE_ALifeZoneVisual
+}
+----------------------------------------------------------------------------------------------------
+function extract_euler_xzy(m)
+	if m.i.y < 1 then
+		if m.i.y > -1 then
+			local az = math.asin(-m.i.y)
+			local ax = math.atan2(m.k.y, m.j.y)
+			local ay = math.atan2(m.i.z, m.i.x)
+			return ax, az, ay
+		else
+			local az = math.pi / 2
+			local ax = -math.atan2(-m.k.x, m.k.z)
+			local ay = 0
+			return ax, az, ay
+		end
+	else
+		local az = -math.pi / 2
+		local ax = math.atan2(-m.k.x, m.k.z)
+		local ay = 0
+		return ax, az, ay
+	end
+end
+function rot_matrix_x(alpha)
+	local tr_matr = matrix():set(
+		vector():set(1,0,0),
+		vector():set(0,math.cos(alpha),-math.sin(alpha)),
+		vector():set(0,math.sin(alpha), math.cos(alpha)),
+		vector():set(0,0,0)
+	)
+	tr_matr._44_ = 1
+	return tr_matr
+end
+function rot_matrix_y(alpha)
+	local tr_matr = matrix():set(
+		vector():set( math.cos(alpha),0,math.sin(alpha)),
+		vector():set(0, 1,0),
+		vector():set(-math.sin(alpha),0,math.cos(alpha)),
+		vector():set(0,0,0)
+	)
+	tr_matr._44_ = 1
+	return tr_matr
+end
+function rot_matrix_z(alpha)
+	local tr_matr = matrix():set(
+		vector():set(math.cos(alpha),-math.sin(alpha),0),
+		vector():set(math.sin(alpha), math.cos(alpha),0),
+		vector():set(0,0,1),
+		vector():set(0,0,0)
+	)
+	tr_matr._44_ = 1
+	return tr_matr
+end
+function scale_matrix(x,y,z)
+	local tr_matr = matrix():set(
+		vector():set(x,0,0),
+		vector():set(0,y,0),
+		vector():set(0,0,z),
+		vector():set(0,0,0)
+	)
+	tr_matr._44_ = 1
+	return tr_matr
+end
+function shear_matrix(a01,a02,a12)
+	local sh_matr = matrix():set(
+		vector():set(1.0,a01,a02),
+		vector():set(0.0,1.0,a12),
+		vector():set(0.0,0.0,1.0),
+		vector():set(0,0,0)
+	)
+	sh_matr._44_ = 1
+	return sh_matr
+end
+function translation_matrix(x,y,z)
+	local tr_matr = matrix():set(
+		vector():set(1,0,0),
+		vector():set(0,1,0),
+		vector():set(0,0,1),
+		vector():set(x,y,z)
+	)
+	tr_matr._44_ = 1
+	return tr_matr
+end
+function make_euler_xzy(ax, az, ay)
+    local xmat = rot_matrix_x(ax)
+    local zmat = rot_matrix_z(az)
+    local ymat = rot_matrix_y(ay)
+
+    return matrix():mul_43(matrix():mul_43(ymat, zmat), xmat)
+end
+
+function mul_43(m1, m2)
+	return matrix():mul_43(m1, m2)
+end
+function transform_tiny(m, v)
+	local res = vector()
+	res.x = m.i.x * v.x + m.k.x * v.z + m.j.x * v.y + m.c.x;
+	res.y = m.k.y * v.z + m.j.y * v.y + m.i.y * v.x + m.c.y;
+	res.z = m.k.z * v.z + m.j.z * v.y + m.i.z * v.x + m.c.z;
+	return res
+end
+function combine_transformations(transl, scale, rotation, shear)
+	return matrix():mul_43(
+		transl,
+		matrix():mul_43(
+			shear,
+			matrix():mul_43(rotation, scale)
+		)
+	)
+end
+function decompose_matrix(m, offset, scale, rotation, shear)
+	offset:set(
+		vector():set(1,0,0), 
+		vector():set(0,1,0), 
+		vector():set(0,0,1), 
+		m.c)
+	offset._44_ = 1.0
+	--
+	local sx = m.i:magnitude()
+	local sy = m.j:magnitude()
+	local sz = m.k:magnitude()
+	scale:set(
+		vector():set(sx,0,0), 
+		vector():set(0,sy,0), 
+		vector():set(0,0,sz), 
+		vector())
+	scale._44_ = 1.0
+	rotation:set(
+		vector():set(m.i:div(sx)),
+		vector():set(m.j:div(sy)),
+		vector():set(m.k:div(sz)),
+		vector())
+	rotation._44_ = 1.0
+	shear:set(matrix():identity())
+end
+function get_xform(cobj)
+	local a = {}
+	for i=0,15 do
+		a[i] = cobj:get_go_float(80 + i*4)
+	end
+	local xform = matrix()
+	xform:set(
+		vector():set(a[0], a[1], a[2]),
+		vector():set(a[4], a[5], a[6]),
+		vector():set(a[8], a[9], a[10]),
+		vector():set(a[12], a[13], a[14])
+	)
+	xform._14_ = 0
+	xform._24_ = 0
+	xform._34_ = 0
+	xform._44_ = 1
+	return xform
+end
+
+local base_box_vertices = {
+	{-.5, -.5, -.5},
+	{-.5, -.5,  .5},
+	{-.5,  .5,  .5},
+	{-.5,  .5, -.5},
+	{ .5,  .5,  .5},
+	{ .5,  .5, -.5},
+	{ .5, -.5,  .5},
+	{ .5, -.5, -.5},
+}
+function build_box_vertices(xformed_box_transformation)
+	local vertices = {}
+	for i,v in ipairs(base_box_vertices) do
+		vertices[i] = transform_tiny(xformed_box_transformation, vector():set(unpack(v)))
+	end
+	return vertices
+end
+function get_all_shapes_data(cobj)
+	local data = {}
+	data.cobj = cobj
+	data.sobj = alife():object(cobj:id())
+	local fun_name = zones[cobj:clsid()]
+	--ASSERT(fun_name, "get_all_shapes_data: unknown zone type")
+	local pk = xs_netpk[fun_name](data.sobj)
+	local row_data = pk:get()
+	local shapes_row_data = row_data.shapes
+	local xform_orig = get_xform(cobj)
+	local xoffset = matrix()
+	local xscale = matrix()
+	local xrot = matrix()
+	local xshear = matrix()
+	decompose_matrix(xform_orig, xoffset, xscale, xrot, xshear)
+	local xform_comp = combine_transformations(matrix():identity(), xscale, xrot, xshear)
+	data.xform = xoffset
+	--
+	data.game_vertex_id = row_data.game_vertex_id
+	data.distance = row_data.distance
+	data.level_vertex_id = row_data.level_vertex_id
+	
+	data.shapes = {}
+	for k = 1, shapes_row_data:count() do
+		local shape = {}
+		data.shapes[k] = shape
+		local shp = shapes_row_data:get(k)
+		if shp:isSphere() then
+			shape.t = shape_type.sphere
+			shape.c = shp.c
+			shape.r = shp.r
+		else
+			shape.t = shape_type.box
+			local m = matrix():set(shp.p1, shp.p2, shp.p3, shp.offset)
+			shape.m = matrix():mul_43(xform_comp, m)
+			shape.v = build_box_vertices(matrix():mul_43(data.xform, shape.m))
+			local offset = matrix()
+			local scale = matrix()
+			local rotation = matrix()
+			local shear = matrix()
+			decompose_matrix(shape.m, offset, scale, rotation, shear)
+			shape.a = {extract_euler_xzy(rotation)}
+			shape.offset = {offset.c.x, offset.c.y, offset.c.z}
+			shape.scale = {scale.i.x, scale.j.y, scale.k.z}
+			shape.shear = {shear.i.y, shear.i.z, shear.j.z}
+			--
+		end
+	end
+	return data
+end
+
+----------------------------------------------------------------------------------------------------
+local function get_particle_name(size, color)
+	return [[zones_editor\]]..size.."_"..color
+end
+-- базовый класс визуализатора элементарного шейпа
+-- задаёт интерфейс и некоторые операции работы с партиклами
+class "shape_visualizator"
+function shape_visualizator:__init(particle_name, particles_number)
+	self.particle_name = particle_name
+	self.particles_number = particles_number
+	self.particles = {}
+	self.current_pos = {}
+	for i=1,self.particles_number do
+		self.particles[i] = particles_object(particle_name)
+		self.current_pos[i] = vector()
+	end
+end
+function shape_visualizator:update()
+	for i=1,self.particles_number do
+		if self.particles[i]:playing() then
+			self.particles[i]:move_to(self.current_pos[i], self.current_pos[i])
+		end
+	end
+end
+function shape_visualizator:start()
+	for i=1,self.particles_number do
+		self.particles[i]:play_at_pos(self.current_pos[i])
+	end
+end
+function shape_visualizator:__finalize()
+	--self:stop()
+end
+function shape_visualizator:stop()
+	for i=1,self.particles_number do
+		if self.particles[i]:playing() then
+			self.particles[i]:stop()
+		end
+	end
+	--self.particle:play_at_pos(vector())
+end
+-- класс визуализации единичного бокса
+class "box_visualizator" (shape_visualizator)
+function box_visualizator:__init(vertices, particle_name) super(particle_name, 12)
+	self.stype = shape_type.box
+	-- данные для отрисовки партикла
+	self.edges = {
+		{vertices[1], vertices[2]},
+		{vertices[2], vertices[3]},
+		{vertices[3], vertices[4]},
+		{vertices[4], vertices[1]},
+		{vertices[5], vertices[6]},
+		{vertices[6], vertices[8]},
+		{vertices[8], vertices[7]},
+		{vertices[7], vertices[5]},
+		{vertices[1], vertices[8]},
+		{vertices[2], vertices[7]},
+		{vertices[3], vertices[5]},
+		{vertices[4], vertices[6]},
+	}
+	self.edge_progress = 0.0
+	self.edge_step = 0.02     -- имеет смысл относительного расстояния между точками партикла
+	-- реальное расстояние будет зависить от длины грани
+end
+
+function box_visualizator:update()
+	for i=1,self.particles_number do
+		local interpolation_factor = self.edge_progress -- + (-0.5 + lua_random()) * self.edge_progress --* 0.2
+		--interpolation_factor = math.max(interpolation_factor, 0.0)
+		--interpolation_factor = math.min(interpolation_factor, 1.0)
+		self.current_pos[i]:lerp(self.edges[i][1], self.edges[i][2], interpolation_factor)
+		self.edge_progress = self.edge_progress + self.edge_step
+		if self.edge_progress >= 1.0 then
+			self.edge_progress = 0
+		end
+	end
+	shape_visualizator.update(self)
+end
+-- класс визуализатора сферы
+class "sphere_visualizator" (shape_visualizator)
+function sphere_visualizator:__init(center, radius, particle_name, pnum) super(particle_name, pnum or 20)
+	self.stype = shape_type.sphere
+	self.center = center
+	self.radius = radius
+	-- данные для отрисовки
+	self.edge_progress = math.pi/2 - 0.5 -- имеет смысл угла в диапазоне [-PI/2, PI/2]
+	self.edge_step = 0.05    -- угловой шаг, чем меньше, тем гуще будут точки
+	-- однако геометрическое расстояние также зависит от радиуса
+end
+local radv = vector() -- для оптимизации
+function sphere_visualizator:update()
+	for i=1,self.particles_number do
+		radv:setHP(math.pi*2.*(i-1)/self.particles_number, self.edge_progress)
+		self.current_pos[i]:set(self.center):mad(radv, self.radius)
+		self.edge_progress = self.edge_progress - self.edge_step
+		if self.edge_progress <= -(math.pi/2 - 0.5) then
+			self.edge_progress = math.pi/2 - 0.5
+		end
+	end
+	shape_visualizator.update(self)
+end
+local dlg
+
+-- класс редактора составного шейпа
+-- хранит всю информацию о шейпах и об объекте
+-- позволяет получать и менять свойства одтельного шейпа а также
+-- добавлять и удалять элементарные шейпы
+-- позволяет экспортировать данные о составном шейпе в текстовый файл и игровой лог
+-- а также сохранять их в виде служебного объекта-рестриктора для последующего редактирования
+class "compound_shape_editor"
+
+function compound_shape_editor:__init(zone_object)
+	dlg.current_zone_name:SetText(zone_object:name())
+	self.data = get_all_shapes_data(zone_object)
+	local pos = zone_object:position()
+	dlg.current_zone_pos:SetText(
+		string.format("pos.: %1.1f, %1.1f, %1.1f  shps#: %d", pos.x, pos.y, pos.z, #self.data.shapes)
+		)
+	for i,shape in ipairs(self.data.shapes) do
+		local editor_item = shape_editor(dlg, self, shape)
+		dlg.shapes_list:AddItem(editor_item)
+	end
+	self:update_items_numbering()
+	self.changed = false
+	self.active_shape = nil
+	self.dalpha = math.pi / 10
+	self.ddist = 0.5
+end
+function get_shape_transformations(shape)
+	return combine_transformations(
+			translation_matrix(unpack(shape.offset)),
+			scale_matrix(unpack(shape.scale)),
+			make_euler_xzy(unpack(shape.a)),
+			shear_matrix(unpack(shape.shear))
+		)
+end
+function update_transformation(shape)
+	shape.m = get_shape_transformations(shape)
+end
+function compound_shape_editor:update_items_numbering()
+	for i,shape in ipairs(self.data.shapes) do
+		shape.num = i
+		shape.editor_item:refresh_controls()
+	end
+end
+function compound_shape_editor:remove_all_shapes()
+	while #(self.data.shapes) > 0 do
+		self:remove_shape(1)
+	end
+end
+function compound_shape_editor:add_new_sphere()
+	local sphere_shape = {}
+	sphere_shape.t = shape_type.sphere
+	sphere_shape.c = vector()
+	sphere_shape.r = 1.0
+	self:add_shape(sphere_shape)
+end
+function compound_shape_editor:add_new_box()
+	local box_shape = {}
+	box_shape.t = shape_type.box
+	box_shape.scale = {1,1,1}
+	box_shape.a = {0,0,0}
+	box_shape.offset = {0,0,0}
+	update_transformation(box_shape)
+	self:add_shape(box_shape)
+end
+function compound_shape_editor:add_shape(shape)
+	table.insert(self.data.shapes, shape)
+	dlg.shapes_list:AddItem(shape_editor(dlg, self, shape))
+	self:update_items_numbering()
+end
+local visible_shapes = {}
+function compound_shape_editor:remove_shape(num)
+	local shape = self.data.shapes[num]
+	if shape.visualizator then
+		table.insert(visible_shapes, shape)
+		--shape.visualizator:stop()
+	end
+	table.remove(self.data.shapes, num)
+	shape.editor_item.shape = nil
+	shape.editor_item.editor = nil
+	shape.editor_item = nil
+	dlg.shapes_list:RemoveItem(num - 1)
+	self:update_items_numbering()
+end
+
+function compound_shape_editor:save()
+	local sobj = alife():create("zone_editor_restrictor", self.data.xform.c, 0, db.actor:game_vertex_id())
+	local pk = xs_netpk.net_alife_space_restrictor(sobj)
+	local table_lc = pk:get()
+	for _,shape in ipairs(self.data.shapes)  do
+		if shape.t == shape_type.box then
+			table_lc.shapes:addBox(shape.m.i, shape.m.j, shape.m.k, shape.m.c)
+		else
+			table_lc.shapes:addSphere(vector():set(shape.c), shape.r)
+		end
+	end
+	pk:set(table_lc)
+end
+local function print_vector_to_log(title, v)
+	log1(title.." = "..v.x..","..v.y..","..v.z)
+end
+
+function compound_shape_editor:export()
+	log1("; cse_abstract properties")
+	print_vector_to_log("position", self.data.xform.c)
+	log1("; cse_alife_object properties")
+	log1("game_vertex_id = "..self.data.game_vertex_id)
+	log1("distance = "..self.data.distance)
+	log1("level_vertex_id = "..self.data.level_vertex_id)
+	log1("; cse_shape properties")
+	local s = "shapes = "
+	for i=0,#self.data.shapes - 1  do
+		s = s.."shape"..i
+		if i ~= #self.data.shapes - 1 then
+			s = s..","
+		end
+	end
+	log1(s)
+	for i,shape in ipairs(self.data.shapes)  do
+		if shape.t == shape_type.box then
+			log1("shape"..(i-1)..":type = box")
+			print_vector_to_log("shape"..(i-1)..":axis_x", shape.m.i)
+			print_vector_to_log("shape"..(i-1)..":axis_y", shape.m.j)
+			print_vector_to_log("shape"..(i-1)..":axis_z", shape.m.k)
+			print_vector_to_log("shape"..(i-1)..":offset", shape.m.c)
+		else
+			log1("shape"..(i-1)..":type = sphere")
+			print_vector_to_log("shape"..(i-1)..":offset", shape.c)
+			log1("shape"..(i-1)..":radius = "..shape.r)
+		end
+	end
+end
+
+function compound_shape_editor:__finalize()
+end
+function compound_shape_editor:show_all()
+	for i,shp in ipairs(self.data.shapes) do
+		shp.editor_item.visualize:SetCheck(true)
+		shp.editor_item:on_visualize()
+	end
+end
+function compound_shape_editor:hide_all()
+	for i,shp in ipairs(self.data.shapes) do
+		shp.editor_item.visualize:SetCheck(false)
+		shp.editor_item:on_visualize()
+	end
+end
+function compound_shape_editor:show_shape(shape, show, part)
+	if shape.visualizator then
+		shape.visualizator:stop()
+		shape.visualizator = nil
+	end	
+	if show then
+		self.part_str = part or self.part_str
+		if shape.t == shape_type.sphere then
+			local center = self.data.xform.c:add(shape.c)
+			shape.visualizator = sphere_visualizator(center, shape.r, self.part_str)
+		else
+			local xformed_box_transformation = matrix():mul_43(self.data.xform, shape.m)
+			shape.v = build_box_vertices(xformed_box_transformation)
+			shape.visualizator = box_visualizator(shape.v, self.part_str)
+		end
+		shape.visualizator:start()
+	end
+end
+
+function compound_shape_editor:set_active_shape(shape, active)
+	for i,shp in ipairs(self.data.shapes) do
+		if i ~= shape.num then
+			shp.editor_item.edit:SetCheck(false)
+		end
+	end
+	self.changed = active
+	if active then
+		self.active_shape = shape
+	else
+		self.active_shape = nil
+	end
+end
+function compound_shape_editor:update()
+	for i,shape in ipairs(self.data.shapes) do
+		if shape.visualizator then
+			shape.visualizator:update()
+		end
+	end
+end
+function change_shape(shape, pos, sizes, angles)
+	if shape.t == shape_type.box then
+		if pos then
+			shape.offset[1] = shape.offset[1] + pos[1]
+			shape.offset[2] = shape.offset[2] + pos[2]
+			shape.offset[3] = shape.offset[3] + pos[3]
+		end
+		if sizes then
+			shape.scale[1] = shape.scale[1] + sizes[1]
+			shape.scale[2] = shape.scale[2] + sizes[2]
+			shape.scale[3] = shape.scale[3] + sizes[3]
+		end
+		if angles then
+			shape.a[1] = shape.a[1] + angles[1]
+			shape.a[2] = shape.a[2] + angles[2]
+			shape.a[3] = shape.a[3] + angles[3]
+		end
+		update_transformation(shape)
+	else
+		if pos then
+			shape.c:add(vector():set(unpack(pos)))
+		end
+		if sizes then
+			shape.r = shape.r + sizes[1] + sizes[2] + sizes[3]
+		end
+	end
+	if shape.visualizator then
+		shape.editor_item.editor:show_shape(shape, true)
+	end
+	shape.editor_item:refresh_controls()
+end
+
+function compound_shape_editor:decr_rx()
+	change_shape(self.active_shape, nil, nil, {-self.dalpha,0,0})
+end
+function compound_shape_editor:incr_rx()
+	change_shape(self.active_shape, nil, nil, {self.dalpha,0,0})
+end
+function compound_shape_editor:decr_sx()
+	change_shape(self.active_shape, nil, {-self.ddist,0,0})
+end
+function compound_shape_editor:incr_sx()
+	change_shape(self.active_shape, nil, {self.ddist,0,0})
+end
+function compound_shape_editor:decr_px()
+	change_shape(self.active_shape, {-self.ddist,0,0})
+end
+function compound_shape_editor:incr_px()
+	change_shape(self.active_shape, {self.ddist,0,0})
+end
+--
+function compound_shape_editor:decr_ry()
+	change_shape(self.active_shape, nil, nil, {0,0,-self.dalpha})
+end
+function compound_shape_editor:incr_ry()
+	change_shape(self.active_shape, nil, nil, {0,0,self.dalpha})
+end
+function compound_shape_editor:decr_sy()
+	change_shape(self.active_shape, nil, {0,-self.ddist,0})
+end
+function compound_shape_editor:incr_sy()
+	change_shape(self.active_shape, nil, {0,self.ddist,0})
+end
+function compound_shape_editor:decr_py()
+	change_shape(self.active_shape, {0,-self.ddist,0})
+end
+function compound_shape_editor:incr_py()
+	change_shape(self.active_shape, {0,self.ddist,0})
+end
+--
+function compound_shape_editor:decr_rz()
+	change_shape(self.active_shape, nil, nil, {0,-self.dalpha,0})
+end
+function compound_shape_editor:incr_rz()
+	change_shape(self.active_shape, nil, nil, {0,self.dalpha,0})
+end
+function compound_shape_editor:decr_sz()
+	change_shape(self.active_shape, nil, {0,0,-self.ddist})
+end
+function compound_shape_editor:incr_sz()
+	change_shape(self.active_shape, nil, {0,0,self.ddist})
+end
+function compound_shape_editor:decr_pz()
+	change_shape(self.active_shape, {0,0,-self.ddist})
+end
+function compound_shape_editor:incr_pz()
+	change_shape(self.active_shape, {0,0,self.ddist})
+end
+
+
+local current_zone_editor -- ссылка на текущий редактируемый объект-зону
+
+function on_update()
+	if current_zone_editor then
+		current_zone_editor:update()
+	end
+	for _,shape in ipairs(visible_shapes) do
+		if shape.visualizator then
+			shape.visualizator:update()
+		end
+	end
+end
+
+
+----------------------------------------------------------------------------------------------------
+-- класс элемента списка доступных для редактирования зон
+class "obj_list_item" (CUIListItemEx)
+function obj_list_item:__init(zone, dist) super()
+	self.obj = zone
+	self:SetWndRect(0,0,140,20)
+	-- поле расстояния от центра зоны до актора
+	self.zdist = CUIStatic()
+	self.zdist:SetAutoDelete(true)
+	self:AttachChild(self.zdist)
+	self.zdist:SetWndRect(0,0,30,20)
+	--local dist = dev.cam_pos:distance_to(zone:position())
+	self.zdist:SetText(string.format("%5.1f", dist))
+	-- поле имени зоны
+	self.zname = CUIStatic()
+	self.zname:SetAutoDelete(true)
+	self:AttachChild(self.zname)
+	self.zname:SetWndRect(30,0,110,20)
+	self.zname:SetText(zone:name())
+end
+class "simple_list_line" (CUIListItem)
+function simple_list_line:__init(txt, color) super()
+	self:SetText(txt)
+	if color then
+		self:SetTextColor(color[1], color[2], color[3], color[4])
+	end
+end
+
+--[[
+-- класс элемента списка элементарных шейпов в окне редактора зоны
+-- каждый элемент списка представляет собой полноценный самостоятельный редактор
+-- элементарного шейпа: сферы или бокса
+local editors_counter = 1
+class "shape_editor" (CUIListItemEx)
+function shape_editor:__init(parent, editor, shp) super()
+	self.id = editors_counter
+	editors_counter = editors_counter + 1
+	--
+	self.editor = editor
+	self.shape = shp
+	self.shape.editor_item = self
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ogse_zones_editor.xml")
+	xml:InitWindow("zone_editor_bgd:shapes_list:shape_editor", 0, self)
+	--
+	xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:bg", self)
+	--
+	self.visualize = xml:InitCheck("zone_editor_bgd:shapes_list:shape_editor:visualize", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.visualize, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_visualize, self)
+	--
+	self.edit = xml:InitCheck("zone_editor_bgd:shapes_list:shape_editor:edit", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.edit, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_edit, self)
+	--
+	xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_particle_sizes", self)
+	self.sizes_list = xml:InitList("zone_editor_bgd:shapes_list:shape_editor:particle_sizes_list", self)
+	self.sizes_list:ShowSelectedItem(true)
+	self.sizes_list:AddItem(simple_list_line("small"))
+	self.sizes_list:AddItem(simple_list_line("medium"))
+	self.sizes_list:AddItem(simple_list_line("big"))
+	--
+	xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_particle_colors", self)
+	self.colors_list = xml:InitList("zone_editor_bgd:shapes_list:shape_editor:particle_colors_list", self)
+	self.colors_list:ShowSelectedItem(true)
+	self.colors_list:AddItem(simple_list_line("green", {255, 0, 255, 0}))
+	self.colors_list:AddItem(simple_list_line("lightblue", {255, 59, 206, 212}))
+	self.colors_list:AddItem(simple_list_line("red", {255, 255, 0, 0}))
+	self.colors_list:AddItem(simple_list_line("yellow", {255, 255, 255, 0}))
+
+	self.shape_type = xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_type", self)
+	xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_offset", self)
+	
+	self.edit_pos_x = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_x", self)
+	self.edit_pos_y = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_y", self)
+	self.edit_pos_z = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_z", self)
+	
+	self.set_btn = xml:Init3tButton("zone_editor_bgd:shapes_list:shape_editor:btn_set", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.set_btn, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_set_clicked, self)
+	self.clone_btn = xml:Init3tButton("zone_editor_bgd:shapes_list:shape_editor:btn_clone", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.clone_btn, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_clone_clicked, self)
+	self.align_btn = xml:Init3tButton("zone_editor_bgd:shapes_list:shape_editor:btn_align", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.align_btn, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_align_clicked, self)
+	self.delete_btn = xml:Init3tButton("zone_editor_bgd:shapes_list:shape_editor:btn_delete", self)
+	local wnd_id = parent:get_unique_id()
+	parent:Register(self.delete_btn, wnd_id)
+	parent:AddCallback(wnd_id, ui_events.BUTTON_CLICKED, self.on_delete_clicked, self)
+	
+	if shp.t == shape_type.sphere then
+		xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_radius", self)
+		self.edit_radius = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_radius", self)
+	else
+		xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_size", self)
+		self.edit_size_x = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_size_x", self)
+		self.edit_size_y = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_size_y", self)
+		self.edit_size_z = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_size_z", self)
+		xml:InitStatic("zone_editor_bgd:shapes_list:shape_editor:txt_rot", self)
+		self.edit_rot_x = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_rot_x", self)
+		self.edit_rot_y = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_rot_y", self)
+		self.edit_rot_z = xml:InitEditBox("zone_editor_bgd:shapes_list:shape_editor:edit_rot_z", self)
+	end
+	self:refresh_controls()
+end
+function shape_editor:refresh_controls()
+	self.visualize:SetCheck(self.shape.visualizator)
+	self.edit:SetCheck(self.editor.active_shape and (self.editor.active_shape.num == self.shape.num))
+
+	if self.shape.t == shape_type.sphere then
+		self.shape_type:SetText(""..(self.shape.num or "")..": sphere")
+		self.edit_pos_x:SetText(string.format("%7.2f", self.shape.c.x))
+		self.edit_pos_y:SetText(string.format("%7.2f", self.shape.c.y))
+		self.edit_pos_z:SetText(string.format("%7.2f", self.shape.c.z))
+		self.edit_radius:SetText(string.format("%7.2f", self.shape.r))
+		
+	else
+		self.shape_type:SetText(""..(self.shape.num or "")..": box")
+		self.edit_pos_x:SetText(string.format("%7.2f", self.shape.offset[1]))
+		self.edit_pos_y:SetText(string.format("%7.2f", self.shape.offset[2]))
+		self.edit_pos_z:SetText(string.format("%7.2f", self.shape.offset[3]))
+		self.edit_size_x:SetText(string.format("%7.2f", self.shape.scale[1]))
+		self.edit_size_y:SetText(string.format("%7.2f", self.shape.scale[2]))
+		self.edit_size_z:SetText(string.format("%7.2f", self.shape.scale[3]))
+		self.edit_rot_x:SetText(string.format("%7.2f", self.shape.a[1]))
+		self.edit_rot_z:SetText(string.format("%7.2f", self.shape.a[2]))
+		self.edit_rot_y:SetText(string.format("%7.2f", self.shape.a[3]))
+	end
+end
+function shape_editor:on_set_clicked()
+	local posx = tonumber(self.edit_pos_x:GetText())
+	local posy = tonumber(self.edit_pos_y:GetText())
+	local posz = tonumber(self.edit_pos_z:GetText())
+	if self.shape.t == shape_type.sphere then
+		self.shape.c = vector():set(posx, posy, posz)
+		self.shape.r = tonumber(self.edit_radius:GetText())
+	else
+		self.shape.offset = {posx, posy, posz}
+		self.shape.scale[1] = tonumber(self.edit_size_x:GetText())
+		self.shape.scale[2] = tonumber(self.edit_size_y:GetText())
+		self.shape.scale[3] = tonumber(self.edit_size_z:GetText())
+		self.shape.a[1] = tonumber(self.edit_rot_x:GetText())
+		self.shape.a[2] = tonumber(self.edit_rot_z:GetText())
+		self.shape.a[3] = tonumber(self.edit_rot_y:GetText())
+		update_transformation(self.shape)
+	end
+	if self.shape.visualizator then
+		self.editor:show_shape(self.shape, true)
+	end
+end
+
+function shape_editor:on_clone_clicked()
+	local new_shape = {}
+	new_shape.t = self.shape.t
+	if self.shape.t == shape_type.sphere then
+		new_shape.c = vector():set(self.shape.c)
+		new_shape.r = self.shape.r
+	else
+		new_shape.m = matrix():set(self.shape.m)
+		new_shape.scale = {}
+		new_shape.a = {}
+		new_shape.offset = {}
+		new_shape.shear = {}
+		for i=1,3 do
+			new_shape.scale[i] = self.shape.scale[i]
+			new_shape.a[i] = self.shape.a[i]
+			new_shape.offset[i] = self.shape.offset[i]
+			new_shape.shear[i] = self.shape.shear[i]
+		end
+	end
+	self.editor:add_shape(new_shape)
+end
+function shape_editor:on_align_clicked()
+	if self.shape.t == shape_type.box then
+		self.shape.a = {0,0,0}
+		self.shape.shear = {0,0,0}
+		update_transformation(self.shape)
+		self:refresh_controls()
+		if self.shape.visualizator then
+			self.editor:show_shape(self.shape, true)
+		end
+	end
+end
+--2
+-- служебный таймер для выполнения отложенного действия в другом потоке
+class "delayed_remove_shape" (ogse_qt.quick_timer)
+function delayed_remove_shape:__init(editor, num) super(0)
+	self.editor = editor
+	self.num = num
+end
+function delayed_remove_shape:taction()
+	self.editor:remove_shape(self.num)
+end
+
+--3
+function shape_editor:on_delete_clicked()
+	delayed_remove_shape(self.editor, self.shape.num):start()
+end
+function shape_editor:__finalize()
+	log1("shape_editor:__finalize") flush1()
+end
+function shape_editor:on_edit()
+	self.editor:set_active_shape(self.shape, self.edit:GetCheck())
+end
+function shape_editor:on_visualize()
+	local sizes = {"small", "medium", "big"}
+	local colors = {"green","lightblue","red","yellow"}
+	
+    local sz_sel = self.sizes_list:GetSelectedItem()
+	if sz_sel < 0 then sz_sel = 0 end
+	local col_sel = self.colors_list:GetSelectedItem()
+	if col_sel < 0 then col_sel = 0 end
+	local part_str = get_particle_name(sizes[sz_sel+1], colors[col_sel+1])
+	
+	self.editor:show_shape(self.shape, self.visualize:GetCheck(), part_str)
+end
+--4
+-- соответствие чекбокса с фильтром и функции доступа к серверным данным
+local btn2zonefun = {
+	["filter_lc"] 			= "net_alife_level_changer",
+	["filter_sp_restr"] 	= "net_alife_space_restrictor",
+	["filter_anom"] 		= "net_zone_anom",
+	["filter_cust_zon"] 	= "net_alife_custom_zone",
+	["filter_clim"] 		= "net_alife_object_climable",
+	["filter_smarts"] 		= "net_alife_smart_zone",
+	["filter_zon_vis"] 		= "net_alife_zone_visual",
+	["filter_tor_zon"] 		= "net_alife_torrid_zone",
+	--["filter_editor_saves"] = "net_alife_space_restrictor",
+}
+-- главное окно редактора: фильтры, список зон, список шейпов
+class "zone_editor_wnd" (CUIScriptWnd)
+function zone_editor_wnd:__init() super()
+	self.xml = CScriptXmlInit()
+	self.xml:ParseFile("ogse_zones_editor.xml")
+	self.xml:InitWindow("main", 0, self)
+	-- окно списка доступных для редактирования зон
+	self.obj_list_bg = self.xml:InitStatic("obj_list_bgd", self)
+	self.obj_list = self.xml:InitList("obj_list_bgd:obj_list", self.obj_list_bg)
+	self.obj_list:ShowSelectedItem(true)
+	self:Register(self.obj_list, "obj_list")
+	self:AddCallback("obj_list", ui_events.LIST_ITEM_CLICKED, self.on_zone_selected, self)
+	-- окно редактора (справа: имя зоны, положение и список элементарных шейпов с элементами
+	-- для редактирования)
+	self.zone_editor_bg = self.xml:InitStatic("zone_editor_bgd", self)
+	self.current_zone_name = self.xml:InitStatic("zone_editor_bgd:zone_name", self.zone_editor_bg)
+	self.current_zone_pos = self.xml:InitStatic("zone_editor_bgd:zone_pos", self.zone_editor_bg)
+	--
+	self.btn_new_sphere = self.xml:Init3tButton("zone_editor_bgd:btn_new_sphere", self.zone_editor_bg)
+	self:Register(self.btn_new_sphere, "btn_new_sphere")
+	self:AddCallback("btn_new_sphere", ui_events.BUTTON_CLICKED, self.on_new_sphere_clicked, self)
+	self.btn_new_box = self.xml:Init3tButton("zone_editor_bgd:btn_new_box", self.zone_editor_bg)
+	self:Register(self.btn_new_box, "btn_new_box")
+	self:AddCallback("btn_new_box", ui_events.BUTTON_CLICKED, self.on_new_box_clicked, self)
+	--
+	self.btn_show_all = self.xml:Init3tButton("zone_editor_bgd:btn_show_all", self.zone_editor_bg)
+	self:Register(self.btn_show_all, "btn_show_all")
+	self:AddCallback("btn_show_all", ui_events.BUTTON_CLICKED, self.on_show_all_clicked, self)
+	--
+	self.btn_hide_all = self.xml:Init3tButton("zone_editor_bgd:btn_hide_all", self.zone_editor_bg)
+	self:Register(self.btn_hide_all, "btn_hide_all")
+	self:AddCallback("btn_hide_all", ui_events.BUTTON_CLICKED, self.on_hide_all_clicked, self)
+	--
+	self.shapes_list = self.xml:InitList("zone_editor_bgd:shapes_list", self.zone_editor_bg)
+	self.shapes_list:ShowSelectedItem(true)
+	--
+	self.filters_bg = self.xml:InitStatic("filters_bg", self)
+	--self.xml:InitEditBox("filters_bg:edit_stub", self.filters_bg)
+	for btn_name,_ in pairs(btn2zonefun) do
+		self:add_button(btn_name)
+	end
+	self:add_button("filter_editor_saves")
+	self.ctr_counter = 0
+	self.replace_active_editor_confirmation = CUIMessageBoxEx()
+	self.replace_active_editor_confirmation:Init("message_box_ogse_zone_ed_open_new")
+	self:Register(self.replace_active_editor_confirmation, "replace_active_editor_confirmation")
+	self:AddCallback("replace_active_editor_confirmation", ui_events.MESSAGE_BOX_YES_CLICKED, self.create_new_editor, self)
+	self:AddCallback("replace_active_editor_confirmation", ui_events.MESSAGE_BOX_NO_CLICKED, self.dont_touch, self)
+	--
+	self.save_btn = self.xml:Init3tButton("save_btn", self)
+	self:Register(self.save_btn, "save_btn")
+	self:AddCallback("save_btn", ui_events.BUTTON_CLICKED, self.on_save_clicked, self)
+	--	
+	self.export_btn = self.xml:Init3tButton("export_btn", self)
+	self:Register(self.export_btn, "export_btn")
+	self:AddCallback("export_btn", ui_events.BUTTON_CLICKED, self.on_export_clicked, self)
+	--	
+	self.btn_clear_shown = self.xml:Init3tButton("btn_clear_shown", self)
+	self:Register(self.btn_clear_shown, "btn_clear_shown")
+	self:AddCallback("btn_clear_shown", ui_events.BUTTON_CLICKED, self.on_clear_shown_clicked, self)
+	--
+	self.hide_btn = self.xml:Init3tButton("hide_btn", self)
+	self:Register(self.hide_btn, "hide_btn")
+	self:AddCallback("hide_btn", ui_events.BUTTON_CLICKED, self.on_hide_clicked, self)
+	
+end
+function zone_editor_wnd:on_clear_shown_clicked()
+	for _,shape in ipairs(visible_shapes) do
+		if shape.visualizator then
+			shape.visualizator:stop()
+		end
+	end
+	visible_shapes = {}
+end
+function zone_editor_wnd:on_hide_all_clicked()
+	if current_zone_editor then
+		current_zone_editor:hide_all()
+	end
+end
+function zone_editor_wnd:on_show_all_clicked()
+	if current_zone_editor then
+		current_zone_editor:show_all()
+	end
+end
+function zone_editor_wnd:on_export_clicked()
+	if current_zone_editor then
+		current_zone_editor:export()
+	end
+end
+function zone_editor_wnd:on_new_sphere_clicked()
+	if current_zone_editor then
+		current_zone_editor:add_new_sphere()
+	end
+end
+function zone_editor_wnd:on_new_box_clicked()
+	if current_zone_editor then
+		current_zone_editor:add_new_box()
+	end
+end
+
+function zone_editor_wnd:on_hide_clicked()
+	level.start_stop_menu(dlg, true)
+end
+
+function zone_editor_wnd:on_save_clicked()
+	if current_zone_editor then
+		current_zone_editor:save()
+	end
+end
+--5
+function zone_editor_wnd:get_unique_id()
+	self.ctr_counter = self.ctr_counter + 1
+	return "child_wnd_"..self.ctr_counter
+end
+
+function zone_editor_wnd:add_button(btn_name)
+	self[btn_name] = self.xml:InitCheck("filters_bg:"..btn_name, self.filters_bg)
+	self:Register(self[btn_name], btn_name)
+	self:AddCallback(btn_name, ui_events.BUTTON_CLICKED, self.on_filter_changed, self)
+end
+--6
+local filters = {}
+
+function zone_editor_wnd:on_filter_changed()
+	self:refresh()
+end
+
+function shape_to_text(shp)
+	local txt
+	if shp:isSphere() then
+		txt = string.format(" sphere:\\n    center: %6.1f, %6.1f, %6.1f\\n    radius: %6.1f",
+			shp.c.x, shp.c.y, shp.c.z, shp.r)
+	else
+		txt = string.format(" box:\\n    axis 1: %6.1f, %6.1f, %6.1f\\n    axis 2: %6.1f, %6.1f, %6.1f\\n    axis 3: %6.1f, %6.1f, %6.1f\\n    offset: %6.1f, %6.1f, %6.1f",
+			shp.p1.x, shp.p1.y, shp.p1.z, 
+			shp.p2.x, shp.p2.y, shp.p2.z, 
+			shp.p3.x, shp.p3.y, shp.p3.z, 
+			shp.offset.x, shp.offset.y, shp.offset.z)
+	end
+	log1(txt)
+	return txt
+end
+
+function zone_editor_wnd:on_zone_selected()
+    local sel = self.obj_list:GetSelectedItem()
+	if sel >= 0 then
+		local sel_item = self.obj_list:GetItem(sel)
+		if sel_item then
+			local zone_object = sel_item.obj
+			if zone_object then
+				self.selected_zone_tmp = zone_object
+				if current_zone_editor and current_zone_editor.changed then
+					self:GetHolder():start_stop_menu(self.replace_active_editor_confirmation, true)
+				else
+					self:create_new_editor()
+				end
+			end
+		end
+	end
+end
+function zone_editor_wnd:dont_touch()
+	self.selected_zone_tmp = nil
+end
+
+function zone_editor_wnd:create_new_editor()
+	if current_zone_editor then
+		current_zone_editor:remove_all_shapes()
+	end
+	current_zone_editor = compound_shape_editor(self.selected_zone_tmp)
+	self.selected_zone_tmp = nil
+end
+function zone_editor_wnd:refresh()
+	for btn,fun in pairs(btn2zonefun) do
+		filters[fun] = self[btn]:GetCheck()
+	end
+	self.obj_list:RemoveAll()
+	local zlist = {}
+	for id=1,MAX_OBJ_ID do
+		local obj = client_obj(id)
+		if obj then
+			local fun = zones[obj:clsid()]
+			if (fun and filters[fun]) or (self.filter_editor_saves:GetCheck() 
+				and obj:section() == "zone_editor_restrictor")
+			then
+				local dist = dev.cam_pos:distance_to(obj:position())
+				table.insert(zlist, {dist, obj})
+			end
+		end
+	end
+	table.sort(zlist, function(a,b) return a[1] < b[1] end)
+	for _,z in ipairs(zlist) do
+		self.obj_list:AddItem(obj_list_item(z[2], z[1]))
+	end
+end
+
+function on_spawn()
+	dlg = zone_editor_wnd()
+end
+function on_destroy()
+	dlg = nil
+	vis_shapes = nil
+	collectgarbage("collect")
+end
+
+local keys_ignore = {}
+local binds_ignore = {
+	[key_bindings.kCONSOLE] = true,
+	[key_bindings.kQUIT] = true,
+}
+function on_key_down(key, bind)
+	if keys_ignore[key] or binds_ignore[bind] then return end
+	if key == DIK_keys.DIK_RETURN then
+		dlg:refresh()
+		level.start_stop_menu(dlg, true)
+		return
+	elseif key == DIK_keys.DIK_F11 then
+		get_console():execute("demo_record ze_record")
+	elseif key == DIK_keys.DIK_F10 then
+		get_console():execute("demo_play ze_record")
+	end
+	local lalt_pressed = GetLAlt()
+	local ralt_pressed = GetRAlt()
+	if current_zone_editor and current_zone_editor.active_shape then
+		local tr_matr
+		local alpha = math.pi*5.0/180.0
+		if key == 71 then  -- '7' 
+			if lalt_pressed then
+				current_zone_editor:decr_rx()
+			elseif ralt_pressed then
+				current_zone_editor:decr_sx()
+			else
+				current_zone_editor:decr_px()
+			end
+			return
+		elseif key == 73 then  -- '9'
+			if lalt_pressed then
+				current_zone_editor:incr_rx()
+			elseif ralt_pressed then
+				current_zone_editor:incr_sx()
+			else
+				current_zone_editor:incr_px()
+			end
+			return
+		elseif key == 75 then  -- '4'
+			if lalt_pressed then
+				log1("decr_ry")
+				current_zone_editor:decr_ry()
+			elseif ralt_pressed then
+				log1("decr_sy")
+				current_zone_editor:decr_sy()
+			else
+				log1("decr_py")
+				current_zone_editor:decr_py()
+			end
+			return
+		elseif key == 77 then  -- '6'
+			if lalt_pressed then
+				current_zone_editor:incr_ry()
+			elseif ralt_pressed then
+				current_zone_editor:incr_sy()
+			else
+				current_zone_editor:incr_py()
+			end
+			return
+		elseif key == 72 then  -- '8'
+			if lalt_pressed then
+				current_zone_editor:incr_rz()
+			elseif ralt_pressed then
+				current_zone_editor:incr_sz()
+			else
+				current_zone_editor:incr_pz()
+			end
+			return
+		elseif key == 76 then  -- '5'
+			if lalt_pressed then
+				current_zone_editor:decr_rz()
+			elseif ralt_pressed then
+				current_zone_editor:decr_sz()
+			else
+				current_zone_editor:decr_pz()
+			end
+			return
+		end
+	end
+end
+--]]

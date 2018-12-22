@@ -1,0 +1,11 @@
+function dbg_clean()
+ if level.name() == "l01_escape" then
+    for i = 1,6 do
+     local sobj = g_sim:object( sprintf("esc_specnaz%d", i) )
+     if sobj then
+        wprintf("[~T]. #DBG: блудный солдат~C0A %s~C07 пропалбез вести", sobj:name())
+        misc.release_obj(sobj)
+     end
+    end
+  end
+end

@@ -1,0 +1,53 @@
+if anom_params == nil then
+   _G.anom_params = {}
+end
+
+
+local eff_params = 400  
+local timings    = eff_params + 108  -- 508 for 1.0006
+
+local anom_offsets_cl = {
+   
+   unk_max_offset    = 576,
+   convert_func = get_CObject
+   
+}
+
+local anom_offsets_se = {
+   anom_power_se      = 240,
+   unk_max_offset     = 256,
+   convert_func = get_SObject 
+}
+
+
+local anom_offsets = { anom_offsets_cl, anom_offsets_se }
+
+function anom_params.anom_prop(id, key, value)
+ -- WriteParamValue (id, key, value, anom_offsets)
+ local obj = client_obj (id)
+ if obj == nil then
+    return 0
+ end
+
+ 
+ local kobj = obj:get_anomaly() 
+ if kobj then
+    return update_prop(kobj, key, value)    
+ end
+ 
+ return 0
+end
+
+function anom_params.anom_prop_se(id, key, value)
+end
+
+function anom_params.activate_anom(id)
+ local tm = anom_prop(id, "awake_time")
+ anom_prop(id, "zone_state", 1)
+ anom_prop(id, "state_time", 0)
+end
+
+
+-- activate_anom(17259) -- for console test
+
+-- 31271

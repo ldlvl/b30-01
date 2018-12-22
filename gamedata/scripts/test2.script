@@ -1,0 +1,636 @@
+-- levelName=l05_bar                    -- под мостиком на дороге на Бар
+-- X=236.48907470703
+-- Y=0.4197084903717
+-- Z=-76.944869995117
+-- LevelVertexID=60207
+-- GameVertexID=1269
+
+--levelName=l06_rostok                  ДТ, площадка на вышке, сюда холодец вместо двух аномалей внизу...
+--X=-148.76794433594
+--Y=7.5051183700562
+--Z=156.59494018555
+--LevelVertexID=38608
+--GameVertexID=1327
+
+function get_target( obj )
+  local npos = device().cam_pos
+    local cdir = get_actor_obj().orientation
+    local vd   = device().cam_dir --  cdir:get_dir() -- actor direction as vector
+    local op   = obj:position()
+    op.y = op.y + 1.2
+    if op:distance_to( npos ) < 3 then
+    local diff  = vector():sub(op, npos):normalize()                         
+    local cp    = vector():crossproduct( vd, diff )
+    local dp    = vd:dotproduct( diff )      
+    local angle = math.atan2( cp:magnitude(), dp )           
+    if math.abs( angle ) < 0.45 then
+      wprintf("++++++++++++++")
+      return true 
+    end
+    end
+    return false
+end
+
+function af()
+    local cnt = 0
+    local level_arts = registry.level_objects( "af_*", true )
+    for i, id in ipairs( level_arts ) do
+        local sobj = g_sim:object( id )
+        if sobj and sobj.parent_id and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID ) then
+            cnt = cnt + 1
+        end
+    end
+    sak.send_tip( "Артефактов: " .. cnt .. " шт.", "", 2, 20, "uniq", "sak", "green" )
+end
+
+function afm()
+    local cnt = 0
+    local level_arts = registry.level_objects( "af_*", true )
+    for i, id in ipairs( level_arts ) do
+        local sobj = g_sim:object( id )
+        if sobj and sobj.parent_id and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID ) then
+            cnt = cnt + 1
+            amk.add_spot_on_map( sobj.id, 'red_location', sobj.section )
+        end
+    end
+    sak.send_tip( "Артефактов: " .. cnt .. " шт.", "", 2, 20, "uniq", "sak", "green" )
+end
+
+function find_arts2()
+    local cnt = 0
+    local ids = registry.level_objects( "af_*", true )
+    local obj = registry.convert_ids( ids, server_obj )
+    for id, sobj in pairs( obj ) do
+        if sobj.parent_id and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID ) then
+            cnt = cnt + 1
+        end 
+    end
+    wprintf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx А так на уровне на земле валяются: " .. cnt .. " артефактов ххххххххххххххххххххххххххххххххх")
+end
+
+function find_arts3()
+    local cnt = 0
+    local ids = registry.sc_objects("af_*", true, 15)
+    local obj = registry.convert_ids( ids, client_obj )
+    for id, cobj in pairs( obj ) do
+        if (   cobj:parent()        == nil
+            or cobj:parent():id()   == nil
+            or cobj:parent():id()   == BAD_OBJ_ID
+        ) then cnt = cnt + 1 end 
+    end
+    wprintf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx А так на уровне на земле валяются: " .. cnt .. " артефактов ххххххххххххххххххххххххххххххххх")
+end
+
+-- function test_anom()
+--  local ts11 = { position = {
+--           x = 74.83625793457,
+--           y = 0.8681628704071,
+--           z = -136.70930480957 },
+--          gv = 397,
+--          lv = 244678
+--  }
+--  local shape= { shtype = 0, radius = 4.0, center = { 0, 0.5, 0 } }
+--  amk_anoms.spawn_anomaly(
+--      "amk_zone_sakbuzz_strong",
+--      ts11.position, ts11.gv, ts11.lv, shape, "static"
+--  )
+-- end
+
+function test_anom2()
+    -- Дикая Территория
+    local ts12 = { position = {       -- наверное возле вышки? не надо, наверху кисель
+             x = -151.52188110352,
+             y = 0.017337024211884,
+             z = 156.4453125 },
+            gv = 1327,
+            lv = 38434
+    }
+    local ts13 = { position = {        -- наверное возле вышки? не надо, наверху кисель
+             x = -144.29028320313,
+             y = -0.00022894144058228,
+             z = 160.337890625 },
+            gv = 1327,
+            lv = 39737
+    }
+    local ts14 = { position = {       -- выход из тоннеля справа
+             x = -100.73574066162,
+             y = -8.9910850524902,
+             z = -134.49829101563 },
+            gv = 1437,
+            lv = 45041
+    }
+    local ts15 = { position = {      --ДТ перед лестницей у вагонов, поставлю вверху лучше
+             x = -203.82136535645,
+             y = -0.055641174316406,
+             z = 119.91515350342 },
+            gv = 1369,
+            lv = 25269
+    }
+    local ts16 = { position = {      -- Верх лестницы сбоку от ангара
+             x = -198.0270690918,
+             y = 4.9914770126343,
+             z = 135.95780944824 },
+            gv = 1367,
+            lv = 27190
+        }
+    -- Агропром
+    local ts17 = { position = {         -- Поваленное дерево по пути к Шерстюку
+             x = 38.811153411865,
+             y = 3.7854871749878,
+             z = -120.99969482422 },
+            gv = 427,
+            lv = 284666
+    }                   
+    local ts17 = { position = {         -- Перед вышкой
+             x = 132.62438964844,
+             y = 2.5579798221588,
+             z = 66.438140869141 },
+            gv = 495,
+            lv = 365551
+    }                   
+    -- Лиманск                          
+    local ts18 = { position = {         -- выход из тоннеля слева
+             x = 1.4093704223633,
+             y = -0.0077807307243347,
+             z = -355.31597900391 },
+            gv = 3006,
+            lv = 25185
+    }                                       
+
+    local shape = { shtype = 0, radius = 2.0, center = { 0, 0.5, 0 } }
+    amk_anoms.spawn_anomaly( "amk_zone_zharka_static_strong", ts12.position, ts12.gv, ts12.lv, shape, "static")
+    amk_anoms.spawn_anomaly( "amk_zone_zharka_static_strong", ts13.position, ts13.gv, ts13.lv, shape, "static")
+    amk_anoms.spawn_anomaly( "amk_zone_zharka_static_strong", ts14.position, ts14.gv, ts14.lv, shape, "static")
+    amk_anoms.spawn_anomaly( "amk_zone_sakbuzz_strong",       ts15.position, ts15.gv, ts15.lv, shape, "static")
+    amk_anoms.spawn_anomaly( "amk_zone_zharka_static_strong", ts16.position, ts16.gv, ts16.lv, shape, "static")
+end
+
+function discharge_art_on_belt( section, amount )
+    local obj_id = -1
+    for i, k in pairs( sak_inventory.belt_items ) do
+        if strpos( i, section, 1, true ) then
+            obj_id = k[ 1 ]
+        end
+    end
+    local cond = params.get_condition( obj_id, 0.9999 )
+    if cond > 0.05 then
+        local new_cond = cond - amount
+        params.upd_condition( obj_id, new_cond )
+    else
+        misc.release_obj( obj_id )
+    end
+end
+
+-- function f_random( v1, v2, day, npc_k )
+--  local k1 = amk_vars.r_task_reward or 1
+--  local k2 = amk_vars.r_task_reward or 2
+--  local unique_k = ( k1 + k2 ) * k1 * k2
+--  if   day ~= nil then unique_k = unique_k + day   end
+--  if npc_k ~= nil then unique_k = unique_k + npc_k end
+--  math.randomseed( unique_k )
+--  math.random()
+--  math.random()
+--  return math.random( v1, v2 )
+-- end
+
+
+
+-- просто пример обращения в сложном массиве---
+-- local nv_type = {
+--         ["bad"] = { ["price"] = 10*k, ["id"] = 911 },
+--         ["good"] = { ["price"] = 25*k, ["id"] = 912 },
+--         ["bast"] = { ["price"] = 30*k, ["id"] = 918 }
+--                 }
+-- function get(choice)
+-- local result = "nope"
+--     for k, v in pairs(nv_type) do
+--         if nv_type[k].id == choice then
+--             result = k
+--             break
+--         end
+--     end
+--     return result
+-- end
+
+-- if v.id == choice then
+
+
+-- function release_random_item(num)
+--     local Tabl = {["section"] = true, ["section2"] = true} -- таблица необрабатываемых предметов по их секциям
+    
+--     local actor = db.actor
+--     local cnt = actor:object_count()
+--     if cnt < num then return end
+--     for i=1, num do
+--         local item = actor:object(math.random(0, cnt-1))
+--         local sobj = alife():object(item:id()) 
+--         if sobj and not Tabl[sobj:section_name()] then
+--             alife():release(sobj,true)
+--             cnt = actor:object_count()
+--         end
+--     end
+-- end
+
+-- Жила: lv 1099 gv 210266 x = 29.582 y = 4.541 z = - 85.9148
+
+function ttt2()
+    local actor = db.actor
+    local obj
+    obj = alife():create( "m_inventory_box", actor:position(), actor:level_vertex_id(), actor:game_vertex_id() )
+    if (obj) then
+        local pk = get_netpk( obj )
+        local data = pk:get()
+        data.custom_data = "[logic]\ncfg = scripts\\ttt.ltx"
+        pk:set( data )
+    end
+end
+
+function ttt3()
+    local actor = db.actor
+    local obj
+    obj = alife():create( "my_box", actor:position(), actor:level_vertex_id(), actor:game_vertex_id() )
+end
+
+function tel()
+  local sobj = alife():story_object( story_ids.val_bandit_trader )
+  if not sobj then return end
+  local pos = sak.v3f( 29.582, 4.541, -85.9148 )
+  if not pos then return end
+  alife():teleport_object( sobj.id, 1099, 210266, pos )
+  --alife():teleport_object( 1099, 210266, 9507, sak.v3f( 29.582, 4.541, -85.9148 ) ) 
+    wprintf("888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888")
+end
+
+function telsah()
+  local sobj = alife():story_object( story_ids.yantar_ecolog_general )
+  if not sobj then return end
+  local pos = sak.v3f( 29.27, -11.72, -272.11 )
+  if not pos then return end
+  alife():teleport_object( sobj.id, 1480, 53540, pos )
+  --alife():teleport_object( 1099, 210266, 9507, sak.v3f( 29.582, 4.541, -85.9148 ) ) 
+    wprintf("888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888")
+end
+
+function hunger_gg()
+    params.satiety_add( -0.5 )
+    wprintf("-------------------------------------------------    HUNGER INCREASED BY 0.5    ---------------------------------------------------------")
+end
+
+function hunger_check()
+    wprintf("==================================================    HUNGER NOW IS: " .. db.actor.satiety )
+end
+
+function dolg_seif_disable()
+    db.actor:disable_info_portion("news_bar_seif")
+end
+
+function frol()
+    db.actor:disable_info_portion("provodnik_senks_done")
+    db.actor:disable_info_portion("provodnik_senks_no")
+    db.actor:give_info_portion("provodnik_senks_have")
+end
+
+function recipt( sect )
+    db.actor:give_info_portion( sect )
+end
+
+function add_all_recipts()
+    db.actor:give_info_portion("info_artmod_mincer_meat_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_gravi_gravi_zone")
+    db.actor:give_info_portion("info_artmod_cristall_flower_mincer")
+    db.actor:give_info_portion("info_artmod_rusty_kristall_buzz")
+    db.actor:give_info_portion("info_artmod_electra_flash_zharka")
+    db.actor:give_info_portion("info_artmod_fireball_galant")
+    db.actor:give_info_portion("info_artmod_electra_sparkler_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_rusty_kristall_gravi_zone")
+    db.actor:give_info_portion("info_artmod_drops_mincer")
+    db.actor:give_info_portion("info_artmod_rusty_thorn_buzz")
+    db.actor:give_info_portion("info_artmod_ameba_slime_zharka")
+    db.actor:give_info_portion("info_artmod_cristall_flower_galant")
+    db.actor:give_info_portion("info_artmod_ameba_slug_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_electra_flash_gravi_zone")
+    db.actor:give_info_portion("info_artmod_rusty_kristall_mincer")
+    db.actor:give_info_portion("info_artmod_fireball_buzz")
+    db.actor:give_info_portion("info_artmod_gravi_zharka")
+    db.actor:give_info_portion("info_artmod_ameba_mica_galant")
+    db.actor:give_info_portion("info_artmod_cristall_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_night_star_gravi_zone")
+    db.actor:give_info_portion("info_artmod_electra_moonlight_mincer")
+    db.actor:give_info_portion("info_artmod_cristall_buzz")
+    db.actor:give_info_portion("info_artmod_night_star_zharka")
+    db.actor:give_info_portion("info_artmod_electra_moonlight_galant")
+    db.actor:give_info_portion("info_artmod_rusty_sea-urchin_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_soul_gravi_zone")
+    db.actor:give_info_portion("info_artmod_ameba_slug_mincer")
+    db.actor:give_info_portion("info_artmod_night_star_buzz")
+    db.actor:give_info_portion("info_artmod_electra_moonlight_zharka")
+    db.actor:give_info_portion("info_artmod_gold_fish_galant")
+    db.actor:give_info_portion("info_artmod_dummy_dummy_mosquito_bald")
+    db.actor:give_info_portion("info_artmod_dummy_pellicle_gravi_zone")
+    db.actor:give_info_portion("info_artmod_dummy_glassbeads_mincer")
+    db.actor:give_info_portion("info_artmod_fuzz_kolobok_buzz")
+    db.actor:give_info_portion("info_artmod_dummy_battery_zharka")
+    db.actor:give_info_portion("info_artmod_dummy_spring_galant")
+    db.actor:give_info_portion("info_artmod_glassbeads_ice")
+    db.actor:give_info_portion("info_artmod_blood_ice")
+    db.actor:give_info_portion("info_artmod_vyvert_buzz")
+    db.actor:give_info_portion("info_artmod_rusty_sea-urchin_ice")
+    db.actor:give_info_portion("info_artmod_medusa_galant")
+    db.actor:give_info_portion("info_amk_recipt_simbion")
+    db.actor:give_info_portion("info_amk_recipt_souls_drops")
+    db.actor:give_info_portion("info_amk_recipt_souls_fire")
+    db.actor:give_info_portion("info_amk_recipt_souls_cristal")
+    db.actor:give_info_portion("info_amk_recipt_souls_bengal")
+    db.actor:give_info_portion("info_amk_recipt_tears_electra")
+    db.actor:give_info_portion("info_amk_recipt_tears_fire")
+    db.actor:give_info_portion("info_amk_recipt_tears_chimaera")
+    db.actor:give_info_portion("info_amk_recipt_tears_gigant")
+    db.actor:give_info_portion("info_amk_recipt_dikoobraz")
+    db.actor:give_info_portion("info_amk_recipt_electra_dikoobraz")
+    db.actor:give_info_portion("info_amk_recipt_sopl_dikoobraz")
+    db.actor:give_info_portion("info_amk_recipt_stone_dikoobraz")
+    db.actor:give_info_portion("info_amk_recipt_steel_kolobok")
+    db.actor:give_info_portion("info_amk_recipt_titan_kolobok")
+    db.actor:give_info_portion("info_amk_recipt_almaz_kolobok")
+    db.actor:give_info_portion("info_amk_recipt_giant_small_brother")
+    db.actor:give_info_portion("info_amk_recipt_dummy_fire")
+    db.actor:give_info_portion("info_amk_recipt_dummy_bright")
+    db.actor:give_info_portion("info_amk_recipt_dummy_moon")
+    db.actor:give_info_portion("info_amk_recipt_dummy_puding")
+    db.actor:give_info_portion("info_amk_recipt_shkura")
+    db.actor:give_info_portion("info_amk_recipt_cheshya")
+    db.actor:give_info_portion("info_amk_recipt_pancir")
+    db.actor:give_info_portion("info_amk_recipt_controller_skalp")
+    db.actor:give_info_portion("info_amk_recipt_grandmother_glassbeards")
+    db.actor:give_info_portion("info_amk_recipt_pra_grandmother_glassbeards")
+    db.actor:give_info_portion("info_amk_recipt_burer_grandmother_glassbeards")
+    db.actor:give_info_portion("info_amk_recipt_burer_pra_grandmother_glassbeards")
+end
+
+function armorz()
+    local tbl = {
+        "novice_outfit",
+        "neytral_novice_gaz_outfit_m1",
+        "stalker_outfit",
+        "stalker_guard_outfit",
+        "neytral_gaz_outfit_m1",
+        "neytral_gaz_outfit_m2",
+        "outfit_stalker_m1",
+        "outfit_stalker_m2",
+        "stalker_outfit_m3",
+        "scientific_outfit",
+        "exo_outfit",
+        "broken_exoskeleton",
+        "bandit_outfit",
+        "bandit_gaz_outfit_m1",
+        "outfit_bandit_m1",
+        "bandit_veteran_outfit",
+        "bandit_veteran_outfit_gas",
+        "bandit_master_outfit",
+        "bandit_master_outfit_gas",
+        "bandit_master_outfit_m1",
+        "dolg_outfit",
+        "dolg_gaz_outfit_m1",
+        "dolg_scientific_outfit",
+        "outfit_dolg_m1",
+        "dolg_black_exoskeleton",
+        "ecolog_outfit",
+        "protection_outfit",
+        "killer_outfit",
+        "killer_gaz_outfit_m1",
+        "outfit_killer_m1",
+        "merc_scientific_outfit",
+        "killer_blue_exoskeleton",
+        "svoboda_light_outfit",
+        "outfit_svoboda_m1",
+        "svoboda_gaz_outfit_m1",
+        "svoboda_heavy_outfit",
+        "svoboda_heavy_gaz_outfit_m1",
+        "freedom_scientific_outfit",
+        "svoboda_exoskeleton",
+        "outfit_soldier_m1",
+        "specops_outfit",
+        "military_outfit",
+        "militaryspec_outfit",
+        "soldier_outfit",
+        "cs_light_outfit",
+        "cs_heavy_outfit",
+        "monolit_outfit",
+        "monolit_gaz_outfit_m1",
+        "monolit_scientific_outfit",
+        "monolit_exoskeleton",
+        "super_scientific_outfit",
+        "ecolog_outfit_m1"
+    }
+    for i = 1, #tbl do
+        misc.spawn_to( tbl[ i ], 0 )
+    end
+end
+
+function caps()
+    local actor=db.actor
+    local lvid=actor:level_vertex_id()
+    local gvid=actor:game_vertex_id()
+    local radius=3
+    local dir=vector_rotate_y(actor:direction(),(lua_random(360)))
+    local lv=level.vertex_in_direction(lvid, dir, radius)
+    if lv then
+      local pos=level.vertex_position(lv)
+      local art="af_ameba_slug_capsule_dyn5d"
+      local sobj = amk.spawn_item(art, sak.v3f( (pos.x), (pos.y+1), (pos.z) ), gvid, lv )
+      vergas_art.add_in_tbl( sobj )
+    end
+end
+
+function spwn( sect )
+    local actor=db.actor
+    local lvid=actor:level_vertex_id()
+    local gvid=actor:game_vertex_id()
+    local radius=3
+    local dir=vector_rotate_y(actor:direction(),(lua_random(360)))
+    local lv=level.vertex_in_direction(lvid, dir, radius)
+    if lv then
+      local pos=level.vertex_position(lv)
+      --local art="af_ameba_slug_capsule_dyn5d"
+      local sobj = amk.spawn_item(sect, sak.v3f( (pos.x), (pos.y+1), (pos.z) ), gvid, lv )
+      vergas_art.add_in_tbl( sobj )
+    end
+end
+
+function exo_time()
+    --local m_time = news_main.game_minutes()
+    local armor = db.actor:item_in_slot( 6 )
+    if armor then
+        local section, id = armor:section(), armor:id()
+        if strposx( section, "exo" ) then
+            local name, shift = timers.check_timer( "upgrade" .. id, "sak_dialog.downgrade_item("..id..")" )
+            --wprintf("---------------------------------".. section.. "----------------------------------")
+            --wprintf("---------------------------------".. id.. "----------------------------------")
+            if name then 
+                sak.send_tip( "Заряда осталось на: " .. math.floor( shift / 60 ) .. " часов.", "", 2, 20, "uniq", "sak", "green" )
+                --wprintf("---------------------------------".. tostring(name) .. "----------------------------------")
+                --wprintf("---------------------------------".. shift .. "----------------------------------")
+                --local timer_next_blow = shift + m_time
+                --local diff = ( timer_next_blow - m_time ) / 60
+                --wprintf("---------------------------------".. diff .. "----------------------------------")
+            end
+        end
+    end
+end
+
+function sem()
+  local lname = level.name()
+  local lvc = const.level_vertices[ lname ]
+  if lvc ~= nil and const.ground_levels[ lname ] and not sleep_manager.is_sleep_active() then
+    local new_lv, pos = const.random_level_point( lname )
+    if ( new_lv == nil ) or ( not amk_anoms.check_coordinates_arts( pos, lname ) ) then return end
+    local new_gw = const.best_game_vertex( pos )
+    --local section = sak_dialog.rand_semart()
+    local section = sak_dialog.table_good_semart[ lua_random( 1, #sak_dialog.table_good_semart ) ]
+    local sobj = amk.spawn_item( section, pos, new_gw, new_lv )
+    if sobj then
+      amk.add_spot_on_map( sobj.id, 'red_location', section )
+      vergas_art.add_in_tbl( sobj )
+    end
+  end
+end
+
+function delll( sect )
+    local obj = g_sim:object( sect )
+    if obj then misc.release_obj( obj.id ) end
+end
+
+local tbl_reciptt = {
+    "info_artmod_mincer_meat_mosquito_bald",
+    "info_artmod_gravi_gravi_zone",
+    "info_artmod_cristall_flower_mincer",
+    "info_artmod_rusty_kristall_buzz",
+    "info_artmod_electra_flash_zharka",
+    "info_artmod_fireball_galant",
+    "info_artmod_electra_sparkler_mosquito_bald",
+    "info_artmod_rusty_kristall_gravi_zone",
+    "info_artmod_drops_mincer",
+    "info_artmod_rusty_thorn_buzz",
+    "info_artmod_ameba_slime_zharka",
+    "info_artmod_cristall_flower_galant",
+    "info_artmod_ameba_slug_mosquito_bald",
+    "info_artmod_electra_flash_gravi_zone",
+    "info_artmod_rusty_kristall_mincer",
+    "info_artmod_fireball_buzz",
+    "info_artmod_gravi_zharka",
+    "info_artmod_ameba_mica_galant",
+    "info_artmod_cristall_mosquito_bald",
+    "info_artmod_night_star_gravi_zone",
+    "info_artmod_electra_moonlight_mincer",
+    "info_artmod_cristall_buzz",
+    "info_artmod_night_star_zharka",
+    "info_artmod_electra_moonlight_galant",
+    "info_artmod_rusty_sea-urchin_mosquito_bald",
+    "info_artmod_soul_gravi_zone",
+    "info_artmod_ameba_slug_mincer",
+    "info_artmod_night_star_buzz",
+    "info_artmod_electra_moonlight_zharka",
+    "info_artmod_gold_fish_galant",
+    "info_artmod_dummy_dummy_mosquito_bald",
+    "info_artmod_dummy_pellicle_gravi_zone",
+    "info_artmod_dummy_glassbeads_mincer",
+    "info_artmod_fuzz_kolobok_buzz",
+    "info_artmod_dummy_battery_zharka",
+    "info_artmod_dummy_spring_galant",
+    "info_artmod_glassbeads_ice",
+    "info_artmod_blood_ice",
+    "info_artmod_vyvert_buzz",
+    "info_artmod_rusty_sea-urchin_ice",
+    "info_artmod_medusa_galant",
+    "info_amk_recipt_simbion",
+    "info_amk_recipt_souls_drops",
+    "info_amk_recipt_souls_fire",
+    "info_amk_recipt_souls_cristal",
+    "info_amk_recipt_souls_bengal",
+    "info_amk_recipt_tears_electra",
+    "info_amk_recipt_tears_fire",
+    "info_amk_recipt_tears_chimaera",
+    "info_amk_recipt_tears_gigant",
+    "info_amk_recipt_dikoobraz",
+    "info_amk_recipt_electra_dikoobraz",
+    "info_amk_recipt_sopl_dikoobraz",
+    "info_amk_recipt_stone_dikoobraz",
+    "info_amk_recipt_steel_kolobok",
+    "info_amk_recipt_titan_kolobok",
+    "info_amk_recipt_almaz_kolobok",
+    "info_amk_recipt_giant_small_brother",
+    "info_amk_recipt_dummy_fire",
+    "info_amk_recipt_dummy_bright",
+    "info_amk_recipt_dummy_moon",
+    "info_amk_recipt_dummy_puding",
+    "info_amk_recipt_shkura",
+    "info_amk_recipt_cheshya",
+    "info_amk_recipt_pancir",
+    "info_amk_recipt_controller_skalp",
+    "info_amk_recipt_grandmother_glassbeards",
+    "info_amk_recipt_pra_grandmother_glassbeards",
+    "info_amk_recipt_burer_grandmother_glassbeards",
+    "info_amk_recipt_burer_pra_grandmother_glassbeards"
+}
+
+function disable_all_recipts()
+    for _, i in ipairs( tbl_reciptt ) do
+        if db.actor:has_info( i ) then
+            db.actor:disable_info_portion( i )
+        end
+    end
+end
+
+function test_spawn()
+    local tbl_del_obj = {
+        "marsh_lab_monster1",                   -- трупики собачек у ученых на болотах?
+        "marsh_lab_monster2",                   -- трупики собачек у ученых на болотах?
+        "bar_sak_physic_object01",              -- большой прицеп на дороге на АС
+        "bar_sak_physic_object02",              -- камаз справа на пути на АС
+        "bar_sak_physic_object04",              -- прицеп у перехода на АС
+        "bar_sak_physic_object06",              -- трактор у перехода на АС
+        "ros_tutorial_witches_galantine_0022",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0005",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0006",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0019",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0018",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0009",  -- электра на ДТ
+        "rad_physic_object_0014"                -- канистра на Радаре
+    }
+    for i = 1, #tbl_del_obj do
+        local obj = g_sim:object( tbl_del_obj[ i ] )
+        if obj then misc.release_obj( obj.id ) end
+    end
+    local tsa = {
+        { "amk_zone_mincer_strong",     74.24,   0.18,   265.00,    1244,   29227  }, --Бар проход на АС справа пандус
+        { "amk_zone_mincer_strong",     74.12,   0.10,   276.37,    1244,   29227  }, --Бар проход на АС справа пандус
+        { "amk_zone_sakbuzz_strong",    74.84,   0.86,  -136.71,    397,    244678 }, --Свалка, бетон, псевды, круг
+        { "amk_zone_sakbuzz_strong",   -100.73, -8.99,  -134.49,    1437,   45041  }, --ДТ на выходе из тонеля справа?
+        { "amk_zone_sakbuzz_strong",   -201.20,  5.00,   119.06,    1402,   26434  }, --ДТ верх лестницы у вагонов между домами
+        { "amk_zone_sakbuzz_strong",   -197.81,  5.00,   136.00,    1369,   26481  }, --ДТ верх лестницы сбоку ангара
+        { "amk_zone_sakbuzz_strong",   -147.66,  7.50,   156.50,    1327,   39387  }, --ДТ верх лестницы на вышку
+        { "amk_zone_sakbuzz_strong",    38.81,   3.78,  -120.99,    427,    284666 }, --Агро дерево на пути к Шерстюку
+        { "amk_zone_sakbuzz_strong",    128.12,  2.70,    67.88,    495,    361525 }, --Агро перед вышкой
+        { "amk_zone_sakbuzz_strong",    86.42,   0.00,    29.98,    423,    321146 }  --Агро перед автобусом
+        --{ "amk_zone_sakbuzz_strong",      1.53,   -0.007, -355,79,    3006,   25185  }  --Лиманск тоннель
+    }
+    local shape = { shtype = 0, radius = 4.0, center = { 0, 0.5, 0 } }
+    for i = 1, #tsa do
+        amk_anoms.spawn_anomaly(
+            tsa[ i ][ 1 ],
+            sak.v3f( tsa[ i ][ 2 ], tsa[  i ][ 3 ], tsa[ i ][ 4 ] ),
+            tsa[ i ][ 5 ], tsa[ i ][ 6 ], shape, "static"
+        )
+    end
+    test.spawn_holod_radio()                -- добавим радиоприёмник Холоду на Болотах
+end
+
+function see_repa()
+    wprintf( "99999999999999999999999999999999999999999999     " .. db.actor:character_reputation() )
+    local m = test.calc_pda_recharge_price( vergas )
+    wprintf("---------------------------------------------------------------------------------------        " .. m )
+end
+
+function rain()
+    sak.send_tip( "Сила дождя: " .. level.rain_factor(), "", 2, 20, "uniq", "sak", "green" )
+end

@@ -1,0 +1,981 @@
+if misc == nil then
+   misc = {}
+end                                   
+
+misc.last_edit = "25.10.2014 by alpet"
+misc.releasing_objects = {}
+misc.releasing_context = {}
+misc.debug_remove = false
+
+function misc.on_spawn(src) -- proxy function (parameter bypass)
+ if src then 
+   local id = misc.get_object_id(src)   
+   --SetDbgVar('on_spawn', id)   
+   local sobj = get_SObject(id)
+   local cobj = get_CObject(id)
+  -- SetDbgVar('on_spawn_se', FormatPtr(sobj))
+   --SetDbgVar('on_spawn_cl', FormatPtr(cobj))
+   
+   NotifySpawned ( sobj, cobj )
+ end   
+ return src
+end
+
+function vxdb_file(lname)
+ if lname == nil then
+    lname = level.name()
+ end    
+ return sprintf("$mod_dir$\\vxdb\\vxd_%s.dat", lname)
+end
+
+function misc.force_offline (id)  
+ if g_sim:object(id) then
+    g_sim:set_switch_offline ( id, true )
+    g_sim:set_switch_online  ( id, false )
+ end   
+end                                    
+
+function misc.force_online(id)
+ if g_sim:object(id) then
+    g_sim:set_switch_online  ( id, true )
+    g_sim:set_switch_offline ( id, false )
+ end                                          
+end
+
+function misc.init_vxdb()
+ -- HINT: загрузка лишний раз не проводится. Обычное время загрузки ~= 30 мс
+ local fname = vxdb_file()
+ local err = LoadVertexList(fname)
+ 
+ if err ~= '#OK' then
+    wprintf('[~T].~C0C #ERROR: load file %s result = %s ', fname, err or 'nil')
+    vertex_dump.dump(true)    
+    if LoadVertexList(fname) ~= '#OK' then    
+       return false
+    end    
+ end
+
+ return true
+end
+
+function misc.nearest_vertex_info(pos)
+  local vxdb = vxdb_file()       
+  local lvid, gvid, tvid = NearestVertexInfo(vxdb, pos)
+  -- wprintf('[~T]. #DBG: lvid = %d, gvid = %d, pos.x = %.3f, pos.z = %.3f ', lvid, gvid, pos.x, pos.z)
+  return lvid, gvid, tvid
+end
+
+function misc.init_pos(pos, gvid, lvid)
+ local res = {} 
+ if pos and pos.x then
+    -- wprintf(" init_pos from~C0F %s ~C07", misc.pos2str(pos))
+ elseif lvid then
+    wprintf("~C0C #WARN:~C07 init_pos from vertex coordinates, called from:\n %s", lua_traceback(" "))    
+    pos = level.vertex_position(lvid)
+ end  
+ 
+ res = { x = pos.x, y = pos.y, z = pos.z, gv = gvid, lv = lvid }
+ res.pos = vector():set(pos) -- double info for spawn_obj
+ return res
+end
+
+
+
+function misc.spawn_obj(section, pos, parent, is_ammo, not_update_obj)
+ -- HINT: за исключением времени создания карты, теоретическое время поиска вертексов < 1 мс 
+ 
+ local lvid = 0
+ local gvid = 0
+ local tvid = 0 
+ 
+ parent = misc.get_object_id(parent)
+
+ if ( parent == nil ) or ( parent < 0 ) or ( parent >= BAD_OBJ_ID ) then
+    parent = BAD_OBJ_ID
+    if pos == nil then
+       wprintf("~C0C #FATAL(spawn_obj):~C07 unexpected pos == nil && no parent ")
+       return nil
+    end
+            
+    if pos.lv == nil then
+      lvid, gvid, tvid = misc.nearest_vertex_info(pos)
+    else
+      lvid = pos.lv
+      gvid = pos.gv or def_gvid
+      pos = pos.pos
+  end
+    
+  
+ 
+  --wprintf('[~T]. #DBG: вотттт2 = %s, lvid = %d, gvid = %d, pos.x = %d, pos.z = %d ',section, lvid, gvid, pos.x, pos.z)
+    if lvid < 0 then 
+       wprintf('[~T].~C0C #ERROR: vertex detection failed in misc.spawn_obj. Used actor values ~C07')
+       lvid = db.actor:level_vertex_id()
+       gvid = db.actor:game_vertex_id()    
+    end
+ else    
+    local pobj = client_obj(parent)
+    local sobj = server_obj(parent)    
+    
+    if pobj then
+       lvid = pobj:level_vertex_id()
+       gvid = pobj:game_vertex_id()
+       pos  = pobj:position()
+    elseif sobj then   
+       lvid = sobj.m_level_vertex_id or 0
+       gvid = sobj.m_game_vertex_id or 0
+       pos  = sobj.position
+    else
+       wprintf("~C0C #FATAL:~C07 unexpected absent parent id = %d ", parent)    
+       return nil
+    end       
+ end
+ 
+  
+ if gvid > 32000 then
+    ODS("[~T].~C0C #ERROR:~C07 bad gvid used for spawn = "..tostring(gvid))     
+    gvid = db.actor:game_vertex_id()
+ end
+ 
+ 
+ local sobj = nil
+ if pos.x == nil then
+    wprintf("[~T].~C0C #ERROR:~C07 used not-vector argument %s as position ", DumpVar(pos))
+    return nil
+ end
+
+ SetDbgVar("last_spawn", sprintf("%s x %d at { %s }:%d:%d", section, is_ammo or 1, misc.pos2str(pos), gvid, lvid), true)
+ 
+ if is_ammo and ( is_ammo > 0 ) then
+    sobj = g_sim:create_ammo(section, pos, lvid, gvid, parent, is_ammo)
+ else
+    if strpos(section, "detector") then
+       wprintf(" spawning~C0A %s~C07 into~C0D %d~C07, at~C0E %s~C0D %d:%d ~C07",
+                 section, parent, misc.pos2str(pos), gvid, lvid)  
+    end
+    sobj = g_sim:create(section, pos, lvid, gvid, parent)
+ end   
+ 
+ if sobj then      
+    if not_update_obj then
+    else                                      
+      sobj = g_sim:object(sobj.id) or sobj  -- update metatable
+    end  
+    -- wprintf('[~T]. #DBG: object id = %d, lvid = %d, gvid = %d ', sobj.id, sobj.m_level_vertex_id or -1, sobj.m_game_vertex_id or -1 )
+ else
+    wprintf('[~T]. #FATAL: alife():create returned nil!')
+ end   
+ 
+ return misc.on_spawn(sobj) 
+end
+
+function misc.cast_object(obj)
+ if type(obj) ~= "userdata" then
+    local id = tonumber(obj) or BAD_OBJ_ID
+    if id >= 0 and id < BAD_OBJ_ID then
+       return client_obj(id) or server_obj(id)
+    end 
+    return nil
+ end 
+ return obj
+end
+
+function misc.object_pos(obj)
+ obj = misc.cast_object(obj)
+ if not obj then 
+    return nil
+ end                       
+ if obj.game_vertex_id and obj.level_vertex_id then
+    return misc.init_pos(obj:position(), obj:game_vertex_id(), obj:level_vertex_id())
+ elseif obj.m_level_vertex_id then
+    return misc.init_pos(obj.position, obj.m_game_vertex_id, obj.m_level_vertex_id)
+ else   
+    wprintf("~C0C #ERROR:~C07 cannot get position from %s ", DumpVar(obj))
+    return misc.object_pos(db.actor)
+ end                    
+
+end
+
+function misc.spawn_to(section, target, is_ammo) -- для спавна в непися или контейнер
+ target = misc.cast_object(target)
+   
+ if target then    
+    return misc.spawn_obj(section, nil, target, is_ammo)     
+ end 
+ return nil
+end
+
+function misc.spawn_on_level(section, pos, level_name, is_ammo)
+ -- как правило родитель-контейнер в таких случаях не требуется, поэтому обработок поменьше  
+ local vxdb = vxdb_file(level_name)
+ local lvid, gvid, tvid = NearestVertexInfo(vxdb, pos)
+ --wprintf('[~T]. #DBG: trying spawn~C0A "%s"~C07 at lvid =~C0D %d~C07, gvid =~C0D %d~C07', section, lvid, gvid)
+ 
+ local sobj = nil 
+ if is_ammo and ( is_ammo > 0 ) then
+    sobj = g_sim:create_ammo (section, pos, lvid, gvid, BAD_OBJ_ID, is_ammo)
+ else
+    sobj = g_sim:create (section, pos, lvid, gvid)
+ end  
+  
+ return misc.on_spawn(sobj) 
+end
+
+function misc.spawn_objects(sclist, pos, parent, is_ammo) 
+ local list = SplitStr(sclist, ',')
+ local result = {}
+ if nil == pos and parent then
+    pos = misc.object_pos(parent)
+ end
+ 
+ for i, section in ipairs(list) do
+   local sobj = misc.spawn_obj (section, pos, parent, is_ammo)   
+   if sobj then table.insert(result, sobj) end   
+ end -- for
+ 
+ return result
+end
+
+function misc.spawn_multi (section, pos, parent, count, is_ammo) 
+ local result = {}
+ if nil == pos and parent then
+    pos = misc.object_pos(parent)
+ end
+ if count > 20 then
+    wprintf("[~T].~C0C #WARN:~C07 to many objects~C0A %s~C07 for spawn =~C0D %d~C07, from\n %s",  section, count, lua_traceback('   ')) 
+ end
+  
+ for i = 1,count do
+   local sobj = misc.spawn_obj (section, pos, parent, is_ammo)   
+   if sobj then table.insert(result, sobj) end   
+ end -- for 
+ return result
+end
+
+function misc.spawn_once(uid, sclist, pos, parent, is_ammo)
+ local st = stored_table("once_spawns")
+ if st[uid] then return false end
+ local ids = misc.spawn_objects(sclist, pos, parent, is_ammo) -- список будет сохранен в сейве
+ st[uid] = ids
+ return ids
+end
+
+function misc.pos2str(p)
+ if p then
+    return string.format("X = %11.3f, Y = %11.3f, Z = %11.3f", p.x, p.y, p.z);
+ else
+    return 'nil'
+ end   
+end
+
+local last_spawn_tb = ""
+local last_spawned = {}
+
+
+function misc.spawn_by_index(index)
+  
+ local name, proto = FindSpawnIDS( tonumber(index) )
+ if name then
+    local tb = lua_traceback(' ')    
+    --SetDbgVar ('spawn_name', name ) 
+    if last_spawned[name] then    
+	   wprintf('[~T].~C0C #WARN: ~C07 duplicate spawn_name~C0F %s~C07 index =~C0D %s ~C07', name, tostring(index) )
+       -- wprintf(' first spawn from:~C0E %s~C07', last_spawn_tb)
+       -- wprintf(' last  spawn from:~C0A %s~C07', tb)                            
+       return nil
+    end   
+    last_spawned[name] = true
+    last_spawn_tb = tb
+    
+    
+ end
+   
+ --SetDbgVar ( 'spawn_by_index', index ) 
+ local sobj = g_sim:create (index)
+
+ if strpos(name, "_surprise_box") then
+   wprintf(" spawned item~C0F %-30s~C07 by spawn_name~C0E %-30s~C07 index =~C0D %d~C07", sobj:name(), name, index)
+ end 
+ return misc.on_spawn(sobj) 
+end
+
+
+
+
+function misc.spawn_by_name(name)
+ local index, proto = FindSpawnIDS(name)
+ 
+ if ( index ~= nil ) and ( index >= 0 ) then
+    --SetDbgVar ( 'spawn_by_name', name )    
+    return misc.spawn_by_index (index)
+ else
+    --wprintf('[~T]. ~C0C #FATAL not found spawn index for ~C0F"%s"~C0C result =~C0F %s ~C07', name, tostring(index) )   
+ end
+end
+
+function misc.spawn_by_story_id(story_id)
+ local name, proto = FindSpawnIDS(story_id, 'by_story_id')
+ local sobj = g_sim:story_object (story_id) 
+ if name and ( sobj == nil ) then
+    --SetDbgVar ( 'spawn_by_story_id', story_id )
+    sobj = misc.spawn_by_name(name)    
+ end
+ return sobj
+end
+
+function misc.get_object_id(src) -- CAN_OPT_DLL
+ local tid = type(src)
+ local id  = BAD_OBJ_ID 
+ if ( tid == 'string' ) or ( tid == 'number' ) then
+   id = tonumber(src)
+ elseif tid == 'userdata' and ( src.id ~= nil ) then
+   if type(src.id) == 'number' then
+      id = src.id 
+   else  
+      id = src:id()
+   end      
+ end     
+       
+ return id
+end
+
+_G.get_object_id = misc.get_object_id
+
+function misc.geo_info(src)
+ -- функция для получения координат присутствия объекта
+ local id = misc.get_object_id(src)
+ local result = { pos = vector(), lv = 0, gv = 0 }
+ 
+ if id < 0 then return result end
+ 
+ local obj = client_obj(id)
+ local sobj = g_sim:object(id)
+ if obj then
+    result.lv = obj:level_vertex_id()
+    result.gv = obj:game_vertex_id()
+    result.pos:set ( obj:position() )
+ elseif sobj and sobj.position then
+    result.lv = sobj.m_level_vertex_id
+    result.gv = sobj.m_game_vertex_id 
+    
+    if result.lv > 0 then
+       -- в оффлайне эти координаты ближе к точке выхода в онлайн (?)
+       result.pos:set ( level.vertex_position(result.lv) )
+    else    
+       result.pos:set ( sobj.position )
+    end   
+ end     
+ 
+ return result 
+end
+
+function misc.process_spawn(id)
+ if misc.in_process_spawn ~= "in" then
+    reset_interactive(2) 
+    misc.in_process_spawn = "in"
+    local w = device().warn_freeze or true 
+    device().warn_freeze = false
+    for i = 1,100 do    
+     alife():update()
+     level.net_update()
+     level.on_frame()
+     if id == nil or client_obj(id) then 
+        break
+     end
+     if i >= 100 then
+      wprintf("[~T].~C0C #PERF_WARN:~C07 wait for spawn object~C0D %d~C07 breaked by timeout", id)
+     end
+     
+    end 
+    device().warn_freeze = w 
+     
+    misc.in_process_spawn = "out"
+ else
+    wprintf("[~T].~C0C #WARN(process_spawn):~C07 already in level.on_frame(), reetrancy blocked")  
+ end         
+end
+
+function misc.release_obj(src, ctx, now)
+ local id = misc.get_object_id(src)
+ if id <= 0 then 
+    wprintf('[~T].~C0C #ERROR: misc.release_obj source unrecognized type %s or bad id %d ~C07', type(src), id )
+    return 
+ end      
+
+    
+ if now == nil then 
+    now = true 
+ elseif type(now) == 'string' then 
+    now = ( now == '1' )
+ end
+  
+       
+ local obj = client_obj(id)
+ local sobj = server_obj(id)
+ -- if sobj:section_name() == "zone_ice" then
+ --    wprintf("[~T]. #DBG: trying remove anomaly~C0F %s~C07 from~C0A %s~C07", sobj:name(), lua_traceback(' ', 2)) 
+ -- end 
+ 
+ if obj then
+   local op = obj:parent()
+      
+   if op and op:id()==0 then   
+      --op:drop_item(obj)
+   end                      
+  
+   misc.force_offline(id)
+   
+ elseif sobj ~= nil then   
+   now = true
+ else
+   wprintf("[~T].~C0C #WARN:~C07 cannot release not existed object %s\n, context = '%s', %s ", id, ctx, lua_traceback(' ', 2))
+   get_console():execute("flush")
+   --[[
+   if type(src) == "userdata" then   
+     if  src.id and type(src.id) == "number" then
+        wprintf(" source is CSE_ALife*Object %s, name = %s ", ReadPtr(src):format(), src:name())
+     end
+     if src.id and type(src.id) == "function" then
+        local cobj = ReadPtr(src) ^ 4
+        wprintf(" source is СGameObject %s, name = %s ", cobj:format(), src:name())
+     end
+   end
+    --]]
+   
+   registry.verify_ptrs()
+   return   
+ end
+ 
+ if misc.debug_remove then
+    wprintf("[~T]. #DBG: releasing object~C0E %s~C0B /~C0F %s~C07 from %s", DumpVar(obj), DumpVar(sobj), lua_traceback('   '))  
+ end 
+ 
+ if now and sobj then
+   NotifyReleased (id, 'release_obj_now:sv '..tostring(ctx), true )
+   --wprintf(" release_obj_now name = %s off  = %s ", sobj:name(), tostring(ctx))
+   g_sim:release(sobj, true)
+ else 
+   NotifyReleased (id, 'release_obj_def:sv '..tostring(ctx), true )
+   misc.releasing_objects [id] = true   
+   if ctx ~= nil then
+      misc.releasing_context[id] = tostring(ctx)
+   end  
+ end        
+     
+end
+
+function misc.release_multi(to_remove)
+  for i, obj in ipairs(to_remove) do
+     misc.release_obj(o)
+  end
+end
+
+function misc.release_by_name(name)
+ local id = InvokeRegistry('Find', name)
+ if ( id < BAD_OBJ_ID ) then
+    -- wprintf(' %s = %d ', name, id )
+    misc.release_obj(id)
+ end                       
+end
+
+function misc.post_release()
+ local t = {}
+ local c = {}
+ local sim = alife()
+ 
+ for id,yep in pairs(misc.releasing_objects) do 
+   local obj = client_obj(id)
+   local sobj = g_sim:object(id)
+   if obj then
+      -- client object exists
+      t [id] = true  
+      c [id] = misc.releasing_context[id]
+      misc.force_offline (id)
+   elseif sobj ~= nil then
+    -- complete destroy
+    NotifyReleased (id, misc.releasing_context[id] )           
+    if sobj.name then     
+       SetDbgVar('alife_release', sobj:name() .. ' @ '.. sobj:section_name() )
+    end       
+    g_sim:release(sobj, true)
+   end 
+ end
+ misc.releasing_objects = t
+ misc.releasing_context = c
+end
+
+function nearest_obj (pos, lvid, objects, min_dist)
+ local result = nil  
+ 
+ for i,obj in ipairs(objects) do
+  if obj and obj.position then 
+     local dist = obj:position():distance_to_xz(pos)          
+     if ( dist < min_dist ) or ( obj:level_vertex_id() == lvid ) then
+        min_dist = dist
+        result = obj
+     end -- if
+  end -- if    
+ end -- for 
+ 
+ return result
+end
+
+misc.nearest_obj = nearest_obj
+
+function misc.easy_sound(snd_name)
+ snd_obj = xr_sound.get_safe_sound_object(snd_name)
+ snd_obj:play_no_feedback (db.actor, sound_object.s2d, 0, vector(), 1.0)
+end
+
+function misc.easy_anom(section, gi, radius)
+ -- !!! функция принимает табличные координаты !!!
+ local shapes = {}
+ shapes[1] = {}
+ 
+ if radius > 0 then    
+    shapes[1].shtype = 0
+    shapes[1].radius = radius
+    shapes[1].center = vector():set( 0, 0.1, 0 )
+ else
+    -- wprintf("[~T].~C07 #WARN:~C07 misc.easy_anom  = %f ", radius)    
+ end
+       
+ -- #WARN: порядок game_vertex & level_vertex перепутан в spawn_anomaly
+ return amk_anoms.spawn_anomaly(section, gi.pos, gi.gv, gi.lv, shapes[1], 'off')    
+end
+
+
+
+function misc.init_module()
+ AddRegularTask("post_release", misc.post_release, nil, 0, 800)
+end
+
+
+function substr_find(s, tab)
+ local cnt = table.getn(tab)
+ 
+ for n = 1,cnt do
+     local subs = tab[n]
+     if string.find(s, subs,1, true) then
+        return true
+     end
+ end
+ return false
+end
+
+function get_com(obj, name)
+ if name == "single_player" then return "actor" end
+
+ if (obj.is_alive) and (obj.character_community~=nil) and IsStalker(obj) then
+    return obj:character_community()
+ end
+
+ if (strposx(name, "heli")~=nil) or (strposx(name, "helicopter")~=nil) or (strposx(name, "btr_")~=nil) or (strposx(name, "vehicle")~=nil) then
+    return "vehicle"
+ end
+ 
+ 
+ if (strposx(name, "trader")~=nil) then return "trader"   end
+ 
+ if (strposx(name, "wpn_")~=nil)   then return "weapon"   end
+ if (strposx(name, "zone_")~=nil)  then return "anomaly"  end
+ if (obj.is_alive)                 then return "monster"  end
+ 
+ if obj.get_base_monster and obj:get_base_monster() then return "monster" end
+
+ return "item"
+end
+
+
+function dump_inventory(id)
+ local nnm
+
+ local a = vector()
+ local dir = vector()
+ local apos = vector()
+
+ dir = db.actor:direction()        -- куда смотрит актор сейчас
+ apos = db.actor:position()        -- позиция актора в координатах уровня
+ a.y = apos.y + 1.3
+ -- дистанцирование на 2 метра вперед относительно актора
+ a.x = apos.x + dir.x * 2
+ a.z = apos.z + dir.z * 2
+
+
+ ODS("[~T]. #DBG: Dumping inventory for npc/parent #"..tostring(id))
+
+
+ id = tonumber(id)
+
+
+
+ for i = 1,BAD_OBJ_ID  do
+  local tmp = client_obj(i)
+
+  if tmp and tmp.parent then
+      local parent = tmp:parent()
+      if parent and parent.id then
+         local parent_id = parent:id()
+
+         if parent_id==id then
+
+            nnm = "obj #"..tostring (i)
+
+            if tmp.name then
+               nnm = tmp:name()
+            end
+            ODS ("- npc have item ~C0A"..nnm.."~C07")
+            -- parent:transfer_item(tmp, db.actor) -- отнять предмет
+        end -- if parent_id
+     end -- if parent
+  end -- if tmp
+ end
+
+end
+
+
+function misc.find_around(pos, sect, radius)
+
+ local result = {}
+ 
+ SetVerbosity(3)
+
+ local list = RegistryFilter('New_List')
+ local flt  = RegistryFilter('New', 'distance_xz', list)
+ RegistryFilter('SetN', flt, pos.x, pos.z, radius)
+ 
+ if sect ~= "" then
+    local ids = registry.sc_objects (sect, false, 15)
+    result = InvokeRegistry( 'sieve', list, 15, ids )    
+ else
+    result = InvokeRegistry( 'filtered', list, 15 ) -- all objects online/offline       
+ end
+ 
+ RegistryFilter('Free', list)
+ 
+ for i, id in ipairs(result) do
+  if id == nil then
+    abort("#FATAL: InvokeRegistry returned nil in table, position = %d", i)   
+  elseif type(id) ~= "number" then
+    abort("#FATAL: InvokeRegistry returned %s value in table, position = %d", type(id), i)
+    
+  else
+    local sobj = get_SObject(id)
+    local cobj = get_CObject(id) 
+    -- wprintf(" found id = %d, se_obj = %s, cl_obj = %s ", id, FormatPtr(sobj), FormatPtr(cobj))   
+  end 
+ 
+ end
+
+ return result
+end
+
+function set_physic_item_mass(id, mass)
+  local obj = client_obj(tonumber(id))
+  if obj then
+     local ps = obj:get_physics_shell()
+      if ps then
+         -- wprintf(" item have physics shell. Current mass =~C0D %.3f~C07", ps:get_mass())
+         ps:set_mass(mass) -- CPhysicsShell::setMass
+         for i = 0, ps:get_elements_number() - 1 do       
+           local e = ps:get_element_by_order(i)
+           if e then
+              -- local ii = e:get_inertia()
+              -- wprintf(" element %d mass =~C0D %.3f~C07 Kg. Inertia mass =~C0D %.3f~C07 Kg ", i, e:get_mass(), ii.mass)       
+              e:set_mass(e:get_mass()) 
+           end              
+         end -- for         
+     end -- if ps
+  end -- if obj
+end
+
+local lines_count = 0
+
+function misc.table_info(t)
+ local l = table.getn(t)
+ local s = misc.size_table(t)
+ if l < s then 
+    return sprintf("~C0F is_table size =~C0D %d~C0F, length =~C0D %d ~C07", s, l), true
+ else
+    return sprintf("~C0F is_array length =~C0F %d~C07", l), false
+ end          
+end
+
+
+function type2color(v)
+  local vt = type(v)
+  local color = "~C0A" 
+  if vt == "string"   then color = "~C0A" v = "'"..v.."'" end
+  if vt == "number"   then color = "~C0D" end
+  if vt == "boolean"  then color = "~C0E" end
+  if vt == "userdata" then color = "~C0F" end
+  return color, v
+end
+
+
+local dump_ext = false
+
+function switch_output(target)
+ dump_ext = target
+end               
+
+function xprintf(fmt, ...)
+ if dump_ext then
+   local s = sprintf(fmt.."\n", ...)  
+   -- ODS(s, "c")   
+   FileWrite(dump_ext, s, s:len(), "mode=append")            
+ else
+   wprintf(fmt, ...)
+ end    
+end
+
+misc.xprintf = xprintf
+
+
+function misc.dump_array(varr) -- форматирование массива, в котором нет таблиц
+  local ordinal = true 
+  local len = table.getn(varr)
+      
+  local s = ""
+ 
+  for i, v in ipairs(varr) do
+   local vt = type(v)   
+   if vt == 'table' then 
+      ordinal = false
+      break
+   end -- if
+   local color
+   color, v = type2color(v)
+   s = s .. sprintf("%s%s~C07", color, DumpVar(v))   
+   if i < len then s = s .. ', ' end    
+  end -- for    
+  
+  if s:len() > 0 then   
+     s = '~C0B{ ' .. s .. '~C0B }'
+  end
+  return s, ordinal
+end
+ 
+
+
+function misc.dump_pair(k, v, prefix)
+ lines_count = lines_count + 1 
+ if lines_count > 5000 then
+    -- wprintf(" to many lines dumped !")
+    return
+ end
+
+ s =  sprintf("~C0F %-20s~C0B", DumpVar(k))
+ if type(v) == "table" then
+    local info, is_tab = misc.table_info(v)
+    misc.xprintf("%s %s:~C0F %s~C07", prefix, s, info)
+    if is_tab then    
+       misc.dump_table(v, prefix.."   ", dump_ext)
+    else
+       local ordinal = true
+       s, ordinal = dump_array(v)       
+       if ordinal then
+          misc.xprintf("%s %s~C07", prefix, s)
+       else
+          misc.dump_table(v, prefix.."   ", dump_ext)
+       end           
+    end -- if is_tab       
+       
+ else    
+    local color
+    color, v = type2color(v)       
+    s = s .. sprintf(" =%s %-25s", color, DumpVar (v))
+    misc.xprintf("%s %s~C0B :~C0E %s~C07", prefix, s, type(v))
+ end
+end
+
+
+function misc.size_table(t)
+ local cnt = 0
+ for k, v in pairs(t) do
+    cnt = cnt + 1 
+ end
+ return cnt
+end
+
+function misc.serialize(t)
+ local sz = size_table(t)
+ local wcnt = 0
+ local result = {}
+ for i = 1, sz do
+   local v = t[i] or t[tostring(i)]
+   if v then
+      table.insert(result, v)
+   else
+      misc.xprintf("~C0C #WARN(serialize):~C07 value t[%d] == nil ", i)
+      wcnt = wcnt + 1   
+   end
+ end
+ 
+ if wcnt > 0 then
+    for k, v in pairs(t) do
+       misc.xprintf(" t[%s:%s] = %s:%s ", DumpVar(k), type(k), DumpVar(v), type(v)) 
+    end
+ end
+ 
+ return result
+end
+
+function compare_keys(a, b)
+ return  DumpVar(a) > DumpVar(b)
+end
+
+function misc.touch_obj(obj)
+ local shell = obj:get_physics_shell()
+ if shell then 
+    shell:apply_force(0, 1, 0)
+ end
+end
+
+function misc.clone_table(t) -- неиспользовать для графов и таблиц с замыканием ссылок!
+ if type(t) ~= "table" then
+    wprintf("[~T].~C0C #ERROR:~C07 argument ~C0A %s ~C07 is not table, called from:\n~C0A %s~C07", DumpVar(t), lua_traceback(' '))
+    return
+ end
+
+ local result = {} 
+ for k, v in pairs(t) do
+  if type(v) == 'table' then
+    result[k] = misc.clone_table(v)
+  else
+    result[k] = v
+  end
+ end
+ return result 
+end
+
+
+function misc.dump_table(t, prefix, target)
+   if type(t) == "userdata" then 
+      t = t(true)
+   end  
+
+   if type(t) ~= "table" then
+      wprintf("[~T].~C0C #ERROR:~C07 argument ~C0A %s ~C07 is not table, called from:\n~C0A %s~C07", DumpVar(t), lua_traceback(' '))
+      return
+   end
+ 
+   if prefix == nil then
+      lines_count = 0
+      prefix = " "
+   end
+   
+   dump_ext = target or false
+   
+   
+   if type(t) ~= "table" then
+      misc.xprintf("~C0C %s ~C07", DumpVar(t))
+      return 
+   end
+
+   misc.xprintf ("%s~C0B {~C07 ", prefix)
+   local cnt = 0
+   
+   --[[     
+   if #t > 0 and nil ~= t[1] then 
+     -- dumping array
+     for i, v in ipairs(t) do     
+        misc.dump_pair('~C0D'..i, v, prefix)
+        cnt = cnt + 1
+     end -- for
+   end
+   
+   --]]
+   -- xprintf("by-pairs:")
+   
+   if misc.size_table(t) == table.getn(t) then
+     for k, v in ipairs(t) do
+      misc.dump_pair(k, v, prefix)                              
+     end -- for
+   else 
+     -- dumping map
+     local keys = {}
+     for k, v in pairs(t) do
+         table.insert(keys, k)
+     end
+     
+     table.sort(keys, compare_keys)
+     
+     for i, k in ipairs(keys) do
+      misc.dump_pair(k, t[k], prefix)                              
+     end -- for
+   end  
+    
+   misc.xprintf ("%s~C0B }~C07 ", prefix)   
+end
+
+function game_time_minutes()
+  return level.get_time_days() * 60 * 24 + level.get_time_hours() * 60 + level.get_time_minutes()
+end
+
+function base_time()
+ local base = game.CTime()
+ base:set(2012, 5, 1) -- начало игры примерное
+ return base
+end
+
+class "game_timer" -- TODO: переместить класс в timers.script
+
+function game_timer:__init(name)
+ self.time = game.get_game_time()
+ self.name = name or '#noname'
+ self.class_name = 'game_timer'
+ if name then self:load(name) end
+end
+
+function game_timer:dump()
+ if self.time then
+    wprintf(" game_timer~C0A %s~C07 start_time =~C0F %s~C07", self.name, self.time:timeToString(3))
+ else
+    wprintf(" game_timer~C0A %s~C07 start_time =~C0F nil~C07", self.name)
+ end
+end
+
+function game_timer:elapsed(update)
+ local diff = 0
+ local curr = game.get_game_time()
+ if self.time then
+    diff = curr:diffSec(self.time)
+ end
+ if update then self.time = curr end
+ return diff
+end
+
+function game_timer:load(name)
+ local t = nlc_vars.stored_timers or {}
+ local r = t[name]
+ if r and type(r) == 'number' then
+    local tt = game.CTime()
+    --     y  m  d  hh mm ss
+    tt:set(2012, 5, 1, 0, 0, math.floor(r), 0) -- восстановление через число секунд от полуночи
+    self.time = tt
+ end
+end
+
+function game_timer:save(name)
+ if nil == nlc_vars.stored_timers then
+    nlc_vars.stored_timers = {}
+    nlc_vars.game_timers = nil -- trash
+ end
+ if self.time then
+    name = name or self.name
+    nlc_vars.stored_timers[name] = self.time:diffSec(base_time())
+ end
+end
+
+function game_timer:timeout(seconds, reset)
+ local e = self:elapsed(false)
+ if e >= seconds then
+    self:elapsed(reset)
+    return true
+ end
+ return false
+end
+
+init_priority = 1000
+_G.dump_table = dump_table

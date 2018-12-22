@@ -1,0 +1,353 @@
+--[[
+Сбрасываемый рюкзак v 1.0
+Vergas
+© NLC-6.0
+
+Модифицированно alpet этак в ноябре 2014-го
+]]--
+
+local flag_tab = false
+local flag_spawn = false
+flag_take_rucksack = true
+local fo_drop_items = {}
+
+fake_rucksack = "shadow_inventory" -- DEPRECATED: константа безнадежно устарела, и не должна встречаться в скриптах! 
+
+flag_drop = true
+
+function set_flag_drop(param)
+  flag_drop = param
+end
+
+function is_medkit(section)
+ return section:sub(1, 6) == "medkit"
+end
+
+function have() -- vergas_rucksack.have() 
+ return  get_shadow_inv():update_storage() 
+end
+
+function sound_no_ruck()
+ vergas_lib.s_play([[rykzack\final_tragic_2]],1)
+end
+
+function exclude_for_greedy(obj)
+   if bind_greedy.get_flag_greedy() then
+    bind_greedy.set_forbid_items(obj:id())
+    bind_greedy.set_drop_rykzack(obj:id())
+    collect_id_items()
+    return
+  end             
+end
+
+function drop_rykzack() -- рикзак ога )
+  if not flag_drop then
+     return
+  end
+    local inv = get_shadow_inv()
+    local obj = inv:update_storage()
+    if obj == nil then return end
+    exclude_for_greedy(obj)   
+    flag_take_rucksack = false                     
+    inv:drop_storage()
+    vergas_lib.s_play("rykzack\\drop_rykzak_"..lua_random(4),1)
+    schedule.add("wpn_ret", "sak.restore_weap()", 800)   
+                                  
+    --[[
+  local obj = db.actor:object(fake_rucksack)
+  if obj then
+    g_sim:release(g_sim:object(obj:id()), true)
+    flag_take_rucksack = false
+    vergas_lib.spawn_item_in_inv("rykzack",true)
+    vergas_lib.s_play("rykzack\\drop_rykzak_"..lua_random(4),1)
+    sak.actor_hide_weapon()
+    schedule.add("wpn_ret", "sak.restore_weap()", 800)
+    flag_spawn = true
+    return
+  end
+    --]] 
+end
+
+function drop_rykzack_2()
+   --[[
+   local inv = get_shadow_inv()
+   local obj = inv:update_storage()
+   if obj == nil then return end     
+      
+         
+    
+    inv:drop_storage()
+    --]]   
+              
+    --[[ 
+  if flag_spawn then
+    local obj = db.actor:object("rykzack")
+    if obj then
+      flag_spawn = false
+      
+      db.actor:drop_item(obj)
+      transfer_in_hran(vergas_lib.set_pr_from_config("list_level_hran_sid",level.name()))
+    end
+  end
+   --]]
+end
+
+function collect_id_items()           
+  drop_items_on_ground(sak_inventory.rucksack)
+  drop_items_on_ground(sak_inventory.eatable)
+ 
+    --[[ устаревший респавн предметов из таблицы
+  local tbl_hran = razgruzka.get_inv_hran() 
+  if tbl_hran ~= nil then
+    local s_obj
+    for a,i in pairs(tbl_hran) do
+      if  razgruzka.is_ammo (a) then
+        vergas_lib.spawn_ammo_in_inv(a,tonumber(i),true)
+      else
+        for j = 1, tonumber(i) do
+          if a ~= "detector_simple_fake" then
+            s_obj = vergas_lib.spawn_item_in_inv(a,true)
+            bind_greedy.set_drop_rykzack(s_obj.id)
+          end
+        end
+      end
+    end
+    nlc_vars.inv_hran = nil
+  end
+    --]]
+end
+
+function drop_items_on_ground(tbl)
+    -- почему-то называется "вывалить предметы на землю", а по факту занимается удалением их напрочь 
+  for i,k in pairs(tbl) do
+    for j, id in ipairs(k) do
+      local item = client_obj(id)
+      local section=item:section()
+      if section ~= "shadow_inventory" then
+        if (section=="vodka" or is_medkit(section)) and lua_random()<0.2 then
+          g_sim:release(g_sim:object(id), true)
+        else
+          if set_flag_transfer(section) then
+             bind_greedy.set_drop_rykzack(id)
+          end
+        end
+      end
+    end -- for
+  end -- for 
+end
+
+function transfer_in_hran(hran_sid) -- от этой функции желательно поскорее избавиться?
+  transfer_tbl_in_hran(sak_inventory.rucksack, hran_sid)
+  transfer_tbl_in_hran(sak_inventory.eatable,  hran_sid)
+  local tbl_hran = nlc_vars.inv_hran
+  if tbl_hran~=nil then
+    nlc_vars["rykzack-hran"] = tbl_hran
+    nlc_vars.inv_hran = nil
+    --razgruzka.change_weight(2,0,0)
+  end
+  sak_inventory.need_update_inventory()
+end
+
+function transfer_tbl_in_hran(tbl,hran_sid)
+  local out_object = db.actor
+  local in_object = level_object_by_sid(hran_sid)
+  local item_id_tbl = {}
+  
+  for i,sub_t in pairs(tbl) do
+    if set_flag_transfer(i) then
+      for j, id in ipairs(sub_t) do
+        table.insert(item_id_tbl, id)
+      end
+    end
+  end
+  
+  for j, id in ipairs(item_id_tbl) do
+      local item = client_obj(id)
+    local section=item:section()
+    if section ~= "shadow_inventory" then
+      if (section=="vodka" or is_medkit(section)) and lua_random()<0.2 then
+        g_sim:release( g_sim:object(id), true) -- некая комиссия за перевод предметов в схрон?
+      else
+        out_object:transfer_item(item, in_object)
+      end
+    end
+  end -- for
+  
+end
+
+
+
+function set_flag_transfer(section)
+  local flag = true
+  if nlc_container.important_items [section] or razgruzka.is_ammo(section) or razgruzka.is_grenade(section) or
+         razgruzka.is_medical(section) or section:sub(1, 7)=="antirad" or section:sub(1, 6)=="energy" then
+    flag = false
+  end
+  return flag
+end
+--===================================функции закрытия инвентаря без рюкзака==============================================
+
+function close_inventory()
+  local ruck = get_shadow_inv():update_storage()
+  local flag_snd = false
+  set_flag_drop(true)
+  if not ruck then
+    sak_inventory.need_update_inventory()
+    -- flag_snd = drop_items(sak_inventory.rucksack) or  drop_items(sak_inventory.eatable)
+  end  
+  if flag_snd then
+    -- sound_no_ruck()
+  end
+end
+
+
+function take_without_rucksack(obj)
+   local  result, forbid = bag_on_belt_use.take_item_without_rucksack(obj) 
+   return result  
+end
+
+
+function take_item_in_inv(obj)
+  if drop_items_4(obj) then return false end
+  local sect=obj:section()
+  local inv = get_shadow_inv()
+  if sect:sub (1 , 3) == "af_" and not vergas_art.take_art(obj) then
+     return false
+  end
+  if inv_buttons_use.get_flag_equipment() then
+     inv_buttons_use.take_ammo(obj)
+     return true
+  end            
+  if inv:update_storage() then
+     -- при наличии хранилища обрабатывать дальше
+     if sect=="flask_army" or sect=="flask_army_trade" then
+        vergas_flask.take_flask_army(obj)
+        return true
+     elseif sect=="sleeping_bag" then
+        sleeping_bag.take_bag(obj) 
+        return true      
+     end -- if-switch
+  else       
+   if take_without_rucksack(obj) then return true end
+   --wprintf(" processing take for~C0A %s~C07 without shadow_inventory, expected drop ", obj:name())    
+  end -- if have storage
+  return inv:take_item(obj, not inv.items_restored)  
+end
+
+
+function drop_items(tbl, flag)
+    flag = flag or false
+      
+  local item_id_tbl = {}
+  for sect, subt in pairs(tbl) do
+    if not nlc_container.important_items[sect] then
+      for j, id in pairs(subt) do
+        table.insert(item_id_tbl, id)
+      end
+    end
+  end
+  for j, id in ipairs(item_id_tbl) do
+    local item = client_obj(id)
+    --wprintf(" drop_items processing~C0A %s~C07 from\n~C0F %s~C07", item:name(), lua_traceback('   '))
+    db.actor:drop_item(item)
+    flag = true
+  end
+  
+  return flag
+end
+
+function drop_items_2(obj)
+  local s = obj:section()
+  local flag, forbid = bag_on_belt_use.take_item_without_rucksack(obj)
+  if flag then
+    if not nlc_container.important_items[s] then
+      if take_in_slot(obj) then
+        local id = obj:id()
+        schedule.add("drop_item"..id, "vergas_rucksack.drop_items_2_2("..id..")", 300)
+        if not forbid then
+           sound_lose_item()
+        end
+      end
+    end
+  end
+end
+
+function drop_items_2_2(obj_id)
+  local obj = client_obj(obj_id)
+  if obj then
+       wprintf(" drop_items_2_2 processing %s ", obj:name())
+     db.actor:drop_item(obj)
+  else
+    schedule.add("drop_item"..obj_id, "vergas_rucksack.drop_items_2_2("..obj_id..")", 300)
+  end
+end
+
+function drop_items_3(item,ostatok)
+    local sect = item:section()   
+  if razgruzka.is_ammo ( sect ) and vergas_lib.get_ammo_size(item) > ostatok then -- если размер пачки больше остатка, добавить остаток?
+    vergas_lib.spawn_ammo_in_inv (sect, ostatok, false)
+  else
+      wprintf(" drop_items_3 processing %s ", item:name())
+    db.actor:drop_item(item)
+    vergas_lib.s_play([[rykzack  rader_script1c_9]],1)
+  end
+end
+
+function drop_items_4(obj)
+  local i
+  local flag_id = false
+  if table.getn(fo_drop_items)~=0 then
+    for i = 1, table.getn(fo_drop_items) do
+      if obj and obj:id()==fo_drop_items[i] then
+        flag_id = true
+                wprintf(" drop_items_4 processing %s ", item:name())
+        db.actor:drop_item(obj)
+        fo_drop_items[i] = 0
+      end
+    end
+    if flag_id then
+      vergas_lib.s_play([[rykzack  rader_script1c_9]],1)
+    end
+    local flag = true
+    for i = 1, table.getn(fo_drop_items) do
+      if fo_drop_items[i]~=0 then
+        flag = false
+      end
+    end
+    if flag then
+      fo_drop_items = {}
+    end
+  end
+  return flag_id
+end
+
+function drop_art(obj)
+  local af_count = 0
+  local i,k
+  for i,k in pairs(sak_inventory.belt_items) do
+    af_count = af_count + table.getn(k)
+  end
+  if   af_count == 6 then
+    set_fo_drop_items(obj:id())
+        return true
+  end
+    return false
+end
+
+function set_fo_drop_items(obj_id)
+  table.insert(fo_drop_items, obj_id)  
+end
+
+function take_in_slot(obj) -- а не добавить-ли быстрые слоты?
+    local test_slots = { 0, 1, 2, 4, 5, 6, 7, 8, 9, 11 }
+    local id = obj:id()
+    for i, slot in ipairs(test_slots) do
+     local item = db.actor:item_in_slot(slot)  
+     if item and id == item:id() then    
+    return false
+     end -- if 
+    end -- for
+    
+  return true
+end
+

@@ -1,0 +1,446 @@
+if coord_params == nil then
+ _G.coord_params = {}
+end
+
+-- offsets checked for 1.0006
+
+se_obj_params = {
+  money_int   =           "$0004",
+  detect      =           "$0008",  -- max_weight // if value == 447A0000 (1000.0 float) then offseted params need += $60 
+  tflags_int  =           "$000C",  -- ?
+  unk010_byte =           "$0010",      
+  rank_int    =           "$0018",  -- rank
+  repa_int    =           "$001C",  -- reputation
+  unk024_byte =           "$0024",  -- 234 for sample stalker
+  comm_byte   =           "$0030",  -- community id  
+  unk024_byte =           "$0034",   -- 15 for sample stalker
+  convert_func =          get_SObject 
+}
+
+--- Следующие параметры смещены для сталкеров на 96 байт: 
+se_obj_params2 = { 
+  sz_name        =        "#CSE_ALifeObject.name",     -- character name StringZ in body
+  id_word_se     =        "#CSE_ALifeObject.id",
+  pid_word       =        "#CSE_ALifeObject.parent_id",  -- parent id
+  ss_section_se  =        "#CSE_ALifeObject.section",    -- shared_str
+  pos_v3f_se     =        "#CSE_ALifeObject.position",   -- same pos x
+  dir_h_se       =        "#CSE_ALifeObject.direction",  -- duplicated ang_ph & ang_h             
+  clsid_word     =        "#CSE_ALifeObject.clsid",
+  unk088_byte    =        "$0088",  
+  gvid_word      =        "#CSE_ALifeObject.game_vertex",
+  lvid_int       =        "#CSE_ALifeObject.level_vertex",
+  flags_int      =        "#CSE_ALifeObject.flags",  -- story_id (abstract only?)
+  stid_int       =        "$00B8",  -- story_id (abstract only?)
+  unk0E8_byte    =        "$00E8",  -- 261 for stalker  
+  health         =        "$00EC",  -- 14Ch full offset
+  ang_ph_se      =        "$0104",  -- #CSE_ALifeObject.angles?
+  ang_h_se       =        "$0108",
+  ang_p_se       =        "$010C",
+  unk14C_word    =        "$014C",
+  self_ptr       =        "$0158",   -- to confirm
+  convert_func   =        get_SObjectExt             
+  
+}
+
+object_params = {
+  -- здесь матрица переноса-поворота-масштабирования-сдвига (возможно аффинные преобразования)
+  xform_matrix     = "$0050",    
+  ho_dir_x         = "$0050",
+  ho_dir_y         = "$0054",
+  ho_dir_z         = "$0058",
+  matrx_14         = "$005C",
+  vo_dir_x         = "$0060",
+  vo_dir_y         = "$0064",
+  vo_dir_z         = "$0068",
+  matrx_24         = "$006C",
+  dir_v3f          = "$0070",
+  fw_dir_x         = "$0070",
+  fw_dir_y         = "$0074",
+  fw_dir_z         = "$0078",
+  matrx_34         = "$007C",
+  pos_v3f          = "$0080",
+  pos_x            = "$0080",
+  pos_y            = "$0084",
+  pos_z            = "$0088",
+  matrx_44         = "$005C",
+  
+  id_word          = "$00A4",
+  ss_name          = "$00A8",  -- shared_str
+  ss_section       = "$00AC",  -- shared_str
+  ss_visual        = "$00B0",
+  convert_func     = get_CObject
+  
+}
+
+
+function update_offsets(t)
+  local r = {}
+  for k, o in pairs(t) do
+     if type(o) == "string" then 
+        local iofs = CalcPtr(o, 0, "@int") or 0
+        r[k] = iofs 
+        if strpos(o, "#") then
+           wprintf(" updated offset~C0A %25s~C07 =~C0D $%03X ~C07 from ~C0F %s~C07 ", k, iofs, o)
+        end   
+     else
+        r[k] = o 
+     end                                                               
+  end
+  return r
+end
+
+
+coord_params.object_params = update_offsets (object_params)
+coord_params.se_obj_params = update_offsets (se_obj_params)
+coord_params.se_obj_params2 = update_offsets (se_obj_params2)
+
+
+local all_offsets = { object_params, se_obj_params, se_obj_params2 }
+
+
+function obj_prop(id, key, newval)
+ local obj = engine_object(id)
+ if obj then
+    return update_prop(obj, key, newval)
+ else
+    return nil 
+ end
+end
+
+function se_obj_prop(id, key, newval)
+ local sobj = g_sim:object (id)
+ if sobj then
+    return update_prop(sobj, key, newval)
+ else
+    return nil 
+ end
+end
+
+function se_flags(id, key, flag, b_set) 
+ local sobj = g_sim:object (id)
+ if sobj then
+    local f  = sobj[key]
+    if flag and f and b_set ~= nil then                 
+       -- wprintf(" se_flags updating flag %x to %s, from %x ", flag, tostring(b_set), f:get())              
+       sobj[key]:set(flag, b_set)
+       -- wprintf(" se_flags verify value = %x ", sobj[key]:get())
+    end          
+    return f
+ end 
+ 
+ return nil
+ 
+end
+
+
+function bad_obj(id)
+ local obj = client_obj(id)
+ if obj ~= nil then
+    return false
+ else
+    return true
+ end
+end
+
+function trace_item_state(id)
+ local cobj = get_CObject( tonumber(id) )
+ if cobj then
+    local entity = ReadDMA(cobj, "$1A4", "safe_ptr")
+    if entity then
+       local  state = ReadDMA(entity, "$88", "safe_ptr")
+       ODS ("[~T]. #DBG: item state at "..FormatPtr(state))       
+       return state
+    end    
+ end 
+ return nil
+end
+
+
+function obj_field(id, key)
+ -- WARN: function is obsolete, can be removed   
+ local addr = nil  
+ local ofs = object_params[key]
+ if ofs then
+   addr = get_CObject(id)
+   return addr, ofs
+ end
+
+ addr = get_SObject(id)
+ ofs = se_obj_params[key] or se_obj_params2[key]   
+ return addr, ofs
+end
+
+-- flush !coord_params.get_obj_prop 0 info_dump
+function get_obj_prop(id, key)
+ if bad_obj(id) or (key == nil) then return 0 end
+ 
+ local ci = obj_clsid(id)
+ if ci == nil then return 0 end
+ local value = nil
+ 
+ 
+ local lobj = client_obj(id) -- lua object (client)
+ if ( key == "info_dump" ) and ( lobj ~= nil ) then
+    local s_addr = FormatPtr ( get_CObject(id) )
+    local s_addr_se = FormatPtr ( get_SObject(id) )
+    local s_addr_rf = FormatPtr ( ReadDMA(lobj, 0, "safe_ptr") )
+    local s_name = "noname"
+    local s_sect = "?"
+
+    if lobj.name then
+       s_name = lobj:name()
+       
+       if string.find(s_name, "outfit") ~= nil  then s_name = "~C0B"..s_name end
+       if string.find(s_name, "device_") ~= nil then s_name = "~C0F"..s_name end
+       if string.find(s_name, "ammo_") ~= nil   then s_name = "~C0E"..s_name end
+       if string.find(s_name, "wpn_") ~= nil    then s_name = "~C0C"..s_name end
+    end
+    
+    if lobj.section then
+       s_sect = lobj:section()
+    end
+    local msg = string.format("[~T]. object id =~C0D %5d~C07, ptr =~C0F %s~C07, rf_ptr = %s, se_ptr =~C0E %s~C07, ci = %s, name =~C0A %25s~C07, sect =~C0A %s~C07", id, s_addr, s_addr_rf, s_addr_se, ci, s_name, s_sect)
+    ODS(msg)
+    return 0
+ end
+  
+ return ReadParamValue(id, key, all_offsets) 
+end
+
+
+function set_obj_prop(id, key, newval)
+ -- универсальный модификатор свойств онлайновых и серверных объектов
+ if (key == nil) then return false end 
+ -- TODO: DMA_REPLACE
+ -- WriteParamValue(id, key, newval, all_offsets)  
+ return true
+end
+
+coord_params.get_obj_prop = get_obj_prop
+coord_params.set_obj_prop = set_obj_prop
+
+function set_obj_section(id, section)
+ local obj = client_obj(id)
+ local sobj = server_obj(id)
+ if obj then -- need engine from 04.12.2014  
+    obj:set_section(section)
+ elseif sobj then
+    sobj:set_section_name(section)    
+ end
+
+ InvokeRegistry("UPD_SECTION", id)
+ --set_obj_prop(id, 'ss_section', section)
+ --set_obj_prop(id, 'ss_section_se', section) 
+end
+
+coord_params.set_obj_section = set_obj_section
+
+
+function camera_angles(h_new, p_new)
+ -- alternate access to device().cam_pos
+ if xr_build_id > 5500 then
+    local cam = actor_camera(0)
+    if cam == nil then
+       return 0, 0
+    end
+    
+    if h_new then
+       cam.yaw = h_new 
+    end
+    if p_new then
+       cam.pitch = p_new
+    end           
+    
+    return cam.yaw, cam.pitch 
+ end
+
+
+ local aobj = get_CObject( db.actor:id() )
+
+ if aobj == nil then return 0, 0 end
+
+ -- 2945: 518h - index of camera
+ local n_cam =  ReadDMA(aobj, "$0530", "int") -- $0518 for 2945, $0530 for 1.0006
+ if n_cam ~= 0 then return 0, 0 end -- only CCameraFirstEye
+ -- 2945: 50Ch - list of cameras
+ local cam = ReadDMA(aobj, "$0524", "safe_ptr") -- $050C for 2945, $0524 for 1.0006
+ if cam == nil then return 0, 0 end
+
+ if (h_new ~= nil) then
+    WriteDMA(cam, 20, tonumber(h_new), "float")
+    WriteDMA(cam, 24, tonumber(p_new), "float")
+ end
+
+ local h_angle = ReadDMA(cam, 20, "float")
+ local p_angle = ReadDMA(cam, 24, "float")
+
+ -- ODS( string.format("[~T]. #DBG: cam %s, dir H = %.7f, P = %.7f ", FormatPtr(cam), h_angle, p_angle) )
+ return h_angle, p_angle
+end
+
+function get_obj_dir(id) 
+ -- упрощеные данные о позиции 
+ res = get_obj_prop(id, "dir_v3f") 
+ return res
+end
+
+
+function get_obj_pos(id)
+ local obj = client_obj (tonumber(id))  
+ if obj then
+    return obj:position()
+ else
+    return get_obj_prop(id, "pos_v3f")    
+ end  
+end
+
+
+
+function set_obj_pos(id, x, y, z, move_se)
+ local newp = vector()
+ 
+ if x == nil then
+    local p = db.actor:position()
+    local d = db.actor:direction()
+    newp:set( p:add(d) )    
+ else
+    newp:set(x, y, z)
+ end
+ 
+  local cobj = client_obj (id)
+  if cobj then
+     cobj:set_position(newp) 
+  end
+  
+  local sobj = server_obj (id)
+  if sobj and move_se and misc.init_vxdb() then
+     local lvid, gvid, tvid = NearestVertexInfo (newp)
+     sobj.m_game_vertex_id  = gvid
+     sobj.m_level_vertex_id = lvid       
+     sobj:set_position(newp)
+  end    
+  
+  return
+ 
+end
+
+coord_params.set_obj_pos = set_obj_pos
+
+function set_axis_angle(id, h_ang, p_ang, axis, scale)
+ if p_ang == nil then
+    p_ang = 0
+ end
+
+ if h_ang == nil then
+    h_ang, p_ang = camera_angles()
+    h_ang = -h_ang
+    p_ang = -p_ang
+ else
+    h_ang = math.pi * tonumber(h_ang) / 180
+    p_ang = math.pi * tonumber(p_ang) / 180
+ end
+
+ if axis == nil then axis = "fw" end
+ 
+ if scale == nil then
+    scale = 1.0
+ else
+    scale = tonumber(scale) * 1.0
+ end
+ 
+ local dir = vector()
+ dir:setHP(h_ang, p_ang)
+ 
+ if scale == 1.1 then
+    local s = misc.pos2str(dir)
+    ODS( string.format("[~T]. set axis~C0F %s~C07 to~C0A %s~C07, by h_ang = %.5f, p_ang = %.5f", axis, s, h_ang, p_ang) )
+ end
+ 
+ dir:mul(scale)
+ 
+ set_obj_prop(id, axis.."_dir_x", dir.x)
+ set_obj_prop(id, axis.."_dir_y", dir.y)
+ set_obj_prop(id, axis.."_dir_z", dir.z)
+end
+
+function set_obj_angs(id, dir, p_ang, scale)
+ 
+ 
+  
+ local h_ang = dir
+ 
+ p_ang = p_ang or 0
+ 
+ 
+ local dt = type (dir)
+ if (dt == 'userdata') and (dir.getH) then
+    h_ang = dir:getH()
+    p_ang = dir:getP() 
+ end 
+ 
+ 
+ if scale == nil then
+    scale = 1.0
+ else
+    scale = tonumber(scale) * 1.0
+ end
+
+ if h_ang == nil then
+    h_ang, p_ang = camera_angles()
+    h_ang = -h_ang * 180 / math.pi
+    p_ang = -p_ang * 180 / math.pi
+ else
+    h_ang = tonumber(h_ang)
+    p_ang = tonumber(p_ang)
+ end
+ local obj = client_obj(id)
+ if obj == nil then 
+    return 
+ end
+ 
+ 
+ if xr_build_id > 5500 then
+    -- TODO: DMA_REPLACE    
+    obj:set_direction(dir)
+    return
+ end
+ 
+ 
+ local cobj =  get_CObject(id)
+ 
+ if cobj then 
+    local m = ReadMatrixDMA (cobj, object_params.xform_matrix)
+    local pos = vector():set (m.c)
+    m:setHPB (h_ang, p_ang, 0) -- Y axis, Z axis, X axis
+    m.c = pos
+    WriteMatrixDMA (cobj, object_params.xform_matrix, m)   
+ end
+
+ set_obj_prop(id, "dir_h_se", h_ang)
+ set_obj_prop(id, "ang_h_se", h_ang)
+ set_obj_prop(id, "ang_p_se", p_ang) 
+end
+
+
+function set_obj_dir(id, x, y, z, scale)
+ local dir_d = vector()
+ 
+ 
+ if x == nil then
+    -- local h_ang, p_ang = camera_angles()    
+    dir_d:set ( device().cam_dir )    
+    local s = misc.pos2str(dir_d)
+    ODS("[~T] #DBG: direction assigned to camera dir: ~C0A"..s.."~C07" )
+ else
+    dir_d:set (x, y, z)
+ end
+   
+ coord_params.set_obj_angs(id, dir_d )  
+ set_obj_prop(id, "ang_h_se", dir_d:getH() )
+ set_obj_prop(id, "ang_p_se", dir_d:getP() )
+end
+
+coord_params.set_obj_angs = set_obj_angs
+coord_params.set_obj_dir = set_obj_dir
+
+

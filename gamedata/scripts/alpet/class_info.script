@@ -1,0 +1,296 @@
+
+class_list = {
+   "actor", "ameba_zone", "art_bast_artefact", "art_black_drops", "art_dummy", "art_electric_ball", "art_faded_ball", "art_galantine", "art_gravi", "art_gravi_black",
+   "art_mercury_ball", "art_needles", "art_rusty_hair", "art_thorn", "art_zuda", "artefact", "artefact_s", "bloodsucker", "bloodsucker_s", "boar", "boar_s",
+   "burer", "burer_s", "car", "car_s", "cat", "cat_s", "chimera", "chimera_s", "controller", "controller_s", "crow", "device_detector_simple", "device_night_vision",
+   "device_pda", "device_torch", "device_torch_s", "dog_black", "dog_red", "dog_s", "equ_exo", "equ_military", "equ_scientific", "equ_stalker", "equ_stalker_s",
+   "flesh", "flesh_group", "flesh_s", "fracture", "fracture_s", "game", "game_cl_artefact_hunt", "game_cl_deathmatch", "game_cl_single", "game_cl_team_deathmatch",
+   "game_sv_artefact_hunt", "game_sv_deathmatch", "game_sv_single", "game_sv_team_deathmatch", "game_ui_artefact_hunt", "game_ui_deathmatch", "game_ui_single",
+   "game_ui_team_deathmatch", "gigant_s", "graph_point", "hanging_lamp", "helicopter", "hud_manager", "inventory_box", "inventory_container", "level",
+   "level_changer", "main_menu", "mp_players_bag", "nogravity_zone", "obj_antirad", "obj_attachable", "obj_bandage", "obj_bolt", "obj_bottle", "obj_breakable",
+   "obj_climable", "obj_document", "obj_explosive", "obj_food", "obj_medkit", "obj_phskeleton", "obj_phys_destroyable", "obj_physic", "online_offline_group",
+   "phantom", "poltergeist", "poltergeist_s", "projector", "pseudo_gigant", "pseudodog_s", "psy_dog", "psy_dog_phantom", "psy_dog_phantom_s", "psy_dog_s",
+   "respawn", "script_heli", "script_object", "script_phys", "script_restr", "script_stalker", "script_trader", "script_zone", "smart_terrain", "smart_zone",
+   "snork", "snork_s", "space_restrictor", "spectator", "stalker", "switcher", "team_base_zone", "torrid_zone", "trader", "tushkano", "tushkano_s", "wpn_ak74",
+   "wpn_ak74_s", "wpn_ammo", "wpn_ammo_m209", "wpn_ammo_og7b", "wpn_ammo_vog25", "wpn_binocular", "wpn_binocular_s", "wpn_bm16", "wpn_bm16_s", "wpn_fn2000",
+   "wpn_fort", "wpn_grenade_f1", "wpn_grenade_fake", "wpn_grenade_launcher", "wpn_grenade_rgd5", "wpn_grenade_rpg7", "wpn_groza", "wpn_groza_s", "wpn_hpsa",
+   "wpn_hpsa_s", "wpn_knife", "wpn_knife_s", "wpn_lr300", "wpn_lr300_s", "wpn_mounted", "wpn_pm", "wpn_pm_s", "wpn_rg6", "wpn_rg6_s", "wpn_rpg7", "wpn_rpg7_s",
+   "wpn_scope", "wpn_scope_s", "wpn_shotgun", "wpn_shotgun_s", "wpn_silencer", "wpn_stat_mgun", "wpn_svd", "wpn_svd_s", "wpn_svu", "wpn_svu_s", "wpn_usp45",
+   "wpn_usp45_s", "wpn_val", "wpn_val_s", "wpn_vintorez", "wpn_vintorez_s", "wpn_walther", "wpn_walther_s", "wpn_wmagaz", "wpn_wmaggl", "zombie", "zombie_s",
+   "zone", "zone_acid_fog", "zone_bfuzz", "zone_bfuzz_s", "zone_dead", "zone_electra_s", "zone_galant_s", "zone_galantine", "zone_greedy_s", "zone_ice_s",
+   "zone_mbald_s", "zone_mincer", "zone_mincer_s", "zone_mosquito_bald", "zone_radioactive", "zone_rusty_hair", "zone_sakbuzz_s", "zone_zharka_s" }
+      
+class_info.mobs_classes = { "actor", "stalker", "script_stalker", "script_trader",
+                            "bloodsucker", "bloodsucker_s", "boar", "boar_s", "burer", "burer_s",
+                            "cat", "cat_s", "chimera", "chimera_s", "controller", "controller_s", "dog_s",                       
+                            "gigant_s", "flesh", "flesh_s", "pseudo_gigant", "pseudodog_s", "psy_dog", "psy_dog_s",
+                            "snork", "snork_s", "tushkano", "tushkano_s" }
+
+
+
+-- CLID_OUTFIT=57
+-- CLID_DRINK=69
+-- CLID_BREAD=72
+-- CLID_ARENA=90
+-- CLID_VEHICLE_BTR=92
+
+
+
+local class_const_map = 
+  {  
+     actor                     = "CLID_ACTOR",
+     artefact                  = "CLID_ART",
+     ameba_zone                = "CLID_ZONE_AMEBA",
+     bloodsucker_s             = "CLID_BLOODSUCKER",
+     boar_s                    = "CLID_BOAR",
+     burer_s                   = "CLID_BURER",
+     car_s                     = "CLID_VEHICLE_BTR",
+     cat_s                     = "CLID_CAT",      
+     chimera_s                 = "CLID_CHIMERA",
+     controller_s              = "CLID_CONTROLLER",
+     crow                      = "CLID_CROW", 
+     device_detector_simple    = "CLID_DETECTOR",      
+     device_pda                = "CLID_PDA",          
+     device_torch_s            = "CLID_TORCH",  
+     dog_s                     = "CLID_DOG",
+     equ_stalker_s             = "CLID_OUTFIT",
+     flesh_s                   = "CLID_FLESH",
+     gigant_s                  = "CLID_GIGANT",
+     helicopter                = "CLID_HELI",
+     hanging_lamp              = "CLID_LIGHT_LAMP",
+     inventory_box             = "CLID_INVENTORY_BOX",
+     level_changer             = "CLID_LVL_CHANGER", 
+     obj_antirad               = "CLID_ANTIRAD", 
+     obj_attachable            = "CLID_ATTACH",
+     obj_bandage               = "CLID_BANDAGE",
+     obj_breakable             = "CLID_BRKBL",
+     obj_bottle                = "CLID_DRINK",
+     obj_climable              = "CLID_CLMBL",
+     obj_document              = "CLID_DOC",
+     obj_explosive             = "CLID_EXPLOSIVE_BARREL",  -- ?
+     obj_food                  = "CLID_BREAD",
+     obj_medkit                = "CLID_MEDKIT",
+     obj_physic                = "CLID_PHYSIC_OBJECT",
+     obj_phys_destroyable      = "CLID_PHYSIC_DESTROYABLE",
+     phantom                   = "CLID_PHANTOM", 
+     poltergeist_s             = "CLID_POLTERGEIST",
+     projector                 = "CLID_SEARCH_LIGHT",
+     pseudodog_s               = "CLID_PSEUDODOG",
+     psy_dog_s                 = "CLID_PSY_DOG",
+     psy_dog_phantom_s         = "CLID_PSY_DOG_PHANTOM",
+     respawn                   = "CLID_RESPAWN",
+     script_stalker            = "CLID_STALKER",
+     script_trader             = "CLID_TRADER",
+     script_zone               = "CLID_ARENA",
+     smart_terrain             = "CLID_SMART_TERR",
+     snork_s                   = "CLID_SNORK",
+     space_restrictor          = "CLID_SPACE_RESTRICTOR",
+     trader                    = "CLID_TRADR",                      
+     tushkano_s                = "CLID_TUSHKANO",
+          
+     wpn_ak74s                 = "CLID_WPN_AK74",     
+     wpn_ammo                  = "CLID_AMMO",      
+     wpn_ammo_m209             = "CLID_GREN_NATO",
+     wpn_ammo_vog25            = "CLID_GREN_VOG",         
+     wpn_ammo_og7b             = "CLID_GREN_ROCKET",
+     wpn_binocular_s           = "CLID_WPN_BINOC",
+     wpn_bm16_s                = "CLID_WPN_TOZ34",     
+     wpn_grenade_f1            = "CLID_GR_F1",
+     wpn_grenade_rgd5          = "CLID_GR_RGD5",
+     wpn_grenade_launcher      = "CLID_WPN_ADDON_GR_LAUNCHER",
+     wpn_groza_s               = "CLID_WPN_GROZA",
+     wpn_hpsa_s                = "CLID_WPN_HPSA",     
+     wpn_knife_s               = "CLID_WPN_KNIFE",
+     wpn_lr300_s               = "CLID_WPN_AK74U", --- WTF ???
+     wpn_pm_s                  = "CLID_WPN_PM",
+     wpn_rg6_s                 = "CLID_WPN_RG",
+     wpn_rpg7_s                = "CLID_WPN_RPG",
+     wpn_scope_s               = "CLID_WPN_ADDON_SCOPE",
+     wpn_shotgun_s             = "CLID_WPN_SPAS",
+     wpn_silencer              = "CLID_WPN_ADDON_SILENCER",
+     wpn_svd_s                 = "CLID_WPN_SVD",
+     wpn_svu_s                 = "CLID_WPN_SVU",          
+     wpn_usp45_s               = "CLID_WPN_USP",
+     wpn_val_s                 = "CLID_WPN_VAL",
+     wpn_vintorez_s            = "CLID_WPN_VINTOREZ",     
+     wpn_walther_s             = "CLID_WPN_WALTHER",   
+          
+     zombie_s                  = "CLID_ZOMBIE",
+      
+     zone                      = "CLID_FIREBALL_ZONE",
+     zone_bfuzz_s              = "CLID_ZONE_BURNING_FUZZ",
+     zone_electra_s            = "CLID_ZONE_WITCHES_GALANTINE",
+     zone_galant_s             = "CLID_ZONE_GRAVI",            
+     zone_ice_s                = "CLID_ZONE_ICE",
+     zone_mbald_s              = "CLID_ZONE_MOSQUITO_BALD",     
+     zone_mincer_s             = "CLID_ZONE_MINCER",
+     zone_radioactive          = "CLID_ZONE_RADIOACTIVE",
+     zone_rusty_hair           = "CLID_RUSTY_HAIR",
+     zone_sakbuzz_s            = "CLID_ZONE_BUZZ",
+     zone_zharka_s             = "CLID_ZONE_ZHARKA"
+     
+  }
+
+
+local mobs_group = {}
+for i, cname in ipairs (class_info.mobs_classes) do
+ local clid = clsid[cname]
+ if clid ~= nil then
+    mobs_group [clid] = true
+ end   
+end                    
+
+function is_mob(obj)
+ local clid = obj:clsid()
+ return mobs_group[clid]     
+end
+
+function is_live(obj) 
+ local f_alive = obj.alive
+ if is_mob(obj) and ( f_alive ~=nil ) and f_alive (obj) then
+    return true
+ else
+    return false             
+ end
+end
+
+class_info.is_mob = is_mob
+class_info.is_live = is_live
+
+
+function update_class_const(clid, id, silent)
+ if ( type(id) == "number" ) then
+    if ( type(_G[clid]) == "number" ) then
+        if ( _G[clid] ~= id ) then       
+          wprintf("~C0C #WARN:~C07 %s updated from %d to %d. Correct in _g.script(!) ", clid, _G[clid], id)
+          _G[clid] = id
+          return true
+        end  
+    else     
+        wprintf("~C0C #WARN:~C07 %s assigned to %d. Correct in _g.script(!) ", clid, id)
+        _G[clid] = id     
+        return true                  
+    end                          
+ end  
+ return false
+end
+
+
+function update_class_list()
+
+ if xr_build_id >= 5712 then
+   local t = {} 
+   for cname, clid in pairs(clsid_table) do
+       table.insert (t, cname)
+   end
+   
+   if #t > #class_list then
+      wprintf("~C0C #WARN:~C07 class_info.script: class_list table have only~C0D %d~C07 names from~C0D %d~C07. Update code with:~C0F ", #class_list, #t) 
+      table.sort(t)   
+      class_info.class_list = t
+      wprintf("class_list = { ")      
+      local line = "  "
+      for i, cname in ipairs(class_list) do
+          if i > 1 then 
+             line = line .. ","
+          end         
+          
+          if line:len() >= 150 then
+             wprintf(line)
+             line = "  "
+          end                                
+          line = line..sprintf(' "%s"', cname)
+                                             
+      end
+      wprintf("%s }", line)      
+   end 
+   
+ end
+
+end
+
+function update_class_map(silent)
+ _G.class_map = {}
+  
+ update_class_list() 
+
+ local class_count = #class_list
+ 
+ for i,cname in ipairs(class_list) do
+  -- одно исключение
+  if ( ( cname == "wpn_ak74s" ) ) 
+         and ( nlc_mod == nil ) then
+  else  
+    local id = clsid[cname]
+    if id ~= nil then 
+       _G.class_map[id] = cname
+    end
+  end    
+ end -- for   
+ 
+ 
+ 
+ local updated = false
+ for cname, clid in pairs(class_const_map) do
+     if update_class_const(clid, clsid[cname], silent) then
+        updated = true
+     end   
+ end
+  
+ 
+ if updated then
+   wprintf("~C0C #WARN:~C07 need update in _g.script ")
+   local tbl_clid = {}
+   for cname, clid in pairs(class_const_map) do
+       table.insert (tbl_clid, clid)         
+   end 
+   table.sort(tbl_clid)
+   for i, clid in ipairs(tbl_clid) do
+       wprintf("%s=%d", clid, _G[clid] or -1)
+   end   
+ end
+  
+  
+end
+
+
+if level.present() then
+   update_class_map(silent)
+end   
+
+class_info.class_map = _G.class_map
+
+
+function init_module() 
+ update_class_map() -- in _G.script 
+end
+
+function late_init()
+ RunCommand("LOAD_CLASS_MAP", _G.class_map)
+end
+
+function lobj_class(id)
+ local obj = client_obj(id)
+ if obj then
+    return class_map[obj:clsid()]
+ end
+end
+
+class_info.lobj_class = lobj_class 
+
+function test_clsid()
+ local t = type(class_list)
+ if t == "table" then
+   local cnt = table.getn(class_list)
+   for n = 1,cnt do
+       local k = class_list[n]
+       local rv = clsid[k]
+       if (k ~= nil) and (rv ~= nil) then
+          wprintff(" classes[%d]='%s' ", tonumber(rv), k)
+       end -- if
+   end -- for
+   
+ else
+   wprintf ("type = %s", t)
+ end    
+end

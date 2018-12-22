@@ -1,0 +1,302 @@
+--[[
+Сбрасываемый рюкзак v 1.0
+Vergas
+© NLC-6.0
+в качестве примера использован
+Биндер самодельных телепортов(Imp)
+]]--
+
+local greedy_binders ={}			-- Список жадинок
+local time_start
+local weight_off = 0 				--Вес выброшенных предметов
+local flag_greedy = false 			--флаг кушающей жадинки
+local actor_pos						--позиция ГГ
+local actor_pos_old				
+local greedy_act 					--Парометры кушающей жадинки
+local drop_items = {} 				--id скушанных предметов
+local zapret_items = {}				--id несъедобных предметов(трансфер снаряжения)
+local rykzack_items = {}			--id предметов для выброса при сброшенном рюкзаке
+local greedy_position
+
+function get_flag_greedy()
+	return flag_greedy
+end
+
+function actor_update()
+	local i,v
+
+	-- Получим позицию актера(что-бы каждый раз не запрашивать)
+	actor_pos = db.actor:position()
+
+	if not flag_greedy then
+		--удаляю скушанные предметы
+		local n
+		if table.getn(drop_items)~=0 then
+			for n = 1, table.getn(drop_items)-1,2 do
+				if drop_items[n]~=0 then
+					if alife():object(drop_items[n]) then
+						alife():release(alife():object(drop_items[n]), true)
+					end
+				end	
+			end
+			drop_items = {}	
+		end
+		-- Проверяем все жадинки
+		for i, v in pairs(greedy_binders) do
+			greedy_act = v.parametrs
+			local obj = client_obj(i)
+			if obj~=nil and greedy_act.activity then
+				-- Пороверим не забрел-ли актер в жадинку
+				if (bind_mteleport.abs_comp(greedy_act.x, actor_pos.x)< v.parametrs.radius	and
+						bind_mteleport.abs_comp(greedy_act.z, actor_pos.z)< v.parametrs.radius	and
+						bind_mteleport.abs_comp(greedy_act.y, actor_pos.y)< v.parametrs.z_radius) then
+					-- Актер в зоне действия жадинки, запускаю процесс обеда
+					actor_pos_old = db.actor:position()
+					greedy_act["greedy"] = true
+					greedy_act["weight"] = 1
+					--greedy_act["weight"] = rnd_weight()		--вес предметов для кормления
+                   ------------------------
+                    a=greedy_act["weight"]
+                    vergas_lib.logmsg("greedy_act[weight] = "..a)
+                    ------------------------					
+					db.actor.power = - 1			--обездвиживаю ГГ
+					time_start = time_global()/1000
+					-- Запускаем спецэфекты жадинки
+					--Тянем ГГ в центр
+					db.actor:set_actor_position(set_vector_greedy(greedy_act.x,greedy_act.y-1.2,greedy_act.z))
+					db.actor.power = - 1
+					flag_greedy = true
+					vergas_lib.s_play([[device\pda\hit_5]],1)
+					return
+				end
+			end
+		end
+	else
+		--Жадинка гурманствует
+		local current_time = time_global()/1000
+		db.actor.power = - 1
+		if current_time - time_start >= 1.5 then
+			db.actor.health = - 0.001
+			local a=lua_random()
+			local h = hit()
+			h.draftsman = db.actor
+			h:bone("bip01_spine")
+			h.type = hit.chemical_burn
+			h.power = 0.1+a/10
+			h.impulse = 0.0
+			db.actor:hit(h)
+			time_start = current_time
+			--vergas_lib.s_play([[anomaly\greedy_idle_1]],1)
+			db.actor:set_actor_position(set_vector_greedy(greedy_act.x,greedy_act.y-0.9,greedy_act.z))
+		end
+		
+		--удаляю ненужный вес из таблицы
+		local n
+		if table.getn(drop_items)~=0 then
+			for n = 1, table.getn(drop_items)-1,2 do
+				if not alife():object(drop_items[n]) then
+					--предмета нет
+					weight_off = weight_off - drop_items[n+1]
+					drop_items[n] = 0
+				end	
+			end
+		end
+
+		if weight_off >= greedy_act.weight then
+			--жадинка накормленна
+			if vergas_rucksack.have() then
+				local wnd = level.main_input_receiver()
+			    if wnd then level.start_stop_menu(wnd, false) end
+			end
+			greedy_act.activity = false
+			vergas_lib.s_play([[anomaly\greedy_end]],1)
+			--Выбрасываю ГГ из аномалии
+			if vergas_rucksack.have() then
+				db.actor:set_actor_position(set_vector_greedy(actor_pos_old.x,actor_pos_old.y+3,actor_pos_old.z))
+			else
+				--рюкзак сброшен - разбрасываю вещи
+				drop_rykzack()
+				greedy_position = set_vector_greedy(actor_pos_old.x,actor_pos_old.y+3,actor_pos_old.z)
+				schedule.add("stop_greedy", "bind_greedy.stop_greedy_without_rykzack()", 400)
+			end
+			-- деактивирую жадинку
+			weight_off = 0
+			greedy_binders[greedy_act.id].activity = false
+			flag_greedy = false
+		else
+			if not vergas_rucksack.have() then
+				--рюкзак сброшен. надо кормить принудительно
+				local i
+				local r_obj
+				if #rykzack_items ~= 0 then
+					for i = 1, #rykzack_items do
+						if rykzack_items[i] ~= 0 then
+							r_obj = client_obj(rykzack_items[i])
+							if r_obj and r_obj:section() ~= "rykzack" then
+								db.actor:drop_item(r_obj)
+								rykzack_items[i] = 0
+								break
+							end
+						end
+					end
+					local tbl_tmp = {}
+					for i = 1,  #rykzack_items do
+						if rykzack_items[i] ~= 0 then
+							table.insert(tbl_tmp,rykzack_items[i])
+						end
+					end
+					rykzack_items = tbl_tmp
+				end
+			end
+		end
+	end
+end
+
+function drop_rykzack()
+	
+	local i
+	local r_obj
+	if #rykzack_items ~= 0 then
+		for i = 1, #rykzack_items do
+			r_obj = client_obj(rykzack_items[i])
+			if r_obj then
+				db.actor:drop_item(r_obj)
+			end
+		end
+		rykzack_items = {}
+	end
+	
+end
+
+function stop_greedy_without_rykzack()
+	db.actor:set_actor_position(greedy_position)
+end
+function rnd_weight()
+	local a,b
+	if level.name()=="l01_escape" then
+		a = 1
+		b = 2
+	elseif level.name()=="l02_garbage" or level.name()=="l03_agroprom"  or level.name()=="l04_darkvalley" or level.name()=="l05_bar" then	
+		a = 1
+		b = 3
+	elseif level.name()=="l06_rostok" or level.name()=="l08_yantar"  or level.name()=="l07_military" then
+		a = 2
+		b = 5
+	else
+		a = 4
+		b = 9
+	end
+	return lua_random(a,b)
+end
+
+function set_vector_greedy(x,y,z)
+	local a = vector()
+	a.x	= x
+	a.y = y
+	a.z = z
+	
+	return a
+end
+
+function drop_item(obj)
+	if flag_greedy then
+		--проверяю на трансфер снаряжения
+		if #zapret_items ~= 0 then
+			local i
+			local obj_id = obj:id()
+			local flag = false
+			for i = 1,#zapret_items do
+				if obj_id == zapret_items[i] then
+					flag = true
+					zapret_items[i] = 0
+					break
+				end
+			end
+			local tbl_tmp = {}
+			for i = 1,	#zapret_items do
+				if zapret_items ~= 0 then
+					table.insert(tbl_tmp,zapret_items[i])
+				end
+			end
+			zapret_items = tbl_tmp
+			if flag then
+				return
+			end
+		end
+	
+		local weight = vergas_lib.set_pr_from_config(obj:section(),"inv_weight")
+		weight_off = weight_off + weight
+		--скушиваю предмет
+		table.insert(drop_items,obj:id())		-- id предмета
+		table.insert(drop_items,weight)			--вес предмета
+	end
+end
+
+function set_zapret_items(param)
+	table.insert(zapret_items,param)
+end
+
+function set_drop_rykzack(param)
+	table.insert(rykzack_items,param)
+end
+
+function bind(obj)
+	obj:bind_object(restrictor_greedy(obj)) 
+end
+-----------------------------------------------------------------------
+class "restrictor_greedy"(object_binder)
+
+function restrictor_greedy:__init(obj)
+	super(obj)
+end
+
+function restrictor_greedy:net_spawn(data)
+	local char_ini = system_ini()
+	-- Если это жадинка, то занесем её в специальный список жадинок
+	if self.greedy==true then
+		greedy_binders[self.object:id()] = self
+
+		-- Заполним таблицу параметров
+		self["parametrs"] = {}
+		if char_ini:line_exist(self.section, "radius") then
+			self.parametrs["radius"] = tonumber(char_ini:r_string(self.section, "radius"))
+		else
+			self.parametrs["radius"] = 2 -- Дефолтный радиус по xy
+		end
+		if char_ini:line_exist(self.section, "z_radius") then
+			self.parametrs["z_radius"] = tonumber(char_ini:r_string(self.section, "z_radius"))
+		else
+			self.parametrs["z_radius"] = self.parametrs["radius"] 
+		end
+		
+		--активирую жадинку
+		self.parametrs["activity"] = true
+		-- Запомним позицию что-бы каждый раз не считать
+		local s_obj = alife():object(self.object:id())
+		if s_obj~=nil then
+		self.parametrs["x"] = tonumber(s_obj.position.x)
+		self.parametrs["y"] = tonumber(s_obj.position.y)
+		self.parametrs["z"] = tonumber(s_obj.position.z)
+		self.parametrs["id"] = tonumber(s_obj.id)
+		end 
+	end
+	return true
+end
+
+function restrictor_greedy:net_destroy()
+	-- Удаляем нашу жадинку
+	greedy_binders[self.object:id()] = nil
+	self.parametrs = nil
+	object_binder.net_destroy(self)
+end
+
+function restrictor_greedy:reload(section)
+
+	local char_ini = system_ini()
+
+	self.section = section
+	-- Если это жадинка то 
+	if char_ini~=nil and char_ini:line_exist(self.section, "greedy") then
+		self["greedy"] = true
+	end
+end

@@ -1,0 +1,824 @@
+--Функции для квеста на огнемёт.
+-- flamethrower.script
+local min_fuel = 150
+local max_fuel = 300
+local flame_jet = nil -- партикл струи пламени огнемета
+
+
+fired_list={}
+
+
+
+--[[
+ fireball structure:
+  start_pt                 - точка отправления 
+  distance                 - пройденная дистанция 
+  direction                - начальное направление 
+  
+ В новой схеме огнемет изрыгает огненные волны, математически являющиеся усеченными конусами. 
+ По таймеру идет апдейт позиции каждой волны (полет по оси направления), и выявление всех объектов попадающих под её действие.   
+ Расчет вхождения объекта в усеченый конус - математически трудоемкая задача. Сначала измеряется дистанция от точки излучения огнемета до 
+ объекта, после чего выбирается подходящая по удаленности волна и производится грубая оценка угла BAC (B = центр объекта, А = точка излучения,
+ C = центр волны). Если угол достаточно мал, объект регистрируется в список на награждение хитом.
+   
+  
+--]]
+
+local flame_waves = {}
+
+function spawn_flame_wave(pt, dir)
+ local wave = {  start_time 	= device():time_global(), 
+ 				 start_pt 		= vector():set(pt), 
+				 center 		= vector():set(pt),
+ 				 direction 		= vector():set(dir),
+				 refer_pt 		= vector():set(pt):add(dir:mul(0.95)), -- для расчета размера катета
+				 distance = 0.1 }
+ table.insert (flame_waves, wave)
+end
+
+local function move_flame_wave(wave, time_now)
+ local delta = ( time_now - wave.start_time ) * 0.001 -- расстояние от прошедшего времени
+ wave.distance = wave.distance + delta 
+ local offset = vector():set(wave.direction):mul(wave.distance) 
+ wave.center:set(offset):add(wave.start_pt)  
+end
+
+local function move_waves()
+ local t = flame_waves
+ flame_waves = {}
+ local time_now = device():time_global()  
+ for i, wave in ipairs(t) do
+ 	move_flame_wave (wave, time_now)
+ 	
+ 	if wave.distance > 7 then
+	   wprintf(" #DBG: wave~C0D %2d~C07 moved to~C0F %-25s~C07, distance =~C0D %.1f~C07",
+			   i, misc.pos2str(wave.center), wave.distance)
+    end			   
+	 	
+    if wave.distance < 5 then       
+       table.insert (flame_waves, wave)
+    else	
+	   --local id = c.spawn_at("simple_krest", 65535, wave.center)       
+       --schedule.add("fix_object", sprintf("campmgr.fix_it(%d)", id), 100)
+    end
+ end   
+end
+
+
+function remove_spot()                                                  
+ local sobj=alife():story_object(story_ids_add.gar_stalker_flame_quest23)
+ if sobj then
+	level.map_remove_object_spot(sobj.id,"green_location")
+ end
+ for a=1,MAX_OBJ_ID do
+	local obj = alife():object(a)
+	if obj then
+	if obj:section_name()=="trubka" then
+		level.map_remove_object_spot(obj.id,"red_location")
+		break
+	end
+	end
+ end
+end
+
+function good_bye(first_speaker, second_speaker)
+	sak_inventory.release_actor_items("af_fireball",1)
+	sak_inventory.release_actor_items("trubka", 1)
+	sak_inventory.release_actor_items("gorelka", 1)
+	sak_inventory.release_actor_items("manometr", 1)
+	sak_inventory.release_actor_items("vodka", 10)
+	sak_inventory.release_actor_items("flamethrower_bad", 1)
+end
+--для диалога с Вороном
+function good_notebook_of_artist(first_speaker, second_speaker)
+	sak_inventory.release_actor_items("notebook_of_artist", 1)
+end
+
+function have_10_vodka()
+	return sak.have_items_count("vodka",10)~=false
+end
+
+function give_flamethrower_worked(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	dialogs.relocate_item_section(trader, "wpn_flame", "in")
+		dialogs.relocate_money(trader, 5000, "out")
+	if actor then
+		local flame = actor:object("wpn_flame")
+		if flame~=nil then
+			flame:set_ammo_elapsed(max_fuel)
+		end
+	end	
+end
+
+function clear_fuel(first_speaker, second_speaker)	
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	trader:iterate_inventory(function(dummy,item)
+	if item:section()=="amk_ballon" or item:section()=="amk_kanistra" or item:section()=="wpn_flame" then 
+	   misc.release_obj (item)
+	end
+	end, nil)
+end
+
+function spawn_parts()
+	alife():create("manometr", vector():set(-146.01,6.04,-201.16), 91750, 621)
+	alife():create("trubka", vector():set(-57.36,22.54,-120.73), 118492, 298)
+	alife():create("gorelka", vector():set(-79.62,-10.69,39.95), 233164, 1595)
+end
+
+
+function set_metka()
+ for a=1,MAX_OBJ_ID do
+	local obj = alife():object(a)
+	if obj then
+		if obj:section_name()=="trubka" then
+			amk.add_spot_on_map(obj.id,"red_location","Трубка")
+		end
+	end
+ end
+end
+
+
+function relocate_to_barman(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "gorelka", "in")
+		dialogs.relocate_money(second_speaker, 250, "out")
+end
+
+function out_antirad(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "antirad", "out")
+end
+
+function transfer_deneg_blockpost(first_speaker, second_speaker)
+		dialogs.relocate_money(second_speaker, 5000, "in")
+end
+
+function give_flamethrower(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "flamethrower_bad", "in")
+end
+
+function have_a_flamethrower_bad(stalker, player)
+		return stalker:object("flamethrower_bad")~=nil
+end
+
+function give_1000(first_speaker, second_speaker)
+		dialogs.relocate_money(second_speaker, 1000, "in")
+end
+
+function have_a_antirad(stalker, player)
+		return stalker:object("antirad")~=nil
+end
+
+function out_flamethrower(first_speaker, second_speaker)
+	dialogs.relocate_item_section(first_speaker, "flamethrower_bad", "out")
+end
+
+
+function have_a_fire_kolobok()
+		local actor = db.actor
+		if actor and sak.have_items_count("af_fireball",1)~=false and actor:dont_has_info("flamethrower_quest_fireball") and actor:has_info("flamethrower_quest_start") then
+		actor:give_info_portion("flamethrower_quest_fireball")
+		end
+		
+end
+
+function have_a_trubki()
+		local actor = db.actor
+		if actor and sak.have_items_count("trubka",1)~=false and actor:dont_has_info("flamethrower_quest_trubki") then
+		actor:give_info_portion("flamethrower_quest_trubki")
+	end
+end
+
+function have_a_manometr()
+		local actor = db.actor
+		if actor and sak.have_items_count("manometr",1)~=false and actor:dont_has_info("flamethrower_quest_manometr") then
+		actor:give_info_portion("flamethrower_quest_manometr")
+		end
+end
+
+function have_a_vodko()
+	local actor = db.actor
+	if actor and sak.have_items_count("vodka",10)~=false and actor:has_info("flamethrower_quest_start") then 
+		actor:give_info_portion("flamethrower_quest_vodka")
+	else actor:disable_info_portion("flamethrower_quest_vodka")
+	end
+end
+
+function have_a_gorelka()
+		local actor = db.actor
+		if actor and sak.have_items_count("gorelka",1)~=false and actor:dont_has_info("flamethrower_quest_gorelka") then
+		actor:give_info_portion("flamethrower_quest_gorelka")
+		end
+end
+
+function have_a_gorelka2(stalker, player)
+		return sak.have_items_count("gorelka",1)~=false
+end
+
+function have_a_manometr2(stalker, player)
+		return sak.have_items_count("manometr",1)~=false
+end
+
+function have_a_trubka2(stalker, player)
+		return sak.have_items_count("trubka",1)~=false
+end
+
+function have_a_af_fireball(stalker, player)
+		return sak.have_items_count("af_fireball",1)~=false
+end
+
+function have_a_drink()
+	return sak.have_items_count("vodka",1)~=false
+end
+
+function have_a_fuel()
+	return have_a_ballon() and have_a_kanistra()
+end
+
+function have_30000()
+	if db.actor and db.actor:money() >= 30000 then
+		return true
+	else
+		return false
+	end
+end
+
+function have_2000()
+	if db.actor and db.actor:money() >= 2000 then
+		return true
+	else
+		return false
+	end
+end
+
+function have_a_ballon()
+		local actor = db.actor
+		if actor~=nil and actor:object("amk_ballon")~=nil then
+		return true
+	end
+	return false
+end
+
+function have_a_kanistra()
+	return sak.have_items_count("amk_kanistra",1)~=false
+end
+
+function have_a_flamethrower()
+	return sak.have_items_count("wpn_flame",1)~=false
+end
+
+function metka_na_npc()
+	local obj = g_sim:create("gar_stalker_flame_quest23",vector():set(24.86,0.40,209.75),198510,359)
+	local pk = get_netpk(obj)
+	local data = pk:get()
+	data.story_id = story_ids_add.gar_stalker_flame_quest23 -- очень большое число!
+	data.custom_data = "[smart_terrains]\nnone = true\n[logic]\nactive=walker\n[walker]\npath_walk = garb_tambovski_path\npath_look = garb_tambovski_look"
+	pk:set(data)
+	--[[local conds = {}
+	conds["none"] = xr_logic.parse_condlist(obj, "smart_terrains", "none", "true")
+	obj.smart_terrain_conditions = conds--]]
+end
+
+function start_work(first_speaker, second_speaker)
+	local gtime = misc.game_time_minutes()
+	nlc_vars.flame_start = gtime
+end
+
+function is_ready(first_speaker, second_speaker)
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	local ftime = nlc_vars.flame_start or gtime
+	if (gtime - ftime) >= 60*24 then
+		return true
+	else
+		return false
+	end
+end
+
+function not_ready(first_speaker, second_speaker)
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	local ftime = nlc_vars.flame_start or gtime
+	if (gtime - ftime) >= 60*24 then
+		return false
+	else
+		return true
+	end
+end
+
+function clear_ready(first_speaker, second_speaker)
+	nlc_vars.flame_start = nil
+end
+
+function start_reload(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	sak_dialog.relocate_money(trader, 2000, "out")
+	sak_inventory.release_actor_items("vodka", 1)	
+	--sak_inventory.release_actor_items("wpn_flame", 1)	
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	nlc_vars.flame_reload = gtime + 30
+	calc_reload(first_speaker, second_speaker)
+	sak_inventory.release_actor_items("wpn_flame",1)
+end
+
+function start_find_and_reload(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	sak_dialog.relocate_money(trader, 30000, "out")
+	sak_inventory.release_actor_items("vodka", 1)	
+	--sak_inventory.release_actor_items("wpn_flame", 1)	
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	nlc_vars.flame_reload = gtime + lua_random(12, 24)*60
+	nlc_vars.flame_reload_count = min_fuel
+	nlc_vars.wpn_flame = 1
+end
+
+function is_reload_ready(first_speaker, second_speaker)
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	local ftime = nlc_vars.flame_reload or 0
+	if gtime >= ftime then
+		return true
+	else
+		return false
+	end
+end
+
+function is_reload_not_ready(first_speaker, second_speaker)
+	local gtime = misc.game_time_minutes()	--time in game minutes
+	local ftime = nlc_vars.flame_reload or 0
+	if gtime <= ftime then
+		return true
+	else
+		return false
+	end
+end
+
+function is_reload_started(first_speaker, second_speaker)
+	local ftime = nlc_vars.flame_reload or -1
+	if ftime==-1 then
+		return false
+	else
+		return true
+	end
+	end
+
+function finish_reload(first_speaker, second_speaker)
+	reload(first_speaker, second_speaker)
+	--clear_fuel(first_speaker, second_speaker)
+	clear_reload(first_speaker, second_speaker)
+end
+
+function clear_reload(first_speaker, second_speaker)
+	nlc_vars.flame_reload = nil
+	nlc_vars.flame_reload_count = nil
+end
+
+function relocate_n_items_section(victim, section, type, n)
+	if db.actor and victim then
+		if type=="in" then
+			for i=1,n do
+				alife():create(section,db.actor:position(),db.actor:level_vertex_id(),db.actor:game_vertex_id(),db.actor:id())
+			end
+	elseif type=="out" then
+		db.actor:iterate_inventory(function(dummy,item)
+					if item:section()==section and n>0 then 
+						db.actor:transfer_item(item, victim)
+						n=n-1
+					end
+				end, nil)
+			end
+		news_manager.relocate_item(db.actor, type, section)
+	end
+end
+
+function calc_reload(first_speaker, second_speaker)
+ local actor, trader
+ if db.actor and db.actor:id()==first_speaker:id() then
+	actor = first_speaker
+	trader = second_speaker
+ else
+	actor = second_speaker
+	trader = first_speaker
+ end
+ if have_a_ballon() and have_a_kanistra() then 
+    local cnt_kanistra=0
+    local cnt_ballon=0
+    actor:iterate_inventory ( function(dummy, item) if item:section()=="amk_kanistra" then cnt_kanistra=cnt_kanistra+1 end end, nil )
+    actor:iterate_inventory ( function(dummy, item) if item:section()=="amk_ballon" then cnt_ballon=cnt_ballon+1 end end, nil )
+    local mm = math.min(cnt_kanistra, cnt_ballon)
+	if mm==1 then
+		 dialogs.relocate_item_section(trader, "amk_kanistra", "out")
+		 dialogs.relocate_item_section(trader, "amk_ballon", "out")
+--rpm в конфиге 300, значит полминуты - 150, а минута 300.
+		 nlc_vars.flame_reload_count = min_fuel
+	elseif mm >= 2 then
+		 flamethrower.relocate_n_items_section(trader, "amk_kanistra", "out", 2)
+		 flamethrower.relocate_n_items_section(trader, "amk_ballon", "out", 2)
+		 nlc_vars.flame_reload_count = max_fuel
+	end
+ end
+end
+
+function reload(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	dialogs.relocate_item_section(trader, "wpn_flame", "in")
+	if actor then
+		local flame = actor:object("wpn_flame")
+		if flame~=nil then
+			local ammo = nlc_vars.flame_reload_count or 0
+			flame:set_ammo_elapsed(ammo)
+		end
+	end
+end
+
+function clear_flame(person)
+	if person then
+       local wf = person:object("wpn_flame")
+       if wf then
+	      misc.release_obj (wf)
+       end  
+	end
+end
+
+function set_ammo(first_speaker, second_speaker)
+	local actor, trader
+	if db.actor and db.actor:id()==first_speaker:id() then
+		actor = first_speaker
+		trader = second_speaker
+	else
+		actor = second_speaker
+		trader = first_speaker
+	end
+	if actor then
+		local flame = actor:object("wpn_flame")
+		if flame~=nil then
+			local ammo = nlc_vars.flame_reload_count or 0
+			flame:set_ammo_elapsed(ammo)
+		end
+	end
+	nlc_vars.flame_reload_count = nil
+end
+
+function best_fire_pos(obj)
+ local dst_pos = vector()
+ dst_pos.y = -5000                   
+
+ if IsStalker(obj) or IsMonster(obj) then
+     dst_pos:set( obj:bone_position("bip01_head") )
+     -- ODS("[~T]. #DBG: trying return head bone position = "..misc.pos2str (dst_pos))
+     dst_pos.y = dst_pos.y + 0.5
+  else
+     local vis = xray_visual.GetKinematics (obj.interface)     
+     local bcnt = 0
+	 
+	 if vis then 
+	    bcnt = bones.GetBoneCount(vis)
+     end	 	    
+     
+     if bcnt > 0 then    
+       for i = 0, bcnt - 1 do
+        local bname = bones.GetBoneName(vis, i)
+		local p = obj:bone_position(bname)		 
+        if strpos(bname, 'link', 1, true) then
+           dst_pos:set(p)
+		   break 
+        end
+	    if p.y > dst_pos.y then
+	       dst_pos:set(p) -- simple highest bone
+	    end	                            
+       end -- for
+     end -- if bcnt > 0
+  end
+  
+  dst_pos.y = dst_pos.y + 0.1
+
+  if dst_pos.y < -1000 then  	 
+     dst_pos:set( obj:position() )
+	 -- ODS( "[~T]. #DBG: no best fire position, using default = "..misc.pos2str (dst_pos) )                                            
+     dst_pos.y = dst_pos.y + 0.7
+  end
+
+
+  return dst_pos
+end
+
+function burn_obj (obj, hits)
+
+  local params = { obj = obj, particle = "amk\\flame", looped = true }
+
+  params.pos = flamethrower.best_fire_pos(obj)
+
+  local pobj = amk_particle.amk_particle(params)
+
+  pobj.counter = tonumber(hits)
+
+  params.particle = "explosions\\expl_car_smoke_small"
+
+  params.pos.y = params.pos.y + 0.1
+
+  pobj.smoke = amk_particle.amk_particle(params)
+
+  return pobj
+end
+
+function set_fire(obj)
+ local obj_id = tostring (obj:id())
+ if fired_list[obj_id] == nil then
+    fired_list[obj_id] = burn_obj(obj, 50)
+ else
+    fired_list[obj_id].counter = fired_list[obj_id].counter + 10 -- reset countback
+ end
+end
+
+function burn_hit(obj, pwr, who)
+ local h = hit()
+ h.impulse = 0
+ h.draftsman = who or obj
+ h.direction = vector():set(0,0,0)
+ h.power = pwr 
+ h.type = hit.burn
+ obj:hit(h)
+end
+
+local function scan_targets()
+ local result = {}
+ 
+ if #flame_waves == 0 then 
+ 	return result    
+ end              
+ local ids = misc.find_around( db.actor:position(), "", 5 )
+ 
+ if #ids == 0 then
+    wprintf(" no objects for burn!")
+    return result 
+ end                                             
+ 
+ for i, id in ipairs(ids) do
+   local tgt = client_obj (id)   
+    -- для билда 56** все разрушаемое имеет здоровье больше нуля
+   if id > 0 and tgt and tgt:parent() == nil then
+      for n, wave in ipairs(flame_waves) do	  
+      	local katet = 1                
+      	local tgt_pos = tgt:position()
+		local norm_pos = vector():set(tgt_pos)       	
+		 
+        local dist = wave.start_pt:distance_to ( tgt_pos ) -- насколько объект удален от старта волны
+        if dist > wave.distance - 2 and dist < wave.distance + 2 then            
+			norm_pos:sub(wave.start_pt):normalize():add(wave.start_pt)
+			
+	        local katet = norm_pos:distance_to(wave.refer_pt) -- расхождение между объектом и центром волны на дистанции метр       
+	        
+	        if katet < 0.25 then
+	           wprintf("~CF0 #WIN: catched in cone, object~CF1 %s~C07", tgt:name())
+	           result [id] = tgt
+	           break
+			elseif n == 0 then   
+			   wprintf(" wave %d vs object ~C0A %32s~C07 cone katet = %.1f", n, tgt:name(), katet)
+			   wprintf("   tgt_pos =~C0F %s~C07, norm_pos =~C0E %s~C07,	start_pt =~C0B %s~C07", 
+			   				misc.pos2str(tgt_pos), misc.pos2str(norm_pos), misc.pos2str(wave.start_pt)) 			   
+			              
+	        end
+	        
+	    else
+		    -- wprintf(" dist = %.1f, wave.dist = %.1f ", dist, wave.distance)  
+        end
+      end -- for waves
+   end   
+ end -- for objects
+
+ return result
+end
+
+local function update_flame_jet(pos, dir)
+
+ if flame_jet == nil then -- or _G.test_particle == nil
+	local params = { particle = "static\\monsters_fire_idle", looped = true }
+ 	params.pos = pos
+ 	params.orientation = dir 	      
+ 	--wprintf(" initial flame dir =~C0F %s~C07", misc.pos2str(dir))
+    flame_jet = amk_particle.amk_particle(params)
+    if flame_jet.particle == nil then                            
+       wprintf("~C0C #ERROR:~C07 flame particle not created")	
+       flame_jet = nil	
+    end
+ else
+    flame_jet.pos = pos
+    flame_jet.orientation = dir
+    --wprintf(" update flame dir =~C0E %s~C07", misc.pos2str(dir))
+    flame_jet:update(50)	      
+ end
+end
+
+
+local function set_fire_targets() 
+ -- выборка объектов в секторе видимости 
+ local targets = scan_targets()
+ 
+ local tgt, tgt_id = hud_params.visible_target() -- если узрел гг мишень
+ 
+ if tgt_id > 0 then
+    table.insert(targets, tgt_id)
+ end
+ 
+ for tgt_id, tgt in pairs(targets) do
+   -- wprintf('[~T]. #DBG: target seen %d ', tgt_id)
+   local bcnt = 0
+   local vis = tgt.interface:Visual()
+   local kobj = nil
+   
+   if vis then
+     kobj = vis:dcast_PKinematics()
+   	 if kobj then
+        bcnt = bones.GetBoneCount(kobj)        
+     else
+	    wprintf("~C0C #WARN:~C07 object %s visual is not CKinematicsAnimated ", tgt:name())   
+     end  
+   else
+     wprintf("~C0C #WARN:~C07 object %s not have visual & bones ", tgt:name())
+   end
+   -- xray_visual.GetKinematics(tgt_id) 
+   if tgt.hit and ( bcnt > 0 ) then
+    -- обычно объекты не подверженные износу, имеют нулевой износ и их бесполезно зажигать (перерасход партиклов).              
+    local cond = params.obj_condition(tgt_id)
+      
+    if IsMonster(tgt) or IsStalker(tgt) or tgt.health > 0 then
+       cond = tgt.health
+    end
+      
+    if ( cond > 0 ) then
+      burn_hit(tgt, 0.2, db.actor) -- здесь нужно отрегулировать величину хита (согласно кости попадания например)
+      wprintf('[~T]. #DBG: fired to object %d, condition = %.5f, bones = %d ', tgt_id, cond, bcnt)          
+      set_fire(tgt) 
+    else   
+      wprintf('[~T]. #DBG: cannot hit object %d, condition = %.5f, bones = %d ', tgt_id, cond, bcnt)
+    end
+    
+   end -- if   
+ end -- for                  
+end -- set_fire_targets
+
+function flamethrower.fired_burn(delta, time)
+ -- проверка кого ещё нужно поджечь:
+ local wpns = wpn_params.actor_active_wpns()
+ local wpn_flame = nil
+
+ -- выбрать огнемет, если гг стреляет куда-то
+ for i, id in ipairs(wpns) do
+  local wpn = client_obj(id)
+  if wpn and wpn.name and strpos( wpn:name(), "wpn_flame", 1, true ) then              
+     local state = 0
+     local wobj = wpn:get_interface()
+     if wobj then
+        state = wobj.state or 0
+     end             
+     
+     if ( state == 1 ) then
+          wpn_flame = wpn 
+     end                                                                              
+     -- wprintf("[~T]. #DBG: wpn_flame is active, id = %d, state = %d", id, state)
+  end
+ end         
+         
+    
+ if wpn_flame then       
+    local rot = SRotation()
+	local src = get_actor_obj().orientation
+	
+	 
+	rot:set(src)		 
+	
+    local dir = rot:get_dir(true) -- v_inversed for actor      
+    local bp = db.actor:position():add(vector():set(0, 1.45, 0))
+    --
+    local hud = wpn_flame:get_weapon_hud()
+    local kobj = hud.visual:dcast_PKinematicsAnimated()    
+    if kobj then    
+       local t = hud.transform             
+       bp = kobj:bone_position(t.c, "wpn_connect1")  -- deprecated
+       
+       local wpn = wpn_flame:get_weapon() -- native function	
+	   if wpn then
+	      t  = wpn:get_particles_xform()
+	      bp = wpn:get_fire_point()
+	   end
+       
+	   rot = t:getRotation()  -- getHPB buggy??	   
+	   dir = rot:get_dir()	   
+	   -- wprintf(" orientation = %.3f, %.3f, %.3f", rot.yaw, rot.pitch, rot.roll)	    
+       -- bp = kobj:bone_position("wpn_flame") 
+       -- bp:add (db.actor:position())	    
+	end
+	--]]
+	if #flame_waves <= 4 then
+	   spawn_flame_wave(bp, dir)
+	end
+	   
+    update_flame_jet(bp, dir)
+ elseif flame_jet then
+    wprintf("[~T]. #DBG: hiding flame jet...") 
+    flame_jet.particle:stop_deffered()
+    flame_jet = nil        
+ end -- if wpn_flame   
+ 
+ move_waves()
+ set_fire_targets()
+
+ -- награждение хитами подпаленных монстров/нпц
+ -- колбек, возможно нет прямого доступа к namespace flamethrower.
+
+ local t = flamethrower.fired_list
+ local max_hits = 100
+
+ flamethrower.fired_list = {} -- clear before loop
+
+ for id, pobj in pairs(t) do
+
+
+     local obj = client_obj( tonumber(id) )
+     local dpos = vector()
+
+     if obj then
+        pobj.pos = flamethrower.best_fire_pos(obj)
+        -- ODS( string.format("[~T]. #DBG: pre_update, pobj.pos =~C0A { %s <- %s }~C07", misc.pos2str(pobj.pos), misc.pos2str(dpos)) )
+     else
+        pobj.counter = 0
+     end
+
+     if pobj.counter > max_hits then
+        pobj.counter = max_hits
+     end
+     
+     -- trying hit
+     if obj and obj.hit and (pobj.counter > 10) then
+        burn_hit ( obj, 0.01 + 0.5 * lua_random() / ( max_hits - pobj.counter + 1 ) ) -- lua_random and fade out
+		--ODS( string.format("[~T].~C09 #DBG: fire hit obj~C0A #%s~C07, remains~C0D %d~C07, health =~C0D %.3f~C07, pobj.pos = ~C0A { %s }~C07", id, pobj.counter, obj.health, misc.pos2str(pobj.pos) ) )
+     end
+
+     -- effectts play begin --<<<<<<<
+     if pobj.counter > 10 then
+        -- поддерживать огонь
+        if (not pobj.started) or (pobj.counter % 10 == 0) then
+           -- pobj:stop()
+           pobj:stop()
+           pobj.smoke:stop()
+           pobj = burn_obj(obj, pobj.counter)
+        else
+           pobj:update(100)
+        end
+     else
+        pobj.looped = false
+        -- pobj:stop()
+     end
+
+     if (pobj.counter > 1) and (pobj.smoke) then
+        pobj.counter = pobj.counter - 1
+        pobj.smoke.pos = pobj.pos
+        pobj.smoke.pos.y = pobj.pos.y + 0.5
+        pobj.smoke:update(100)
+        flamethrower.fired_list[id] = pobj  -- next loops enabled
+     else
+        pobj.smoke:stop()
+        pobj.smoke = nil
+     end
+     -- effectts play end --<<<<<<<
+
+
+ end -- for
+end
+
+function init_module()
+end
+
+function flamethrower.late_init()
+ AddRegularTask("fired_burn", flamethrower.fired_burn, nil, 0, 100)
+end

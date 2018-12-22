@@ -1,0 +1,1224 @@
+--[[
+PDA npc
+Vergas
+© NLC 6.0
+]]--
+
+class "cheat"(CUIScriptWnd)
+local tbl_info = {}		--таблица данных выбранного ПДА
+local wnd_pda
+local wnd_sn			--окно служебного номера
+local wnd_nm			--окно имени 
+local wnd_lg			--окно логина
+local wnd_ps			--окно пароля
+local wnd_vv			--окно ввода пароля
+local wnd_sms			--окно сообщений
+local wnd_clocks_h1		--цифра 1 часа	
+local wnd_clocks_h2		--цифра 2 часа
+local wnd_clocks_m1		--цифра 1 минут
+local wnd_clocks_m2		--цифра 2 минут
+local wnd_clocks_tch	--двоеточие часов
+local wnd_calendar_d1	--календарь день 1 цифра	
+local wnd_calendar_d2	--календарь день 2 цифра
+local wnd_calendar_m1	--календарь месяц 1 цифра
+local wnd_calendar_m2	--календарь месяц 2 цифра
+local wnd_calendar_g1	--календарь год 1 цифра
+local wnd_calendar_g2	--календарь год 2 цифра
+local wnd_calendar_sl1	--календарь 1 слеш
+local wnd_calendar_sl2	--календарь 2 слеш
+local wnd_signal		--уровень сигнала
+local wnd_batt			--уровень зарядки
+local wnd_steklo
+local v_pass 			--вводимый пароль
+local mode				--режим работы: 1- ввод пароля, 2 - вывод записей
+local btn				--номер нажатой клавиши
+local old_btn			--предыдущая нажатая клавиша
+local klik				--номер клика на клавишу
+local old_time			--глобальное время последнего нажатия
+local tbl_msg ={}		--таблица номеров сообщений
+local number_msg		--номер текущей записи tbl_msg
+local ratio_mode
+local flag_show_signal_time
+local flag_treasure
+
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+
+	-- Положение и размеры окна
+	ratio_mode = vergas_pda.set_ratio_mode()
+	
+	if ratio_mode == 4 then
+		self:Init(0,0,1024,768)
+	elseif ratio_mode == 3 then
+		self:Init(256,192-64,768,576)		--1024x768
+	elseif ratio_mode == 2 then
+		self:Init(420,263-88,604,505)		--1680x1050
+	elseif ratio_mode == 1 then
+		self:Init(400,225-75,624,543)
+	end
+	
+	self:set_info_pda()
+	mode = 1
+	--подскажем ненавязчиво: скока буковок в пароле
+	local i
+	v_pass = ""
+	if tbl_info and tbl_info[2] and tbl_info[2]~=0 then
+		for i = 1, string.len(tbl_info[2]) do
+			v_pass = v_pass.."*" 
+		end
+	else v_pass = "****************"
+	end
+	--выбираю стекло
+	texture_steklo = vergas_pda.set_get_steklo()
+	
+	self:set_wnd_pda()			--текстура ПДА
+	self:set_wnd_nm()			--имя непися
+	self:set_wnd_sn()			--служебный номер ПДА
+	self:set_wnd_lg()			--логин
+	self:set_wnd_ps(1)			--пароль
+	self:set_wnd_signal()		--уровень сигнала
+	self:set_wnd_batt()			--зарядка батареи
+	self:set_wnd_calendar()		--текущая дата
+	self:set_wnd_clocks()		--текущее время
+	flag_show_signal_time = true			--запускаю демонстрацию
+	schedule.add("show_pda_signal", "ui_cheat_pda.cheat:show_signal_time()", 3000)
+	
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_pda_npc.xml")
+	
+	if ratio_mode == 4 then								--1280x1024
+		self:Register(xml:Init3tButton("btn_a4_1", self),"btn_a_1")			-- Кнопка "АБВГ"
+		self:Register(xml:Init3tButton("btn_a4_2", self),"btn_a_2")			-- Кнопка "ДЕЖЗ"
+		self:Register(xml:Init3tButton("btn_a4_3", self),"btn_a_3")			-- Кнопка "ИЙКЛ"
+		self:Register(xml:Init3tButton("btn_a4_4", self),"btn_a_4")			-- Кнопка "МНОП"
+		self:Register(xml:Init3tButton("btn_a4_5", self),"btn_a_5")			-- Кнопка "РСТУ"
+		self:Register(xml:Init3tButton("btn_a4_6", self),"btn_a_6")			-- Кнопка "ФХЦЧ"
+		self:Register(xml:Init3tButton("btn_a4_7", self),"btn_a_7")			-- Кнопка "ШЩЪЫ"
+		self:Register(xml:Init3tButton("btn_a4_8", self),"btn_a_8")			-- Кнопка "ЬЭЮЯ"
+		
+		self:Register(xml:Init3tButton("btn_u4_1", self),"btn_u_1")			-- Кнопка "Ввод"
+		self:Register(xml:Init3tButton("btn_u4_2", self),"btn_u_2")			-- Кнопка "<=="
+		--self:Register(xml:Init3tButton("btn_u4_3", self),"btn_u_3")			-- Кнопка "конверт"
+		self:Register(xml:Init3tButton("btn_u4_4", self),"btn_u_4")			-- Кнопка "==>"
+		self:Register(xml:Init3tButton("btn_u4_5", self),"btn_u_5")			-- Кнопка "Выход"
+	end
+	
+	if ratio_mode == 3 then								--1024x768
+		self:Register(xml:Init3tButton("btn_a3_1", self),"btn_a_1")			-- Кнопка "АБВГ"
+		self:Register(xml:Init3tButton("btn_a3_2", self),"btn_a_2")			-- Кнопка "ДЕЖЗ"
+		self:Register(xml:Init3tButton("btn_a3_3", self),"btn_a_3")			-- Кнопка "ИЙКЛ"
+		self:Register(xml:Init3tButton("btn_a3_4", self),"btn_a_4")			-- Кнопка "МНОП"
+		self:Register(xml:Init3tButton("btn_a3_5", self),"btn_a_5")			-- Кнопка "РСТУ"
+		self:Register(xml:Init3tButton("btn_a3_6", self),"btn_a_6")			-- Кнопка "ФХЦЧ"
+		self:Register(xml:Init3tButton("btn_a3_7", self),"btn_a_7")			-- Кнопка "ШЩЪЫ"
+		self:Register(xml:Init3tButton("btn_a3_8", self),"btn_a_8")			-- Кнопка "ЬЭЮЯ"
+		
+		self:Register(xml:Init3tButton("btn_u3_1", self),"btn_u_1")			-- Кнопка "Ввод"
+		self:Register(xml:Init3tButton("btn_u3_2", self),"btn_u_2")			-- Кнопка "<=="
+		--self:Register(xml:Init3tButton("btn_u3_3", self),"btn_u_3")			-- Кнопка "конверт"
+		self:Register(xml:Init3tButton("btn_u3_4", self),"btn_u_4")			-- Кнопка "==>"
+		self:Register(xml:Init3tButton("btn_u3_5", self),"btn_u_5")			-- Кнопка "Выход"
+	end
+	
+	if ratio_mode == 2 then								--1680x1050
+		self:Register(xml:Init3tButton("btn_a2_1", self),"btn_a_1")			-- Кнопка "АБВГ"
+		self:Register(xml:Init3tButton("btn_a2_2", self),"btn_a_2")			-- Кнопка "ДЕЖЗ"
+		self:Register(xml:Init3tButton("btn_a2_3", self),"btn_a_3")			-- Кнопка "ИЙКЛ"
+		self:Register(xml:Init3tButton("btn_a2_4", self),"btn_a_4")			-- Кнопка "МНОП"
+		self:Register(xml:Init3tButton("btn_a2_5", self),"btn_a_5")			-- Кнопка "РСТУ"
+		self:Register(xml:Init3tButton("btn_a2_6", self),"btn_a_6")			-- Кнопка "ФХЦЧ"
+		self:Register(xml:Init3tButton("btn_a2_7", self),"btn_a_7")			-- Кнопка "ШЩЪЫ"
+		self:Register(xml:Init3tButton("btn_a2_8", self),"btn_a_8")			-- Кнопка "ЬЭЮЯ"
+		
+		self:Register(xml:Init3tButton("btn_u2m_1", self),"btn_u_1")			-- Кнопка "Ввод"
+		self:Register(xml:Init3tButton("btn_u2m_2", self),"btn_u_2")			-- Кнопка "<=="
+		--self:Register(xml:Init3tButton("btn_u2_3", self),"btn_u_3")			-- Кнопка "конверт"
+		self:Register(xml:Init3tButton("btn_u2m_4", self),"btn_u_4")			-- Кнопка "==>"
+		self:Register(xml:Init3tButton("btn_u2m_5", self),"btn_u_5")			-- Кнопка "Выход"
+	end
+
+	if ratio_mode == 1 then								--1600x900
+		self:Register(xml:Init3tButton("btn_a1_1", self),"btn_a_1")			-- Кнопка "АБВГ"
+		self:Register(xml:Init3tButton("btn_a1_2", self),"btn_a_2")			-- Кнопка "ДЕЖЗ"
+		self:Register(xml:Init3tButton("btn_a1_3", self),"btn_a_3")			-- Кнопка "ИЙКЛ"
+		self:Register(xml:Init3tButton("btn_a1_4", self),"btn_a_4")			-- Кнопка "МНОП"
+		self:Register(xml:Init3tButton("btn_a1_5", self),"btn_a_5")			-- Кнопка "РСТУ"
+		self:Register(xml:Init3tButton("btn_a1_6", self),"btn_a_6")			-- Кнопка "ФХЦЧ"
+		self:Register(xml:Init3tButton("btn_a1_7", self),"btn_a_7")			-- Кнопка "ШЩЪЫ"
+		self:Register(xml:Init3tButton("btn_a1_8", self),"btn_a_8")			-- Кнопка "ЬЭЮЯ"
+		
+		self:Register(xml:Init3tButton("btn_u1m_1", self),"btn_u_1")			-- Кнопка "Ввод"
+		self:Register(xml:Init3tButton("btn_u1m_2", self),"btn_u_2")			-- Кнопка "<=="
+		--self:Register(xml:Init3tButton("btn_u_3", self),"btn_u_3")			-- Кнопка "конверт"
+		self:Register(xml:Init3tButton("btn_u1m_4", self),"btn_u_4")			-- Кнопка "==>"
+		self:Register(xml:Init3tButton("btn_u1m_5", self),"btn_u_5")			-- Кнопка "Выход"
+	end
+
+	self:wnd_steklo()			--стекло
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_a_1", ui_events.BUTTON_CLICKED, self.btn_a_1, self) 			-- Кнопка "АБВГ"
+	self:AddCallback("btn_a_2", ui_events.BUTTON_CLICKED, self.btn_a_2, self) 			-- Кнопка "ДЕЖЗ"
+	self:AddCallback("btn_a_3", ui_events.BUTTON_CLICKED, self.btn_a_3, self) 			-- Кнопка "ИЙКЛ"
+	self:AddCallback("btn_a_4", ui_events.BUTTON_CLICKED, self.btn_a_4, self) 			-- Кнопка "МНОП"
+	self:AddCallback("btn_a_5", ui_events.BUTTON_CLICKED, self.btn_a_5, self) 			-- Кнопка "РСТУ"
+	self:AddCallback("btn_a_6", ui_events.BUTTON_CLICKED, self.btn_a_6, self) 			-- Кнопка "ФХЦЧ"
+	self:AddCallback("btn_a_7", ui_events.BUTTON_CLICKED, self.btn_a_7, self) 			-- Кнопка "ШЩЪЫ"
+	self:AddCallback("btn_a_8", ui_events.BUTTON_CLICKED, self.btn_a_8, self) 			-- Кнопка "ЬЭЮЯ"
+	
+		self:AddCallback("btn_u_1", ui_events.BUTTON_CLICKED, self.btn_u_1, self) 			-- Кнопка "Ввод"
+	self:AddCallback("btn_u_2", ui_events.BUTTON_CLICKED, self.btn_u_2, self) 			-- Кнопка "<=="
+		--self:AddCallback("btn_u_3", ui_events.BUTTON_CLICKED, self.btn_u_3, self) 			-- Кнопка "конверт"
+	self:AddCallback("btn_u_4", ui_events.BUTTON_CLICKED, self.btn_u_4, self) 			-- Кнопка "==>"
+		self:AddCallback("btn_u_5", ui_events.BUTTON_CLICKED, self.btn_stop, self) 			-- Кнопка "Выход"
+end
+
+--===============================КНОПКИ============================================
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+				self:btn_stop()
+		end
+	end
+	return true
+end
+
+function cheat:btn_stop()								-- Кнопка Выкл
+	flag_show_signal_time = false		--отключаю демонстрацию
+	self:set_treasure()					--установка тайника
+	self:del_windows()
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_finish_pda"),1)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_pda.start_search_pda(2) 
+end
+
+function cheat:btn_a_1()					-- Кнопка "АБВГ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(1,4)
+	
+	table.insert(tbl, "а")
+	table.insert(tbl, "б")
+	table.insert(tbl, "в")
+	table.insert(tbl, "г")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_a_2()					-- Кнопка "ДЕЖЗ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(2,5)
+	
+	table.insert(tbl, "д")
+	table.insert(tbl, "е")
+	table.insert(tbl, "ё")
+	table.insert(tbl, "ж")
+	table.insert(tbl, "з")
+	
+	self:password_formation(self:symbol_choice(tbl))
+
+end
+
+function cheat:btn_a_3()					-- Кнопка "ИЙКЛ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(3,4)
+	
+	table.insert(tbl, "и")
+	table.insert(tbl, "й")
+	table.insert(tbl, "к")
+	table.insert(tbl, "л")
+	
+	self:password_formation(self:symbol_choice(tbl))
+	
+end
+
+function cheat:btn_a_4()					-- Кнопка "МНОП"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(4,4)
+	
+	table.insert(tbl, "м")
+	table.insert(tbl, "н")
+	table.insert(tbl, "о")
+	table.insert(tbl, "п")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_a_5()					-- Кнопка "РСТУ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(5,4)
+	
+	table.insert(tbl, "р")
+	table.insert(tbl, "с")
+	table.insert(tbl, "т")
+	table.insert(tbl, "у")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_a_6()					-- Кнопка "ФХЦЧ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(6,4)
+	
+	table.insert(tbl, "ф")
+	table.insert(tbl, "х")
+	table.insert(tbl, "ц")
+	table.insert(tbl, "ч")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_a_7()					-- Кнопка "ШЩЪЫ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(7,4)
+	
+	table.insert(tbl, "ш")
+	table.insert(tbl, "щ")
+	table.insert(tbl, "ъ")
+	table.insert(tbl, "ы")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_a_8()					-- Кнопка "ЬЭЮЯ"
+	local tbl = {}
+	
+	if mode == 2 then
+		return
+	end
+	
+	self:set_btn_klik(8,4)
+	
+	table.insert(tbl, "ь")
+	table.insert(tbl, "э")
+	table.insert(tbl, "ю")
+	table.insert(tbl, "я")
+	
+	self:password_formation(self:symbol_choice(tbl))
+end
+
+function cheat:btn_u_1()					-- Кнопка "Ввод"
+	
+		if mode == 1 then
+			old_btn = nil
+			klik = nil
+			self:password_check()
+	end
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_klik_pda"),1)
+end
+
+function cheat:btn_u_2()					-- Кнопка "<=="
+	if mode == 1 then
+		v_pass = string.sub (v_pass, 1 , string.len(v_pass)-1)
+		self:set_wnd_ps(2)
+		old_btn = nil
+		klik = nil
+	elseif mode == 2 then
+		--идет перебор сообщений
+		self:set_treasure()
+		self:replace_record_msg(2)
+	end
+
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_klik_pda"),1)	
+end
+
+function cheat:btn_u_3()					-- Кнопка "конверт"
+	if mode == 1 then
+		return
+	end
+
+end
+
+function cheat:btn_u_4()					-- Кнопка "==>"
+	if mode == 1 then
+		return
+	end
+
+	--идет перебор сообщений
+	self:set_treasure()
+	self:replace_record_msg(1)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_klik_pda"),1)
+end
+
+function cheat:set_btn_klik(n,m)
+--n-номер нажатой кнопки
+--m-количество максимальных нажатий
+	if old_btn == n then
+		if klik == m then
+			klik = 1
+		else
+			klik = klik + 1
+		end
+	else
+		btn = n
+		klik = 1
+	end
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_klik_pda"),1)
+end
+
+function cheat:symbol_choice(t)
+	local i
+	
+	for i = 1, table.getn(t) do
+		if klik == i then
+			return t[i]
+		end
+	end
+end
+
+function cheat:password_formation(symbol)
+	local time_n = time_global()
+	
+	if string.sub (v_pass, 1 , 1) == "*" then
+		v_pass = ""
+	end
+	if old_btn == btn then
+		--нажата та же клавиша
+		if old_time ~= nil then
+			if (time_global() - old_time) > 700 then
+				if string.len(v_pass) < string.len(tbl_info[2]) then
+					v_pass = v_pass..symbol
+				end
+			else
+				v_pass = string.sub (v_pass, 1 , string.len(v_pass)-1)..symbol
+			end
+		else
+			v_pass = v_pass..symbol
+		end
+	else
+		--нажата другая клавиша
+		if string.len(v_pass) < string.len(tbl_info[2]) then
+			v_pass = v_pass..symbol
+		end
+	end
+	
+	self:set_wnd_ps(2)
+	old_btn = btn
+	old_time = time_global()
+end
+
+function cheat:password_check()
+	if v_pass == tbl_info[2] then
+		--пароль верный
+		if wnd_lg ~= nil then
+			self:DetachChild(wnd_lg)
+			wnd_lg = nil
+		end
+		
+		if wnd_ps ~= nil then
+			self:DetachChild(wnd_ps)
+			wnd_ps = nil
+		end
+		
+		if wnd_nm ~= nil then
+			self:DetachChild(wnd_nm)
+			wnd_nm = nil
+		end
+		
+		self:set_tbl_msg()
+		
+		self:set_msg()
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_pass_ok"),1)
+	else
+		--пароль не верный
+		v_pass = string.rep("*", string.len(tbl_info[2]))
+		self:set_wnd_ps(2)
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_pda","snd_pass_no"),1)
+	end
+end
+
+--===========================================ОКНА==================================================
+function cheat:set_wnd_pda()
+	if wnd_pda ~= nil then
+		self:DetachChild(wnd_pda)
+		wnd_pda = nil
+	end
+
+	wnd_pda = CUIStatic()
+	wnd_pda:SetAutoDelete(true)
+	self:AttachChild(wnd_pda)
+	wnd_pda:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_pda:SetWndRect(0,0,1024,768)
+	elseif ratio_mode == 3 then
+		wnd_pda:SetWndRect(0,0,768,576)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_pda:SetWndRect(0,0,604,505)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_pda:SetWndRect(0,0,624,543)		--1600x900
+	end
+	wnd_pda:InitTexture("ui\\ui_pda_ok")
+end
+function cheat:set_wnd_sn()		--служебный номер
+	if wnd_sn ~= nil then
+		self:DetachChild(wnd_sn)
+		wnd_sn = nil
+	end
+	
+	wnd_sn = CUIStatic()
+	wnd_sn:SetAutoDelete(true)
+	self:AttachChild(wnd_sn)
+	wnd_sn:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_sn:SetWndRect(76,43,39,18)
+	elseif ratio_mode == 3 then
+		wnd_sn:SetWndRect(61,31,38,18)			--1024x768
+	elseif ratio_mode == 2 then
+		wnd_sn:SetWndRect(48,25,38,18)			--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_sn:SetWndRect(64,30,38,18)			--1600x900
+	end
+	wnd_sn:SetTextColor(255,28, 28, 28)		--225
+	wnd_sn:SetFont(GetFontLetterica16Russian())
+	wnd_sn:SetText("№ "..(tbl_info[4] or '?'))
+end
+
+function cheat:set_wnd_nm()		--имя непися
+	if wnd_nm ~= nil then
+		self:DetachChild(wnd_nm)
+		wnd_nm = nil
+	end
+	
+	wnd_nm = CUIStatic()
+	wnd_nm:SetAutoDelete(true)
+	self:AttachChild(wnd_nm)
+	wnd_nm:SetStretchTexture(true)
+	wnd_nm:SetWndRect(110,90,100,20)
+	wnd_nm:SetTextColor(225, 0, 0, 0)		
+	wnd_nm:SetFont(GetFontGraffiti32Russian())
+	wnd_nm:SetText(tbl_info[3])
+end
+
+function cheat:set_wnd_lg()		--логин
+	if wnd_lg ~= nil then
+		self:DetachChild(wnd_lg)
+		wnd_lg = nil
+	end
+	
+	wnd_lg = CUIStatic()
+	wnd_lg:SetAutoDelete(true)
+	self:AttachChild(wnd_lg)
+	wnd_lg:SetStretchTexture(true)
+	wnd_lg:SetWndRect(160+50,130+50,100,20)
+	wnd_lg:SetTextColor(225, 0, 0, 0)		
+	wnd_lg:SetFont(GetFontLetterica18Russian())
+	wnd_lg:SetText("ЛОГИН: "..tbl_info[1])
+
+end
+
+function  cheat:set_wnd_ps(mode_p)		--пароль
+--mode = 1 - стекло не ставлю	
+--mode = 2 - стекло ставлю	
+
+	if wnd_ps ~= nil then
+		self:DetachChild(wnd_ps)
+		wnd_ps = nil
+	end
+	
+	if mode_p == 2 then
+		if wnd_steklo ~= nil then
+			self:DetachChild(wnd_steklo)
+			wnd_steklo = nil
+		end
+	end
+	
+	wnd_ps = CUIStatic()
+	wnd_ps:SetAutoDelete(true)
+	self:AttachChild(wnd_ps)
+	wnd_ps:SetStretchTexture(true)
+	wnd_ps:SetWndRect(160+50,170+50,100,20)
+	wnd_ps:SetTextColor(225, 0, 0, 0)		
+	wnd_ps:SetFont(GetFontLetterica18Russian())
+	wnd_ps:SetText("ПАРОЛЬ: "..v_pass)
+
+	if mode_p == 2 then
+		self:wnd_steklo()			--стекло	
+	end
+end
+
+function cheat:wnd_steklo()
+	if wnd_steklo ~= nil then
+		self:DetachChild(wnd_steklo)
+		wnd_steklo = nil
+	end
+	
+	wnd_steklo = CUIStatic()
+	wnd_steklo:SetAutoDelete(true)
+	self:AttachChild(wnd_steklo)
+	wnd_steklo:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_steklo:SetWndRect(100,77,781,540)
+	elseif ratio_mode == 3 then
+		wnd_steklo:SetWndRect(75,58,583,403)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_steklo:SetWndRect(58,52,463,358)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_steklo:SetWndRect(60,51,476,382)		--1600x900
+	end
+	wnd_steklo:InitTexture(texture_steklo)
+end
+
+function cheat:set_wnd_signal()
+	
+	if wnd_signal ~= nil then
+		self:DetachChild(wnd_signal)
+		wnd_signal = nil
+	end
+
+	local n = lua_random(1,6)
+	if n == 6 then
+		n = "0"
+	else
+		n = tostring(n)
+	end
+	
+	wnd_signal = CUIStatic()
+	wnd_signal:SetAutoDelete(true)
+	self:AttachChild(wnd_signal)
+	wnd_signal:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_signal:SetWndRect(710,510,60,30)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_signal:SetWndRect(570,375,56,28)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_signal:SetWndRect(442,333,44,21)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_signal:SetWndRect(442+10+10,351+2,44,21)		--1600x900
+	end
+	wnd_signal:InitTexture("ui_pda_sig_"..n)
+	
+	
+end
+
+function cheat:set_wnd_batt()
+	if wnd_batt ~= nil then
+		self:DetachChild(wnd_batt)
+		wnd_batt = nil
+	end
+
+	local n = tostring(lua_random(1,4))
+	
+	wnd_batt = CUIStatic()
+	wnd_batt:SetAutoDelete(true)
+	self:AttachChild(wnd_batt)
+	wnd_batt:SetStretchTexture(true)
+	
+	if ratio_mode == 4 then							--1280x1024
+		wnd_batt:SetWndRect(710,560,60,30)
+	elseif ratio_mode == 3 then
+		wnd_batt:SetWndRect(570,424,56,28)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_batt:SetWndRect(442,393-20,44,21)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_batt:SetWndRect(462,380+20,44,21)		--1600x900
+	end
+	
+	wnd_batt:InitTexture("ui_pda_batt_"..n)
+end
+
+function cheat:set_wnd_calendar()
+
+	local n_1
+	local n_2
+	
+	self:del_windows_calendar()	
+	--Вывожу день
+	n_1, n_2 = set_texture(3)
+	
+	wnd_calendar_d1 = CUIStatic()
+	wnd_calendar_d1:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_d1)
+	wnd_calendar_d1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_d1:SetWndRect(90+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_d1:SetWndRect(90,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_d1:SetWndRect(60,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_d1:SetWndRect(60,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_d1:InitTexture(n_1)
+	
+	wnd_calendar_d2 = CUIStatic()
+	wnd_calendar_d2:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_d2)
+	wnd_calendar_d2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_d2:SetWndRect(100+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_d2:SetWndRect(100,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_d2:SetWndRect(70,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_d2:SetWndRect(70,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_d2:InitTexture(n_2)
+	
+	--вывожу слеш 1
+	wnd_calendar_sl1 = CUIStatic()
+	wnd_calendar_sl1:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_sl1)
+	wnd_calendar_sl1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_sl1:SetWndRect(110+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_sl1:SetWndRect(110,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_sl1:SetWndRect(80,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_sl1:SetWndRect(80,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_sl1:InitTexture("ui_pda_c_sl")
+	
+	--Вывожу месяц
+	n_1, n_2 = set_texture(2)	
+	
+	wnd_calendar_m1 = CUIStatic()
+	wnd_calendar_m1:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_m1)
+	wnd_calendar_m1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_m1:SetWndRect(120+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_m1:SetWndRect(120,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_m1:SetWndRect(90,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_m1:SetWndRect(90,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_m1:InitTexture(n_1)
+	
+	wnd_calendar_m2 = CUIStatic()
+	wnd_calendar_m2:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_m2)
+	wnd_calendar_m2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_m2:SetWndRect(130+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_m2:SetWndRect(130,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_m2:SetWndRect(100,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_m2:SetWndRect(100,351+10,9,12)		--1600x900
+end
+	wnd_calendar_m2:InitTexture(n_2)
+	
+	--вывожу слеш 2
+	wnd_calendar_sl2 = CUIStatic()
+	wnd_calendar_sl2:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_sl2)
+	wnd_calendar_sl2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_sl2:SetWndRect(140+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_sl2:SetWndRect(140,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_sl2:SetWndRect(110,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_sl2:SetWndRect(110,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_sl2:InitTexture("ui_pda_c_sl")
+	
+	--Вывожу год
+	n_1, n_2 = set_texture(1)	
+	
+	wnd_calendar_g1 = CUIStatic()
+	wnd_calendar_g1:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_g1)
+	wnd_calendar_g1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_g1:SetWndRect(150+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_g1:SetWndRect(150,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_g1:SetWndRect(120,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_g1:SetWndRect(120,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_g1:InitTexture(n_1)
+	
+	wnd_calendar_g2 = CUIStatic()
+	wnd_calendar_g2:SetAutoDelete(true)
+	self:AttachChild(wnd_calendar_g2)
+	wnd_calendar_g2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_calendar_g2:SetWndRect(160+80,510+8,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_calendar_g2:SetWndRect(160,382,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_calendar_g2:SetWndRect(130,333,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_calendar_g2:SetWndRect(130,351+10,9,12)		--1600x900
+	end
+	wnd_calendar_g2:InitTexture(n_2)
+	
+end
+
+function cheat:set_wnd_clocks()
+	local n_1
+	local n_2
+	
+	self:del_windows_clocks()	
+	
+	--вывожу часы
+	n_1, n_2 = set_texture(4)
+	
+	wnd_clocks_h1 = CUIStatic()
+	wnd_clocks_h1:SetAutoDelete(true)
+	self:AttachChild(wnd_clocks_h1)
+	wnd_clocks_h1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_clocks_h1:SetWndRect(105+95-20,588-30,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_clocks_h1:SetWndRect(105,430,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_clocks_h1:SetWndRect(75,380,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_clocks_h1:SetWndRect(75,405,9,12)		--1600x900
+	end
+	wnd_clocks_h1:InitTexture(n_1)
+	
+	wnd_clocks_h2 = CUIStatic()
+	wnd_clocks_h2:SetAutoDelete(true)
+	self:AttachChild(wnd_clocks_h2)
+	wnd_clocks_h2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_clocks_h2:SetWndRect(115+95-20,588-30,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_clocks_h2:SetWndRect(115,430,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_clocks_h2:SetWndRect(85,380,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_clocks_h2:SetWndRect(85,405,9,12)		--1600x900
+	end
+	wnd_clocks_h2:InitTexture(n_2)
+	
+	--вывожу двоеточие
+	wnd_clocks_tch = CUIStatic()
+	wnd_clocks_tch:SetAutoDelete(true)
+	self:AttachChild(wnd_clocks_tch)
+	wnd_clocks_tch:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_clocks_tch:SetWndRect(125+95-20,588-30,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_clocks_tch:SetWndRect(125,430,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_clocks_tch:SetWndRect(95,380,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_clocks_tch:SetWndRect(95,405,9,12)		--1600x900
+	end
+	wnd_clocks_tch:InitTexture("ui_pda_c_tch")
+	
+	--вывожу минуты
+	n_1, n_2 = set_texture(5)
+	
+	wnd_clocks_m1 = CUIStatic()
+	wnd_clocks_m1:SetAutoDelete(true)
+	self:AttachChild(wnd_clocks_m1)
+	wnd_clocks_m1:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_clocks_m1:SetWndRect(135+95-20,588-30,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_clocks_m1:SetWndRect(135,430,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_clocks_m1:SetWndRect(105,380,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_clocks_m1:SetWndRect(105,405,9,12)		--1600x900
+	end
+	wnd_clocks_m1:InitTexture(n_1)
+	
+	wnd_clocks_m2 = CUIStatic()
+	wnd_clocks_m2:SetAutoDelete(true)
+	self:AttachChild(wnd_clocks_m2)
+	wnd_clocks_m2:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_clocks_m2:SetWndRect(145+95-20,588-30,9,12)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_clocks_m2:SetWndRect(145,430,9,12)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_clocks_m2:SetWndRect(115,380,9,12)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_clocks_m2:SetWndRect(115,405,9,12)		--1600x900
+	end
+	wnd_clocks_m2:InitTexture(n_2)
+	
+end
+
+function  cheat:set_wnd_sms(txt_msg)		--записи
+	
+	local xml_1 = CScriptXmlInit()
+	xml_1:ParseFile("ui_cheat_pda_msg.xml")
+
+	if wnd_sms ~= nil then
+		self:DetachChild(wnd_sms)
+		wnd_sms = nil
+	end
+	
+	if wnd_steklo ~= nil then
+		self:DetachChild(wnd_steklo)
+		wnd_steklo = nil
+	end
+	
+	wnd_sms = CUIStatic()
+	wnd_sms:SetAutoDelete(true)
+	self:AttachChild(wnd_sms)
+	wnd_sms:SetStretchTexture(true)
+	if ratio_mode == 4 then
+		wnd_sms:SetWndRect(100,80,783,415)		--1280x1024
+	elseif ratio_mode == 3 then
+		wnd_sms:SetWndRect(80,63,573,307)		--1024x768
+	elseif ratio_mode == 2 then
+		wnd_sms:SetWndRect(63,57,453,268)		--1680x1050
+	elseif ratio_mode == 1 then
+		wnd_sms:SetWndRect(65,56,466,340)		--1600x900
+	end
+	xml_1:InitStatic(txt_msg, wnd_sms)			--Запись
+	
+	self:wnd_steklo()
+end
+
+function cheat:del_windows_clocks()
+	if wnd_clocks_h1 ~= nil then
+		self:DetachChild(wnd_clocks_h1)
+		wnd_clocks_h1 = nil
+	end
+
+	if wnd_clocks_h2 ~= nil then
+		self:DetachChild(wnd_clocks_h2)
+		wnd_clocks_h2 = nil
+	end
+	
+	if wnd_clocks_m1 ~= nil then
+		self:DetachChild(wnd_clocks_m1)
+		wnd_clocks_m1 = nil
+	end
+
+	if wnd_clocks_m2 ~= nil then
+		self:DetachChild(wnd_clocks_m2)
+		wnd_clocks_m2 = nil
+	end
+
+	if wnd_clocks_tch ~= nil then
+		self:DetachChild(wnd_clocks_tch)
+		wnd_clocks_tch = nil
+	end
+end
+
+function cheat:del_windows_calendar()
+	if wnd_calendar_d1 ~= nil then
+		self:DetachChild(wnd_calendar_d1)
+		wnd_calendar_d1 = nil
+	end
+
+	if wnd_calendar_d2 ~= nil then
+		self:DetachChild(wnd_calendar_d2)
+		wnd_calendar_d2 = nil
+	end
+	
+	if wnd_calendar_m1 ~= nil then
+		self:DetachChild(wnd_calendar_m1)
+		wnd_calendar_m1 = nil
+	end
+
+	if wnd_calendar_m2 ~= nil then
+		self:DetachChild(wnd_calendar_m2)
+		wnd_calendar_m2 = nil
+	end
+
+	if wnd_calendar_g1 ~= nil then
+		self:DetachChild(wnd_calendar_g1)
+		wnd_calendar_g1 = nil
+	end
+	
+	if wnd_calendar_g2 ~= nil then
+		self:DetachChild(wnd_calendar_g2)
+		wnd_calendar_g2 = nil
+	end
+
+	if wnd_calendar_sl1 ~= nil then
+		self:DetachChild(wnd_calendar_sl1)
+		wnd_calendar_sl1 = nil
+	end
+
+	if wnd_calendar_sl2 ~= nil then
+		self:DetachChild(wnd_calendar_sl2)
+		wnd_calendar_sl2 = nil
+	end
+
+end
+
+function cheat:del_windows()
+	if wnd_sn ~= nil then
+		self:DetachChild(wnd_sn)
+		wnd_sn = nil
+	end
+
+	if wnd_nm ~= nil then
+		self:DetachChild(wnd_nm)
+		wnd_nm = nil
+	end
+
+	if wnd_lg ~= nil then
+		self:DetachChild(wnd_lg)
+		wnd_lg = nil
+	end
+
+	if wnd_ps ~= nil then
+		self:DetachChild(wnd_ps)
+		wnd_ps = nil
+	end
+
+	if wnd_sms ~= nil then
+		self:DetachChild(wnd_sms)
+		wnd_sms = nil
+	end
+	
+	if wnd_steklo ~= nil then
+		self:DetachChild(wnd_steklo)
+		wnd_steklo = nil
+	end
+
+	if wnd_pda ~= nil then
+		self:DetachChild(wnd_pda)
+		wnd_pda = nil
+	end
+
+	if wnd_signal ~= nil then
+		self:DetachChild(wnd_signal)
+		wnd_signal = nil
+	end
+
+	if wnd_batt ~= nil then
+		self:DetachChild(wnd_batt)
+		wnd_batt = nil
+	end
+
+	self:del_windows_calendar()
+	
+	self:del_windows_clocks()
+end
+
+function cheat:show_signal_time()
+
+	if flag_show_signal_time then
+		local n = lua_random(1,6)
+		if n == 6 then
+			n = "0"
+		else
+			n = tostring(n)
+end
+
+		if wnd_signal ~= nil then
+			wnd_signal:InitTexture("ui_pda_sig_"..n)
+		end
+		
+		local n_1,n_2 = set_texture(4)
+		wnd_clocks_h1:InitTexture(n_1)
+		wnd_clocks_h2:InitTexture(n_2)
+		
+		n_1,n_2 = set_texture(5)
+		wnd_clocks_m1:InitTexture(n_1)
+		wnd_clocks_m2:InitTexture(n_2)
+		
+		schedule.add("chow_pda_signal", "ui_cheat_pda.cheat:show_signal_time()", 3000)
+	end
+
+end
+
+function set_texture(param)
+	local smv
+	
+	if param == 1 then
+		smv = string.sub(tostring(vergas_lib.return_time(param)),3,4)
+	else
+		smv = tostring(vergas_lib.return_time(param))
+end
+	local n,m
+	
+	if string.len(smv) == 1 then
+		n = "ui_pda_c_0"
+		m = "ui_pda_c_"..smv
+	else
+		n = "ui_pda_c_"..string.sub(smv,1,1)
+		m = "ui_pda_c_"..string.sub(smv,2,2)
+	end	
+	
+	return n,m
+
+end
+
+--==================СООБЩЕНИЯ=============================================================
+function cheat:set_msg()														--подготовка к выводу сообщения
+
+	mode = 2
+	
+	--определяю стринг номера записи
+	flag_treasure = false
+	local txt_msg = tbl_msg[number_msg]
+	--проверяю, а не тайник ли это случаем
+	if string.find(txt_msg, "_") == nil then
+		if tonumber(txt_msg) >= 1000 then
+			-- это тайник
+			flag_treasure = true
+		end
+	end
+	
+	if flag_treasure then
+		grup = "treasure"
+		msg_id = grup.."_"..txt_msg.."_"..ReadIni(db.stor_ltx, "stor", "r_treas_items")
+	else
+		grup = ui_cheat_pda.cheat:get_community()
+		msg_id = grup.."_"..txt_msg
+	end
+	txt_msg = "text_"..msg_id
+	
+	self:set_wnd_sms(txt_msg)
+
+end
+
+function cheat:set_tbl_msg()													--формирование таблицы номеров сообщений
+	tbl_msg = vergas_lib.str_explode(",",tbl_info[5],true)
+	number_msg = 1
+end
+
+function cheat:replace_record_msg(mode_r)										--смена номера текущего сообщения (по кнопкам "вперед", "назад")
+
+	--меняю номер записи
+	if mode_r == 1 then
+		--двигаю вперед
+		if number_msg == table.getn(tbl_msg) then
+			number_msg = 1
+		else
+			number_msg = number_msg + 1
+		end
+	else
+		--двигаю назад
+		if number_msg == 1 then
+			number_msg = table.getn(tbl_msg)
+		else
+			number_msg = number_msg - 1
+		end
+	end
+	--запускаю просмотр
+	self:set_msg()
+end
+
+function cheat:set_treasure()
+	if flag_treasure and tbl_info[7] == "0" then
+		local shron = tbl_info[6]
+		treasure_manager.get_treasure_manager():give_treasure(shron)
+		--помечаю в кастом-дате ПДА тайник как установленный
+		self:set_status_pda()
+end
+
+end
+
+function cheat:set_info_pda()													--формирование таблицы данных выбранного ПДА
+	local tbl = vergas_pda.get_pda_info()
+	local n = vergas_pda.get_number_record()
+	tbl_info = vergas_lib.str_explode("|",tbl[n],true)
+end
+
+function cheat:get_community()													--имя группировки
+	local grup_n = string.sub(tbl_info[4],7,8)
+	local grup_s
+	if grup_n == "01" then
+		grup_s = "stalker"
+	elseif grup_n == "02" then
+		grup_s = "military"
+	elseif grup_n == "03" then
+		grup_s = "bandit"
+	elseif grup_n == "04" then
+		grup_s = "dolg"
+	elseif grup_n == "05" then
+		grup_s = "freedom"
+	elseif grup_n == "06" then
+		grup_s = "monolith"
+	elseif grup_n == "07" then
+		grup_s = "killer"
+	elseif grup_n == "08" then
+		grup_s = "ecolog"
+	elseif grup_n == "09" then
+		grup_s = "green"
+	end
+	
+	return grup_s
+end
+
+function cheat:set_status_pda()
+	local i
+	local j
+	local k
+	local record_old
+	local record_new
+	local t = vergas_pda.get_pda_info()
+	local n = vergas_pda.get_number_record()
+	
+	for i,k in pairs(sak_inventory.eatable) do
+		if i == "device_pda_npc" then
+			for j = 1,table.getn(k) do
+				local sobj = alife():object(k[j])
+				if sobj then
+					local net_pak = get_netpk(sobj,1)
+					local record =  net_pak:get()
+					if t[n] == record.custom_data then
+						record_old = t[n]
+						record.custom_data = string.sub(t[n], 1 , string.len(t[n])-1).."1"
+						record_new = record.custom_data
+						net_pak:set(record)
+					end
+	end
+	end
+	end
+	end
+	flag_treasure=false
+	tbl_info[7] = "1" 	--защита от повторной установки тайника при повторном просмотре записи в одной сессии
+	vergas_pda.change_info_pda_record(record_old,record_new) -- защита от повторной установки тайника при повторном включении ПДА в одной сессии
+	end
+	

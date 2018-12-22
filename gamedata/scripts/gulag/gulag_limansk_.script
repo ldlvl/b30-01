@@ -1,0 +1,401 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+
+	--Lim Lager Bandits--
+	if type=="lim_lager_bandits" then
+		t = {section = "logic@lim_lager_bandits_borov",
+			idle = 0,
+			prior = 10, state = {0, 1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest",
+			predicate = function(obj_info)
+				return obj_info.profile_name=="val_bandit_borov"
+			end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_bodyguard1",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_bodyguard2",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard1",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard2",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard3",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard1",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard2",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man1",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man2",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man3",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp2",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp2",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp2",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp2",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_bodyguard1",
+			idle = 0,
+			prior = 9, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_bodyguard2",
+			idle = 0,
+			prior = 9, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard1",
+			idle = 0,
+			prior = 8, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard2",
+			idle = 0,
+			prior = 8, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_zoneguard3",
+			idle = 0,
+			prior = 8, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard3",
+			idle = 0,
+			prior = 7, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard4",
+			idle = 0,
+			prior = 7, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard5",
+			idle = 0,
+			prior = 7, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_guard6",
+			idle = 0,
+			prior = 7, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man1",
+			idle = 0,
+			prior = 6, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man2",
+			idle = 0,
+			prior = 6, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_patrol_man3",
+			idle = 0,
+			prior = 6, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp1",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp3",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp3",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp3",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp3",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_bandits_kamp3",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = "lim_lager_bandits_out_rest"
+		}
+		table.insert(sj, t)
+	end
+	--Lim Lager Freedom Stalkers--
+	if type=="lim_lager_freedom_stalkers" then
+		t = {section = "logic@lim_lager_freedom_stalkers_commander",
+			idle = 0,
+			prior = 10, state = {0, 1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_zoneguard1",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_zoneguard2",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_guard1",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_guard2",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_patrol_man1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_patrol_man2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_zoneguard1",
+			idle = 0,
+			prior = 8, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_zoneguard2",
+			idle = 0,
+			prior = 8, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_kamp1",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_kamp1",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_kamp1",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_kamp1",
+			idle = 0,
+			prior = 2, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_drink1",
+			idle = 0,
+			prior = 8, state = {0, 1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				return obj_info.profile_name=="lim_stalker_general"
+			end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@lim_lager_freedom_stalkers_drink2",
+			idle = 0,
+			prior = 8, state = {0, 1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+				return obj_info.profile_name=="lim_stalker_general"
+			end
+		}
+		table.insert(sj, t)
+	end
+
+end
+
+function load_states(gname, type)
+	--Lim Lager Bandits--
+	if type=="lim_lager_bandits" then
+		return function(gulag)
+			if db.actor~=nil then
+				if (level.get_time_hours()*60+level.get_time_minutes()) >= 380 and (level.get_time_hours()*60+level.get_time_minutes()) < 1345 then
+					return 0  -- день
+				else
+					return 1  -- ночь
+				end
+			else
+				return gulag.state
+			end
+		end
+	end
+
+	--Lim Lager Freedom Stalkers--
+	if type=="lim_lager_freedom_stalkers" then
+		return function(gulag)
+			if db.actor~=nil then
+				if (level.get_time_hours()*60+level.get_time_minutes()) >= 380 and (level.get_time_hours()*60+level.get_time_minutes()) < 1345 then
+					return 0  -- день
+				else
+					return 1  -- ночь
+				end
+			else
+				return gulag.state
+			end
+		end
+	end
+	
+end
+
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	--Lim Lager Bandits--
+	if gulag_type=="lim_lager_bandits" then
+		return npc_community=="bandit"
+	end
+
+	--Lim Lager Freedom Stalkers--
+	if gulag_type=="lim_lager_freedom_stalkers" then
+		return npc_community=="freedom" or npc_community=="stalker"
+	end
+
+	return false
+end
+
+function checkMonster(npc_community, gulag_type)
+	return false
+end
+

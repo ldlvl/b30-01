@@ -1,0 +1,62 @@
+--[[
+
+File:	amk_utils .script
+Created:	23.05.2008
+Copyright:	© 2008 AMK team
+Version:	1.1.0.5
+
+  Арифметический дублер инвентаря, для оптимизации проверки количества предметов 
+
+--]]
+
+function actor_item_take(obj)
+  -- inventory_update(obj, 1)
+end
+function actor_item_drop(obj)
+  -- inventory_update(obj, -1)
+end
+
+
+
+function inventory_search (needed_section, needed_count) -- нужен ли поиск в носимых рюкзаках?
+    local inv = get_shadow_inv()
+    if inv.need_update then
+       inv:update_quantity()
+    end
+ 
+    local have_count = inv.quantity(needed_section) or 0     
+	return ( have_count >= needed_count )
+end
+
+
+InventoryState = {}
+
+function inventory_update(obj, delta)
+	if obj==nil then return end
+	local item_section = sak_inventory.dyn_art_base( obj:section() )
+	local count = InventoryState[item_section] or 0
+	if count < 0 then count = 0 end    
+    count = count + delta
+ 	InventoryState [item_section] = count
+    if count < 0 then
+       wprintf("~C0C #WARN:~C07 items with section~C0A %s~C07 =~C0D %d~C07", item_section, count) 
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

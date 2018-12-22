@@ -1,0 +1,79 @@
+-- shared_str [0] (u32) = reference counter
+-- shared_str [4] (u32) = string lentgh
+-- shared_str [8] (u32) = crc32
+-- shared_str [12] = symbols data 
+
+local fdock="?dock@str_container@@QAEPAUstr_value@@PBD@Z"
+local fdump="?dump@str_container@@QAEXXZ"
+local container="?g_pStringContainer@@3PAVstr_container@@A"
+
+
+fdock = GetProcAddr("xrCore.dll", fdock)
+fdump = GetProcAddr("xrCore.dll", fdump) 
+container = GetProcAddr("xrCore.dll", container)
+
+if container ~= nil then
+   container = ReadDMA (container, 0, "safe_ptr")
+end
+
+
+ODS ("[~T] #DBG: g_pStringContainer = "..FormatPtr(container))
+ODS ("[~T] #DBG: str_container::dock = "..fdock)
+ODS ("[~T] #DBG: str_container::dump = "..fdump)
+
+
+function dock_str(s)
+ local r = BinThisCall(container, fdock, "avar="..s)
+ if (r == nil) or (r < 1000) then
+    ODS("[~T]. #ERROR: str_contaner::dock returned bad value "..tostring(r))
+    return nil
+ end
+ 
+ local ss = CalcPtr(r, 0, "+")  -- shared str 
+ 
+ local counter = ReadDMA (ss, 0, "int")
+ 
+ if counter >= 0 then -- предотвратить потерю строки из-за сборщика мусора            
+    local err = WriteDMA (ss, 0, counter + 1, "int")
+    -- ODS("[~T]. #DBG: string counter = "..tostring(counter) .. " updated: "..tostring(err) )
+ end          
+ 
+ return ss 
+end
+
+function dump_all()
+ -- дамп всех общих строк в файл X:\$str_dump$.txt 
+ -- без диска X: лучше не вызывать
+ BinThisCall(container, fdump)
+end
+
+function exchange_shared_str(ptr, ss)
+ local old = ReadDMA(ptr, 0, 'safe_ptr')
+ if old ~= ss then  
+    WriteDMA(ptr, 0, ss, 'ptr')
+ end   
+  
+ if old ~= nil then
+   local ref_count = ReadDMA(old, 0, 'int') - 1
+   WriteDMA(old, 0, ref_count, 'int')    
+ end 
+end;
+
+
+function get_shared_str(ptr)
+ local ss = ReadDMA(ptr, 0, 'safe_ptr')
+ return ReadDMA(ss, 12, 'ansi')  
+end
+
+
+function set_shared_str(ptr, str_v)
+ local ss = dock_str(str_v)
+ exchange_shared_str(ptr, ss)
+end
+
+
+_G.dock_str = dock_str
+_G.get_shared_str = get_shared_str
+_G.set_shared_str = set_shared_str
+shared_str.dock_str = dock_str
+shared_str.set_shared_str = set_shared_str

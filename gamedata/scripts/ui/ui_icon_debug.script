@@ -1,0 +1,122 @@
+active_dialog = nil
+
+
+class "icon_debug" (windows.CUIScriptDialog)
+
+
+function icon_debug:__init(owner) super()
+ self.owner = owner
+ self:InitControls() 
+end
+
+function icon_debug:InitControls()
+ self:Init(0, 0, 1024, 768)
+ local background = self:add_static("background", { 0, 0, 1024, 768 }, "", "detail\\detail_grnd_sand.dds")  
+ 
+ local list_wnd = CUIListWnd()
+ list_wnd:Init(0, 0, 1024, 768)
+ list_wnd:SetAutoDelete(true)
+ self.list = list_wnd
+ 
+ 
+ local sini = system_ini()
+ local ini = sini:object()
+ 
+ local px = 0
+ local py = 0
+ local max_h = 100
+ 
+ local item = CUIListItem()
+ item:Init(0, 0, 1024, 120)
+ 
+ local dev = device()
+ local scale_x = dev.width / 1024
+ local scale_y = dev.height / 768  
+ 
+ -- цикл по всем секциям, в поисках предметов
+ for i = 0, sini:section_count() - 1 do
+  local sc = sini:section_name(i)
+  local sco = ini[sc]
+  sco.auto_type = true
+  
+  if sco and sco.inv_grid_x and sco.inv_grid_y then
+     -- найден предмет с иконкой, добавляется два статика в скролл-вью
+     local tx = sco.inv_grid_x * 50
+     local ty = sco.inv_grid_y * 50
+  
+     local tw = sco.inv_grid_width * 50
+     local th = sco.inv_grid_height * 50
+     local tex = "ui\\ui_icon_equipment"
+     local grp = 0
+     if sco.icon_group and sco.icon_group > 0 then
+        grp = sco.icon_group
+        tex = sprintf("%s_%d", tex, grp)      
+     end                           
+     
+     
+     local width  = math.max(200, tw) / scale_x
+     local height = (th + 20) / scale_y 
+     
+     local label = CUIStatic()
+     label:Init(px, 0, width, height) -- width not wide
+     label:SetAutoDelete(true)
+     label:SetText(sc .. sprintf("\\ngrp=%d", grp) )
+     label:SetTextColor(255, 255, 255, 0)
+     label:SetFont(GetFontSmall())
+     label:SetTextComplexMode(true)
+     self.statics[sc] = label
+     
+     local st = CUIStatic()     
+     st:SetAutoDelete(true)   
+     st:Init(0, 32 / scale_y, tw / scale_x, th / scale_y) 
+     st:SetWindowName("texture:".. sc)
+     st:InitTexture(tex)
+     st:SetStretchTexture(true)     
+     st:SetOriginalRect(tx, ty, tw, th)         
+     label:AttachChild(st)
+     
+     item:AttachChild(label)       
+     
+     max_h = math.max(max_h, height)
+     
+     px = px + width + 2
+     if px > 850 then
+      px = 0 
+      item:SetWndSize(1024, 100)
+      list_wnd:AddItem(item)
+      item = CUIListItem()      
+      -- break
+     end
+     
+         
+  end
+    
+ end
+ 
+ 
+ list_wnd:AddItem(item)
+ list_wnd:SetItemHeight(max_h)
+
+ background:AttachChild(list_wnd) 
+end
+
+function icon_debug:close()
+ 
+ self:GetHolder():start_stop_menu  (self, true)
+end
+
+function icon_debug:OnKeyboard(dik, keyboard_action)
+  CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)  
+  local bind = dik_to_bind(dik)
+  if (bind == key_bindings.kQUIT) then
+     self:close()  
+  end                           
+  return true
+end
+
+function open()
+ active_dialog = icon_debug()
+ level.start_stop_menu(active_dialog,true)
+end
+
+

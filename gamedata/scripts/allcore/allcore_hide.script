@@ -1,0 +1,100 @@
+local allcore_file = "$mod_dir$\\nlc\\allcore.ltx"
+local stay_while_use = 0
+local medkit_hide_wpn = 0
+local eat_in_mask = 0
+
+local food_data = {
+	["bread"] = {0.3,1},
+	["kolbasa"] = {0.4,1},
+	["green_kolbasa"] = {0.6,1},
+	["conserva"] = {0.75,1},
+	["suhpay"] = {1.0,3},
+	["energy_drink"] = {0.0,1}
+}
+
+local medical_data = {
+	["medkit"] = 4000,
+	["medkit_army"] =  3000,
+	["medkit_scientic"] =  2500,
+	["bandage"] =  1500,
+	["energy_drink"] =  1500,
+	["energy_drink_new"] =  1500, 
+	["antirad"] =  1000,
+	["suvorotka"] =  1500
+}
+
+function HideWpn()
+	bind_stalker.hide_weapon()
+	if stay_while_use > 0 then
+		level.disable_input()
+	end
+end
+
+function RestoreWpn()
+	bind_stalker.restore_weapon()
+	if stay_while_use > 0 then
+		level.enable_input()
+	end
+end
+
+function onLoad()
+	stay_while_use = tonumber(ReadIni(allcore_file, 'settings', 'stay_while_use'))
+	medkit_hide_wpn = tonumber(ReadIni(allcore_file, 'settings', 'medkit_hide_wpn'))
+	eat_in_mask = tonumber(ReadIni(allcore_file, 'settings', 'eat_in_mask'))
+	--защита от дурачка
+	if stay_while_use < 0 then stay_while_use = 0 end
+	if stay_while_use > 1 then stay_while_use = 1 end
+	if medkit_hide_wpn < 0 then medkit_hide_wpn = 0 end
+	if medkit_hide_wpn > 1 then medkit_hide_wpn = 1 end
+	if eat_in_mask < 0 then eat_in_mask = 0 end
+	if eat_in_mask > 1 then eat_in_mask = 1 end	
+	wprintf("#ACLOG#WPNHIDE: [allcore_hide.onLoad(): vars, stay_while_use = %d, medkit_hide_wpn = %d, eat_in_mask = %d]", stay_while_use, medkit_hide_wpn, eat_in_mask)
+end
+
+function onItemUse(obj)
+	local section = obj:section()
+	if eat_in_mask>0 then
+		if food_data[section] then
+			if vergas_masks.allcore_mask_is_on() then
+				local eat = obj:get_eatable_item() 
+				if eat then
+					eat.eat_portions_num = eat.eat_portions_num + 1
+					if eat.eat_portions_num > food_data[section][2] then
+						eat.eat_portions_num = food_data[section][2]
+					end
+				end
+				sak.send_tip("А маску снимать кто будет?", "Мда...", 1, 10, "g_g", "sak", "red")
+				vergas_lib.s_play([[device\antirad_no]],1)
+				return
+			end
+		end
+	end
+	if food_data[section] then
+		params.satiety_add(food_data[section][1])
+	end
+	if medkit_hide_wpn>0 then
+		if medical_data[section]  then 
+			if razgruzka.inventory_opened()  ~= true then 
+				HideWpn() 
+				schedule.add("acore_med", "allcore_hide.RestoreWpn()", medical_data[section]) 
+			end 
+		end
+	end
+	vergas_medical_elastic.use_item(obj)
+end
+
+function UseEnegry()
+	if eat_in_mask > 0 then
+		if vergas_masks.allcore_mask_is_on() then 
+			sak.send_tip("А маску снимать кто будет?", "Мда...", 1, 10, "g_g", "sak", "red")
+			vergas_lib.s_play([[device\antirad_no]],1)
+			return 
+		end
+	end
+	if db.actor:object("energy_drink") ~= nil then
+			db.actor:eat(db.actor:object("energy_drink"))
+	else
+		sak.send_tip("Нету энергетика!", "Едрён-батон!", 1, 10, "g_g", "sak", "red")
+		vergas_lib.s_play([[device\antirad_no]],1)
+	end
+end

@@ -1,0 +1,192 @@
+--[[
+ created 6.01.13 by alpet
+ Очень упрощенный шедулер, для заданий с коротким перидом задержки
+ 
+--]]
+
+if schedule == nil then
+   -- _G.schedule = {}   
+end   
+                   
+local executed = 0
+if nil == this.initialized then
+ this.initialized = false
+end
+
+function get_scheduled()
+ if schedule and schedule.scheduled then
+    return schedule.scheduled
+ else
+    return {}
+ end 
+end                    
+                   
+scheduled = get_scheduled()
+local DT_HOUR    = 1.0 / 24
+local DT_MINUTE  = DT_HOUR / 60.0
+local DT_SECOND  = DT_MINUTE / 60.0
+local DT_MSEC    = DT_SECOND / 1000
+
+function add (name, func, delay, fast)
+  local rt = PreciseTime() + delay * DT_MSEC
+  
+  if fast then
+     -- wprintf("scheduled tasks:")
+     dump(true)
+  else
+     run_tasks()
+  end
+  
+  local task = tostring(name)
+  local cod = tostring(func)
+  scheduled[task]={}
+  scheduled[task].code = cod
+  scheduled[task].run_at = rt
+end
+
+function dump(only_ready)
+  local ct = PreciseTime()
+  for i,v in pairs(scheduled) do
+    local flag = true
+               
+    if ct < v.run_at and only_ready then
+       flag = false
+    end
+    
+    if flag then  
+       -- wprintf(" scheduled[~C0F%s~C07] =~C0E %s~C07 at~C0D %.7f~C07 ", i, v.code, v.run_at)
+    end   
+  end
+end
+
+function run_tasks(self, delta, curtime, taskrec)
+
+  local tlist = scheduled
+  local ct = PreciseTime()
+  scheduled = {}
+  local f_start = device():frame_elapsed()
+  local last_exec = false
+  
+  for i,k in pairs(tlist) do
+    local f_elps = device():frame_elapsed()
+    if device():is_paused() then f_elps = 0 end
+
+    
+    -- отводится 30 мс на выполнение заданий      
+    if (tlist[i].run_at > ct) or (f_elps > f_start + 10) or (f_elps > 30) then
+      scheduled[i]={}
+      scheduled[i].code = tlist[i].code
+      scheduled[i].run_at = tlist[i].run_at
+    else
+      if tlist[i].code then
+         local foo = tlist[i].code
+         if type(foo) == "string" then
+            foo = loadstring(foo)
+         end
+         foo () -- execute function/chunk
+         last_exec = i
+         executed = executed + 1
+         if executed % 100 == 0 then
+            wprintf("[~T]. #PERF: schedule.script executed~C0D %d~C07 tasks ", executed)
+         end   
+      end
+    end
+  end
+  
+  local f_elps = device():frame_elapsed()
+  if last_exec and (f_elps > 50) then
+     wprintf("[~T/~B].~C0B #PERF_WARN:~C07 schedule.run_task breaked at~C0E %s~C07, after~C0D %.1f~C07 ms", last_exec, f_elps)
+  end
+end
+
+
+local online_ids = {}                    
+
+function schedule.setup_scheduled()
+  if (0 == #online_ids) or (device():frame_elapsed() < 3) then
+    -- wprintf("[~T/~B].~C0B #PERF: schedule.setup_scheduled() scaning for online objects ~C07")
+    online_ids = registry.online_objects()
+    -- wprintf("[~T/~B].~C0B #PERF: schedule.setup_scheduled() objects count =~C0D %d~C07", #online_ids)
+    -- return
+  end
+
+  local ids = online_ids
+  local cnt = #ids
+  local stl = {}
+  
+  for k = 1, math.min(cnt, 100) do
+     local i = lua_random(1, cnt)
+     local id = ids[i]     
+     local obj = engine_object(id)
+     if device():frame_elapsed() > 4 then return end
+     if obj then   
+        local ut = obj.updated_times
+        if ut and ut > 1000 then
+           local cobj = client_obj(id)      
+           local name = cobj:name()      
+           local sect = cobj:section()
+           local pname = "none"
+           if cobj:parent() then
+              pname = cobj:parent():name()
+              if strpos(name, "wpn_") then
+                 obj:set_schedule(100, 1000)  -- для отработки стрельбы 
+              else
+                 obj:set_schedule(500, 2000)
+              end   
+           end
+           if strpos(name, "_box") or strpos(name, "_spechran") then
+              obj:set_schedule(1000, 2000)
+           end                      
+              
+           if strpos(sect, "smart_terrain") then
+              obj:set_schedule(100, 500)                       
+           end   
+                    
+           if strpos(sect, "physic_") or strpos(sect, "respawn") then
+              obj:set_schedule(100, 1000)                       
+           end          
+
+           if cobj.is_alive then
+              obj:set_schedule(50, 200)
+           end
+
+           obj.updated_times = 0
+           -- table.insert(stl, sprintf("~C0C %08d =~C0D #%5d ~C0A   %-42s~C0E %-25s~C07  parent =~C0F %-25s~C07, shedule.t_min =~C0D %d~C07 ", ut, id, name, sect, pname, obj.schedule_min ))         
+        end   
+     end
+  end
+    
+end
+
+
+local idle_calls = 0 
+
+function _G.frame_idle_load(max_ms) -- заглушка для заполнения избыточного времени кадра
+ if this.initialized then 
+    schedule.run_tasks()
+    idle_calls = idle_calls + 1    
+    if (idle_calls % 10000 == 0) then
+      wprintf("[~T].~C0B #PERF_IDLE:~C07 frame_idle_load called~C0D %d~C07 times", idle_calls)
+    end    
+ end   
+end
+
+
+function schedule.init_module()
+ AddRegularTask("run_tasks", schedule.run_tasks, nil, 0, 20)
+ if xr_build_id > 5500 then
+    AddRegularTask("setup_scheduled", schedule.setup_scheduled, nil, 0, 30000)
+ end
+end
+
+function schedule.late_init() 
+ schedule.init_module()
+ this.initialized = true
+end
+
+function schedule.stop_module()
+ this.initialized = false
+end
+
+
+schedule.init_priority = 900

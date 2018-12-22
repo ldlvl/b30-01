@@ -1,0 +1,246 @@
+local state_looking = 0
+local state_approaching = 1
+local state_punch = 2
+local punch_time = 2000
+local min_check_dist = 20
+local neer_dist = 1.4
+local neer_trade_dist = 2.0
+local npc_traded = {}
+
+class "evaluator_need_punch"(property_evaluator)
+function evaluator_need_punch:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_punch:evaluate()
+	if xr_sleeper.is_npc_asleep(self.object) then return false end
+	local rank = amk_offline_alife.get_be_enemy(self.object:id())
+	return rank > 0 and rank < amk_offline_alife.enemy_level_angry and self.object:position():distance_to(db.actor:position()) <= min_check_dist
+end
+
+class "evaluator_need_trade"(property_evaluator)
+function evaluator_need_trade:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_trade:is_vip()
+	return(self.object:character_community()=="stalker" and self.object:relation(db.actor)==game_object.friend) or(self.object:story_id()~=NONE_SID and self.object:story_id()~=424)
+end
+
+function evaluator_need_trade:evaluate()
+	if not self.object:is_talk_enabled() or xr_sleeper.is_npc_asleep(self.object) then return false end
+	local whom = db.actor
+	local dist = self.object:position():distance_to(whom:position())
+	if dist > min_check_dist then
+		npc_traded[self.object:id()] = nil
+		return false
+	elseif npc_traded[self.object:id()] then 
+		return false
+	end
+	return dist > neer_trade_dist and whom:see(self.object) and self.object:see(whom) and self:is_vip()
+end
+
+
+class "action_punch_activity"(action_base)
+
+function action_punch_activity:__init(npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+end
+
+function action_punch_activity:initialize()
+	action_base.initialize(self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	local obj = alife():object(self.object:id())
+	--story NPCs will not run but will call Mecheniy
+self.is_story = obj.m_story_id and obj.m_story_id<NONE_SID
+	self.desired_vx = nil
+
+	self.state = state_looking
+	if lua_random() >= 0.5 then
+		self.move_type = "assault"
+	else
+		self.move_type = "run"
+	end
+	db.actor:stop_talk()
+end
+
+function action_punch_activity:do_move()
+	local whom = db.actor
+	--if self.is_story then
+		--a story NPC is calling Mecheniy
+		--[[if whom:see(self.object) then
+			state_mgr.set_state(self.object, "hello", nil, nil, {look_object = whom }, {animation = true})
+		else
+			self.state = state_looking
+			state_mgr.set_state(self.object, "wait", nil, nil, {look_object = whom }, {animation = true})
+		end]]
+	if self.desired_vx~= whom:level_vertex_id() or state_mgr.get_state(self.object)~=self.move_type then
+		self.desired_vx = whom:level_vertex_id()
+		self.object:set_path_type(game_object.level_path)
+		self.object:set_detail_path_type(move.line)
+		
+		utils.send_to_nearest_accessible_vertex(self.object, self.desired_vx)
+		self.object:set_desired_position(whom:position())
+		
+		state_mgr.set_state(self.object, self.move_type, nil, nil, {look_object = whom }, {animation = true})
+		self.object:movement_enabled(true)
+	end
+end
+
+function action_punch_activity:execute()
+	action_base.execute(self)
+	local whom = db.actor
+
+	if self.state==state_looking then
+		if self.object:see(whom) then
+			--a NPC see Mecheniy and initializes chasing routine
+			self.state = state_approaching
+			self:do_move()
+		end
+	elseif self.state==state_approaching then
+		local dist = self.object:position():distance_to(whom:position())
+		if dist < 7 and amk_offline_alife.get_be_enemy(self.object:id()) > amk_offline_alife.enemy_level_hit then
+			--if a NPC wants to kill Mecheniy switch to enemy status
+			amk_offline_alife.set_be_enemy_f(self.object:id(), amk_offline_alife.enemy_level_angry)
+			self.object:set_relation(game_object.enemy, db.actor)
+		elseif dist < neer_dist and self.object:see(whom) then
+			--a NPC has reached Mecheniy and can punch him now
+			self.object:set_movement_type(move.stand)
+			state_mgr.set_state(self.object, "punch", nil, nil, {look_object = whom }, {animation = true})
+			--it's a time period for punching(two seconds) 
+			self.expiration_time = time_global() + punch_time
+			self.state = state_punch
+			xr_sound.set_sound_play(self.object, "use_abuse")
+		else
+			--a NPC is trying to catch Mecheniy
+			self:do_move()
+		end
+	elseif self.state==state_punch then
+		if time_global() >= self.expiration_time then
+			self.state = state_looking
+		end
+	end
+end
+
+function action_punch_activity:finalize()
+	action_base.finalize(self)
+end
+----------------------------------------------------------------------------------------------------------------------
+
+class "action_trade_activity"(action_base)
+
+function action_trade_activity:__init(npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+end
+
+function action_trade_activity:initialize()
+	action_base.initialize(self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	self.tt=time_global()+20000 
+end
+
+function action_trade_activity:execute()
+	action_base.execute(self)
+	if self.tt < time_global() then 
+		npc_traded[self.object:id()] = true
+		return
+	end
+	--[[local whom = db.actor
+	local dist = self.object:position():distance_to(whom:position())
+	if dist < neer_trade_dist then
+		state_mgr.set_state(self.object, "wait_trade", nil, nil, {look_object = whom }, {animation = true})
+	else
+		state_mgr.set_state(self.object, "hello", nil, nil, {look_object = whom }, {animation = true})
+	end]]
+end
+
+function action_trade_activity:finalize()
+	local whom = db.actor
+	local dist = self.object:position():distance_to(whom:position())
+	if dist <=(neer_trade_dist + 1) and whom:see(self.object) and self.object:see(whom) then
+		npc_traded[self.object:id()] = true
+	end
+	action_base.finalize(self)
+end
+----------------------------------------------------------------------------------------------------------------------
+
+local need_punch_id = 20001
+local need_trade_id = need_punch_id+1
+
+----------------------------------------------------------------------------------------------------------------------
+function addCommonPrecondition_tm(action)
+	action:add_precondition(world_property(stalker_ids.property_alive, true))
+	action:add_precondition(world_property(stalker_ids.property_enemy, false))
+	action:add_precondition(world_property(stalker_ids.property_danger, false))
+	action:add_precondition(world_property(stalker_ids.property_anomaly, false))
+
+	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base + 0, false))
+	action:add_precondition(world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+	action:add_precondition(world_property(xr_evaluators_id.abuse_base, false))
+	
+	action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+	action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+	action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+	action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+end
+
+function add_to_binder(npc, ini, scheme, section, storage)
+	local operators		= {}
+	local properties	= {}
+
+	local manager = npc:motivation_action_manager()
+
+	properties["need_punch"]	= need_punch_id
+	operators["action_punch"] = need_punch_id
+	properties["need_trade"]	= need_trade_id
+	operators["action_trade"] = need_trade_id
+
+	local zombi=npc:character_community()=="zombied" 
+	or npc:character_community()=="arena_enemy" 
+	or npc:character_community()=="trader" 
+	or npc:story_id()<NONE_SID
+
+	if zombi then
+		manager:add_evaluator(properties["need_punch"], property_evaluator_const(false))
+		manager:add_evaluator(properties["need_trade"], property_evaluator_const(false))
+	else
+		manager:add_evaluator(properties["need_punch"],	this.evaluator_need_punch(storage, "punch_need_punch"))
+		manager:add_evaluator(properties["need_trade"],	this.evaluator_need_trade(storage, "trade_need_trade"))
+		local new_action = this.action_punch_activity(npc, "action_punch_activity", storage)
+		addCommonPrecondition_tm(new_action)
+		new_action:add_precondition(world_property(properties["need_punch"], true))
+		new_action:add_effect(world_property(properties["need_punch"], false))
+		manager:add_action(operators["action_punch"], new_action)
+		new_action = this.action_trade_activity(npc, "action_trade_activity", storage)
+		addCommonPrecondition_tm(new_action)
+		new_action:add_precondition(world_property(xr_evaluators_id.stohe_meet_base + 1, false))
+		new_action:add_precondition(world_property(properties["need_trade"], true))
+		new_action:add_precondition(world_property(properties["need_punch"], false))
+		new_action:add_effect(world_property(properties["need_trade"], false))
+		manager:add_action(operators["action_trade"], new_action)
+	
+		new_action = manager:action(xr_actions_id.alife)
+		new_action:add_precondition(world_property(properties["need_punch"], false))
+		new_action:add_precondition(world_property(properties["need_trade"], false))
+	end
+end
+
+function set_scheme(object, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(object, ini, scheme, section)
+	if st then
+	st.enabled = false
+	end
+end
+
+function disable_scheme(npc, scheme)
+	if npc and scheme and npc:id() and db.storage[npc:id()] then
+	local st = db.storage[npc:id()][scheme]
+	if st then
+		st.enabled = false
+	end
+	end
+end
+
+

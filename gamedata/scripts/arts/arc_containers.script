@@ -1,0 +1,525 @@
+arc_containers.cfg_containers = {}
+arc_containers.inv_containers = {}
+   
+   
+class "art_container" 
+ 
+function art_container:__init(cont_id)
+ self.section = "art_arc_box_1basic"
+ self.arts = {}
+ self.name = "abstract"
+ self.id   = cont_id or - 1
+ if self.id > 0 then
+  local obj = client_obj(self.id)   
+  self:load(obj:section())    
+  self.name = obj:name()                                      
+  self:update()
+ end
+end
+
+function art_container:art_count(index)
+  local rec = self.arts[index]
+  if rec then 
+     return rec.count
+  else
+     return 0
+  end       
+end 
+
+function art_container:count_artefacts(section)
+  local result = 0
+  for i, rec in ipairs(self.arts) do
+   if strposx(rec.x_section, section) then
+      result = result + rec.count
+   end -- if    
+  end -- for
+  -- wprintf(" in container~C0F %s~C07 have~C0D %d~C07 x ~C0A %s~C07", self.name, result, section)
+  -- misc.dump_table(self.arts, ' ')  
+  return result 
+end
+
+function art_container:load(cont_section)
+ self.section = cont_section or self.section
+ self.config = cfg_containers:get_config (self.section)
+ self.arts = {} -- decoded total
+ 
+ local sobj = alife():object(self.id)
+ if sobj==nil then
+    if self.id > 0 then
+       wprintf("[~T].~C0C #ERROR:~C07 not found container sv-object for~C0D %d~C07", self.id)
+       return {}
+    end   
+ end
+ local pk = get_netpk(sobj)
+ local data = pk:get()
+ local cd_string = data.custom_data
+ if not cd_string or cd_string == "" then
+   wprintf("[~T].~C0C #WARN:~C07 void custom data for container id =~C0D %d~C07", self.id)
+   return {}
+ end
+  
+ wprintf("[~T].~C0F #DBG: parsing arts for~C0D %d~C0A '%s'~C07", self.id, cd_string)
+ for a in string.gmatch(cd_string, "[_%w:-]+") do
+   if a == '_' then
+      table.insert(self.arts, { x_section = '?', count = 0 })
+   else    
+      table.insert(self.arts, arc_arts.af_decode(a)) -- список секций или пропусков
+   end   
+ end
+ -- wprintf(" arc_container:load() ~C0D%d~C07) results:", self.id) 
+ -- misc.dump_table(arts)
+ return self.arts         
+end   
+
+function art_container:save() -- сохранение данных в объекте
+  local sobj = alife():object(self.id)
+  if sobj==nil then
+    return false
+  end
+   
+  -- переформатирование в сплошную строку, с разделителями 
+  local arts_list = {}  
+  for i = 1, self.config.slots do
+    local rec = self.arts[i]
+    if rec and rec.count > 0 then
+      arts_list[i] = rec:format()
+    else
+      arts_list[i] = "_"
+    end
+  end
+  
+  local pk = get_netpk(sobj)
+  local data = pk:get()     
+  data.custom_data = table.concat(arts_list, ',')
+  pk:set(data)
+  pk = nil
+  wprintf(" art_container:save() list =~C0E %s~C07", data.custom_data)  
+  return data.custom_data
+end
+
+
+function art_container:put_art(x_section)
+ for i = 1, self.config.slots do
+    local rec = self.arts[i]     
+    if not rec or rec.count == 0 then
+      self.arts[i] = arc_arts.af_decode(x_section)
+      self.arts[i].count = 1
+      self:update()
+      self:save()      
+      return i
+    end
+ end 
+ return 0
+end
+
+function art_container:take_art(slot)
+ local rec = self.arts[slot]    
+ if rec and rec.count > 0 then
+    self.arts[slot] = { x_section = '?', count = 0 }
+    self:update()
+    self:save()                   
+    return rec
+ end -- if
+ return { x_section = '?', count = 0 }    
+end    
+
+function art_container:on_detach()
+  wprintf("~C0E %s:on_detach()~C07", self.name)
+  if self:remove_artefacts(black_tip.section) then  -- не останется метка без носителя
+     black_tip.on_drop(0)
+  end   
+end
+
+function art_container:protection_low(art_rad)
+  return (art_rad  - self.config.protection > 0.0000001)
+end
+
+
+function art_container:remove_artefacts(section)
+  local upd = {}
+  local rc = 0  
+  for i, rec in ipairs(self.arts) do
+   if strposx(rec.x_section, section) then     
+     rc = rc + rec.count
+     wprintf(" container~C0A %s~C07 removed~C0D %d~C07 x~C0F %s~C07 ", self.name, rec.count or 0, rec.x_section)
+   else
+     table.insert(upd, rec)  
+   end -- if    
+  end -- for
+  
+  if rc > 0 then
+     self.arts = upd
+     self:update()
+     self:save()    
+  end
+  return rc  
+end
+
+
+function art_container:update()   
+  self.object = client_obj(self.id)
+  local cfg  = self.config          
+  local add_weight = cfg.weight
+  local rrs = 0      
+  -- перебор слотов, добавления веса артефактов и пробоя радиации
+  for i, rec in pairs(self.arts) do
+    if nil == rec or nil == rec.count then
+       wprintf("~C0C #WARN:~C07 strange record~C0D %d~C0B =~C0A %s~C07", i, DumpVar(rec))
+       if rec then
+          misc.dump_table(rec)
+          rec.count = 0
+       end   
+    end
+      
+    if rec and rec.count > 0 and rec.weight then      
+      -- учетные артефакты существуют только как логические сущности, их нет на уровне вообще!
+      -- соответственно: маятники оцениваются по текущей секции только
+      local art_rad = rec.radiation 
+      local weight  = rec.weight
+      if self:protection_low(art_rad) then
+         -- сам контейнер может фонить, чем и надо пользоваться
+         wprintf(" protection low = ~C0D %.7f~C07 vs ~C0D %.7f~C07", cfg.protection, art_rad) 
+         rrs = rrs + (art_rad - cfg.protection)
+      end   
+      add_weight = add_weight + weight
+    end
+  end
+  
+  
+  local cont = engine_object(self.id) -- low_level object
+  if cont then
+     cont.radiation_restore_speed = rrs
+     if rrs > 0 then
+        wprintf(" container~C0A %s~C07 radiation_restore_speed set to~C0D %.9f~C07", self.name or self.id, rrs) 
+     end
+  end                        
+  self.total_weight = add_weight
+  params.container_weight_add(self.id, add_weight)
+end -- act_container:update
+
+class "arc_config_map" (std_map)
+
+function arc_config_map:__init() super() end
+
+function arc_config_map:get_config(cont_section)
+  local tmp = self:get(cont_section)
+  if tmp then return tmp end                
+  local ini = system_ini()                  
+  if not ini:section_exist(cont_section) then
+     wprintf("[~T].~C0C #ERROR(cont_config):~C07 section not exists~C0F %s~C07", cont_section)
+     return
+  end
+  tmp = {}
+  tmp.section = cont_section
+  tmp.slots   = ini:r_u32(cont_section,   "container_slots")
+  tmp.tx      = ini:r_u32(cont_section,   "inv_grid_x")
+  tmp.ty      = ini:r_u32(cont_section,   "inv_grid_y")
+  tmp.weight  = ini:r_float(cont_section, "inv_weight")
+  tmp.protection = 0.1 -- защита одной ячейки по ионизирующему излучению (радиации)
+  
+  if tmp.slots == 3 then
+     tmp.protection = 0.0012 
+  elseif tmp.slots == 8 then
+     tmp.protection = 0.0006
+  end
+  
+  if ini:line_exist(cont_section, "rad_protection") then
+     tmp.protection = ini:r_float(cont_section, "rad_protection")
+  end 
+  self:set(cont_section, tmp)    
+  return tmp
+end
+
+arc_containers.cfg_containers = arc_config_map()
+
+local dialog_showed = false
+used_cont = false
+
+if list_tools.std_map == nil then
+   abort("list_tools.script absent or wrong version")
+end 
+
+function get_inv_containers_number()
+  return inv_containers:size()
+end
+
+function get_inv_container_arts(cont_id)
+  local ic = inv_containers:get(cont_id)
+  if ic then return ic.arts end
+  wprintf("[~T].~C0C #ERROR:~C07 invalid container id =~C0D %d ~C07", cont_id or -1)
+  return {}
+end
+
+class "containers_map"(list_tools.std_map)
+
+function containers_map:__init() super()
+ 
+ if self.map == nil then
+    wprintf("~C0C map == nil!!!~C07")
+    self = list_tools.std_map()
+ end
+ 
+ arc_containers.inv_containers = self
+ self.active_id = 0 
+end
+
+function containers_map:active()
+ return self:get(self.active_id)
+end
+
+function containers_map:active_slots()
+ local ic = self:active()
+ if ic then return ic.config.slots end
+ return 1
+end
+
+function containers_map:count(slots)
+ local result = 0     
+ slots = slots or self:active_slots()
+ 
+ for id, ic in self:pairs() do
+  if ic.slots == slots then 
+     result = result + 1
+  end
+ end -- for
+ 
+ return result
+end 
+
+function containers_map:count_artefacts(section)
+  local result = 0
+  for id, ic in self:pairs() do
+    result = result + ic:count_artefacts(section)   
+  end -- for
+  
+  return result
+end
+
+function containers_map:detach(cont_id)
+  -- detected ownership change
+  if self:size() > 1 then 
+     self:select (self:next_id())
+     if self.active_id == cont_id then
+        self:select (self:prev_id())
+     end                      
+  end
+  local ic = self:get(cont_id)
+  if ic then
+    ic:on_detach()        
+    self:erase(cont_id)
+  end 
+end
+
+function containers_map:have_black_tip()
+ return ( self:count_artefacts(black_tip.section) > 0 )
+end
+
+function containers_map:register(cont_id)
+  if self:get(cont_id) then -- Уже зарегистрирован
+     self:get(cont_id):update()
+     return true
+  end
+  local cnt = art_container(cont_id)
+  self:set(cnt.id, cnt) 
+          
+  if self.active_id <= 0 then 
+     self:select(cnt.id)
+  end  
+  return true
+end
+
+function containers_map:update_container(cont_id)
+  cont_id = cont_id or self.active_id       
+  local cnt  = self:get(cont_id)
+  if nil == cnt then return end
+  cnt:update()
+  if cnt.object then
+     local parent = cnt.object:parent()
+     if nil == parent or 0 ~= parent:id() then
+        self:detach(cont_id)    
+     end 
+  else
+     self:detach(cont_id)     
+  end  
+end  
+
+function containers_map:get_ids()  -- пересортировка контейнеров по id
+  local ids = {}
+  for id, cont in self:pairs() do
+      table.insert(ids, id)
+  end
+  table.sort(ids)
+  return ids
+end
+
+function containers_map:get_alter (current, next, slots)
+  local ids = self:get_ids()         
+  local last = nil  
+  current = current or self.active_id
+  
+  slots = slots or self:active_slots()
+  
+  wprintf(" get_alter id =~C0D %d~C07, need slots =~C0D %d~C07", current, slots)
+  
+  
+  for i, id in ipairs(ids) do
+    local ic = self:get(id)
+    
+    wprintf("   check candidate id =~C0D %d~C07, slots =~C0D %d~C07", id, ic.config.slots)   
+        
+    if (id == current) and (not next) then -- если найден текущий, возвращать предыдущий подходящий       
+      break      
+    end -- if  
+      
+    if (ic.config.slots == slots) then
+        last = ic       
+    end 
+    
+    -- если следующий id - возвращать его
+    if (id > current) and (ic.config.slots == slots) and next then    
+      return last      
+    end -- if  
+    
+     
+  end -- for i 
+
+  if last and (not next) then return last end -- только для сдвига влево  
+  
+  local alt_sizes = {}
+  alt_sizes[1] = { p = 1, n = 3 }
+  alt_sizes[3] = { p = 1, n = 8 }
+  alt_sizes[8] = { p = 3, n = 8 }
+  
+  local MIN_OBJ_ID = 1
+  
+  if next then
+     local s = alt_sizes[slots].n
+     if s == slots then return nil end  
+     return self:get_alter(MIN_OBJ_ID, true, s) -- начать с первого контейнера большего размера
+  else
+     local s = alt_sizes[slots].p
+     if s == slots then return nil end
+     return self:get_alter(MAX_OBJ_ID, false, s) -- начать с последнего контейнера меньшего размера 
+  end
+  
+end
+
+function containers_map:next_id(current, slots) 
+ local ic = self:get_alter(current, true, slots) 
+ if ic then return ic.id end 
+ return current or self.active_id -- нет следующего
+end
+
+function containers_map:prev_id(current, slots) 
+ local ic = self:get_alter(current, false, slots) 
+ if ic then return ic.id end 
+ return current or self.active_id -- нет предыдущего
+end
+
+function containers_map:save_container(id)
+  id = id or self.active_id
+  local ic = self:get(id)
+  if ic == nil then return false end 
+
+  if ic:save() then
+    self:set(id, ic)    
+    return true 
+  else    
+    wprintf("[~T].~C0C #WARN~C07: save~C0A %s~C07 failed, removing container ", ic.name)
+    self:detach(id) -- не существует объекта   
+    return false
+  end
+end
+
+function containers_map:select(id)
+ if self:get(id) then
+    self.active_id = id
+ end 
+end
+
+inv_containers = containers_map() -- создание глобального объекта!
+
+function containers_map:check_removed()
+  for id, ic in self:pairs() do
+    if not arc_arts.is_actor_item(ic.id) then  
+       on_drop_container(id)
+    end
+  end
+end
+
+function check_container()
+  --inv_containers={}
+  inv_containers:check_removed()              
+  sak_inventory.need_update_inventory()  
+  local ini = system_ini()    
+  for i,k in pairs(sak_inventory.eatable) do    
+    if ini:section_exist(i) then    
+      if strposx(i, "arc_art_box_") then
+        -- wprintf(" checking for~C0F %s~C07, k =~C0F %s~C07", i, DumpVar(k))
+        local section = i
+        local count = table.getn(k) -- сколько контейнеров одного типа        
+        for cont_no = 1, count do          
+          local id = k[cont_no] or -1
+          local cont = engine_object(id)
+          if nil == cont then
+             wprintf("[~T].~C0C #ERROR:~C07 not found container object~C0D %d~C07 for index~C0D %d~C07", cnt.id, cont_no)
+             break
+          end
+          inv_containers:register(id, section)
+        end -- for a 
+      end -- if strpos 
+    end -- if ini:section
+  end -- for 
+  
+  -- wprintf(" total containers in inventory =~C0D %d~C07 ", inv_containers:size())
+end 
+
+arc_containers.check_container = check_container
+
+
+function show_dialog(cont_id)  
+  if dialog_showed then
+     wprintf("[~T]. ~C0C#WARN!: dialog already showed!~C07")
+  else
+     local self = level.main_input_receiver()
+     if self then self:GetHolder():start_stop_menu(self,true) end
+     arc_ui_container_common.show_dialog(cont_id)
+ end    
+end
+
+arc_containers.show_dialog = show_dialog
+
+function on_drop_container(cont_id)
+  if cont_id > 0 then
+     wprintf("[~T].~C0E #DBG: container~C0D %d~C0E drop handling~C07", cont_id) 
+     inv_containers:detach(cont_id)  
+  end
+end
+
+function set_dialog_showed(f)
+  dialog_showed = f
+end
+
+function lose_item(obj) 
+  if obj and strposx(obj:section(),"arc_art_box_") then
+     on_drop_container(obj:id())
+  end	
+end
+
+
+function list_cfg_containers()
+  local s = "cfg_containers = "  
+  return s
+end
+
+function list_inv_containers()
+  local s = "inv_containers = "
+  for id, ic in inv_containers:pairs()  do    
+    s = s.."["..ic.id.."] arts={"..table.concat(ic.arts, ",").."}"
+  end
+  return s
+end
+
+if db.actor then
+  check_container() -- debug
+end

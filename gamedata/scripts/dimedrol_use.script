@@ -1,0 +1,41 @@
+--Vergas таблетки снотворного "димидрол"
+local lost_id_dimed = -1	
+local flag_dimedrol
+
+function lose_item(obj)
+--Вызывается из bind_stalker.script(функция actor_binder:on_item_drop(obj))
+--отслеживает исчезновение димедрола из инвентаря
+
+	--потеря димедрола(ушел из инвентаря)
+	if obj:section()=="dimedrol" then
+		lost_id_dimed = obj:id() --признак, что объект именно димедрол
+	else
+		lost_id_dimed = -1			--признак того что объект не димедрол
+	end
+end
+
+function used_item()
+-- Вызывается из xr_detector.script(функция actor_detector:update())
+-- отслеживает использование димедрола
+
+	if (lost_id_dimed > 0) and(alife():object(lost_id_dimed)==nil) then 
+		-- обрабатывает использование димедрола
+		flag_dimedrol = vergas_lib.return_time(5)
+		lost_id_dimed = -1
+	end
+end
+
+function use_soporific()
+	if flag_dimedrol==nil then
+		flag_dimedrol = 0
+	end
+	local set_time = vergas_lib.return_time(5) - flag_dimedrol
+	-- Что-бы димедрол сработал должно пройти не более одной минуты с момента принятия
+	if set_time==0 or set_time==1 or set_time==-59 then
+		--сон можно разрешить
+		nlc_vars.blowout = 6
+		nlc_vars.block_sleep_menu =  0
+        sleep_manager.change_sleepiness(11, true)
+	end
+	flag_dimedrol = nil
+end

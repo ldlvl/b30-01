@@ -1,0 +1,707 @@
+local t = {}
+
+function load_job(sj, gname, type, squad, groups)
+
+	if type=="dsc_dom_bridge" then
+		t = {section = "logic@dsc_dom_sit",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@dsc_dom_sleep",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="dsc_usadba" then
+		t = {section = "logic@dsc_usadba_watch",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@dsc_usadba_kamp",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@dsc_usadba_kamp",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@dsc_usadba_kamp",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="val_mongol" then
+		t = {section = "logic@val_mongol",
+			idle = 0,
+			prior = 25, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.story_id==424
+						end
+		}
+		table.insert(sj, t)
+	end
+	if type=="mar_esc_khutor" then
+		t = {section = "logic@stepanych",
+			idle = 0,
+			prior = 25, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="stepanych"
+						end
+		}
+		table.insert(sj, t)
+	end
+	if type=="mar_agr_khutor" then
+		t = {section = "logic@stepanych_mar_agr",
+			idle = 0,
+			prior = 25, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="stepanych"
+						end
+		}
+		table.insert(sj, t)
+	end
+	if type=="lost_khutor" then
+		t = {section = "logic@stepanych",
+			idle = 0,
+			prior = 25, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="stepanych2"
+						end
+		}
+		table.insert(sj, t)
+	end
+	if type=="val_dram" then
+		t = {section = "logic@val_dram_bandit_glavn",
+			idle = 0,
+			prior = 25, state = {0,1},
+			--online = true,
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="val_dram_glavn"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit1",
+			idle = 0,
+			prior = 15, state = {0},
+			--online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit2",
+			idle = 0,
+			prior = 15, state = {0},
+			--online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit3",
+			idle = 0,
+			prior = 15, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit_kamp",
+			idle = 0,
+			prior = 15, state = {1},
+			--online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit_kamp",
+			idle = 0,
+			prior = 15, state = {1},
+			--online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_dram_bandit_kamp",
+			idle = 0,
+			prior = 15, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="val_lager_dolg" then
+		t = {section = "logic@val_lager_dolg_commander",
+			idle = 0,
+			prior = 15, state = {0, 1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="gar_dolg_commander_blokpost"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_sub_commander",
+			idle = 0,
+			prior = 15, state = {0, 1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return (obj_info.name~="gar_dolg_commander_blokpost" and has_alife_info("sar2_death_18"))
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_guard",
+			idle = 0,
+			prior = 10, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_zoneguard1",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_zoneguard2",
+			idle = 0,
+			prior = 9, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_patrol",
+			idle = 0,
+			prior = 8, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_sleep1",
+			idle = 0,
+			prior = 3, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_guard",
+			idle = 0,
+			prior = 10, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_zoneguard1",
+			idle = 0,
+			prior = 9, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_zoneguard2",
+			idle = 0,
+			prior = 9, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_sleep1",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_sleep2",
+			idle = 0,
+			prior = 3, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_1",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_1",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_1",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_2",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_2",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_2",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_3",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_3",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_3",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_4",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_4",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@val_lager_dolg_kamp_4",
+			idle = 0,
+			prior = 2, state = {0,1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="generators_zombies" then
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp1",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[2],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp2",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0}, squad = squad, group = groups[3],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp3",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[4],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+
+		t = {section = "logic@generators_zombies_kamp4",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp4",
+			idle = 0,
+			prior = 9, state = {0}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp4",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp4",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_kamp4",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 5, state = {0,1}, squad = squad, group = groups[5],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+
+
+
+		t = {section = "logic@generators_zombies_walker",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_walker",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_walker",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_walker",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+		t = {section = "logic@generators_zombies_walker",
+			idle = 0, timeout = lua_random(10,20)*60*1000,
+			prior = 7, state = {0}, squad = squad, group = groups[1],
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)				
+	end
+	if type=="mil_patrol" then
+		t = {section = "logic@mil_patrol_glavn",
+			idle = 0,
+			prior = 25, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="mil_patrol_glavn"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mil_patrol_1",
+			idle = 0,
+			prior = 15, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mil_patrol_2",
+			idle = 0,
+			prior = 15, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mil_patrol_glavn",
+			idle = 0,
+			prior = 25, state = {1},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="mil_patrol_glavn"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mil_patrol_1",
+			idle = 0,
+			prior = 15, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mil_patrol_2",
+			idle = 0,
+			prior = 15, state = {1},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="mar_military_post" then
+		t = {section = "logic@mar_military_post_kamper1",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.community~="ecolog"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mar_military_post_patrul",
+			idle = 0,
+			prior = 6, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.community~="ecolog"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mar_military_post_ecolog",
+			idle = 0,
+			prior = 15, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.community=="ecolog"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mar_military_post_sniper1",
+			idle = 0,
+			prior = 7, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.community~="ecolog"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@mar_military_post_kamper2",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.community~="ecolog"
+						end
+		}
+		table.insert(sj, t)
+	end
+	if type=="aver_stalker_monolith" then
+		t = {section = "logic@aver_monolith_glavn",
+			idle = 0,
+			prior = 5, state = {0},
+			in_rest = "", out_rest = "",
+			predicate = function(obj_info)
+							return obj_info.name=="aver_stalker_monolith_glavn"
+						end
+		}
+		table.insert(sj, t)
+		t = {section = "logic@aver_monolith_kamper",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@aver_monolith_kamper",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+		t = {section = "logic@aver_monolith_kamper",
+			idle = 0,
+			prior = 2, state = {0},
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+	if type=="x16_burer_1dom" or type=="x16_burer_2dom" or type=="x16_burer_3dom" or type=="x16_burer_4dom" then
+		t = {section = "logic@x16_burer_dom",
+			idle = 0,
+			prior = 5, state = {0},
+			online = true,
+			in_rest = "", out_rest = ""
+		}
+		table.insert(sj, t)
+	end
+end
+local simpl_type={
+["dsc_usadba"]=true,
+["mar_military_post"]=true,
+["val_mongol"]=true,
+["mar_esc_khutor"]=true,
+["mar_agr_khutor"]=true,
+["lost_khutor"]=true,
+["generators_zombies"]=true,
+["aver_stalker_monolith"]=true,
+["x16_burer_1dom"]=true,
+["x16_burer_2dom"]=true,
+["x16_burer_3dom"]=true,
+["x16_burer_4dom"]=true,
+["dsc_dom_bridge"]=true
+}
+function load_states(gname, type)
+	if simpl_type[type] then
+		return function(gulag)
+			return 0
+		end
+	end
+	if type=="val_dram" then
+		return function(gulag)
+			if db.actor~=nil then
+				if has_alife_info("val_dram_scene_end") then
+				return 1
+				else
+				return 0
+				end
+			end
+		end
+	end
+	if type=="val_lager_dolg" or type=="mil_patrol" then
+		return function(gulag)
+			if db.actor~=nil then
+				if (level.get_time_hours()*60+level.get_time_minutes()) >= 380 and (level.get_time_hours()*60+level.get_time_minutes()) < 1345 then
+					return 0  -- день
+				else
+					return 1  -- ночь
+				end
+			else
+				return gulag.state
+			end
+		end
+	end
+end
+
+function load_ltx(gname, type)
+	return nil
+end
+
+function checkStalker(npc_community, gulag_type, npc_rank, se_obj)
+	if gulag_type=="val_mongol" or gulag_type=="mar_esc_khutor" or gulag_type=="mar_agr_khutor" or gulag_type=="lost_khutor"  then
+		return true
+	end
+	if gulag_type=="dsc_dom_bridge"  then
+		return npc_community=="stalker" or npc_community=="green"
+	end
+	if gulag_type=="mar_military_post"  then
+		return npc_community=="military" or npc_community=="ecolog"
+	end
+	if gulag_type=="val_dram" then
+		return npc_community=="bandit"
+	end
+	if gulag_type=="val_lager_dolg" or gulag_type=="dsc_usadba" then
+		return npc_community=="dolg"
+	end
+	if gulag_type=="mil_patrol" then
+		return npc_community=="freedom"
+	end
+	if gulag_type=="generators_zombies" then
+		return npc_community=="zombied"
+	end
+	if gulag_type=="aver_stalker_monolith" then
+		return npc_community=="monolith"
+	end
+	return false
+end
+
+function checkMonster(npc_community, gulag_type)
+	if gulag_type=="x16_burer_1dom" or gulag_type=="x16_burer_2dom" or gulag_type=="x16_burer_3dom" or gulag_type=="x16_burer_4dom" then
+		return npc_community=="burer"
+	end
+end

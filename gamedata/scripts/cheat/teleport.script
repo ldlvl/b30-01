@@ -1,0 +1,126 @@
+--
+if teleport == nil then
+ _G.teleport = {}
+end
+
+last_teleport = 0
+
+function teleport.awake_lc(id)
+  wprintf("[~T]. #DBG: Enabling anomaly %d ", id)
+  amk_anoms.set_online_anomaly_status(id, "on")
+end
+
+
+function teleport.make(src_marker, dest_marker, sidlc) 
+  local obj1, name_level, obj_tport 
+  local a = { gv = 0, lv = 0, position = vector() }
+  local b = { gv = 0, lv = 0, position = vector() }
+  local tvid = 0
+  local sim = alife()
+  local gg = game_graph()
+  
+  -- find free story_id
+  local story_id = tonumber(sidlc or 34700)
+  while true do  
+     local sobj = sim:story_object(story_id)
+     if ( sobj == nil ) then
+        -- wprintf("~C0C #ERROR:~C07 story_id~C0D %d~C07 was busy by object~C0A %s ~C07", story_id, sobj:name())
+        break
+     end
+     story_id = story_id + 1
+  end
+  
+  
+  
+  a.position, a.gv, a.lv = d.readpos(src_marker)-- in current level only!
+  if a.gv == nil then
+     a.position, a.gv, a.lv = d.readpos(db.actor.level_name ..":".. src_marker)-- in current level only!
+  end
+  
+  if a.gv == nil then
+     wprintf("~C0C #ERROR:~C07 source marker ~C0F %s~C07 unknown, gvid = nil", src_marker)
+     return nil
+  end 
+  
+    
+  b.position, b.gv, b.lv = d.readpos(dest_marker)
+  if not b.gv then
+     wprintf("~C0C #ERROR:~C07 destination~C0F %s~C07 unknown, gvid = nil", dest_marker)
+     return nil
+  end
+  
+  
+  name_level = sim:level_name( gg:vertex(b.gv):level_id() )       
+
+
+
+  wprintf(" source at~C0F %s~C07 gv = %5d, lv = %5d ", d.pos2str(a.position), a.gv, a.lv )
+  wprintf(" target at~C0F %s~C07 gv = %5d, lv = %5d, level_name =~C0A %s ~C07", d.pos2str(b.position), b.gv, b.lv, name_level )
+
+  if ( b.position.x == 0 ) then 
+    
+    
+     return nil
+  end  
+  
+  obj1 = sim:create("level_changer", a.position, a.lv, a.gv, BAD_OBJ_ID)
+  obj_tp = amk.spawn_item("zone_teleport", a.position, a.gv, a.lv)
+  
+  obj_tport = obj_tp.id
+  
+  if obj1.id then
+     -- amk_vars.sak_teleport = obj1.id
+  else
+     wprintf("~C0C #ERROR:~C07 spawn~C0F level_changer~C07 failed")     
+  end
+  
+  if obj_tport then     
+     -- amk_vars.sak_teleport_vis = obj_tport
+  else
+     wprintf("~C0C #ERROR:~C07 spawn~C0F zone_teleport~C07 failed")   
+  end
+  
+  	
+  if obj1 and obj1.id > 0 then
+    
+  
+	local rand_direction = lua_random(0, 6)
+ 	local pk = get_netpk(obj1)
+    if pk == nil then
+       wprintf("~C0C #FATAL: get_netpk returned nil for obj~C0F %d ~C07", obj_tport )
+       return nil
+    end
+ 
+	local data = pk:get()
+	data.object_flags = bit_not(193)
+	data.shapes:addSphere (1,sak.v3f(0,0.5,0))
+	data.story_id = story_id
+	data.restrictor_type = 3
+	data.dest_position  = vector():set( b.position )
+    data.dest_direction = sak.v3f(0, -3 + rand_direction, 0)
+    data.dest_game_vertex_id = b.gv
+    data.dest_level_vertex_id = b.lv
+    data.dest_level_name = name_level
+	data.silent_mode = 1
+	pk:set(data)                       
+    g_sim:set_switch_online  ( obj1.id, true )
+    g_sim:set_switch_offline ( obj1.id, false )    
+    
+    last_teleport = obj1.id
+                   
+    wprintf(" successfully spawned and configured ~C0A %s~C07 ", obj1:name() )
+        
+    schedule.add ("awake_1", sprintf("teleport.awake_lc(%d)", obj_tport), 800 )
+    
+    level.map_add_object_spot_ser(obj1.id, "level_changer_self", src_marker .. "->" .. dest_marker )
+    
+    -- local obj2 = sim:object(obj1.id)   
+     
+  else
+    wprintf("~C0C #FATAL: alife():create returned~C0F %s ~C07", obj1 or "nil") 
+ 
+  end
+  
+  sak.info_teleport()
+  return obj1
+end

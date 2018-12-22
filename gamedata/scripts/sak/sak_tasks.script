@@ -1,0 +1,138 @@
+function proceed()
+	local actor = db.actor
+	if has_alife_info("sidor_artmod_31_reward_info") and has_alife_info("pahom_artmod_31_reward_info") and has_alife_info("ignat_artmod_31_reward_info") and not has_alife_info("gar_prapor_courier_poshta_done") then
+	actor:give_info_portion("gar_prapor_courier_poshta_done")
+	end	
+	if has_alife_info("sema_one_info") and has_alife_info("sema_two_info") and has_alife_info("sema_three_info") and not has_alife_info("semena_done_info") then
+	actor:give_info_portion("semena_done_info")
+	end
+	if has_alife_info("semena_done_info") and has_alife_info("prizrak_said_everything") and not has_alife_info("lebedev_wait") then
+	actor:give_info_portion("lebedev_wait")
+	mike.timer_lebedev()
+	end
+	if has_alife_info("agr_klyk_1faze") and has_alife_info("agr_klyk_2faze") and has_alife_info("agr_klyk_3faze") and not has_alife_info("agr_klyk_faze_done") then
+	actor:give_info_portion("agr_klyk_faze_done")
+	actor:disable_info_portion("agr_klyk_1faze")
+	actor:disable_info_portion("agr_klyk_2faze")
+	actor:disable_info_portion("agr_klyk_3faze")
+	end
+	if has_alife_info("escape_lager_volk_info2") and has_alife_info("escape_lager_volk_info3") and has_alife_info("escape_lager_volk_info1") and has_alife_info("escape_lager_volk_info4") and not has_alife_info("escape_lager_volk_info_zone") then
+	actor:give_info_portion("escape_lager_volk_info_zone")
+	end
+	if has_alife_info("escape_lager_volk_info_strelok") and has_alife_info("escape_lager_volk_info_cars") and has_alife_info("escape_lager_volk_info_zone") and not has_alife_info("escape_lager_volk_info_done") then
+	actor:give_info_portion("escape_lager_volk_info_done")
+	actor:disable_info_portion("escape_lager_volk_info_zone") --подчищаем за собой бестолковые инфопоршни...
+	actor:disable_info_portion("escape_lager_volk_info_strelok")
+	actor:disable_info_portion("escape_lager_volk_info_cars")
+	actor:disable_info_portion("escape_lager_volk_info1")
+	actor:disable_info_portion("escape_lager_volk_info2")
+	actor:disable_info_portion("escape_lager_volk_info3")
+	actor:disable_info_portion("escape_lager_volk_info4")
+	end
+	if has_alife_info("esc_trader_talked_about_world") and has_alife_info("esc_trader_talked_about_reach") and has_alife_info("esc_trader_talked_about_center") and not has_alife_info("esc_trader_talked_about_zone") then
+	actor:give_info_portion("esc_trader_talked_about_zone")
+	end
+	if has_alife_info("esc_trader_talked_about_zone") and has_alife_info("esc_trader_talked_about_army") and has_alife_info("esc_trader_talked_about_me") and has_alife_info("esc_trader_talked_about_strelok") and not has_alife_info("escape_trader_info_zone") then
+	actor:give_info_portion("escape_trader_info_zone")
+	end
+	if has_alife_info("esc_trader_talked_about_near1") and has_alife_info("esc_trader_talked_about_near2") and has_alife_info("esc_trader_talked_about_near3") and has_alife_info("esc_trader_talked_about_near4") and not has_alife_info("escape_trader_info_near") then
+	actor:give_info_portion("escape_trader_info_near")
+	end
+	if has_alife_info("escape_trader_info_near") and has_alife_info("escape_trader_info_zone") and not has_alife_info("escape_trader_info_done") then
+	actor:give_info_portion("escape_trader_info_done")
+	actor:disable_info_portion("esc_trader_talked_about_world") --подчищаем за собой бестолковые инфопоршни...
+	actor:disable_info_portion("esc_trader_talked_about_reach")
+	actor:disable_info_portion("esc_trader_talked_about_center")
+	actor:disable_info_portion("esc_trader_talked_about_zone")
+	actor:disable_info_portion("esc_trader_talked_about_army")
+	actor:disable_info_portion("esc_trader_talked_about_me")
+	actor:disable_info_portion("esc_trader_talked_about_strelok")
+	actor:disable_info_portion("esc_trader_talked_about_near1")
+	actor:disable_info_portion("esc_trader_talked_about_near2")
+	actor:disable_info_portion("esc_trader_talked_about_near3")
+	actor:disable_info_portion("esc_trader_talked_about_near4")
+	end
+	if (has_alife_info("borov_11_done") or has_alife_info("borov_11_failed")) and not has_alife_info("borov_11_fdone") then
+	actor:give_info_portion("borov_11_fdone")
+	end
+	if (has_alife_info("borov_11_saharov_done") or has_alife_info("val_lager_bandits_borov_umer")) and not has_alife_info("borov_11_failed") then
+	actor:give_info_portion("borov_11_failed")
+	end
+	if has_alife_info("borov_11_start") and not has_alife_info("borov_11_have") then
+		if (sak.have_items_count("inventory_sakbox_borov",1)~=false or sak.have_items_count("scaintist_docs",1)~=false) then
+		sak.borov_11_have_info()
+		actor:give_info_portion("borov_11_have")
+		end
+	end
+	if has_alife_info("mil_Svoboda_trader_plan_faze") and has_alife_info("agr_ratcatcher_umer") and not has_alife_info("mil_Svoboda_trader_plan_2faze") then
+	actor:give_info_portion("mil_Svoboda_trader_plan_2faze") sak.add_sak_plan()
+	elseif (has_alife_info("esc_vagon_wounded_umer") or has_alife_info("esc_wolf_umer")) and not has_alife_info("mil_volk_resiver_fail") then
+	actor:give_info_portion("mil_volk_resiver_fail")
+	elseif (has_alife_info("bar_dolg_ivancov_umer") or has_alife_info("mil_freedom_member0021_umer")) and not has_alife_info("bar_ivancov_rg6_fail") then
+	actor:give_info_portion("bar_ivancov_rg6_fail")
+	elseif (has_alife_info("about_life_heart_sahar") and has_alife_info("about_life_heart_sidor") and has_alife_info("about_life_heart_barman")) and not has_alife_info("about_life_heart_done") then
+	actor:give_info_portion("about_life_heart_done")
+	elseif  has_alife_info("escape_stalker_done") and not has_alife_info("garbage_meetstalker_start") then
+	actor:give_info_portion("garbage_meetstalker_start")
+	elseif has_alife_info("bar_darklab_document_gain") and not has_alife_info("val_raid_start") then
+	actor:give_info_portion("dar_document5")
+	actor:give_info_portion("val_raid_start") 
+	--elseif (has_alife_info("escape_factory_assault_say_hello") or has_alife_info("esc_kill_bandits_quest_kill") or has_alife_info("esc_petruha_great")) then
+	elseif has_alife_info("mil_leader_quest2_start") and has_alife_info("mil_courier_see_actor") and not has_alife_info("mil_leader_quest2_failed")  and (not has_alife_info("mil_courier_in_khutor_zone") or not has_alife_info("mil_actor_in_khutor_zone")) then
+	actor:give_info_portion("mil_leader_quest2_failed")
+	mil_tasks.switch_mutants_online()
+	elseif has_alife_info("mil_leader_quest2_start") and has_alife_info("mil_courier_dead") and not has_alife_info("mil_leader_quest2_failed")  and (not has_alife_info("mil_courier_call") or not has_alife_info("mil_actor_in_khutor_zone")) then
+	actor:give_info_portion("mil_leader_quest2_failed")
+	mil_tasks.switch_mutants_online()
+	elseif has_alife_info("mil_courier_khutor_leave") and not has_alife_info("mil_leader_quest2_failed")  and not has_alife_info("mil_courier_dead") then
+	actor:give_info_portion("mil_leader_quest2_failed")
+	mil_tasks.switch_mutants_online()
+	elseif has_alife_info("mil_ara_leave") and not has_alife_info("mil_leader_quest2_failed") and not has_alife_info("mil_ara_dead") then
+	actor:give_info_portion("mil_leader_quest2_failed")
+	mil_tasks.switch_mutants_online()
+	elseif (has_alife_info("mil_dolg_dead") or has_alife_info("mil_dolg_collected")  or mil_tasks.is_actor_enemy_dolg()==true) and not has_alife_info("mil_dolg_skull_sniper_end") then
+	actor:give_info_portion("mil_dolg_skull_sniper_end")
+	actor:give_info_portion("mil_dolg_task_fail")
+	actor:give_info_portion("mil_dolg_auto_attack")
+	elseif (not has_alife_info("mil_dolg_skull_sniper_end") and mil_tasks.is_actor_enemy_dolg()==false and has_alife_info("mil_dolg_skull_talk")) then
+	actor:give_info_portion("mil_dolg_skull_sniper_end")
+	elseif (not has_alife_info("mil_lukash_dolg_task_fail") and (mil_tasks.lukash_job_fail()==true or has_alife_info("mil_max_dead"))) then
+	actor:give_info_portion("mil_lukash_dolg_task_fail")
+	actor:give_info_portion("mil_lukash_task_dolg_end")
+	elseif (has_alife_info("mil_lukash_get_job") and has_alife_info("mil_lukash_dolg_task_complete") and not has_alife_info("mil_lukash_task_dolg_end") and mil_tasks.lukash_job_fail()==false) then
+	actor:give_info_portion("mil_lukash_task_dolg_end")
+	end
+end
+
+function process_info_portion(info_id)
+	--[[if info_id=="near_bridge_leader_sos_start" then
+		level_tasks.add_location(9801, "crlc_big", "red_sos_spot")
+		return true
+	elseif info_id=="agr_add_klyk_med_spot2" then
+		level_tasks.add_location(9302, "crlc_small", "agr_klyk_med_spot2")
+		return true
+	elseif info_id=="agr_add_klyk_med_spot3" then
+		level_tasks.add_location(9303, "crlc_small", "agr_klyk_med_spot3")
+		return true
+	elseif info_id=="agr_remove_klyk_med_spot1" then
+		level_tasks.remove_location(9301, "crlc_small")
+		return true
+	elseif info_id=="agr_remove_klyk_med_spot2" then
+		level_tasks.remove_location(9302, "crlc_small")
+		return true		
+	elseif info_id=="agr_remove_klyk_med_spot3" then
+		level_tasks.remove_location(9303, "crlc_small")
+		return true
+	end
+	return false]]
+end
+
+function agr_actor_enemy()
+		if level_object_by_sid(302)~=nil then
+		local actor = db.actor
+		local npc = level_object_by_sid(302)
+		local t = db.storage[npc:id()].death
+		return npc:relation(actor)==game_object.enemy or(t~=nil and t.killer==actor:id())
+	end
+		return false
+end

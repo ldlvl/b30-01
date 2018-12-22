@@ -1,0 +1,262 @@
+----------------------------------------------------------------------------------------------------
+-- Companion
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Serhiy Vynnychenko (narrator@gsc-game.kiev.ua)
+-- Доработки: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+local desired_distance = 3
+local min_distance = 1.5
+local keep_state_min_time = 2000
+
+local dist_walk = 12
+local dist_run = 30
+-- otherwise - sprint
+local timeout
+local scared = false
+local scared_timer = nil
+local disabled_objects = {}
+local calm_down_timer = nil
+
+local sound_wait = "weather,state"
+
+beh_walk_simple = 0
+beh_walk_low_aggr = 8
+beh_walk_ignore = 2
+
+beh_crouch_simple = 1
+beh_crouch_low_aggr = 9
+beh_crouch_ignore = 4
+
+beh_wait_simple = 3
+beh_wait_low_aggr = 10
+beh_wait_ignore = 5
+
+beh_hide_simple = 6
+beh_hide_low_aggr = 11
+beh_hide_ignore = 7
+
+local mt_stand = 0
+local mt_walk = 1
+local mt_run = 2
+local mt_sprint = 3
+
+class "evaluator_need_companion"(property_evaluator)
+
+function evaluator_need_companion:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_companion:evaluate()
+	if not self.object:alive() then
+		return false
+	end
+	return self.st.enabled
+end
+
+class "action_companion_activity"(action_base)
+
+function action_companion_activity:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function action_companion_activity:initialize()
+	action_base.initialize(self)
+	if not self.object:alive() then
+		return false
+	end	
+
+	--self.object:remove_all_restrictions()
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+
+	self.object:enable_talk()	
+
+	self.assist_point = nil
+	
+	self.last_state = "guard"
+	state_mgr.set_state(self.object, self.last_state, nil, nil, nil, {animation = true})
+	self.keep_state_until = time_global()
+end
+
+function action_companion_activity:execute()
+	action_base.execute(self)
+	if not self.object:alive() then
+		return false
+	end
+	if xr_logic.try_switch_to_another_section (self.object, self.st, db.actor) then
+		return
+	end
+	if self.st.behavior == beh_walk_simple then
+		self:beh_walk_simple()
+	elseif self.st.behavior == beh_wait_simple then
+		self:beh_wait_simple()
+	end
+end
+
+function action_companion_activity:finalize()
+	--xr_sound.set_sound(self.object, nil) 
+	action_base.finalize(self)
+end
+
+function action_companion_activity:beh_walk_simple()
+	local actor = db.actor
+	local select_new_pt = false
+	local dist_from_self_to_actor = self.object:position():distance_to(actor:position())
+	local dist_from_assist_pt_to_actor
+	
+	if self.assist_point then
+		dist_from_assist_pt_to_actor = level.vertex_position(self.assist_point):distance_to(actor:position())
+	else
+		dist_from_assist_pt_to_actor = nil
+	end
+	if dist_from_self_to_actor >= desired_distance and
+	   (not dist_from_assist_pt_to_actor or
+		dist_from_assist_pt_to_actor >= desired_distance * 2) then
+		select_new_pt = true
+	end
+
+	if select_new_pt then
+		self.assist_point = select_position(self.object, self.st)
+		if not self.assist_point then
+			return
+		end
+	elseif not self.assist_point then
+		return
+	end
+	self.object:set_path_type(game_object.level_path)
+	self.object:set_dest_level_vertex_id(self.assist_point)
+
+	local dist_to_assist_pt = level.vertex_position(self.assist_point):distance_to(self.object:position())
+	local new_state
+	if self.object:level_vertex_id() == self.assist_point then
+		new_state = "guard"
+	else
+		local t = time_global()
+		if t >= self.keep_state_until then
+			self.keep_state_until = t + keep_state_min_time
+			if dist_to_assist_pt <= dist_walk then
+				new_state = "patrol"
+			elseif dist_to_assist_pt <= dist_run then
+				new_state = "rush"
+			else
+				new_state = "sprint"
+			end
+		end
+	end
+	if new_state and new_state ~= self.last_state then
+		state_mgr.set_state(self.object, new_state,	nil, nil, nil, {animation = true})
+		self.last_state = new_state
+	end 
+	xr_sound.set_sound(self.object, sound_wait) 
+end
+
+function action_companion_activity:beh_wait_simple()
+	local actor = db.actor
+	local new_state = "guard"
+	if new_state ~= self.last_state then
+		state_mgr.set_state(self.object, new_state,	nil, nil, nil, {animation = true})
+		self.last_state = new_state
+	end 
+	xr_sound.set_sound(self.object, sound_wait) 
+end
+
+function select_position(npc, st)
+	local node_1_vertex_id = nil
+	local node_1_distance = nil
+	local node_2_vertex_id = nil
+	local node_2_distance = nil
+
+	local actor = db.actor
+	desired_direction = vector_rotate_y(actor:direction(), lua_random(50,60) )
+	node_1_vertex_id = level.vertex_in_direction(actor:level_vertex_id(),desired_direction,desired_distance)
+	if npc:accessible(node_1_vertex_id) ~= true or node_1_vertex_id == actor:level_vertex_id() then			
+		node_1_vertex_id = nil
+	end
+	desired_direction = vector_rotate_y(actor:direction(), -lua_random(50,60) )
+	node_2_vertex_id = level.vertex_in_direction (actor:level_vertex_id(),desired_direction,desired_distance )
+	if npc:accessible(node_2_vertex_id) ~= true or node_2_vertex_id == actor:level_vertex_id() then			
+		node_2_vertex_id = nil
+	end
+	if node_1_vertex_id ~= nil then
+		node_1_distance = npc:position():distance_to_sqr(level.vertex_position(node_1_vertex_id))
+	else
+		node_1_distance = -1
+	end
+	if node_2_vertex_id ~= nil then
+		node_2_distance = npc:position():distance_to_sqr(level.vertex_position(node_2_vertex_id))
+	else
+		node_2_distance = -1
+	end
+	if node_1_distance == -1 and node_2_distance == -1 then
+		return nil
+	end
+	if node_1_distance == -1 then
+		return node_2_vertex_id
+	end
+	if node_2_distance == -1 then
+		return node_1_vertex_id
+	end
+	if node_1_distance < node_2_distance then
+		return node_1_vertex_id
+	else
+		return node_2_vertex_id
+	end
+end
+
+function vector_rotate_y (v, angle)
+    angle = angle * 0.017453292519943295769236907684886
+    local c = math.cos (angle)
+    local s = math.sin (angle)
+    return vector ():set (v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+end
+
+function add_to_binder(object, char_ini, scheme, section, st)
+	local operators		= {}
+	local properties	= {}
+	local manager = object:motivation_action_manager()
+	properties["companion"] = xr_evaluators_id.zmey_companion_base
+	operators["companion"]	= xr_actions_id.zmey_companion_base
+
+	manager:add_evaluator(properties["companion"], evaluator_need_companion(st, "evaluator_need_companion"))	
+
+	local action = action_companion_activity(st, "action_companion_activity")
+	action:add_precondition(world_property(stalker_ids.property_alive, true))
+	--action:add_precondition(world_property(stalker_ids.property_enemy, false))
+	--action:add_precondition(world_property(stalker_ids.property_danger, false))
+	--action:add_precondition(world_property(stalker_ids.property_anomaly, false))
+
+	action:add_precondition(world_property(xr_evaluators_id.sidor_wounded_base, false))
+	--action:add_precondition(world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
+	action:add_precondition(world_property(xr_evaluators_id.abuse_base, false))
+	
+	action:add_precondition(world_property(blowout_scheme.evid_outside, false))
+	action:add_precondition(world_property(blowout_scheme.evid_blowout, false))
+	action:add_precondition(world_property(blowout_scheme.evid_preblowout, false))
+	--action:add_precondition(world_property(blowout_scheme.evid_anomaly, false))
+	action:add_precondition (world_property(properties["companion"], true))
+	action:add_effect(world_property(properties["companion"], false))
+	
+	manager:add_action(operators["companion"], action)	
+	action = manager:action(xr_actions_id.alife)	
+	action:add_precondition	(world_property(properties["companion"], false))
+	xr_logic.subscribe_action_for_events(object, st, action)
+end
+
+function set_scheme(object, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(object, ini, scheme, section)
+	if st==nil then return end
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, object)
+	st.enabled = true
+	st.behavior = beh_walk_simple
+end
+
+function disable_scheme(npc, scheme)
+	if npc and scheme and npc:id() and db.storage[npc:id()] then
+	local st = db.storage[npc:id()][scheme]
+		if st then
+			st.enabled = false
+		end
+	end
+end
+

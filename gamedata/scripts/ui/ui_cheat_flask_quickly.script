@@ -1,0 +1,140 @@
+--[[
+Динамический худ v 4
+Фляжки для мытья стекол противогаза 
+Режим мытья стекол противогаза
+Vergas
+© NLC-6.0
+]]--
+
+class "cheat" (CUIScriptWnd)
+
+local win_pocket		--ячейка чехла
+local win_pic_pocket	--пиктограмма ячейки чехла
+
+local info_chhl = {}  				--информация для чехла (что лежит)
+
+function cheat:__init(owner) 
+	super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+
+	-- Положение и размеры окна
+	self:Init(248,0,528,414)
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_flask.xml")
+	
+	xml:InitStatic("background_0", self)     	--Стекло
+	xml:InitStatic("background_quickly", self)     		--Собственно рамка
+	
+	self:Register(xml:Init3tButton("btn_stop_quickly", self),"btn_stop_quickly")		-- Кнопка Выкл
+	self:Register(xml:Init3tButton("btn_wash_quickly", self),"btn_wash_quickly")		-- Кнопка Помыть
+
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_stop_quickly", ui_events.BUTTON_CLICKED, self.btn_stop_quickly, self) 	-- Кнопка Выкл
+	self:AddCallback("btn_wash_quickly", ui_events.BUTTON_CLICKED, self.btn_wash_quickly, self) 	-- Кнопка Помыть
+	info_chhl = vergas_flask.data_collection(2)
+	self:init_win_pocket()
+	if info_chhl[1] == "?" then
+		self:set_wnd_pocket(1)
+	else
+		self:set_wnd_pocket(2)
+	end
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:btn_stop_quickly()
+		end
+	end
+	return true
+end
+
+function cheat:on_quit()
+	info_chhl = {}  
+	if wnd_pocket ~= nil then
+		self:DetachChild(wnd_pocket)
+		wnd_pocket = nil
+	end
+	if wnd_pic_pocket ~= nil then
+		self:DetachChild(wnd_pic_pocket)
+		wnd_pic_pocket = nil
+	end
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
+	--razgruzka.inventory_on_off(false)
+	bind_stalker.restore_weapon()
+end
+
+function cheat:on_work_quit()
+	info_chhl = {}  
+	if wnd_pocket ~= nil then
+		self:DetachChild(wnd_pocket)
+		wnd_pocket = nil
+	end
+	if wnd_pic_pocket ~= nil then
+		self:DetachChild(wnd_pic_pocket)
+		wnd_pic_pocket = nil
+	end
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
+	--razgruzka.inventory_on_off_work(false)
+end
+
+function cheat:btn_stop_quickly()					--Кнопка закрытия чехла
+	--self:write_data()
+	self:on_quit()
+end
+
+function cheat:btn_wash_quickly()			--кнопка мытья стекла
+	info_chhl = vergas_flask.wash_glass(info_chhl)
+	self:on_work_quit()
+end
+
+function cheat:init_win_pocket()
+	if wnd_pocket ~= nil then
+		self:DetachChild(wnd_pocket)
+		wnd_pocket = nil
+	end
+
+	wnd_pocket = CUIStatic()
+	wnd_pocket:SetAutoDelete(true)
+	self:AttachChild(wnd_pocket)
+	wnd_pocket:SetStretchTexture(true)
+
+	if wnd_pic_pocket ~= nil then
+		self:DetachChild(wnd_pic_pocket)
+		wnd_pic_pocket = nil
+	end
+
+	wnd_pic_pocket = CUIStatic()
+	wnd_pic_pocket:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_pocket)
+	wnd_pic_pocket:SetStretchTexture(true)
+	wnd_pic_pocket:SetWndRect(289,288,20,20)
+end
+
+function cheat:set_wnd_pocket(mode)
+--mode = 2 - чухол с фляжкой
+--mode = 1 - чехол без фляжки
+	if mode == 1 then
+		wnd_pocket:SetWndRect(214+16,281+13,68,63)
+		wnd_pocket:InitTexture("ui_cover_without_flask")
+		wnd_pic_pocket:Show(false)
+	else
+		wnd_pocket:SetWndRect(214+30,278+12,40,60)
+		wnd_pocket:InitTexture("ui_flask_army")
+		wnd_pic_pocket:InitTexture("ui_water_pictogram_"..info_chhl[2])
+		wnd_pic_pocket:Show(true)
+	end
+end

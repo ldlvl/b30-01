@@ -1,0 +1,655 @@
+--[[
+ƒинамический худ v 4
+‘л€жки дл€ мыть€ стекол противогаза
+–ежим загрузки и долива фл€жки на по€се 
+Vergas
+© NLC-6.0
+]]--
+
+class "cheat" (CUIScriptWnd)
+
+local wnd_1			--€чейка 1
+local wnd_2			--€чейка 2
+local wnd_3			--€чейка 3
+local wnd_4			--€чейка 4
+local win_pic_1		--пиктограмма €чейки 1
+local win_pic_2		--пиктограмма €чейки 2
+local win_pic_3		--пиктограмма €чейки 3
+local win_pic_4		--пиктограмма €чейки 4
+local win_pocket	--€чейка чехла
+local win_pic_pocket	--пиктограмма €чейки чехла
+
+local btn_old = 0			--номер предыдущей нажатой кнопки
+
+local info_rug = {}  				--информаци€ дл€ чехла (что положить)
+local info_chhl = {}  				--информаци€ дл€ чехла (что лежит)
+local flask_number = {}
+
+function cheat:__init(owner) 
+	super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+
+	-- ѕоложение и размеры окна
+	self:Init(249,0,527,548)
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_flask.xml")
+	
+	xml:InitStatic("background_0", self)     	--—текло
+	xml:InitStatic("background", self)     		--—обственно рамка
+
+	self:Register(xml:Init3tButton("btn_stop", self),"btn_stop")		--  нопка ¬ыкл
+	self:Register(xml:Init3tButton("btn_empty", self),"btn_empty")		--  нопка ¬ыгрузить
+	self:Register(xml:Init3tButton("btn_pour", self),"btn_pour")		--  нопка ѕерелить
+	self:Register(xml:Init3tButton("btn_left", self),"btn_left")		--  нопка прокрутки слотов влево
+	self:Register(xml:Init3tButton("btn_right", self),"btn_right")		--  нопка прокрутки слотов вправо
+	self:Register(xml:Init3tButton("btn_wash", self),"btn_wash")		--  нопка помывки стекла
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")				--  нопка 1 
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")				--  нопка 2 
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")				--  нопка 3 
+	self:Register(xml:Init3tButton("btn_4", self),"btn_4")				--  нопка 4 
+
+end
+
+function cheat:InitCallBacks()
+
+	self:AddCallback("btn_stop", ui_events.BUTTON_CLICKED, self.btn_stop, self) 		--  нопка ¬ыкл
+	self:AddCallback("btn_empty", ui_events.BUTTON_CLICKED, self.btn_empty, self) 		--  нопка ¬ыгрузить
+	self:AddCallback("btn_pour", ui_events.BUTTON_CLICKED, self.btn_pour, self) 		--  нопка ѕерелить
+	self:AddCallback("btn_left", ui_events.BUTTON_CLICKED, self.btn_left, self)			--  нопка прокрутки слотов влево
+	self:AddCallback("btn_right", ui_events.BUTTON_CLICKED, self.btn_right, self)		--  нопка прокрутки слотов влево
+	self:AddCallback("btn_wash", ui_events.BUTTON_CLICKED, self.btn_wash, self)		--  нопка помывки стекла
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 				--  нопка 1 
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 				--  нопка 2 
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self) 				--  нопка 3 
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self) 				--  нопка 4 
+	
+	info_rug, info_chhl, flask_number = vergas_flask.data_collection(1)
+    
+    --[[
+    wprintf(" flask_number: ")
+    misc.dump_table(flask_number)
+    wprintf(" info_rug : ")
+    misc.dump_table(info_rug)
+    wprintf(" info_chhl: ")
+    misc.dump_table(info_chhl)      
+    --]]
+    
+	self:init_windows()
+	self:set_wnd_1(1)
+	self:set_wnd_2(1)
+	self:set_wnd_3(1)
+	self:set_wnd_4(1)
+	if info_chhl[1] == "?" then
+		self:set_wnd_pocket(1)
+	else
+		self:set_wnd_pocket(2)
+	end
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:btn_stop()
+		elseif dik == DIK_keys.DIK_A then
+			self:btn_left()
+		elseif dik == DIK_keys.DIK_D then
+			self:btn_right()
+		end
+	end
+	return true
+end
+
+function cheat:on_quit()
+	btn_old = 0
+	info_rug = {} 
+	info_chhl = {}
+	flask_number = {}
+	self:del_windows()
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
+	razgruzka.inventory_on_off(false)
+end
+
+function cheat:on_work_quit()
+	btn_old = 0
+	info_rug = {} 
+	info_chhl = {}
+	flask_number = {}
+	self:del_windows()
+	used_items.set_get_flag_use_gadget(1,true)
+	self:GetHolder():start_stop_menu (self,true)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
+	razgruzka.inventory_on_off_work(false)
+end
+
+function cheat:btn_stop()
+	self:write_data()
+	self:on_quit()
+end
+
+function cheat:btn_left()
+	info_rug = razgruzka.step_left(info_rug,8)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
+	self:reset_windows()
+end
+
+function cheat:btn_right()
+	info_rug = razgruzka.step_right(info_rug,8)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
+	self:reset_windows()
+end
+
+function cheat:btn_pour()				-- нопка перелива воды
+	if btn_old == 0 then
+		return
+	end
+	
+	if info_chhl[1] == "?" or info_chhl[2] == 4 then
+		self:stop_btn()
+		btn_old = 0
+		return
+	end
+	
+	vergas_lib.s_play([[device\masks\flask_flask]],1)
+	
+	local nn = 4 - info_chhl[2] 				--столько порций надо долить
+	local i = self:reassign(btn_old)			--получаю номер записи таблицы
+	
+	if nn <= info_rug[i+1] then
+		--нужно меньше чем есть во фл€жке
+		info_chhl[2] = 4
+		info_rug[i+1] = info_rug[i+1] - nn
+	else
+		--нужно больше чем есть во фл€жке
+		info_chhl[2] = info_chhl[2] + info_rug[i+1]
+		info_rug[i+1] = 0
+	end
+	--обновл€ю окошки
+	self:set_window(btn_old,1)
+	btn_old = 0
+	self:set_wnd_pocket(2)
+end
+
+function cheat:btn_empty()				-- нопка выгрузки
+	if info_chhl[1] == "?" then
+		return
+	end
+	
+	local i
+	local n = 0
+	local flag = true
+	
+	for i = 1,#info_rug,2 do
+		if info_rug[i] == "?" then
+			info_rug[i] = info_chhl[1]
+			info_rug[i+1] = info_chhl[2]
+			n = i
+			flag = false
+			break
+		end
+	end
+	
+	if flag then
+		table.insert(info_rug,info_chhl[1])
+		table.insert(info_rug,info_chhl[2])
+	end
+	
+	info_chhl[1] = "?"
+	info_chhl[2] = 0
+	self:set_wnd_pocket(1)
+	
+	if n == 1 then
+		self:set_wnd_1(1)
+	elseif n == 3 then
+		self:set_wnd_2(1)
+	elseif n == 5 then
+		self:set_wnd_3(1)
+	elseif n == 7 then
+		self:set_wnd_4(1)
+	end
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
+end
+
+function cheat:btn_wash()				-- нопка помывки стекла
+	info_chhl = vergas_flask.wash_glass(info_chhl)
+	self:write_data()
+	self:on_work_quit()
+end
+
+function cheat:btn_1()					-- нопка €чейки 1
+	self:klik_btn(1,1)
+end
+
+function cheat:btn_2()					-- нопка €чейки 2
+	self:klik_btn(2,3)
+end
+
+function cheat:btn_3()					-- нопка €чейки 3
+	self:klik_btn(3,5)
+end
+
+function cheat:btn_4()					-- нопка €чейки 4
+	self:klik_btn(4,7)
+end
+
+-------------------------------------------------------------------------
+--‘ункции окон
+-------------------------------------------------------------------------
+function cheat:set_wnd_1(mode)
+--mode = 1 - обычна€ пиктограмма
+--mode = 2 - желта€ пиктограмма
+	if info_rug[1] == "?" then
+		wnd_1:Show(false)
+		wnd_pic_1:Show(false)
+		return
+	end
+	local n = self:flask_number(info_rug[1])
+	wnd_1:SetText("є"..n)
+	wnd_1:Show(true)
+	if mode == 1 then
+		wnd_pic_1:InitTexture("ui_water_pictogram_"..info_rug[2])
+	else
+		wnd_pic_1:InitTexture("ui_water_pictogram_yellow_"..info_rug[2])
+	end
+	wnd_pic_1:Show(true)
+end
+
+function cheat:set_wnd_2(mode)
+	if info_rug[3] == "?" then
+		wnd_2:Show(false)
+		wnd_pic_2:Show(false)
+		return
+	end
+	local n = self:flask_number(info_rug[3])
+	wnd_2:SetText("є"..n)
+	wnd_2:Show(true)
+	if mode == 1 then
+		wnd_pic_2:InitTexture("ui_water_pictogram_"..info_rug[4])
+	else
+		wnd_pic_2:InitTexture("ui_water_pictogram_yellow_"..info_rug[4])
+	end
+	wnd_pic_2:Show(true)
+end
+
+function cheat:set_wnd_3(mode)
+	if info_rug[5] == "?" then
+		wnd_3:Show(false)
+		wnd_pic_3:Show(false)
+		return
+	end
+	local n = self:flask_number(info_rug[5])
+	wnd_3:SetText("є"..n)
+	wnd_3:Show(true)   
+    
+    
+	if mode == 1 then
+		wnd_pic_3:InitTexture("ui_water_pictogram_"..info_rug[6])
+	else
+		wnd_pic_3:InitTexture("ui_water_pictogram_yellow_"..info_rug[6])
+	end
+	wnd_pic_3:Show(true)
+end
+
+function cheat:set_wnd_4(mode)
+	if info_rug[7] == "?" then
+		wnd_4:Show(false)
+		wnd_pic_4:Show(false)
+		return
+	end
+	local n = self:flask_number(info_rug[7])
+	wnd_4:SetText("є"..n)
+	wnd_4:Show(true)
+	if mode == 1 then
+		wnd_pic_4:InitTexture("ui_water_pictogram_"..info_rug[8])
+	else
+		wnd_pic_4:InitTexture("ui_water_pictogram_yellow_"..info_rug[8])
+	end
+	wnd_pic_4:Show(true)
+end
+
+function cheat:set_wnd_pocket(mode)
+--mode = 2 - чухол с фл€жкой
+--mode = 1 - чехол без фл€жки
+	if mode == 1 then
+		wnd_pocket:SetWndRect(214+13,281+6+3,68,63)
+		wnd_pocket:InitTexture("ui_cover_without_flask")
+		wnd_pic_pocket:Show(false)
+	else
+		wnd_pocket:SetWndRect(214+25,281+10,40,70)
+		wnd_pocket:InitTexture("ui_flask_army")
+		wnd_pic_pocket:InitTexture("ui_water_pictogram_"..info_chhl[2])
+		wnd_pic_pocket:Show(true)
+	end
+end
+
+function cheat:init_windows()
+
+	if wnd_1 ~= nil then
+		self:DetachChild(wnd_1)
+		wnd_1 = nil
+	end
+
+	wnd_1 = CUIStatic()
+	wnd_1:SetAutoDelete(true)
+	self:AttachChild(wnd_1)
+	wnd_1:SetStretchTexture(true)
+	wnd_1:SetWndRect(115+13,404+5,40,70)
+	wnd_1:InitTexture("ui_flzhka_without_cover")
+	wnd_1:SetFont(GetFontMedium())
+	wnd_1:SetTextColor(255, 225, 225, 240)
+	wnd_1:Show(false)
+
+	if wnd_pic_1 ~= nil then
+		self:DetachChild(wnd_pic_1)
+		wnd_pic_1 = nil
+	end
+
+	wnd_pic_1 = CUIStatic()
+	wnd_pic_1:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_1)
+	wnd_pic_1:SetStretchTexture(true)
+	wnd_pic_1:SetWndRect(115+46,404,20,20)
+
+	if wnd_2 ~= nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil
+	end
+
+	wnd_2 = CUIStatic()
+	wnd_2:SetAutoDelete(true)
+	self:AttachChild(wnd_2)
+	wnd_2:SetStretchTexture(true)
+	wnd_2:SetWndRect(193+13,404+5,40,70)
+	wnd_2:InitTexture("ui_flzhka_without_cover")
+	wnd_2:SetFont(GetFontMedium())
+	wnd_2:SetTextColor(255, 225, 225, 240)
+	wnd_2:Show(false)
+
+	if wnd_pic_2 ~= nil then
+		self:DetachChild(wnd_pic_2)
+		wnd_pic_2 = nil
+	end
+
+	wnd_pic_2 = CUIStatic()
+	wnd_pic_2:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_2)
+	wnd_pic_2:SetStretchTexture(true)
+	wnd_pic_2:SetWndRect(193+46,404,20,20)
+
+	if wnd_3 ~= nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil
+	end
+
+	wnd_3 = CUIStatic()
+	wnd_3:SetAutoDelete(true)
+	self:AttachChild(wnd_3)
+	wnd_3:SetStretchTexture(true)
+	wnd_3:SetWndRect(268+13,404+5,40,70)
+	wnd_3:InitTexture("ui_flzhka_without_cover")
+	wnd_3:SetFont(GetFontMedium())
+	wnd_3:SetTextColor(255, 225, 225, 240)
+	wnd_3:Show(false)
+
+	if wnd_pic_3 ~= nil then
+		self:DetachChild(wnd_pic_3)
+		wnd_pic_3 = nil
+	end
+
+	wnd_pic_3 = CUIStatic()
+	wnd_pic_3:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_3)
+	wnd_pic_3:SetStretchTexture(true)
+	wnd_pic_3:SetWndRect(268+46,404,20,20)
+
+	if wnd_4 ~= nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil
+	end
+
+	wnd_4 = CUIStatic()
+	wnd_4:SetAutoDelete(true)
+	self:AttachChild(wnd_4)
+	wnd_4:SetStretchTexture(true)
+	wnd_4:SetWndRect(346+13,404+5,40,70)
+	wnd_4:InitTexture("ui_flzhka_without_cover")
+	wnd_4:SetFont(GetFontMedium())
+	wnd_4:SetTextColor(255, 225, 225, 240)
+	wnd_4:Show(false)
+	
+
+	if wnd_pic_4 ~= nil then
+		self:DetachChild(wnd_pic_4)
+		wnd_pic_4 = nil
+	end
+
+	wnd_pic_4 = CUIStatic()
+	wnd_pic_4:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_4)
+	wnd_pic_4:SetStretchTexture(true)
+	wnd_pic_4:SetWndRect(346+46,404,20,20)
+
+	if wnd_pocket ~= nil then
+		self:DetachChild(wnd_pocket)
+		wnd_pocket = nil
+	end
+
+	wnd_pocket = CUIStatic()
+	wnd_pocket:SetAutoDelete(true)
+	self:AttachChild(wnd_pocket)
+	wnd_pocket:SetStretchTexture(true)
+
+	if wnd_pic_pocket ~= nil then
+		self:DetachChild(wnd_pic_pocket)
+		wnd_pic_pocket = nil
+	end
+
+	wnd_pic_pocket = CUIStatic()
+	wnd_pic_pocket:SetAutoDelete(true)
+	self:AttachChild(wnd_pic_pocket)
+	wnd_pic_pocket:SetStretchTexture(true)
+	wnd_pic_pocket:SetWndRect(284,282,20,20)
+	
+end
+
+-------------------------------------------------------------------------
+--¬—ѕќћќ√ј“≈Ћ№Ќџ≈ ”Ќ ÷»»
+-------------------------------------------------------------------------
+
+function cheat:del_windows()
+
+	if wnd_1 ~= nil then 
+		self:DetachChild(wnd_1)
+		wnd_1 = nil			--€чейка 1
+	end
+	if wnd_2 ~= nil then
+		self:DetachChild(wnd_2)
+		wnd_2 = nil			--€чейка 2
+	end	
+	if wnd_3 ~= nil then
+		self:DetachChild(wnd_3)
+		wnd_3 = nil			--€чейка 3
+	end	
+	if wnd_4 ~= nil then
+		self:DetachChild(wnd_4)
+		wnd_4 = nil			--€чейка 4
+	end	
+	if wnd_pic_1 ~= nil then 
+		self:DetachChild(wnd_pic_1)
+		wnd_pic_1 = nil			--€чейка 1
+	end
+	if wnd_pic_2 ~= nil then
+		self:DetachChild(wnd_pic_2)
+		wnd_pic_2 = nil			--€чейка 2
+	end	
+	if wnd_pic_3 ~= nil then
+		self:DetachChild(wnd_pic_3)
+		wnd_pic_3 = nil			--€чейка 3
+	end	
+	if wnd_pic_4 ~= nil then
+		self:DetachChild(wnd_pic_4)
+		wnd_pic_4 = nil			--€чейка 4
+	end	
+	if wnd_pocket ~= nil then 
+		self:DetachChild(wnd_pocket)
+		wnd_pocket = nil			--€чейка чехла
+	end
+	if wnd_pic_pocket ~= nil then 
+		self:DetachChild(wnd_pic_pocket)
+		wnd_pic_pocket = nil			--€чейка чехла
+	end
+	
+end
+
+function cheat:stop_btn()
+	if btn_old == 1 then
+		self:set_wnd_1(1)
+	elseif btn_old == 2 then
+		self:set_wnd_2(1)
+	elseif btn_old == 3 then
+		self:set_wnd_3(1)
+	elseif btn_old == 4 then
+		self:set_wnd_4(1)
+	end
+end
+
+function cheat:reassign(btn)
+	local n
+	if btn == 1 then
+		n = 1
+	elseif btn == 2 then
+		n = 3
+	elseif btn == 3 then
+		n = 5
+	elseif btn == 4 then
+		n = 7
+	end
+	
+	return n
+end
+
+function cheat:take_in_cover(btn)
+	local n = self:reassign(btn)
+	
+	info_chhl[1] = info_rug[n]
+	info_chhl[2] = info_rug[n+1]
+	info_rug[n] = "?"
+	info_rug[n+1] = 0
+end
+
+function cheat:klik_btn(btn,record)
+	if info_chhl[1] ~= "?" and btn_old ~= 0 then
+		--в чехле уже есть фл€га
+		self:stop_btn()
+		btn_old = 0
+		return
+	end
+	
+	if info_rug[record] == "?" then
+		if btn_old ~= 0 then
+			self:stop_btn()
+			btn_old = 0
+			return
+		end
+	end
+	
+	if btn_old == 0 then
+		--активной кнопки нет, первое нажатие на кнопку
+		btn_old = btn
+		self:set_window(btn,2)
+	else
+		if btn_old ~= btn then
+			--была нажата друга€ кнопка
+			self:stop_btn()
+			btn_old = 0
+		else
+			--второе нажатие на кнопку
+			--btn_old = 0
+			self:take_in_cover(btn)
+			self:set_window(btn,1)
+			self:set_wnd_pocket(2)
+			self:stop_btn()
+			btn_old = 0
+		end
+	end
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_load"),1)
+end
+
+function cheat:set_window(btn,regime)
+	if btn == 1 then
+		self:set_wnd_1(regime)
+	elseif btn == 2 then
+		self:set_wnd_2(regime)
+	elseif btn == 3 then
+		self:set_wnd_3(regime)
+	elseif btn == 4 then
+		self:set_wnd_4(regime)
+	end
+end
+
+function cheat:reset_windows()
+	btn_old = 0
+	self:set_wnd_1(1)
+	self:set_wnd_2(1)
+	self:set_wnd_3(1)
+	self:set_wnd_4(1)
+end
+
+function cheat:flask_number(flask_id)
+	local i
+	local n = 0
+	for i = 1,#flask_number,2 do
+		if flask_id == flask_number[i] then
+			n = flask_number[i+1]
+			break
+		end
+	end 
+	return n
+end
+
+function cheat:write_data()
+	local sobj, section, i
+	if info_chhl[1] ~= "?" then
+		section = client_obj(info_chhl[1]):section()
+		if section == "flask_army" then
+            sobj = alife():object(info_chhl[1])
+            if sobj then 
+				alife():release(sobj, true) 
+			end
+			local npc=db.actor
+			sobj = alife():create("flask_army_on_belt",npc:position(),npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+			vergas_flask.set_get_flask_custom(1,sobj.id,info_chhl[2])
+			info_chhl[1] = sobj.id
+		elseif section == "flask_army_on_belt" then
+			vergas_flask.set_get_flask_custom(1,info_chhl[1],info_chhl[2])
+		end
+	end
+	vergas_flask.replace_flask_weight(info_chhl[1],info_chhl[2])
+	for i = 1,#info_rug,2 do
+		if info_rug[i] ~= "?" then
+			section = client_obj(info_rug[i]):section()
+			if section == "flask_army_on_belt" then
+				sobj = alife():object(info_rug[i])
+				if sobj then 
+					alife():release(sobj, true) 
+				end
+				local npc=db.actor
+				sobj = alife():create("flask_army",npc:position(),npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
+				vergas_flask.set_get_flask_custom(1,sobj.id,info_rug[i+1])
+				info_rug[i] = sobj.id
+			elseif section == "flask_army" then	
+				vergas_flask.set_get_flask_custom(1,info_rug[i],info_rug[i+1])
+			end
+			vergas_flask.replace_flask_weight(info_rug[i],info_rug[i+1])
+		end
+	end
+end

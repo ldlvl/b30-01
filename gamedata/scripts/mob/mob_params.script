@@ -1,0 +1,114 @@
+if mob_params == nil then
+  _G.mob_params = {}
+end
+
+local base_monster_offsets =
+ {
+   block_rcnt_int       = -16, -- RefCount
+   block_crc32_int      = -12,
+   block_size_int       = -08,
+   block_nil_value      = -04,
+   distance_to_corpse   =  00,
+   damaged_threshold    =  04, -- DamagedThreshold = 0.2
+   i_sdelay_int         =  08, -- idle_sound_delay
+   e_sdelay_int         =  12, -- eat_sound_delay
+   a_sdelay_int         =  16, -- attack_sound_delay  
+   d_sdelay_int         =  20, -- distant_idle_sound_delay
+   d_sound_range        =  24, -- distant_idle_sound_range 
+   dayt_begin_int       =  28,
+   dayt_end_int         =  32,
+   satiety_tresh        =  36, 
+   sound_treshold       =  40,
+   eat_freq             =  44,
+   eat_slice            =  48,
+   eat_slice_weight     =  52,
+   legs_count_byte      =  56,
+   blur                 =  60,
+   gray                 =  64,
+   duality_h            =  68,
+   duality_v            =  72,
+   noise_intensity      =  76,
+   noise_grain          =  80,
+   noise_fps            =  84,
+   color_base_r         =  88,   -- byte ? int ? float ? 
+   color_base_g         =  92,
+   color_base_b         =  96,
+   color_gray_r         = 100,
+   color_gray_g         = 104,
+   color_gray_b         = 108,
+   color_add_r          = 112,
+   color_add_g          = 116,
+   color_add_b          = 120,
+   time                 = 124,
+   time_attack          = 128,
+   time_release         = 132,
+   ce_time              = 136,
+   ce_amplitude         = 140,
+   ce_period_number     = 144,
+   ce_power             = 148,   
+   max_hear_dist        = 152,   
+   attack_pdist         = 156,   -- RunAttack_PathDistance
+   attack_rdist         = 160,   -- RunAttack_StartDistance
+   unk_max_offset       = 164   
+ } 
+ 
+function BaseMonsterSettings(id)
+  -- TODO: casting to CBaseMonster
+  local cobj = get_CObject(id)
+  if cobj ~= nil then
+     local shared_settings = ReadDMA(cobj, '$538', 'safe_ptr') -- 3312ru
+     -- local shared_settings = ReadDMA(cobj, '$52C', 'safe_ptr') --- 2945     
+     return CalcPtr(shared_settings, 16, '+') 
+  end                                 
+  return nil 
+end
+ 
+function get_obj_prop(id, key)
+  local cobj = BaseMonsterSettings(id)      
+  local ofs = base_monster_offsets[key]
+  if (cobj == nil) or (ofs == nil) then return nil end  
+  return ReadMemValue (cobj, ofs, key) 
+end
+
+function set_obj_prop(id, key, value)
+  local cobj = BaseMonsterSettings(id)      
+  local ofs = base_monster_offsets[key]
+  if (cobj == nil) or (ofs == nil) then return nil end  
+  WriteMemValue (cobj, ofs, value, key) 
+end
+
+
+function test(id)
+  
+ local ofs_table = {}
+ 
+ local offsets = base_monster_offsets
+ local ptr_table = BaseMonsterSettings(id)
+ 
+ for key,ofs in pairs(offsets) do
+	local kofs = tostring(ofs)
+	ofs_table[kofs] = key
+ end
+ 
+ if (ptr_table ~= nil) and (ofs_table ~= nil) then
+	 local count = table.getn(ofs_table)
+	 ODS( string.format ("#~C0F #DBG: params(%d) for~C0A base_monster ~C0F at %s :~C07", count, FormatPtr(ptr_table)) ) 
+	 local max_ofs = offsets.unk_max_offset 
+	 
+	 for ofs = 0, max_ofs, 4 do
+		  local kofs = tostring(ofs)
+		  local key = ofs_table[kofs]		  
+		  if ( key ~= nil ) and ( string.find(key, "unk") == nil ) then
+			local val = get_obj_prop(id, key)
+			if val ~= nil then
+			   ODS( string.format ("~C0F %-20s~C0B at ~C0F %5d~C0B =~C0D %s~C07", key, ofs, tostring(val) ) )
+			end
+		  end
+	 end  -- for
+ end -- if
+end
+
+mob_params.BaseMonsterSettings = BaseMonsterSettings
+mob_params.get_obj_prop = get_obj_prop
+mob_params.set_obj_prop = set_obj_prop
+mob_params.test = test

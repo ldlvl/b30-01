@@ -1,0 +1,878 @@
+if registry == nil then 
+ _G.registry = {}
+end
+
+g_pGameLevel = nil
+enable_update = false
+g_upd_loop = 0
+test_id = 0
+root = nil
+registry.cl_root = nil
+show_ptrs = false
+initialized = false
+key_word_offset = 12
+obj_ptr_offset  = 16
+nil_flag_offset = 21
+update_frame    = 0
+
+local dev = device()
+
+if xr_build_id > 3312 then
+   key_word_offset = 16
+   obj_ptr_offset  = 20
+   nil_flag_offset = 13
+end
+
+
+function check_init()
+ if not initialized then
+    registry.init()
+ end
+end
+
+function run()
+ enable_update = true
+ ODS("[~T]. #DBG: registry update enabled ")
+end
+
+function stop()
+ enable_update = false
+ ODS("[~T]. #DBG: registry update disabled ")
+end
+
+function setest(id)
+ test_id = tonumber(id)
+ local sim = alife()
+ 
+ ODS(string.format("[~T]. #DBG: test_id = %d, sim = %s, sim.object = %s", test_id, FormatPtr(sim), DumpVar(sim.object)) );
+end
+
+function update_registry(fast)
+ if nil == fast then fast = true end
+ -- быстрые обновлени€ допускаютс€ раз в 50 кадров, не более одного раза за кадр
+ if fast and (5 ~= dev.frame % 50 or update_frame == dev.frame) then                      
+    return 
+ end 
+ update_frame = dev.frame 
+ UpdateRegistry (fast)  
+end
+
+
+function reg_object(id)
+ -- if g_upd_loop <= 3 then  ODS("[~T]. reg_object "..tostring(id) ) end
+ local cobj = xray_dma.get_CObject(id) -- client object
+ local sobj = xray_dma.get_SObject(id) -- client object
+ InvokeRegistry("Add", tonumber(id), cobj, sobj) -- добавление объекта или обновление ссылок на экземпл€ры в пам€ти
+end
+
+function unreg_object(id)
+ -- call from db.del_obj
+ id = tonumber(id)
+ if id > 0 then
+    NotifyRemoved(id)
+ end
+end
+
+function l_node(node)
+ return node:read(0, "pointer") -- left node
+end                   
+
+function p_node(node)
+ return node:read(4, "pointer") -- parent node 
+end
+
+function r_node(node)
+ return node:read(8, "pointer") -- right node 
+end
+
+function node_key(node, vtype)
+ return node:read(key_word_offset, vtype or "word")
+end
+
+function node_obj(node, vtype)
+ return node:read(obj_ptr_offset, vtype or "ptr")
+end
+
+
+function rq_traverse(node, head, out)
+ if node == head then 
+    return
+ end
+
+ local left = l_node(node)
+ rq_traverse(left, head, out)
+ 
+ local id = node_key(node) -- node:read(key_word_offset, "word")
+ table.insert(out, id)
+ 
+ local right = r_node(node)
+ rq_traverse(right, head, out)
+end
+
+-- alternate traverse with callback (used in params.script)
+function registry.traverse_tree(node, cb_func)
+ --[[ 
+ if ( type(node) ~= "userdata" ) or (node == nil) then
+    wprintf("[~T]. #ERROR(traverse_tree): node = %s, type = %s ", FormatPtr(node), type(node))
+    wprintf("      xr_build_id = %d, nil_flag_offset = %d ", xr_build_id, nil_flag_offset)
+    return 
+ end  --]]
+ 
+ if type(cb_func) ~= "function" then
+    return
+ end
+
+ local term   = node:read (nil_flag_offset, 'byte') -- for old releases _isnil after key-obj pair
+ if term ~= 0 then return end
+ 
+ local left   = node:read_ptr(0)
+ local right  = node:read_ptr(8) 
+     
+ registry.traverse_tree(left, cb_func)
+ 
+ local id = node:read(key_word_offset, "word")  
+ cb_func (node, id)  
+ registry.traverse_tree(right, cb_func) 
+end
+
+
+local g_dump = ""
+local g_ids = {}
+
+function dump_func(node, id)
+ table.insert (g_ids, id)
+ if (id < 20) then
+    obj = node:read_ptr(obj_ptr_offset)
+    wprintf("%d = %s ", id, FormatPtr(obj))
+ end      
+end
+
+function test_traverse(head)
+ local root = p_node(head)
+ g_ids = {}
+ g_dump = ""  
+ 
+ registry.traverse_tree (root, dump_func)
+
+ wprintf("[~T]. #TEST_TRAVERSE: count = %d \n~C0F %s~C07", table.getn(g_ids), g_dump)   
+end
+
+registry.rq_traverse = rq_traverse
+registry.test_traverse = test_traverse
+
+function dump_game_level()
+ -- используетс€ дл€ детектировани€ смещений списков objects_active, objects_sleeping
+ -- обращени€ к спискам objects_* €вно видны в экспортируемом xr_3da.exe методе CObjectList::FindObjectByName(shared_str) 
+ local ofs = 0
+ if g_pGameLevel == nil then
+    update_imports()
+ end
+ 
+ wprintf('[~T].~C0F #DBG: IGameLevel g_pGameLevel dump first 64 ptrs:'); 
+ 
+ while ofs < 256 do
+  local p = g_pGameLevel:read_ptr(ofs) -- ReadPtr (g_pGameLevel, ofs)
+  wprintf(" ~C0E [$%02x]~C0B =~C0F %s ~C07", ofs, p:format()) 
+  ofs = ofs + 4
+ end
+
+end
+
+
+function init()
+  _G.g_sim = alife() 
+  update_imports()
+     
+  RunCommand("INIT_DMA")
+  -- wprintf("alife() = %s ", FormatPtr(alife()))
+  --                
+  
+  
+  InvokeRegistry("ENABLE_UPDATES")
+  for lname, gvr in pairs (const.game_vertices) do
+    local level_id = const.level_number[lname]
+    InvokeRegistry("SET_LEVEL_INFO", lname, level_id, gvr[1], gvr[2])
+    if lname == level.name() then
+       InvokeRegistry("SET_ACTIVE_LEVEL", lname, level_id)
+    end
+    
+  end
+  
+  
+  UpdateRegistry(false) -- not fast update  
+  initialized = true
+  
+    
+  -- ReadLn()
+end
+
+function stop_module()
+ InvokeRegistry("DISABLE_UPDATES")   
+end
+-- cl_init()
+
+
+function registry.init_dbg()
+      
+   _G.g_pGameLevel = CalcPtr ( GetVarAddr("xr_3da.exe", "?g_pGameLevel@@3PAVIGame_Level@@A"), 0, "+" )
+   wprintf(" g_pGameLevel = %s ", FormatPtr(g_pGameLevel))
+   
+   local conf = ExpandPath("$fs_root$/bin/xray_dma.conf")
+   local fini = IniFile(conf)  -- luaicp alternative for ini_file, can be accessed to files outside gamedata
+   if fini == nil then
+      wprintf("[~T].~C0C #ERROR:~C07 error open ini-file %s ", conf)
+      return
+   end
+   
+   dump_game_level()
+   
+   RunCommand("INIT_DMA")
+   
+   local sect = "build_"..xr_build_id
+       
+   local ofs = fini:read_int (sect, "GameLevel.ObjectList", 76)  
+   
+   wprintf("[~T]. #CL: sect = %s, GameLevel.ObjectList = %d ", sect, ofs)     
+   local ObjectList = CalcPtr(g_pGameLevel, ofs, "+")  -- CObjects ObjectList is member of IGameLevel 
+   
+   -- 3312      xr_vector size 16 (aligned?)
+   -- 5564debug xr_vector size 12   
+   
+   ofs = fini:read_int (sect, "GameLevel.destroy_queue",  0)
+   if ofs == 0 then
+      wprintf ("[~T]. #CL: GameLevel.destroy_queue = 0 for sect %s ", sect) 
+      return 
+   end
+   
+   local destroy_queue = CalcPtr(g_pGameLevel, ofs, "+")
+   ofs = fini:read_int (sect, "GameLevel.objects_active", ofs + 12)
+   wprintf("[~T]. #CL: offset GameLevel.objects_active = $%x ", ofs)
+   -- GameLevel.objects_active=0x60 base = 0x1922E6E0, pval = 0x1922E740 
+         local objects_active = CalcPtr(g_pGameLevel, ofs, "+")  
+   ofs = fini:read_int (sect, "GameLevel.objects_sleeping", ofs + 12)
+   local objects_sleeping = CalcPtr(g_pGameLevel, ofs, "+")
+   
+   _G.g_sim = alife()
+ 
+   
+   local cnt = 0
+   for id = 0,65534 do
+    -- local obj = client_obj(id)
+    local sobj = g_sim:object(id)
+    
+    if sobj then
+       local pobj = get_SObject(id)
+       local pid = sobj.parent_id
+       if cnt < 20 and (pid > 0) then
+          wprintf(' %5d =~C0D %s~C0A %-40s~C07, clsid = %4d, owner = %5d', id, pobj:format(), sobj:name(), sobj:clsid(), pid)
+       end   
+       cnt = cnt + 1
+    end
+   end
+   
+   wprintf("[~T].~CF1 #CL:~C04 destroy_queue =~C0D %s, ~C0F objects_active =~C0D %s,~C0E objects_sleeping =~C0D %s~C07", destroy_queue:format(), objects_active:format(), objects_sleeping:format())
+   wprintf("  #CL: g_pGameLevel = %s ", g_pGameLevel:format())
+   wprintf("[~T]. #DBG: total objects =~C0D %d~C07", cnt)
+   wprintf(" type of level = %s ", type(level))
+   
+   -- GameLevel.objects_active=0x60 base = 0x1922F7F0, pval = 0x1922F850
+   
+   InvokeRegistry("Set_Pointer", "map_NETID",        ObjectList) -- map_NETID first embedded
+   InvokeRegistry("Set_Pointer", "objects_active",   objects_active)
+   InvokeRegistry("Set_Pointer", "objects_sleeping", objects_sleeping)
+   InvokeRegistry("Set_Pointer", "destroy_queue",    destroy_queue)
+   SleepEx(200)
+   --[[  
+         #XRAY: ObjectList[0x1BCE9C3C] objects_active begin = 0x44658860, end = 0x44658B94, size = 205
+         #DBG: destroy_queue = $1BCE9C44, objects_active = $1BCE9C50, objects_sleeping = $1BCE9C5C
+         #DBG: ScanVector start = $44658860, last = $44658B94, end = $44658FC8
+         
+   
+ 1290 = $3EC90D30 device_pda1290                          , clsid =   51, owner =  1289
+ 1291 = $43927500 ammo_9x18_fmj1291                       , clsid =   38, owner =  1289
+ 1292 = $432FCA80 device_torch1292                        , clsid =  122, owner =  1289
+ 1293 = $3EED97B0 wpn_pm1293                              , clsid =  134, owner =  1289
+ 
+ 
+ CALifeObjectRegistry detection, alife = $187E04D0, prom = $187E0770, root = $187E0770
+ alife() = $0C62CB40, ^= $0C62CB40
+ 
+ CALifeObjectRegistry 'alife' created at 0x18C14390, m_objects = 0x18C14394 
+ CALifeSimulatorBase section 'alife' reloaded, this = 0x0C62CDD4, m_objects = 0x18C14390, &m_objects = 0x
+
+   --]]
+   
+ 
+ 
+ if false then  
+    registry.test_traverse(ObjectList:read(0, "pointer"))    
+ end    
+       
+ 
+ local p_sim = ReadPtr(g_sim)
+ wprintf("[~T] #SE: alife() = %s, ^= %s ", FormatPtr(g_sim), p_sim:format())   
+ ofs = fini:read_int (sect, "CALifeSimulatorBase", 0)
+ if ofs == 0 then
+    return
+ end 
+ 
+ local sim_base = CalcPtr(p_sim, ofs, "+")
+ ofs = fini:read_int (sect, "CALifeObjectRegistry", 0)
+ if ofs == 0 then
+    return
+ end                                   
+ 
+ local obj_reg = sim_base:read(ofs, "pointer")
+ local m_objects = obj_reg + 4               
+ InvokeRegistry("Set_Pointer", "alife_objects", m_objects) -- xr_map  
+   
+ wprintf("[~T]. #SE:~C0F CALifeSimulatorBase =~C0D %s~C0B,~C0E CALifeObjectRegistry m_objects =~C0D %s~C0B,~C0A m_objects->m_objects =~C0D %s~C07", 
+                      sim_base:format(), obj_reg:format(), m_objects:format())  
+      
+
+ if true then  
+    registry.test_traverse(m_objects:read(0, "pointer"))    
+ end    
+   
+   
+ -- SetVerbosity(8)  
+ update_registry(false)                          
+ SetVerbosity(3)
+   
+   
+ local ids = online_objects()
+ if ids then 
+    wprintf(" online objects count = %d ", table.getn(ids))
+    local dump = ""
+    for i, id in ipairs(ids) do
+      dump = dump..sprintf("%d ", id)
+    end
+
+    wprintf("[~T]. table.getn(ids): \n~C0F %s~C07", dump)
+    
+ end
+   
+   
+ ofs = fini:read_int (sect, "CALifeSpawnRegistry", 0)
+ if ofs == nil then
+    return
+ end
+        
+ local spw_reg = sim_base:read_ptr(ofs) -- CALifeSpawnRegistry
+  
+ if spw_reg ~= nil then  
+     wprintf ('~CF0 CALifeSpawnRegistry = %s ~C07', FormatPtr(spw_reg))
+     
+     ofs = fini:read_int (sect, "CALifeSpawnRegistry.spawns", 80)        
+     local list = spw_reg + ofs -- read_ptr     
+     wprintf ('~C0F m_spawns = %s ~C07', list:format())     
+     ofs = fini:read_int (sect, "CALifeSpawnRegistry.verts", 4)
+     local vertices =  list + ofs -- m_vertices.head       
+
+     wprintf("[~T]. #SE: CALifeSpawnRegistry.m_spawns.vertices = %s ", vertices:format())     
+     InvokeRegistry("Set_Pointer", "alife_spawns", vertices) -- xr_map
+     
+ end
+   
+end
+
+function test(struct)
+ if struct == nil then struct = 3 end
+ UpdateRegistry()
+ InvokeRegistry("Dump", tonumber(struct))
+end
+
+function convert_ids(ids, func, ...)
+ if func == nil then
+    return ids
+ end
+
+ if type(ids) ~= 'table' then
+    abort('convert_ids 1st param must be table')
+ end
+
+ local result = {}
+ local insert_func = table.insert
+ 
+ local ft = type(func)
+ if ( func == nil ) or ( ft ~= 'function') then
+    wprintf('[~T].~C0C #FATAL(convert_ids): func = %s ~C07', ft)
+    return nil
+ end 
+  
+ for i, id in ipairs(ids) do
+  local v = func (id, ...)
+  if v ~= nil then
+     insert_func (result, v)  
+  end -- if  
+ end -- for
+ return result 
+end
+
+
+function all_objects(fast_update, flt)
+ check_init()
+ if flt == nil then flt = 15 end
+ update_registry(fast_update)
+ local ids = InvokeRegistry("Full", "", flt)
+ return ids, table.getn(ids) 
+end
+
+function clsid_objects(cid_min, cid_max, fast_update, convertor, flags)
+ return registry.in_range_objects('clsid_range', cid_min, cid_max, fast_update, convertor, flags) 
+end
+
+registry.clsid_objects = clsid_objects
+
+function in_range_objects(filter_name, i_min, i_max, fast_update, convertor, flags)
+ check_init()
+ update_registry(fast_update)
+ if flags then
+    flags = tonumber(flags)
+ else
+    flags = 7
+ end          
+  
+ SetVerbosity(3)
+ local list = RegistryFilter('New_List') 
+ local flt  = RegistryFilter('New', filter_name, list)
+ RegistryFilter('SetI', flt, i_min, i_max)
+ local result = InvokeRegistry("Filtered", list, flags)
+ RegistryFilter('Free', list)
+ -- SetVerbosity(3)
+ local objs = convert_ids(result, convertor)
+ return objs, table.getn(objs) 
+end
+
+registry.in_range_objects = in_range_objects
+
+function local_objects(fast_update, convertor, flags) -- получать объекты наход€щиес€ на текущей локации
+ local gvids = const.game_vertices[level.name()]
+ if gvids == nil then
+    abort ("for level %s not set const.game_vertices ", level.name())    
+ end
+ -- wprintf(" must return objects with gvid in range %d..%d ", gvids[1], gvids[2])
+ 
+ return registry.in_range_objects('gvid_range', gvids[1], gvids[2], fast_update, convertor, flags)
+end
+
+registry.local_objects = local_objects
+
+function offline_objects(fast_update, convertor)
+ check_init()
+ local ids = all_objects(fast_update, 11)
+ local objs = convert_ids(ids, convertor)
+ return objs, table.getn(objs)
+end
+
+function online_objects(fast_update, convertor)
+ check_init()
+ local ids = all_objects(fast_update, 7) 
+ local objs = convert_ids(ids, convertor)
+ return objs, table.getn(objs)  
+end
+
+
+function registry.sc_objects(sc, fast_update, flt, convertor)
+ check_init()
+ update_registry(fast_update)
+ local ids = InvokeRegistry("Sections", sc, flt) 
+ local objs = convert_ids(ids, convertor)
+ return objs, table.getn(objs)     
+end
+
+function registry.inv_objects(id, fast_update, convertor)
+ check_init()
+ update_registry(fast_update)
+ 
+ local ids, err = InvokeRegistry("Content", id, 15)
+ 
+ if id > 0 then
+    if ( table.getn(ids) == 0 ) and ( GetVerbosity() > 8 ) then
+       local name = ''
+       local sobj = g_sim:object(id)
+       local obj = client_obj(id)
+       if sobj then name = sobj:name() end
+       if obj then  name = obj:name() end    
+       wprintf(" no objects found inside container %d (%s)", id, name)
+    end
+    
+ end    
+ 
+ local objs = convert_ids(ids, convertor)
+ return objs, table.getn(objs)  
+end
+
+function level_objects(sect, fast_update, flags)  
+ if flags == nil then 
+    flags = 15
+ else
+    flags = tonumber(flags)
+ end                                                        
+ update_registry(fast_update)
+ local gv_range = const.level_gv_range()             
+ local list = RegistryFilter('New_List')
+ local flt  = RegistryFilter('New', 'gvid_range', list)
+ RegistryFilter('SetI', flt, gv_range[1], gv_range[2])
+ 
+ if sect ~= "" then
+    local ids = registry.sc_objects (sect, fast_update, flags)
+    result = InvokeRegistry( 'sieve', list, flags, ids )    
+ else
+    SetVerbosity(3)
+    result = InvokeRegistry( 'filtered', list, flags) -- all objects online/offline
+    SetVerbosity(3)       
+ end
+ 
+ RegistryFilter('Free', list)
+ return result
+end
+
+function stalkers(fast_update, convertor, flags)
+ return clsid_objects(clsid.script_stalker, clsid.script_stalker, fast_update, convertor, flags)
+end
+
+registry.stalkers = stalkers
+
+function dumpids(tab)
+ if tab == nil then return "" end
+ local s = "  "
+ for n = 1, table.getn(tab) do
+  s = s .. string.format ("%d ", tab [n])
+ end -- for
+ return s
+end
+
+function dumpinv(npc_id)
+ if npc_id == nil then
+    npc_id = 0
+ end
+
+ local tab = registry.inv_objects(npc_id, true)
+ 
+ if tab == nil then return false end
+ 
+ local npc = client_obj(npc_id)
+ 
+ if npc and npc.name then
+    ODS( "[~T]. #DBG: dumping inventory detailed for NPC ~C0A" .. npc:name().."~C07" )
+ end
+ 
+ for n = 1, table.getn(tab) do
+  local id = tonumber (tab[n])
+
+  coord_params.get_obj_prop(id, "info_dump")
+ end
+ 
+ return true
+end
+
+function cntest(id)
+  local ids = InvokeRegistry("Content", id)
+  local s = dumpids(ids)
+  ODS("[~T]. #DBG: ids in container~C0D #"..id.."~C07: "..s)
+end
+
+function sctest(sc)
+ local ids = InvokeRegistry("Sections", sc)
+ local s = dumpids(ids)
+ ODS("[~T]. #DBG: ids in section~C0A "..sc.."~C07: "..s)
+end
+
+
+function on_obj_event(evt, param)
+ if param and param.id ~= nil then
+    ODS( string.format ("[~T]. #EVT: code =~C0A %s~C07, time =~C0F %s~C07, id = %d, v0 = %.3f, lp = %d, x = %.3f, y = %.3f, z = %.3f",evt, param.time, param.id, param.v0, param.v7, param.x, param.y, param.z ))
+ end
+end
+
+function cbset(id)
+ InvokeRegistry("Set_Callback", tonumber(id), "registry.on_obj_event")
+end
+
+function cboff(id)
+ InvokeRegistry("Set_Callback", tonumber(id), "~")
+end
+
+function verify_ptrs()
+  local c_count = 0
+  local s_count = 0
+  
+  wprintf('[~T/~B]. #PERF: start verify ptrs...')
+  for id = 0,MAX_OBJ_ID do
+   local sobj = xray_dma.get_SObject(id)
+   local cobj = xray_dma.get_CObject(id)
+       
+   if cobj ~= nil or sobj ~= nil then   
+      InvokeRegistry ('Verify_Ptrs', id, sobj, cobj)
+   end        
+   
+   if sobj then s_count = s_count + 1 end
+   if cobj then c_count = c_count + 1 end  
+  end
+  wprintf('[~T/~B]. #PERF: end verify ptrs. SE_objects = %d, client objects = %d', s_count, c_count)
+end
+
+function init_module()
+  
+end
+
+
+function late_init()
+ verify_ptrs()
+ local task = AddRegularTask("adjust_spawned_objects", "registry", nil, 0, 3500)
+ task.initial = true
+end
+
+init_priority=800
+
+function clamp_angle(a)
+ local b = math.pi * 2
+ while a >   b / 2 do a = a - b end
+ while a <= -b / 2 do a = a + b end
+ return a
+end
+
+function norm_angles(a)
+ a.x = clamp_angle(a.x)
+ a.y = clamp_angle(a.y)
+ a.z = clamp_angle(a.z)
+ return a
+end
+
+function angle_diff(a, b)
+ local r = vector()
+ r.x = clamp_angle(a.x - b.x)
+ r.y = clamp_angle(a.y - b.y)
+ r.z = clamp_angle(a.z - b.z)
+ return r 
+end
+
+function vector_max (a)
+ local v = math.max ( math.abs(a.x), math.abs(a.y) )
+ return math.max ( v, math.abs(a.z) )
+end
+
+
+local last_cp = vector():set(-10000, 0, 0)
+local shifted = {}
+
+function registry.adjust_spawn_pos(id, disp)
+ id = tonumber(id)
+ if shifted[id] then return end -- already shifted
+  
+ local e = InvokeRegistry("SPAWN_ENTITY", "GAME_ID", id) -- verify id
+ local obj = server_obj(id)
+ local cobj = client_obj(id)
+ 
+  
+ 
+ 
+ if obj == nil and cobj then
+    if disp then wprintf("~C0C #WARN:~C07 no server object #%d (%s) ", id, cobj:name()) end 
+    misc.force_offline(id)
+    return
+ end
+ 
+ if obj and obj:clsid() == clsid.level_changer then -- отображать проверки левел-ченжеров
+    disp = true
+ end
+ 
+ 
+ 
+ local v = vector()
+ local d = vector()
+ if e == nil and disp then
+    wprintf("~C0C #WARN:~C07 not found spawn entity for~C0A %s~C0D #%d~C07", DumpVar(obj), id) 
+ end
+ 
+
+ -- e.gvid >= gvr[1] and e.gvid <= gvr[2] and
+ if  e and obj and id > 0 then     
+   local cl = pack_args (e.pos_x, e.pos_y, e.pos_z)
+   if id < 10 then
+      misc.dump_table(cl)
+   end      
+   v:set(unpack(cl)) 
+   d:set(e.dir_x, e.dir_y, e.dir_z)
+   local name = obj:name()
+   
+   
+   if e.name ~= name then
+      wprintf("~C0C #ERROR:~C07 spawn_entity name = %-35s != object #%5d name = %s", e.name, id, obj:name())
+      InvokeRegistry("VALIDATE_SPAWN_ID", obj.id) 
+      e = InvokeRegistry("SPAWN_ENTITY", "GAME_ID", obj.id) 
+      if e.name ~= obj:name() then  
+         wprintf("~C0C #FATAL:~C07 id validation failed!")
+         return false
+      end    
+   end
+      
+      
+   d = norm_angles(d)
+   -- SetDbgVar("adjust_verify", obj:name())
+   local pk = get_netpk(obj,1)
+   local data = pk:get()     
+   
+   local fxd_bones = data.fixed_bones or ""
+   if disp then
+      -- wprintf(" object~C0A %-35s~C07 have~C0F %s~C07 fixed bones ", obj:name(), fxd_bones)
+   end
+   
+   
+   if (#fxd_bones > 0) and ( obj.parent_id == BAD_OBJ_ID ) and ( obj:clsid() ~= clsid.script_stalker ) and ( not obj.is_alive ) then    
+     if disp then
+        wprintf(" verify ~C0D %5d, entity = ~C0F %s~C07, object =~C0E %s~C07 ", id, DumpVar(e), FormatPtr(get_SObject(id)))
+     end   
+     
+     name = name .. ":lv" .. tostring(obj.level_id)
+     
+     local pos = vector():set(obj.position)
+     local dir = vector():set(obj.direction) -- направление o_Angle (pith, yaw, rool) - все задаетс€ в радианах!
+     local obj_gvid = obj.m_game_vertex_id
+     local obj_lvid = obj.m_level_vertex_id
+     
+     local cl_obj = client_obj(id)
+     if cl_obj then
+        obj_gvid = cl_obj:game_vertex_id()
+        obj_lvid = cl_obj:level_vertex_id()
+        pos:set (cl_obj:position())
+        dir = cl_obj:xform():getXYZ()
+     end
+     
+     dir = norm_angles(dir)
+     
+     local dist = v:distance_to (pos)
+     local a_diff = angle_diff (dir, d)
+     
+     -- IC	SelfRef	setXYZ	(T x, T y, T z)	{return setHPB(y,x,z);}
+   -- IC	SelfRef	setXYZ	(Tvector& xyz)	{return setHPB(xyz.y,xyz.x,xyz.z);}
+     -- (vector_max(a_diff) > 1) or
+     if dist > 0.1 or (e.gvid ~= obj_gvid) or (e.lvid ~= obj_lvid) then
+   
+       local epos = sprintf(" { gv = %5d, lv = %8d } { %s }",  e.gvid,    e.lvid,  misc.pos2str(v))
+       local opos = sprintf(" { gv = %5d, lv = %8d } { %s } ", obj_gvid, obj_lvid, misc.pos2str(pos)) --        
+     
+       wprintf("~C0F #SHIFTED:~C07 entity spawn_id =~C0D %5d~C07 obj_id =~C0D %5d~C07,  name =~C0A %s~C07, fixed_bones =~C0A '%s'~C07", 
+                                          e.spawn_id, id, name, fxd_bones)
+       wprintf("    entity pos =~C0F %45s~C07\n    object pos =~C0E %s~C07, shift =~C0D %.3f~C07 ", epos, opos, dist)
+       wprintf("    entity dir =~C0F %45s~C07\n    object dir =~C0E %s~C07", misc.pos2str(d), misc.pos2str(dir))
+       wprintf("    diff angs  =~C0A %s~C07 ", misc.pos2str(a_diff))
+                          
+       -- local class = class_map[obj:clsid()] or tostring(obj:clsid())
+       -- wprintf("    entity ptr =~C0B %s~C07 se_obj ptr =~C0A %s~C07, class =~C0A %s~C07 ", e:format(), get_SObject(id):format(), class)         
+       -- coord_params.set_obj_pos(obj.id, v.x, v.y, v.z, true)
+       obj.direction = d
+       obj:set_position(v)
+       if e.gvid ~= obj.m_game_vertex_id then
+          wprintf(" game_vertex changed from~C0D %5d~C07 to~C0D %5d~C07", obj.m_game_vertex_id, e.gvid)
+          obj.m_game_vertex_id = e.gvid
+       end   
+              
+       if obj.m_level_vertex_id ~= e.lvid then
+          wprintf(" level_vertex changed from~C0D %5d~C07 to~C0D %5d~C07", obj.m_level_vertex_id, e.lvid)
+          obj.m_level_vertex_id = e.lvid
+       end
+                                                  
+       if cl_obj then
+          local rot = SRotation(dir.y, dir.x, dir.z)
+          cl_obj:set_rotation(rot)
+          cl_obj:set_position(v)                            
+          misc.touch_obj(cl_obj)         
+          campmgr.fix_it(id, true)
+          -- misc.force_offline(id)                         
+          -- schedule.add( "restore_client", sprintf("misc.force_online(%d)", id), 500 )            
+       end
+       shifted[id] = 1
+       return true
+     else
+       shifted[id] = (shifted[id] or 0) + 1 -- больше не требует внимани€
+       
+       if disp then 
+          wprintf("~C0A %-35s~C07 has normal position at~C0F %s~C07 ", name, misc.pos2str(pos))
+       end    
+     end -- if dist > 0.0x                         
+   
+   else
+     shifted[id] = true              
+   end -- if obj and have bones and not obj.is_alive
+ end -- if entity exists  
+ return false
+end
+
+
+local all_objs = {}
+
+function registry.adjust_spawned_objects(self, delta, ct, taskrec)
+
+  local max_time = 20
+  if self and lua_isnumber(self) then
+     max_time = self
+  end 
+  
+  local ref = db.actor:position()
+
+  if ref:distance_to_xz(last_cp) < 30 then 
+     return 
+  end               
+  last_cp:set(ref)
+  wprintf("[~T/~B]. #PERF: adjust_spawned_objects start, cp = { %.1f, %.1f, %.1f } ", last_cp.x, last_cp.y, last_cp.y)
+  
+  -- local ids = misc.find_around(ref, "", 50)
+  local cnt = 0 
+  -- local ids = registry.level_objects("")
+  if #all_objs == 0 then
+     all_objs = registry.local_objects()
+     wprintf("[~T/~B]. #DBG: on level objects now =~C0D %d~C07 ", #all_objs)
+  end
+  
+  
+  local ids = all_objs 
+  wprintf("[~T/~B]. #DBG: for processing objects %d ", #ids)  
+  local time_out = false
+  local last_id = 0           
+             
+  local elapsed = 0            
+            
+  for i, id in ipairs(ids) do   
+    if not shifted[id] then -- исключение повторов      
+        
+       last_id = id 
+       cnt = cnt + 1
+       if cnt % 50 == 0 then 
+          elapsed = device():frame_elapsed()
+       end  
+       
+       if adjust_spawn_pos(id) or elapsed > max_time then
+          -- упреждение лагов
+          time_out = true       
+          break 
+       end 
+    end   
+  end -- for
+
+  if cnt > 100 or time_out then
+     wprintf("[~T/~B]. #DBG: adjust_spawned_object end, processed = %5d, last_id = %d", cnt, last_id)
+  end
+  
+  if not time_out then
+     wprintf("[~T/~U/~B]. #DBG: цикл выравнивани€ позиций завершен")
+     last_cp:set(ref)
+     taskrec.initial = false
+     all_objs = {}
+  end    
+
+  wprintf("[~T/~B]. #PERF: adjust_spawned_objects end")
+end -- adjust_spawned_objects
+
+
+function find_object(name, fast_update, convertor)
+ update_registry(fast_update)
+ local id = InvokeRegistry("FIND", name)
+ if convertor ~= nil then
+    return convertor(id)
+ else
+    return id
+ end
+end
+

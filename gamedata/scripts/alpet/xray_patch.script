@@ -1,0 +1,152 @@
+
+opcodes = 
+{
+  jb    = 114,
+  jnb   = 115, -- jae
+  jz    = 116, -- je 
+  jnz   = 117, -- jne
+  jbe   = 118, -- jna
+  ja    = 119,
+  retnx = 194, -- 3 byte command
+  retn  = 195,
+  int3  = 204,  
+  jmp   = 235  
+}
+
+local wprintf = _g.wprintf
+if nil == wprintf then
+   ODS("~CFC WARNING: _g.wprintf == nil !~C07") 
+   wprintf = function (msg,...)
+    ODS(string.format(msg,...))
+   end
+end
+
+local function check_build()
+ local build =  xr_build_id or 0 
+ if build == 3312 then
+    return true
+ else
+    if wprintf then   
+       wprintf(" ~C0C#WARN(xray_patch.script):~C07 incompatible xr_build %d%s", xr_build_id, xr_build_ext or ".")
+    end       
+    return false
+ end    
+end
+
+
+function enable_icons_67()
+ local j_cmd, b 
+ if not check_build() then 
+    return 0
+ end
+ 
+ 
+ j_cmd = CalcPtr('xrGame.dll', '$3D0F72', '+') -- in CUIMainIngameWnd::Update
+ if j_cmd == nil then 
+    return 0
+ end
+ 
+ local r = 2
+ b = ReadDMA (j_cmd, 0, 'byte')
+ if ( b == opcodes.jz ) then
+   UnlockDMA (j_cmd, 0)    
+   WriteDMA (j_cmd, 0, opcodes.jmp, 'byte')   -- convert to jmp 
+   wprintf('[~T].~C0F #DBG: enable_icon_6 success patch applied from byte %d to JMP ~C07', b)   
+ else
+   ODS('[~T].~C0C #DBG: enable_icons_6 unknown byte =~C0F '..tostring(b)..'~C07')
+   r = r - 1     
+ end
+  
+ -- icon 7
+ j_cmd = CalcPtr('xrGame.dll', '$3D04DF', '+') 
+ b = ReadDMA (j_cmd, 0, 'byte')
+ if ( b == opcodes.jnz ) then    
+    UnlockDMA (j_cmd, 0)    
+    WriteDMA (j_cmd, 0, opcodes.ja, 'byte')   -- convert to ja
+    wprintf('[~T].~C0F #DBG: enable_icon_7 success patch applied from byte %d to JA ~C07', b)   
+ else
+    ODS('[~T].~C0C #DBG: enable_icon_7 unknown byte =~C0F '..tostring(b)..'~C07')
+    r = r - 1      
+ end
+ return r 
+end
+
+
+function patch_indctr()
+  if not check_build() then 
+     return 0
+  end
+
+
+  local dest = CalcPtr('xrGame.dll', '$3D1C35', '+')
+  if dest == nil then return end
+  local dump = dest:read(0, 'dump', 3)
+  if dump == 'C6 40 30' then
+    
+     dest:unlock(0)
+     dest:write(3, 1, 'byte')  
+  else
+     wprintf('[~T].~C0C #FATAL:~C07 incompatible bytes at~C0D %s~C0B =~C0F %s~C07', dest:format(), dump)   
+  end
+  local pstr = CalcPtr('xrGame.dll', '$4A5C78', '+') 
+  local nstr = 'jemo_besvrp'
+  local vstr = pstr:read(0, 'ansi')               
+
+  if strpos(vstr,'emo_recor') or ( vstr == nstr ) then
+     pstr:unlock(0)
+     pstr:write(0, nstr, 'ansi')
+     return 1
+  else
+     wprintf('[~T].~C0C #FATAL:~C07 incompatible string at~C0D %s~C0B =~C0F %s~C07', pstr:format(), vstr)   
+  end
+  return 0 
+end
+
+function patch_cnp() 
+ if not check_build() then 
+    return 0
+ end
+ local r = 2
+ local p = CalcPtr ("xrGame.dll", "$19FEB0", '+') -- CEffectorZoomInertion::CalcNextPoint start: sub esp, 0Ch
+ local b = p:read(0, 'byte')
+ if ( b == 131 ) or ( b == 195 ) then
+    p:unlock(0)
+    p:write(0, 195, 'byte')
+    b = p:read(0, 'byte')
+    wprintf('[~T].~C0F #PATCH_CNP:~C07 SUCCESS,  byte at %s =~C0D %d~C07 ', p:format(), b)    
+ else
+    wprintf('[~T].~C0C #PATCH_CNP: ~C07 FAILED, byte at %s =~C0D %d~C07 ', p:format(), b)   
+    r = r - 1 
+ end
+ p = CalcPtr ("xrGame.dll", "$1A0072", "+")
+ local d = p:read(0, 'dump', 5)     
+ if d == 'F3 0F 10 46 0C' then
+    p:unlock(0)
+    p:write(0, 'E9 C7 00 00 00', 'dump')     
+    d = p:read(0, 'dump', 5)
+    wprintf('[~T].~C0F #PATCH_CNP:~C07 SUCCESS, dump at %s =~C0D %s~C07 ', p:format(), d)    
+ else
+    wprintf('[~T].~C0C #PATCH_CNP: ~C07 FAILED, dump at %s =~C0A %s~C07', p:format(), d)
+    r = r - 1 
+ end     
+ return r 
+end
+
+
+function patch_all() 
+
+  RunCommand('MW_ENABLE', 'xray_patch.script')
+  local success = patch_cnp()
+  -- success = success + do_gamespy_patch()
+  -- success = success + do_vertex_patch()  
+  success = success + enable_icons_67()
+  success = success + patch_indctr()
+  wprintf("[~T] #XRAY_PATCH: success = %d ", success)
+  RunCommand('MW_DISABLE')
+end
+
+function init_module()
+ if xr_build_id < 5500 then
+    patch_all()
+ end    
+end    

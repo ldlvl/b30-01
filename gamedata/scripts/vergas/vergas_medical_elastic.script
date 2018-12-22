@@ -1,0 +1,279 @@
+--[[
+Медицинская резинка v 2
+Vergas
+© NLC-6.0
+]]--
+
+local obj_name 			    	--имя медицинской прибамбасины
+local obj_id				    --ID медицинской прибамбасины
+local flag_help 		= false     -- флаг помощи раненому (true - оказывается, false - не оказывается) 
+local help_id  			= -1
+local msg_last   		= 0
+
+in_progress      		= false		-- флаг лечения (true - лечение запущено, false - лечения нет)
+heal_start       		= false     -- игровое время начала лечения
+heal_last        		= false     -- последнее лечение
+heal_time        		= 0			-- время в секундах на лечение
+
+delta_health     		= 0 		--порция здоровья в еденицу времени
+delta_power      		= 0		    --порция потери энергии в еденицу времени
+delta_radiation  		= 0  	    --порция снятия радиации в еденицу времени
+post_eff		 		= 0		    --номер пост-эффекта
+
+local save_vars = { 
+	"in_progress",
+	"heal_start",
+	"heal_last",
+	"heal_time",
+	"delta_health",
+	"delta_power",
+	"delta_radiation",
+	"post_eff"
+}
+
+local wnd_ar
+
+local med = {
+	medkit 				= true,
+	medkit_army 		= true,
+	medkit_scientic 	= true,
+	bandage 			= true,
+	energy_drink 		= true,
+	energy_drink_new 	= true, 
+	antirad 			= true,
+    -- mixture = true,
+	suvorotka 			= true
+}
+
+local vis_post_eff = {
+	"intoxication_1.ppe",
+	"intoxication_2.ppe",
+	"black_q.ppe",
+	"psychic.ppe",
+	"escape.ppe",
+	"noise.ppe",
+	"brighten.ppe"
+}
+
+local snd_eff = {
+	"scripts\\inv_medkit",
+	"scripts\\inv_softdrink",
+	"scripts\\inv_pills",
+	"scripts\\inv_bandage",
+	"device\\tiski_avto_2",
+	"device\\tiski_bronik_2",
+	"scripts\\inv_medkit_arm",
+    "scripts\\inv_medkit_sci",
+    "scripts\\inv_antirad"
+}
+ 
+function dump()
+  if in_progress then
+     wprintf( " heal_time        =~C0D %f~C07", heal_time		)
+     wprintf( " delta_health     =~C0D %f~C07", delta_health	)
+     wprintf( " delta_power      =~C0D %f~C07", delta_power		)
+     wprintf( " delta_radiation  =~C0D %f~C07", delta_radiation )
+  end
+end
+
+function use_item( obj )
+	obj_name = obj:section()
+	obj_id 	 = obj:id()
+	if not med[ obj_name ] then	return end
+    wprintf(
+            "use_item object =~C0F %s~C07, flags =~C0E %s~C0B,~C0A %s~C07, help_id =~C0D %d~C07 ",
+            obj_name,
+            tostring( in_progress ),
+            tostring( flag_help ),
+            help_id
+            ) 
+	--ODS("[~T]  флаги	"..tostring(in_progress).."	"..tostring(flag_help).."	")
+	if in_progress or ( flag_help and obj_id == help_id ) then
+		if in_progress and alife():object( obj_id ) == nil then
+			vergas_lib.spawn_item_in_inv( obj_name, true )
+		end
+		flag_help = false        
+		return
+	end
+	if obj_name == "medkit_army" then
+		sleep_manager.add_sleepiness( 15 )
+		ODS( "[~T]  ----------------------------   добавили сонливости   --------------------------	" )
+	end
+	init_treatment()	
+end
+
+function init_treatment()
+    help_id = -1 
+	snd_eat_med()     
+    wprintf( "[~T]. #DBG: init_treatment called with object~C0A %s~C07 ", obj_name )
+    local heal_coef  = 7 / (3 + level.get_game_difficulty() ) -- коэффициент лечения от сложности игры
+	heal_time        = vergas_lib.set_pr_from_config( obj_name, "mr_time" 			)
+	delta_health     = vergas_lib.set_pr_from_config( obj_name, "mr_eat_health" 	)   / heal_time / 60.0
+	delta_power      = vergas_lib.set_pr_from_config( obj_name, "mr_eat_power" 		)   / heal_time / 20.0 
+	delta_radiation  = vergas_lib.set_pr_from_config( obj_name, "mr_eat_radiation" 	) 	/ heal_time / 60.0    
+	post_eff         = vergas_lib.set_pr_from_config( obj_name, "post_eff" 			)
+    --wprintf("[~T]. #DBG: init_treatment heal_coef = %.3f, heal_time = %d, delta_health = %.5f ", heal_coef, heal_time, delta_health)
+    heal_time        = heal_time       * 60.0
+    delta_health     = delta_health    * heal_coef
+    delta_power      = delta_power     * heal_coef
+    delta_radiation  = delta_radiation * heal_coef
+    heal_start       = game.get_game_time()
+    heal_last        = game.get_game_time()
+    msg_last         = 0
+	--if obj_name~="bandage" then
+    if heal_time > 0 and obj_name ~= "energy_drink" then 
+	   level.add_pp_effector( vis_post_eff[ post_eff ], 1021, true )
+    end   
+	--end
+	in_progress = true
+	if obj_name == "mixture" then
+		params.psy_health_v_add( 20 )
+	end
+    medical_procedures()
+end
+
+function medical_procedures()
+	local portion = 0                           	
+    if not in_progress or type( heal_last ) ~= "userdata" or type( heal_start ) ~= "userdata" then
+       wprintf(
+               "~C0C #WARN:~C07 in_progress = %s, heal_start = %s, heal_last = %s - no actions ",
+               DumpVar( in_progress ),
+               DumpVar( heal_start ),
+               DumpVar( heal_last )
+               )
+	   return
+	end
+    schedule.add( "med_procedur", "vergas_medical_elastic.medical_procedures()", 200 )
+	local time_cur = game.get_game_time()
+    local d_sec    = time_cur:diffSec( heal_last )
+    local d_heal   = time_cur:diffSec( heal_start )
+    if d_sec < 10 then
+       -- wprintf("~C09 d_sec =~C0D %.2f ~C07", d_sec)  
+       return 
+    end
+    heal_last = time_cur
+    if d_heal > msg_last + 30 then	
+       msg_last = d_heal
+	   wprintf(
+	           "[~T].~C0E #DBG: healing delta sec =~C0D %.3f~C0E, actor.health =~C0D %.3f ~C0E, healing progress =~C0D %.3f%% ~C07",
+	           d_sec,
+	           db.actor.health,
+	           100 * d_heal / heal_time
+	           )
+    end       
+	if  d_heal >= heal_time  then
+        heal_start = false
+        heal_last  = false
+		params.psy_health_v_add( 1 )
+		level.remove_pp_effector( 1021 )
+		in_progress = false
+        wprintf( "[~T].~CF0 #OK: healing complete, actor.health =~CFD %.3f ~C07", db.actor.health ) 
+	else
+		db.actor.health    = delta_health 	 * d_sec
+		db.actor.power     = delta_power 	 * d_sec
+		db.actor.radiation = delta_radiation * d_sec
+        params.tiredness_add( 0 ) -- immediate reaction
+	end
+end
+
+function get_flag_help()
+	return flag_help
+end
+
+function set_flag_help( item )
+    if item and item.id 			then help_id 	= item:id() 	 end
+	if not type( item ) == "string" then item 		= item:section() end
+	if med[ item ] 					then flag_help 	= true 			 end
+end
+
+local sound_tip = {
+	medkit 				= 1,
+	medkit_army 		= 7,
+	medkit_scientic 	= 8,
+	bandage 		 	= 4,
+	energy_drink 	 	= 2,
+	energy_drink_new 	= 2, 
+	antirad 			= 9,
+	mixture 			= 2,
+	suvorotka 			= 2
+	}
+
+function snd_eat_med( tips )
+	if tips == nil and obj_name ~= "energy_drink" then	tips = sound_tip[ obj_name ] end
+	local snd_obj = xr_sound.get_safe_sound_object( snd_eff[ tips ] )
+	snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
+end
+
+function use_antirad()
+	if db.actor:object( "antirad" ) ~= nil then
+		db.actor:eat( db.actor:object( "antirad" ) )
+		--timers.start_timer("antirad_timer",4,"vergas_medical_elastic.end_antirad_timer()")
+	else
+		sak.send_tip( "А ведь нету антирада", "Тудыть твою железа мать!", 1, 10, "g_g", "sak", "red" )
+		vergas_lib.s_play( [[device\antirad_no]], 1 )
+	end
+end
+
+function use_energy()
+	if  db.actor:object( "energy_drink" ) ~= nil then
+		db.actor:eat( db.actor:object( "energy_drink" ) )
+	else
+		sak.send_tip( "Нету энергетика!", "Едрён-батон!", 1, 10, "g_g", "sak", "red" )
+		vergas_lib.s_play( [[device\antirad_no]], 1 )
+	end
+end
+
+function encode_value( v )
+	if type( v ) ~= "userdata" then return v end
+	local  tm = pack_args( v:get() )
+	return tm  
+end
+
+function decode_value( k, v )
+	if type( v ) ~= "table" or #v ~= 7 then return v end
+	local tmp = game.CTime()
+	tmp:set( unpack( v ) ) 
+	wprintf( " loaded time value~C0E %s~C0B =~C0F %s~C07", k, tmp:timeToString( 2 ) )
+	return tmp 
+end
+
+function save()
+	if  not in_progress then return end
+    local tbl = {}
+    if  heal_start and heal_last and heal_time > 0 then 
+		in_progress = true
+    else
+		in_progress = false
+    end
+    if  delta_health == 0 and delta_radiation == 0 and delta_power == 0 then
+		in_progress = false
+    end
+    for i, k in ipairs( save_vars ) do        
+		tbl[ k ] = encode_value ( vergas_medical_elastic[ k ] )                 
+    end  -- for    
+	nlc_vars.medical = tbl
+    --wprintf(" saved medical ")
+    misc.dump_table( tbl )
+    -- misc.dump_table(xvars.nlc.medical(true))
+end
+
+function load()
+	local tbl = nlc_vars.medical
+	if tbl == nil then return end
+    tbl = tbl( true ) -- нужна сама таблица, а не объект 
+	nlc_vars.medical = nil
+    wprintf( " loaded medical: " )
+    misc.dump_table( tbl )
+    for k, v in pairs( tbl ) do
+        vergas_medical_elastic[ k ] = decode_value ( k, v ) -- импорт переменных 
+    end
+	if post_eff and post_eff ~= 0 then
+	   --ODS("[~T]. #DBG: вот post_eff = ~C0A"..post_eff.."~C07")
+	   level.add_pp_effector( vis_post_eff[ post_eff ], 1021, true )
+	end
+    if in_progress then
+	   schedule.add( 'med_proc', 'vergas_medical_elastic.medical_procedures()', 500 )
+    else
+       wprintf( " #DBG: healing not scheduled by flag" )  
+    end       
+end

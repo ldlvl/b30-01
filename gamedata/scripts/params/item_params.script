@@ -1,0 +1,61 @@
+
+local item_offsets = {
+  burn_immunity				    =	"-$00AC",
+  shock_immunity				=	"-$00A8",
+  strike_immunity				=	"-$00A4",
+  wound_immunity				=	"-$00A0",
+  radiation_immunity			=	"-$009C",
+  telepatic_immunity			=	"-$0098",
+  chemical_burn_immunity		=	"-$0094",
+  explosion_immunity			=	"-$0090",
+  fire_wound_immunity			=	"-$008C",
+  condition                     =   "-$0030",
+  
+  burn_immunity2				=	"$0214",
+  shock_immunity2				=	"$0218",
+  strike_immunity2			    =	"$021C",
+  wound_immunity2				=	"$0220",
+  radiation_immunity2			=	"$0224",
+  telepatic_immunity2			=	"$0228",
+  chemical_burn_immunity2		=	"$022C",
+  explosion_immunity2			=	"$0230",
+  fire_wound_immunity2		    =	"$0234",
+  
+  slot						    =	"-$0064",
+  
+  cost					     	=	"-$0060",
+  inv_weight					=	"-$005C",
+  
+  eat_health					=	"-$0024",
+  eat_satiety					=	"-$001C",
+  eat_power					    =	"-$0020",
+  eat_radiation				    =	"-$0018",
+  wounds_heal_perc			    =	"-$0010",
+  eat_alcohol					=	"$01B0",
+  eat_power_vodka				=	"$02B0",
+  
+  eat_portions_num			    =	"-$000C",
+  eat_portions_num			    =	"-$0008"
+}
+
+function item_prop(id, key, newval)
+ local obj = client_obj(id) -- game_object
+ if obj == nil then 
+    return nil
+ end
+ 
+ local iobj = obj:get_inventory_item()
+ if iobj then
+ --ODS("[~T].~C0C item_prop "..tostring(key).."    "..tostring(newval).."~C07")
+    return update_prop(iobj, key, newval)
+ end    
+ return 0
+end
+
+function immun_prop(id, key, newval)
+ local obj = client_obj(id) -- game_object
+ if obj then
+ return update_prop(obj.immunities, key, newval)
+ end
+end
+                                                

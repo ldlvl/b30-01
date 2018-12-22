@@ -1,0 +1,583 @@
+
+-- предполагается потом этот класс будет реализован средствами движка(!), если потребуется быстродействие
+
+class "record_list"
+
+local LIST_SIGNATURE = 83398
+local std_conv = { string = tostring, number = tonumber, boolean = toboolean }
+
+function _G.istable(t)
+ return type(t) == "table"
+end
+
+function convertor(type, value)
+ 
+ local conv = std_conv[type]
+ if conv then
+    return conv(value)
+ else
+    return value
+ end   
+end
+
+function rec_detect_type(fields, rec)
+ local result = {} 
+ for i, fld in ipairs(fields) do
+     local val = rec[fld]
+     table.insert(result, type(val)) 
+ end
+ return result
+end
+
+function rec_get_fields(rec)
+ local result = {}
+ for fld, val in pairs(rec) do
+    table.insert(result, fld)
+ end
+ return result
+end
+
+-- параметром конструктора служит список-вектор полей и их типов
+function record_list:__init(fields, types, default)
+   self.name = "unnamed"
+   self.class_name = "record_list"
+   self:clear()
+   if fields and type(fields[1]) ~= "string" then
+      -- при инициализации из массива, не будет сортировки полей и соответственно методы add/insert будут малополезны!
+      local rec = fields[1]
+      
+      self.fields = rec_get_keys (rec)
+      self.types  = rec_detect_types (rec)
+      
+      for k, v in pairs(rec) do
+        table.insert(self.fields, k)
+        table.insert(self.types, type(v))
+      end
+      self.default = default or {}   
+      return
+   end 
+         
+   self.signature = LIST_SIGNATURE
+   self.fields    = fields   or { "sect" }                    
+   self.types     = types    or { "string", "number" }
+   self.default   = default  or { "?", 0 }                
+   
+   self.field_type = {}
+   for i, fld in ipairs(self.fields) do
+      self.field_type[fld] = self.types[i]    
+      self.default[i] = convertor(self.types[i], self.default[i])      
+   end                                                             
+
+   self:verify_rec(self:default_rec(), "test_default_rec")          
+end
+
+function record_list:__add(list) -- небезопасное сращивание списков - не проверяется формат записей!
+  local tsrc = {}  
+  if istable(list) then
+     tsrc = list
+  else
+     tsrc = list.storage
+  end
+  
+  -- порождение копии, чтобы исключить самозатирание 
+  result = self:fork() 
+   
+  for i, rec in ipairs(tsrc) do
+      result:add_rec(rec)
+  end             
+  
+  return result       
+end
+
+function record_list:__call(index)
+   if type(index) == "boolean" then
+      return self.storage -- unpack capture, same as script_vars
+   else   
+      local rec = self.storage[tonumber(index)] -- same as get
+      return self:verify_rec(rec, sprintf("__call(%d/%d)", index, self:size()))
+   end          
+end
+
+function record_list:add(...) -- добавление одной записи
+  self:insert(#self.storage + 1, ...)
+end
+
+function record_list:verify_rec(rec, context)
+  if not rec then
+     wprintf("~C0C #ERROR:~C0 record_list:verify_rec, ctx =~C0F %s~C0C, rec == nil from\n~C0A %s~C07 ", context or 'nil', lua_traceback(' '))     
+     return self:default_rec()
+  end
+  local fail = false
+ 
+  for key, val in pairs(rec) do
+    local ref_t =self.field_type[key]
+    if ref_t and ref_t ~= type(val) then
+       wprintf("~C0C #WARN: ~C07 record_list:verify_rec ctx = %s, rec.%s mistmach = %s:%s, expected %s ", context or 'nil', key, DumpVar(val), type(val), ref_t)
+       wprintf(" %s ", lua_traceback('  '))
+       rec[key] = convertor(ref_t, val)
+       fail = true 
+    end 
+  end
+  if fail and context == "test_default_rec" then
+     wprintf("~C0C #ERROR:~C07 not compatible 'default': ")
+     dump_table(self.default)
+  end  
+  
+  return rec
+end
+
+function record_list:add_rec(rec)
+  self:verify_rec(rec, 'add_rec')
+  table.insert(self.storage, rec)
+end
+       
+function record_list:dump(title)
+  if title then ODS(title) end
+  misc.dump_table(self.storage)
+end
+                   
+function record_list:default_rec()
+  local rec = {}
+  for i, field in ipairs(self.fields) do               
+    if i <= #self.default then
+       rec[field] = self.default[i]
+    end   
+  end                                  
+  return rec
+end                   
+
+function record_list:fork()
+ local result = record_list( self.fields, self.types, self.default )
+ result.name       = self.name
+ result.field_type = self.field_type
+ result:assign(self)
+ return result
+end
+                   
+function record_list:insert(index, ...)
+  local args = pack_args(...)  
+  local rec = self:default_rec()
+  local argc = #args 
+  if argc > 0 then 
+  
+    if argc == 1 and istable(args[1])then
+       rec = args[1]
+    else   
+      for i, field in ipairs(self.fields) do              
+        if i <= argc then  
+           rec[field] = convertor (self.types[i], args[i])
+        end -- if   
+      end -- for                                 
+    end -- if table
+  end -- if argc  
+  
+  self:verify_rec(rec, "insert")
+  table.insert(self.storage, index, rec)
+end
+
+function record_list:assign (tbl)
+ local tt = type(tbl) 
+ if tbl and tt  == "table" then
+    self.storage = tbl
+ elseif tt == "userdata" then  
+    self.storage = tbl(true) -- unpack total  
+ end
+ return self:verify()
+end
+
+function record_list:clear()
+ self.storage = {}
+end
+
+function record_list:find(n_field, ...) -- небыстрый, но гибкий поиск записей
+ local args = pack_args(...)
+ local key = self.fields[n_field]
+ 
+ for i, rec in self:ipairs() do      
+    local val = rec[key]
+    if val then     
+      for n, sample in ipairs(args) do
+          if sample == val then
+             return i
+          end 
+      end -- for
+    end -- if
+ end -- for 
+ return 0  -- nothing found
+end
+
+function record_list:map(std)
+ local result = {}            
+ if std then
+    result = std_map()
+ end
+ 
+ if self.types[1] == "string" then
+    local key = self.fields[1]
+    local val = self.fields[2]  
+    for i, rec in ipairs(self.storage) do
+        local k   = rec[key]
+        if std then
+          result:add(k, rec[val])
+        else 
+          result[k] = rec[val]
+        end             
+    end -- for 
+ end -- if
+ 
+ return result    
+end
+
+function record_list:remove(index)
+  table.remove(self.storage, index) 
+end
+
+function record_list:set_default(i_min, i_max)
+    
+ for i = i_min, i_max or i_min  do
+   if self:size() < i then
+      self:add()
+   else
+      self:set(i, self:default_rec())
+   end   
+ end
+ return self
+end
+
+function record_list:set_size(sz)
+ self:set_default(self:size() + 1, sz)
+ while self:size() > sz do 
+       self:remove()
+ end
+end
+
+function record_list:import_map(map)
+ map = cast_std_map(map) 
+ for key, val in map:pairs() do
+   self:add(key, val) 
+ end                  
+ return self
+end
+
+-- устаревший метод с вектором в строке
+function record_list:import_string(s)
+ local v = vergas_lib.str_explode("|", s, true)
+ self:import_vector(v)
+ return self
+end       
+
+function record_list:import_vector(v) -- для импорта из "ужасного-для-восприятия" векторого хранилища пар
+ self:clear() 
+ for i = 1, #v - 1, 2 do
+     self:add(v[i], v[i + 1])
+ end
+ return self
+end
+
+function record_list:ipairs()
+ return  ipairs(self.storage)
+end
+                            
+function record_list:get(index) 
+ return self.storage[index]
+end
+
+function record_list:set(index, rec)
+ self.storage[index] = rec   
+end                                     
+
+function record_list:size()
+ return #self.storage
+end 
+                            
+
+function record_list:front()
+ return self:get(1)
+end
+
+function record_list:back()  
+ return self:get(#self.storage)       
+end
+
+function record_list:optimize(n_field, value)
+ value = value or 0
+ local fld = self.fields[n_field or 2]
+ for i = #self.storage, 1, -1 do
+  local rec = self.storage[i]
+  if rec[fld] == value then
+     self:remove(i)
+  end
+ end
+end      
+
+function record_list:pop_front()
+ local rec = self:front()
+ self:remove(1)
+ return rec
+end
+
+function record_list:pop_back()
+ local rec = self:back()
+ self:remove()
+ return rec
+end
+
+function record_list:push_front(rec)
+ self:insert(1, rec)
+ return self:size()
+end
+
+function record_list:push_back(rec)
+ self:add_rec (rec)
+ return self:size()                 
+end                                         
+                            
+function record_list:rotate_left()
+ -- сдвиг всех элементов справа налево (от конца вектора к началу)
+ local first = self:pop_front()
+ if first then self:push_back(first) end
+end
+                            
+function record_list:rotate_right()
+ -- сдвиг всех элементов слева направо (от начала вектора к концу)
+ local last  = self:pop_back()
+ if last then self:push_front(last) end
+end                  
+
+function record_list:sort(compare)
+ if compare then
+    table.sort(self.storage, compare)
+ end
+end
+
+function record_list:load(from, name, def_size)
+ name = name or self.name
+ from = from or nlc_vars
+ local src = xray_vars.load_table(from, name, {})
+ self:clear()
+ for i, rec in ipairs(src) do
+     self:push_back(rec)
+ end
+ if def_size then self:set_size(def_size) end 
+ return self:verify()
+end
+
+function record_list:save(to, name)
+ name = name or self.name
+ to = to or nlc_vars
+ to[name] = self.storage 
+end          
+
+function record_list:verify()
+ for i, rec in self:ipairs() do
+     self:verify_rec(rec, "verify_all")
+ end
+ return self
+end
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function std_table()
+ local t = {}
+ t.dump    = dump_table
+ t.insert  = table.insert
+ t.size    = table.getn
+ t.pairs   = pairs
+ t.ipairs  = ipairs 
+ return    t
+end
+
+
+class "std_map"
+                            
+function cast_std_map(map)
+ if type(map) ~= "userdata" then
+    return std_map(map)
+ else
+    return map
+ end
+end                            
+                            
+function std_map:__init(src, min_value)
+ self:clear() 
+ if src and istable (src) then
+    for k, v in pairs(src) do
+        self:set(k, v) 
+    end
+ end     
+ self.min_value = min_value or 0 
+ self.name = "unnamed"
+ self.class_name = "std_map"
+ self.erase_key = nil
+end                            
+            
+function std_map:__add(src)
+ local result = self:fork()
+ return result:add_map(src)
+end            
+            
+function std_map:__call(key, default)
+ if type(key) == "boolean" then 
+    return self.map 
+ else 
+    return self:get(key, default)
+ end
+end
+              
+function std_map:add(key, val)
+ local res = tonumber(val or 0) + (self.map[key] or 0)
+ self.map[key] = res
+ return res 
+end               
+
+function std_map:add_map(src)
+ src = cast_std_map(src)
+ local st = type(src)
+ if st ~= "userdata" then
+    wprintf("~C0C #ERROR:~C07 std_map:add_map src.type = %s ", st)
+    return self
+ end 
+ 
+ for key, val in src:pairs() do
+     if val ~= 0 then
+        self:add(key, val)
+     end   
+ end
+ return self
+end
+
+function std_map:clear()
+ self.map = {}
+end
+
+
+function std_map:dump(title, space)
+ if title then ODS(title) end
+ misc.dump_table(self.map, space)
+end
+
+function std_map:erase(keys) -- вытереть пары с соответствующими ключами
+ if istable (keys) then
+   for i, key in ipairs(keys) do
+       self:set(key, nil)
+   end  
+ else
+   self:set(keys, nil)
+ end  
+end
+
+function std_map:fork()
+ result = std_map(this.map, self.min_value)
+ result.name = self.name
+ return result 
+end
+
+function std_map:sieve (filter, ...) -- быстрый отсев пар не входящих в вектор ключей, или не удостоверяемых функцией-колбеком
+ 
+ local key_set = {}
+ 
+ local std_filter = function(key, key_set) return key_set[key] end
+ 
+ if istable(filter) then  
+   for i, key in ipairs(filter) do key_set[key] = true end
+   filter = std_filter -- нужен колбек
+ end  
+ 
+ local to_erase = {} 
+ for key, val in self:pairs() do
+   if not filter(key, key_set, ...) then 
+      table.insert(to_erase, key)
+   end 
+ end
+ self:erase(to_erase) 
+end
+                                   
+function std_map:sub(key, val)
+ val = tonumber(val)
+ local res = (self.map[key] or 0)
+ res = res - val
+ val = 0
+ -- TEST: -2  vs 0 
+ if res < self.min_value then
+    -- TEST: val += (0 + 2)    
+    val = val + (self.min_value - res)
+    res = self.min_value
+ end
+   
+ self.map[key] = res
+ 
+ if self.erase_key and (self.erase_key == res) then
+    self:erase(key)    
+ end                  
+ return res, val 
+end               
+
+function std_map:keys(sorted)
+  local keys = {}
+  for k, v in self:pairs() do  
+    table.insert(keys, k)
+  end
+  if sorted then table.sort(keys) end
+  return keys  
+end
+
+function std_map:get(key, default)
+ return ( self.map[key] or default )
+end                                 
+
+function std_map:set(key, val)
+ self.map[key] = val
+end
+
+function std_map:optimize()
+ local void = {}
+ for key, val in self:pairs() do
+   if type(val) == "number" and val == 0 then
+      table.insert(void, key) 
+   end  
+ end
+ self:erase(void)
+end
+
+function std_map:pairs()
+ return pairs(self.map)
+end
+
+function std_map:ipairs(sorted) -- итератор значений в массив
+ local list = {}
+ local keys = self:keys(sorted)
+ for i, k in ipairs(keys) do
+   table.insert(list, self:get(k))
+ end
+ return ipairs(list)  
+end
+
+function std_map:size()
+ return misc.size_table(self.map)
+end
+
+
+-- карта стеков используется для сохранения абстрагированных объектов в формате секция:число
+
+class "stack_map" (std_map)
+
+function stack_map:__init() super()
+ self.erase_key = 0
+end
+
+function stack_map:push(key)
+ return self:add(key, 1)
+end
+ 
+function stack_map:pop(key)
+ local sv, vv = self:sub(key, 1)
+ return sv
+end
+
+
+                                   
+--_G.table_size = table.getn                                   
+_G.record_list = record_list
+_G.std_map     = std_map
+_G.stack_map   = stack_map

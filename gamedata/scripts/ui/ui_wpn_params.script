@@ -1,0 +1,111 @@
+function normalize(val)
+	if val > 100 then
+		val = 100
+	elseif val < 1 then
+		val	= 1
+	end
+	
+	return val
+end
+local ltx = system_ini()
+
+function read_if_exist(section, value, default)
+	if ltx:line_exist(section,value) then
+		return ltx:r_float(section,value)
+	else
+		return default
+	end
+end
+function GetRPM(section)
+	--[[local rpm = read_if_exist(section,"rpm", 100) --скорострельность
+	local mag_size = ltx:r_float(section,"ammo_mag_size") --ёмкость магазина
+	local f_modes = read_if_exist(section, "f_mode", 1) --коэф. 2для автомата
+	
+	if f_modes == 2 then
+		rpm = (rpm-380)^2
+		rpm = ((math.log10(rpm))^2)
+		rpm = ((math.floor(rpm))*3)+5
+	else
+		rpm = (rpm/50)*mag_size
+		rpm = ((math.log10(rpm))^2)
+		rpm = ((math.floor(rpm))*10)
+	end--]]
+	return 0 --normalize(rpm)
+end
+
+function GetDamage(section)
+    --[[local hit_power = ltx:r_float(section,"hit_power")
+    local buck_shot = 1
+    local ammo_list    = ltx:r_string(section,"ammo_class")
+    
+    local pos  = string.find(ammo_list,",",1)
+    local k_hit
+	local ammo
+    if pos then
+        ammo	= string.sub(ammo_list,1,pos - 1)
+        k_hit		= ltx:r_float(ammo, "k_hit")
+    else
+		ammo	= ammo_list
+        k_hit		= ltx:r_float(ammo,"k_hit")
+    end
+    local hit = (5*hit_power*k_hit)
+	if hit<1 then hit=1 end
+	hit = (hit)^2
+	local hit = math.log10(hit)
+	hit = (hit)^2
+	hit=hit*10--]]
+    return 0 --normalize(hit)
+end
+
+function GetDamageMP(section)
+	--[[local val = ltx:r_float(section,"hit_power")
+		
+	if val < 1.05 then
+		val = val*100-30
+	else
+		val = 75 + math.pow(val/4,2)*25
+	end--]]
+	
+	return 0 --normalize(val)	
+end
+
+function GetHandling(section)
+	--[[local misfire_probability	= ltx:r_float(section,"misfire_probability")
+	local misfire_condition_k	= read_if_exist(section, "misfire_condition_k", 1)
+	local condition_shot_dec = ltx:r_float(section,"condition_shot_dec")
+
+	local ammo_list			= ltx:r_string(section,"ammo_class")
+	
+	local pos	= string.find(ammo_list,",",1)
+	local impair
+	if nil~=pos then
+		local ammo = string.sub(ammo_list,1,pos - 1)
+		impair				= ltx:r_float(ammo, "impair");
+	else
+		impair				= ltx:r_float(ammo_list, "impair");
+	end
+		local n = 3000
+		local cond = 1 - impair*condition_shot_dec*n
+			if cond < 0 then cond = 0 
+		end
+		local prob
+			if cond > 0.95 then prob = 0
+			else
+			prob =(0.95 - cond)*(misfire_condition_k - misfire_probability) + misfire_probability
+		end
+
+		local val = 100*(1 - prob*7) 
+			if val < 20 then val = 20
+		end--]]
+		
+	return 0--normalize(val)
+end
+
+function GetAccuracy(section)
+    --[[local fire_dispersion_base    = ltx:r_float(section,"fire_dispersion_base")
+    local k_disp=(fire_dispersion_base)
+	if k_disp>1 then k_disp=1 end
+	k_disp=(math.log10(k_disp))
+    local fir = - (k_disp * 100)--]]
+    return 0 --normalize(fir)
+end

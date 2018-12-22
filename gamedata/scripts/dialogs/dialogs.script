@@ -1,0 +1,286 @@
+function allow_break_dialog(first_speaker, second_speaker, id)
+	if second_speaker:profile_name()=="osoznanie" then
+		return false
+	end
+	return true
+end
+
+function break_dialog(first_speaker, second_speaker, id)
+	first_speaker:stop_talk()
+	second_speaker:stop_talk()
+end
+function no_trade_trader(first_speaker, second_speaker, id)
+	first_speaker:disable_trade()
+end
+function no_trade(first_speaker, second_speaker, id)
+	second_speaker:disable_trade()
+end
+function yes_trade(first_speaker, second_speaker, id)
+	first_speaker:enable_trade()
+	second_speaker:enable_trade()
+end
+function start_trade_gg(first_speaker, second_speaker, id)
+	first_speaker:switch_to_trade()
+end
+function start_trade_trader(first_speaker, second_speaker, id)
+	second_speaker:switch_to_trade()
+end
+function disable_talk_self(first_speaker, second_speaker)
+	first_speaker:disable_talk()
+end
+function disable_talk_victim(first_speaker, second_speaker)
+	second_speaker:disable_talk()
+	first_speaker:disable_talk()
+end
+
+function punch(first_speaker, second_speaker)
+	db.storage[first_speaker:id()].punch.enabled = true
+end
+
+function get_money_then_leave(first_speaker, second_speaker)
+	db.storage[first_speaker:id()].meet.enabled = false
+	db.storage[first_speaker:id()].robber.enabled = true
+end
+function is_good_repa(first_speaker, second_speaker)
+		if second_speaker:character_reputation()<-100 and first_speaker:relation(second_speaker)~=game_object.friend then
+			return false
+		end
+	return true
+end
+function is_not_good_repa(first_speaker, second_speaker)
+	return not is_good_repa(first_speaker, second_speaker)
+end
+function is_wounded(first_speaker, second_speaker)
+		if db.storage[first_speaker:id()].wounded~=nil and db.storage[first_speaker:id()].wounded.wound_manager.can_use_medkit==true then
+			return false
+		end
+	return xr_wounded.is_wounded(first_speaker)
+end
+function is_opp_wounded(first_speaker, second_speaker)
+		if db.storage[second_speaker:id()].wounded~=nil and db.storage[second_speaker:id()].wounded.wound_manager.can_use_medkit==true then
+			return false
+		end
+	return	xr_wounded.is_wounded(second_speaker)
+end
+function is_not_wounded(first_speaker, second_speaker)
+	local oSpeaker2=second_speaker
+	if second_speaker:id()==db.actor:id() then
+		oSpeaker2=first_speaker
+	end
+	return not xr_wounded.is_wounded(oSpeaker2)
+end
+function actor_have_medkit(first_speaker, second_speaker)
+	return vergas_lib.search_items("medkit",1,1)~=false or
+		vergas_lib.search_items("medkit_army",1,1)~=false or
+		vergas_lib.search_items("medkit_scientic",1,1)~=false
+end
+function actor_have_medkit_same(first_speaker, second_speaker)
+	return vergas_lib.search_items("medkit",1,1)~=false
+end
+function actor_have_medkit_army(first_speaker, second_speaker)
+	return vergas_lib.search_items("medkit_army",1,1)~=false
+end
+function actor_have_medkit_scientic(first_speaker, second_speaker)
+	return vergas_lib.search_items("medkit_scientic",1,1)~=false
+end
+function actor_have_bandage(first_speaker, second_speaker)
+	return vergas_lib.search_items("bandage",1,1)~=false
+end
+function transfer_medkit_same(first_speaker, second_speaker)
+	if vergas_lib.search_items("medkit",1,1) then
+		vergas_lib.search_items("medkit",1,2)
+		amk.spawn_item_in_inv("medkit",second_speaker)
+		amk.spawn_item_in_inv("medkit_npc",second_speaker)
+	end
+	xr_wounded.unlock_medkit(second_speaker)
+end
+function transfer_medkit_army(first_speaker, second_speaker)
+	if vergas_lib.search_items("medkit_army",1,1) then
+		vergas_lib.search_items("medkit_army",1,2)
+		amk.spawn_item_in_inv("medkit_army",second_speaker)
+		amk.spawn_item_in_inv("medkit_npc",second_speaker)
+	end
+	xr_wounded.unlock_medkit(second_speaker)
+end
+function transfer_medkit_scientic(first_speaker, second_speaker)
+	if vergas_lib.search_items("medkit_scientic",1,1) then
+		vergas_lib.search_items("medkit_scientic",1,2)
+		amk.spawn_item_in_inv("medkit_scientic",second_speaker)
+		amk.spawn_item_in_inv("medkit_npc",second_speaker)
+	end
+	xr_wounded.unlock_medkit(second_speaker)
+end
+function transfer_medkit(first_speaker, second_speaker)
+	if vergas_lib.search_items("medkit",1,1) then
+		vergas_lib.search_items("medkit",1,2)
+		amk.spawn_item_in_inv("medkit",second_speaker)
+		amk.spawn_item_in_inv("medkit_npc",second_speaker)
+	end
+	xr_wounded.unlock_medkit(second_speaker)
+	
+	if second_speaker:relation(first_speaker)~=game_object.enemy then
+		first_speaker:change_character_reputation(10)
+	else
+		first_speaker:change_character_reputation(20)
+		xr_wounded.help_wounded(second_speaker)
+	end
+end
+function transfer_bandage(first_speaker, second_speaker)
+	dialogs.relocate_item_section(second_speaker, "bandage", "out")
+	second_speaker:set_relation(game_object.friend, first_speaker)
+end
+function kill_yourself(npc, actor)
+	npc:kill(actor)
+end
+function give_mongol_weapon(first_speaker, second_speaker)
+	amk.spawn_item_in_inv("wpn_pb",second_speaker)
+	amk.spawn_item_in_inv("ammo_9x18_fmj",second_speaker)
+end
+
+function relocate_item(victim, obj, type)
+	if db.actor and victim then
+		if type=="in" then
+			victim:transfer_item(obj, db.actor)
+		elseif type=="out" then
+			db.actor:transfer_item(obj, victim)
+		end
+	end
+end
+
+function relocate_item_section(who_transfer, section, type)
+	if db.actor and who_transfer then
+		if type=="in" then
+           misc.spawn_to(section, db.actor)			
+		elseif type=="out" then
+           local obj = db.actor:object(section)
+           if obj then
+		      db.actor:transfer_item(obj, who_transfer)
+           else
+              wprintf("~C0C #ERROR(relocate_item_section):~C07 actor not have object with section %s", section)
+              return false 
+           end                       
+                                        
+		end
+		news_manager.relocate_item(db.actor, type, section)
+        return true
+	end
+   
+   return false
+end
+
+
+function relocate_money(victim, num, type)
+	if db.actor and victim then
+		if type=="in" then
+			db.actor:give_money(num)
+			game_stats.money_quest_update(num) 
+		elseif type=="out" then
+			db.actor:transfer_money(num, victim)
+			game_stats.money_quest_update(-num) 
+		end
+		news_manager.relocate_money(db.actor, type, num)
+	end
+end
+
+function dialog_allowed(object, victim, id)
+	if db.storage[victim:id()].actor_dialogs~=nil then
+		for k,v in pairs(db.storage[victim:id()].actor_dialogs) do
+			if v==id then return true end
+		end
+	end
+	return false
+end
+function dialog_not_disable(object, victim, id)
+	if db.storage[victim:id()].actor_disable~=nil then
+		for k,v in pairs(db.storage[victim:id()].actor_disable) do
+			if v==id then return false end
+		end
+	end
+	return true
+end
+
+function allow_wounded_dialog(object, victim, id)
+	if db.storage[victim:id()].wounded==nil then
+		return false
+	end	
+	if db.storage[victim:id()].wounded.help_dialog==id then
+		return true
+	end
+	return false	
+end
+
+function level_escape(first_speaker, second_speaker)
+	return level.name()=="l01_escape"
+end
+
+function level_garbage(first_speaker, second_speaker)
+	return level.name()=="l02_garbage"
+end
+
+function level_agroprom(first_speaker, second_speaker)
+	return level.name()=="l03_agroprom_ai2" or level.name()=="l03_agroprom"
+end
+
+function is_friend(first_speaker, second_speaker)
+	return first_speaker:relation(second_speaker)==game_object.friend
+end
+
+function is_not_friend(first_speaker, second_speaker)
+	return not is_friend(first_speaker, second_speaker)
+end
+
+function become_friend(first_speaker, second_speaker)
+	first_speaker:set_relation(game_object.friend, second_speaker)
+end
+function is_military(actor, npc)
+	if db.actor then
+		return npc:character_community()=="military"
+	end
+	return false
+end
+
+function actor_in_dolg(actor, npc)
+	if db.actor then
+		return db.actor:character_community()=="actor_dolg"
+	end
+	return false
+end
+function actor_not_in_dolg(actor, npc)
+	return not actor_in_dolg(actor, npc)
+end
+function actor_set_dolg(actor, npc)
+	if db.actor then
+		db.actor:set_character_community("actor_dolg", 0, 0)
+	end
+	return true
+end
+function actor_clear_community(actor, npc)
+	if db.actor then
+		db.actor:set_character_community("actor", 0, 0)
+	end
+	return true
+end
+
+function has_2000_money(first_speaker, second_speaker)
+	return first_speaker:money() >= 2000
+end
+
+function trade_init(seller, buyer)
+	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
+	xr_position.setPosition(db.storage[seller:id()].meet.Seller, db.storage[seller:id()].meet.Seller:level_vertex_id())
+	db.storage[seller:id()].meet.Buyer = buyer
+end
+
+function want_trade(seller, buyer)
+	if seller:relation(buyer)==game_object.friend or
+		seller:relation(buyer)==game_object.neutral
+	then
+		return true
+	else
+		return false
+	end
+end
+
+function dont_want_trade(seller, buyer)	
+	return not want_trade(seller,buyer)
+end

@@ -1,0 +1,256 @@
+--[[
+Снаряжение Главного Героя
+Vergas
+© NLC 6.0
+]]--
+
+class "rummaged" (CUIScriptDialog)
+
+local wnd_icon
+local wnd_rykzack
+
+function rummaged:__init(owner) 
+	super()
+	self.owner = owner
+	self:InitControls()
+end
+
+function rummaged:__finalize() end
+
+function rummaged:InitControls()
+
+	-- Положение и размеры окна
+	self:Init(246,0,533,722)
+	
+	--определяю костюм и иконку 
+	local armor = db.actor:item_in_slot(6)
+	local gg_icon = ""
+	if armor then
+		--костюм на ГГ есть
+		gg_icon = vergas_lib.set_pr_from_config_str(armor:section(),"full_icon_name")
+	else
+		--костюма нет
+		gg_icon = "npc_icon_without_outfit"
+	end
+	
+	--ставлю иконку костюма
+	wnd_icon = CUIStatic()
+	--wnd_icon:SetWndRect(207,158,128,320)
+	wnd_icon:SetWndRect(130,158,128,320)
+	wnd_icon:SetStretchTexture(true)
+	self:AttachChild(wnd_icon)
+	wnd_icon:InitTexture(gg_icon)
+	
+	if vergas_rucksack.have() then
+		--ставлю иконку сидорка
+		local gg_rykzack = ""
+		if armor then
+			gg_rykzack = vergas_lib.set_pr_from_config_str(armor:section(),"backpack_type")
+		else
+			gg_rykzack = "ui_icon_rykzack_1_brown"
+		end
+
+		wnd_rykzack = CUIStatic()
+		wnd_rykzack:SetWndRect(250,267,170,200)
+		wnd_rykzack:SetStretchTexture(true)
+		self:AttachChild(wnd_rykzack)
+		wnd_rykzack:InitTexture(gg_rykzack)
+	end
+	
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_inv_buttons.xml")
+	
+	xml:InitStatic("background_glass", self)
+	xml:InitStatic("background", self)
+	--xml:InitStatic("background_0", self)
+	xml:InitStatic("btn_exit_back", self)                           -- Кнопка ВЫХОД
+
+	self:Register(xml:Init3tButton("btn_stop", self),"btn_stop")				-- Кнопка выхода
+	self:AddCallback("btn_stop", ui_events.BUTTON_CLICKED, self.btn_stop, self)
+	
+	if db.actor:object("razgruzka") then
+		xml:InitStatic("background_raz", self)
+		self:Register(xml:Init3tButton("btn_raz", self),"btn_raz")				-- Кнопка разгрузки 
+		self:AddCallback("btn_raz", ui_events.BUTTON_CLICKED, self.btn_raz, self) 	
+	end
+	
+	if db.actor:object("podsumok") then
+		xml:InitStatic("background_pod", self)
+		self:Register(xml:Init3tButton("btn_pod", self),"btn_pod")				-- Кнопка подсумка 
+		self:AddCallback("btn_pod", ui_events.BUTTON_CLICKED, self.btn_pod, self)
+	end
+	
+	if db.actor:object("bag_on_belt") then
+		xml:InitStatic("background_sum", self)
+		self:Register(xml:Init3tButton("btn_sum", self),"btn_sum")				-- Кнопка сумки НЗ 
+		self:AddCallback("btn_sum", ui_events.BUTTON_CLICKED, self.btn_sum, self)
+	end	
+
+	if inv_buttons_use.search_flask_army_in_inventory() then
+		xml:InitStatic("background_fl", self)
+		self:Register(xml:Init3tButton("btn_fl", self),"btn_fl")				-- Кнопка фляжки
+		self:AddCallback("btn_fl", ui_events.BUTTON_CLICKED, self.btn_fl, self)
+	end	
+	
+	if vergas_rucksack.have() then
+		xml:InitStatic("background_ruk", self)
+		self:Register(xml:Init3tButton("btn_ruk", self),"btn_ruk")				-- Кнопка рюкзака (весь)
+		self:AddCallback("btn_ruk", ui_events.BUTTON_CLICKED, self.btn_ruk, self)
+	end
+
+	if db.actor:object("sleeping_bag") then
+		xml:InitStatic("background_sleep", self)
+		self:Register(xml:Init3tButton("btn_sleep", self),"btn_sleep")			-- Кнопка спальника
+		self:AddCallback("btn_sleep", ui_events.BUTTON_CLICKED, self.btn_sleep, self)
+	end
+	
+	if inv_buttons_use.search_weapons_belt_in_inventory("wpn_") and vergas_rucksack.have() then
+		xml:InitStatic("background_wpn", self)
+		self:Register(xml:Init3tButton("btn_wpn", self),"btn_wpn")				-- Кнопка рюкзака (ружья)
+		self:AddCallback("btn_wpn", ui_events.BUTTON_CLICKED, self.btn_wpn, self)
+	end
+
+	if inv_buttons_use.search_weapons_belt_in_inventory("belt") and vergas_rucksack.have() then
+		xml:InitStatic("background_belt", self)
+		self:Register(xml:Init3tButton("btn_belt", self),"btn_belt")				-- Кнопка рюкзака (пояс)
+		self:AddCallback("btn_belt", ui_events.BUTTON_CLICKED, self.btn_belt, self)
+	end
+	
+	if inv_buttons_use.search_small_things_in_inventory() and vergas_rucksack.have() then
+		xml:InitStatic("background_eat", self)
+		self:Register(xml:Init3tButton("btn_eat", self),"btn_eat")				-- Кнопка рюкзака (мелочевка)
+		self:AddCallback("btn_eat", ui_events.BUTTON_CLICKED, self.btn_eat, self)
+	end
+	
+end
+
+function rummaged:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		-- на выход повесим Esc
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:btn_quit(0)
+		end
+	end
+	return true
+end
+
+function rummaged:btn_quit(mode)
+	--mode = 0 закрытие снаряжения
+	--mode = 1 рюкзак (мелочевка)
+	--mode = 2 рюкзак (оружие)
+	--mode = 3 рюкзак (пояс)
+	--mode = 4 рюкзак (все)
+	--mode = 5 подсумок
+	--mode = 6 разгрузка
+	--mode = 7 сумка
+	--mode = 8 сумка (быстрая)
+	--mode = 9 чехол для фляжки
+	--mode = 10 чехол для вляжки (быстрый)
+	vergas_lib.flag_inventory=false
+	schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
+	if wnd_icon ~= nil then
+		self:DetachChild(wnd_icon)
+		wnd_icon = nil
+	end
+
+	if wnd_rykzack ~= nil then
+		self:DetachChild(wnd_rykzack)
+		wnd_rykzack = nil
+	end
+
+	if mode == 0 then
+		--закрываю снаряжение
+		inv_buttons_use.imitation_closing_inventory(mode)
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
+		used_items.set_use_gadget(true) -- разрешить использование снова
+	elseif mode == 4 then
+		--полное открытие рюкзака (долго ковыряется)
+		level.disable_input()	--обездвиживаю ГГ
+		level.add_cam_effector( "camera_effects\\item_use.anm", 9773, false, "" ) -- добавим анимку
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("rykzack","snd_select_long"),1)        
+		schedule.add("show_full_rucksack", "inv_buttons_use.open_inventory(4)", 4000)
+        razgruzka.open_inventory() -- подготовить инвентарь с скрытием избыточных предметов
+	elseif mode == 10 then
+		--фляжка(быстрая)
+		inv_buttons_use.imitation_closing_inventory(mode)
+		schedule.add("show_flask_army", "used_items.used_flask_army(false)", 300)
+	elseif mode == 9 then
+		--фляжка
+		used_items.used_flask_army(true)
+	elseif mode == 8 then
+		--сумка(быстрая)
+		inv_buttons_use.imitation_closing_inventory(mode)
+		schedule.add("show_bag_on_belt", "used_items.used_bag_on_belt(false,false)", 300)
+	elseif mode == 7 then
+		--сумка
+		used_items.used_bag_on_belt(true,false)
+	elseif mode == 6 then
+		--разгрузка
+		used_items.used_podsumok_razgruzka("razgruzka")
+	elseif mode == 5 then
+		--подсумок
+		used_items.used_podsumok_razgruzka("podsumok")
+	else
+        razgruzka.open_inventory() -- подготовить инвентарь с скрытием избыточных предметов
+		inv_buttons_use.open_inventory(mode)
+	end
+	
+    CUIScriptDialog.CloseDialog(self)
+end
+
+function rummaged:btn_raz()
+	self:btn_quit(6)
+end
+
+function rummaged:btn_pod()
+	self:btn_quit(5)
+end
+
+function rummaged:btn_fl()
+	if vergas_rucksack.have() then
+		--рюкзак на ГГ
+		self:btn_quit(9)
+	else
+		--рюкзака на ГГ нет
+		self:btn_quit(10)
+	end
+end
+
+function rummaged:btn_sum()
+	if vergas_rucksack.have() then
+		--рюкзак на ГГ
+		self:btn_quit(7)
+	else
+		--рюкзака на ГГ нет
+		self:btn_quit(8)
+	end
+end
+
+function rummaged:btn_ruk()
+	self:btn_quit(4)
+end
+
+function rummaged:btn_sleep()
+	local obj = db.actor:object("sleeping_bag")
+	if obj then
+		db.actor:drop_item(obj)
+	end
+	self:btn_quit(0)
+end
+
+function rummaged:btn_wpn()
+	self:btn_quit(2)
+end
+
+function rummaged:btn_belt()
+	self:btn_quit(3)
+end
+
+function rummaged:btn_eat()
+	self:btn_quit(1)
+end
+
+function rummaged:btn_stop()
+	self:btn_quit(0)
+end

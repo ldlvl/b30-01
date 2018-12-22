@@ -1,0 +1,886 @@
+-- flush #arc_ui_container_common.script
+
+container_size = 1
+container_arts = nil
+arts_cont      = nil
+inventory_arts = nil
+arts_inv       = nil
+arts_weight    = nil
+_dialog        = level.main_input_receiver()  
+btn_pos        = nil
+inv_containers = nil
+cur_cont_id    = 0
+last_tick      = 0
+dialog_cfg     = {}
+dialog_counter = 0
+actor_radiation_v    = 0.0001
+
+
+config_list    = {}
+
+function update_dialog()
+ if _dialog and _dialog.UpdateDialog then    
+    _dialog:UpdateDialog()    
+    get_inventory_arts()
+    -- schedule.add("update_dialog", script_name()..".update_dialog()", 1000)
+ end
+end
+
+
+local start_pt = vector()
+local target_pt = vector()
+
+function shift_slide_btn(stage) -- перемещение кнопки с артефактом, типа перекладывание
+ stage = stage or 1
+ 
+ local self = _G[script_name()]._dialog
+ if self == nil then return end
+ local btn = self.slide_btn 
+ if btn == nil then return end 
+
+ if btn.GetSlideStage then     
+   stage = btn:GetSlideStage()   
+   local r = Frect()                     
+   btn:GetWndRect(r) 
+   -- btn:StartSlide(stage + 0.01, 0.05) -- DEBUG INCREMENT
+   -- wprintf("~C8F slide_btn stage =~C8D %.2f~C8F, pos =~C8A %.0f x %.0f ~C8F, tgt =~C8A %0.f x %0.f~C07", stage, r.x1, r.y1, target_pt.x, target_pt.y);
+ else 
+   -- inscript realisation 
+   local p = vector():sub(target_pt, start_pt)
+   if p.x == 0 and p.y == 0 then
+     wprintf("~C0C #WARN:~C07 button start and target points are similar")
+   end
+   p:mul(stage)
+   p:add(start_pt) 
+   btn:SetWndPos( math.floor(p.x), math.floor(p.y) ) 
+   wprintf("~C8E slide_btn stage =~C8D %.2f~C8E, pos =~C8A %.0f x %.0f ~C07", stage, p.x, p.y)
+ end
+ 
+ self.target_button = "?"  
+    
+ if (stage >= 0.99) then
+   if btn.remove then
+      self:DeleteButton(btn)
+   end   
+   self.disabled_buttons = false
+   self.slide_btn = nil 
+   get_inventory_arts()
+   update_dialog()    
+ else
+   self.disabled_buttons = true
+   local code = sprintf( "%s.shift_slide_btn(%.3f)", script_name(), stage + 0.1)
+   schedule.add("slide_btn_move", code, 20)
+   if stage >= 0.8 then  end   
+ end                                  
+end 
+
+
+function mk_rect(x1, y1, x2, y2)
+ return Frect():set(x1, y1, x2, y2)
+end
+
+function af_get_real(x_section) 
+ return arc_arts.af_find(x_section, true, true)
+end
+
+function make_static(name, button, text, rect)
+  local static = CUIStatic()
+  static:SetAutoDelete(true)
+  static:Init(rect)
+  button:AttachChild(static)
+  if text then static:SetText(text) end
+  button[name] = static
+  return static
+end
+
+
+
+-- TODO: этот список настроек можно перетащить в файл конфигурации!
+config_list[1]=
+  {
+    take =
+    {
+      row_size = 1,
+      x_start = 157,
+      y_start = 145,
+      space = 69
+    },
+    
+    put =
+    {
+      row_size = 5,
+      x_start = 30,
+      y_start = 290,
+      space = 60
+    },
+    
+    bg_texture = "ui\\ui_arc_art_box_1basic",
+    rc_texture = mk_rect(50,  77, 290, 357),
+    rc_weight  = mk_rect(120, 5, 300,  20)
+  }
+
+
+config_list[3]=
+  {
+    take = {
+      row_size = 3,
+      x_start = 75,
+      y_start = 125,
+      space = 91  
+    },
+    put = {
+      row_size = 5,
+      x_start = 30,
+      y_start = 290,
+      space = 60
+    },
+    bg_texture = "ui\\ui_arc_art_box_basic",
+    rc_texture = mk_rect(25,  65, 335, 375),
+    rc_weight  = mk_rect(120, 5, 300, 20)
+  }
+
+
+
+config_list[8]= 
+  {   
+    take = {
+      row_size = 4,
+      x_start = 60,
+      y_start = 155,
+      space = 63
+    },
+    put = {
+      row_size = 5,
+      x_start = 30,
+      y_start = 335,
+      space = 60
+    },                                       
+    bg_texture = "ui\\ui_arc_art_box_8basic",
+    rc_texture = mk_rect(25, 80, 335, 400),
+    rc_weight  = mk_rect(120, 5, 300, 20)
+  }
+
+
+
+class "art_container_dialog"(CUIScriptWnd)
+
+function art_container_dialog:__init() super()
+  dialog_counter = dialog_counter + 1
+  actor_radiation_v = system_ini():r_float("actor_condition", "radiation_v")
+  self.dialog_id = dialog_counter
+  self.take_buttons = {}
+  self.put_buttons = {}
+  self.pos_buttons  = {} -- позиции кнопок
+  self.disabled_buttons = false
+  self.target_button = ""
+  self.garbage = {}
+                                   
+  self:switch_container(cur_cont_id)
+    
+  _dialog = self
+  if dialog_cfg == nil then
+     wprintf("[~T].~C0C #ERROR:~C07 no configuration for container size =~C0D %d~C07", container_size)     
+  end      
+  misc.dump_table(dialog_cfg)     
+  self:SetWindowName(sprintf("art_container_dialog_%d", self.dialog_id))              
+  self:UpdateDialog()
+end
+
+function art_container_dialog:__finalize()
+  wprintf("[~T]. #DBG: art_container_dialog:__finalize() called")
+end
+
+function art_container_dialog:disable_buttons()
+  self.disabled_buttons = true
+  schedule.add("enable_buttons", script_name()..".enable_buttons()", 500)
+end
+
+
+function art_container_dialog:on_drop()
+  if self.disabled_buttons then return end
+  _dialog:disable_buttons()  
+  
+  inv_containers:update_container()
+  inv_containers:save_container()
+  
+  local drop_id = cur_cont_id
+  cur_cont_id = 0
+  
+  -- переключиться, если есть на что
+  if inv_containers:size() > 1 then       
+     if drop_id ~= inv_containers:next_id() then
+        cur_cont_id = inv_containers:next_id()
+     else          
+        cur_cont_id = inv_containers:prev_id()
+     end      
+  end
+    
+  inv_containers:erase(drop_id)  
+  db.actor:drop_item (client_obj(drop_id))
+  if cur_cont_id > 0 then
+    self:switch_container(cur_cont_id)
+  else
+    self:on_quit()
+  end  
+end  
+
+
+
+function art_container_dialog:on_quit()
+  if inv_containers:active() then
+     inv_containers:save_container()
+     inv_containers:update_container()
+     local obj = inv_containers:active().object
+     if obj then wprintf("[~T]. #DBG: container dialog~C0D %d~C07 closing for~C0A %s~C07", self.dialog_id, obj:name()) end   
+  end   
+
+  bind_stalker.cont_dialog = true
+  if self then
+     local holder = self:GetHolder()
+     if holder then
+        holder:start_stop_dialog(self,true)
+     end
+     level.destroy_dialog(self)
+  end   
+  arc_containers.set_dialog_showed(false) 
+  _dialog = nil
+end  
+
+if _dialog then
+   _dialog:GetHolder():start_stop_menu(_dialog,true)
+   _dialog:on_quit()
+   _dialog = nil
+end  
+
+arc_containers.set_dialog_showed(false)
+
+function art_container_dialog:OnKeyboard(dik, keyboard_action)
+  if self.disabled_buttons then return end
+
+  if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+    if dik==DIK_keys.DIK_ESCAPE then
+       self:on_quit()
+       return true
+    end
+  end
+
+  return CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
+end
+
+function art_container_dialog:AddButton(name, caption, rect, callback, callback2)
+   local btn = CUIButton()   
+   btn:SetWindowName(name)
+   btn:SetAutoDelete(true)    
+   btn:SetTextColor(200, 255, 255, 0)  -- полупрозрачный!
+   btn:SetHighlightColor(0xc0ffffff) 
+   btn:SetFont(GetFontLetterica25())
+   btn:Init(rect)  
+   if caption then  btn:SetText(caption) end              
+                 
+   self[name] = btn
+   self:AttachChild(btn)
+   
+   if callback2 then -- 
+      -- wprintf(" added callback2~C0F %s~C07", DumpVar(callback2))
+      self:AddCallback(name, ui_events.WINDOW_MOUSE_MOVE, callback2, self)
+   end   
+   
+   if callback then   
+      self:AddCallback(name, ui_events.BUTTON_CLICKED, callback, self)
+   end 
+         
+   return btn
+end 
+
+function art_container_dialog:DeleteButton(btn)
+  if btn then
+     btn:Show(false)     
+     self[btn:WindowName()] = nil
+     table.insert(self.garbage, btn)     
+  end
+end
+
+
+function art_container_dialog:UpdateAmount(button, amount)
+  button.multi = button.multi or make_static("multi", button, "x", mk_rect(40, 37, 50, 30))
+  button.multi:SetText("x"..tostring(amount))    
+  button.multi:Show(amount > 1)
+  button:Show(amount > 0) 
+end
+
+function art_container_dialog:UpdateCondition(parent, condition, rect)
+  -- local label = sprintf("%2.0f%%", condition * 100)  
+  parent.condition = parent.condition or make_static("condition", parent, false, rect or mk_rect(2, -3, 48, 2))
+  parent.condition:InitTexture("ui\\ui_small_scale_gr")
+  local pos_x = 512 - math.floor(512 * condition) 
+  parent.condition:SetOriginalRect(pos_x, 0, 512, 64) -- позиция в текстурке 
+  parent.condition:SetStretchTexture(true)
+  parent.condition:SetColor(0x90FFFFFF)                               
+  parent.condition:Show(true)   
+end
+
+function art_container_dialog:UpdateRadiation(button, rad_restore)
+  button.rrs = button.rrs or make_static("rrs", button, false, mk_rect(40, 03, 40, 15))
+  button.rrs:SetText(sprintf("+%.0f", rad_restore))
+  button.rrs:SetTextColor(255, 255, 0, 0)    
+  button.rrs:Show(rad_restore >= 0.5)   
+end
+
+function art_container_dialog:UpdateGoodness( button, sect )
+  -- if     strposx(sect,"capsule") or strposx(sect,"_dummy") or strposx(sect,"_new") or strposx(sect,"_1") or
+  --        strposx(sect,"_2") or strposx(sect,"_3") or strposx(sect,"_4") then return end
+  -- if strposx(sect, "capsule") then return end
+  button.dyn_amount = button.dyn_amount or make_static( "dyn_amount", button, false, mk_rect( 2, 40, 50, 15 ) )
+  local  dyn_n = ""
+  local  color = { 255, 255, 255, 255 }
+  if     strposx( sect, "capsule" ) or strposx( sect, "compass" ) then dyn_n = ""
+  elseif strposx( sect, "dyn1" )  then dyn_n = "•" color = { 200, 255, 0, 0 }
+  elseif strposx( sect, "dyn2" )  then dyn_n = "••" color = { 200, 255, 100, 0 }
+  elseif strposx( sect, "dyn3" )  then dyn_n = "•••" color = { 200, 255, 255, 0 }
+  elseif strposx( sect, "dyn4" )  then dyn_n = "••••" color = { 200, 160, 255, 0 }
+  elseif strposx( sect, "dyn5" )  then dyn_n = "•••••" color = { 200, 0, 255, 0 }
+  elseif strposx( sect, "dyn6" )  then dyn_n = "°" color = { 200, 0, 255, 255 }
+  end
+  button.dyn_amount:SetText( dyn_n )
+  button.dyn_amount:SetTextColor( unpack( color ) )
+  button.dyn_amount:Show( dyn_n ~= "" )   
+end
+
+function art_container_dialog:NewArtButton(name, art_desc, x, y, callback, callback2)
+    
+  local b = self:AddButton(name, false, mk_rect(x, y, x + 50, y + 50), callback, callback2)
+    
+  local pos = vector():set(x, y, 0)
+  self.pos_buttons[name] = pos
+  
+  -- wprintf(" checking ~C0A %s~C07 vs ~C0F %s~C07", b.desc, self.target_button)  
+  
+  b:InitTexture("ui\\ui_icon_equipment")
+
+  if art_desc.tx and art_desc.ty  then -- координаты иконки артефакта
+    tx = art_desc.tx * 50
+    ty = art_desc.ty * 50
+    b:SetOriginalRect(tx, ty, 50, 50)  -- выбор иконки в файле иконок
+  elseif art_desc.x_section ~= '?' then
+    wprintf("[~T].~C0C #WARN:~C07 NewArtButton(~C0A'%s'~C07) invalid icon param, art_desc:", name)     
+    misc.dump_table(art_desc)
+    b:SetOriginalRect(100, 1800, 50, 50)    
+  end
+    
+  return b
+end 
+
+function art_container_dialog:AddArtButton(art_desc, button_number, amount, action ) 
+  local b, btns, x, y, m, t, tx, ty
+  local bp = button_number
+    
+  if action == 'put' then  -- кнопка с количеством, в нижней части контейнера
+    btns = self.put_buttons        
+    bp = btn_pos
+  elseif action == 'take' then
+    btns = self.take_buttons       
+  end
+      
+  m = dialog_cfg[action]
+  x = m.x_start + (m.space * math.mod(bp - 1, m.row_size))
+  y = m.y_start + (m.space * math.floor( ( bp - 1) / m.row_size))
+  
+  b = btns[button_number]
+  local name = "btn_"..action.."_"..button_number
+  
+  if not b then -- if first time
+    local chunk      = loadstring( sprintf( "%s.btn_%s_art(%d)", script_name(), action, button_number) )
+    local chunk_move = loadstring( sprintf( "%s.on_mouse_over('%s')", script_name(), name) )    
+    if art_desc.x_section == '?' then
+    else
+       wprintf("~C0F AddArtButton action =~C0E %4s~C0F, sect =~C0A %32s~C0F, num =~C0D %d~C0F, amount =~C0D %d~C07", action, art_desc.x_section, button_number, amount or 0)
+    end
+       
+    btns[button_number] = self:NewArtButton(name, art_desc, x, y, chunk, chunk_move) 
+    b = btns[button_number]          
+    
+    if amount then
+      self:UpdateAmount(b, amount)
+    else
+      b:Show(art_desc.count > 0)
+    end
+  elseif amount~=nil then -- if updating put_buttons
+    b:SetWndPos(x,y)
+    self:UpdateAmount(b, amount)    
+  elseif not amount then -- if updating take_buttons
+    b:Show( art_desc.count > 0 )
+  end
+
+
+  b.action    = action 
+  b.x_section = art_desc.x_section  
+  b.number    = button_number
+  local desc  = action..":"..b.x_section
+      
+  if desc == self.target_button then
+     wprintf("[~T].~C0F #DBG: catched target button ~C0A %s / %s ~C07", name, b.x_section)
+     self.slide_btn = b  -- её сначала придется переместить          
+     target_pt:set(x, y, 0)     
+     -- return b
+  end 
+
+
+  -- and (b.desc ~= self.target_button) 
+  if art_desc.tx and art_desc.ty then -- обновить координаты иконки артефакта
+    tx = art_desc.tx * 50
+    ty = art_desc.ty * 50
+    b:SetOriginalRect(tx, ty, 50, 50)  -- выбор иконки в файле иконок    
+  end
+      
+  local rrs = (art_desc.radiation or 0) / actor_radiation_v;
+  self:UpdateRadiation(b, rrs)   
+  self:UpdateCondition(b, (art_desc.condition or 0.5))  
+  self:UpdateGoodness(b, art_desc.x_section)
+  return b
+end
+
+function art_container_dialog:ArtButtonMouseOver(name)
+
+end
+
+function art_container_dialog:DrawBackground()
+  local xs, ys
+  xs = 350
+  ys = 500
+  local b = self.bkg
+  if not b then
+    self:Init(10,10, xs, 800)
+    self.bkg = CUIStatic()
+    b = self.bkg
+    b:SetWindowName("background")
+    b:SetAutoDelete(true)
+    b:InitTexture("ui\\ui_dg_inventory_arc")
+    b:SetOriginalRect(0, 0, xs, ys)
+    b:SetStretchTexture(true)
+    b:Init(0,0, xs, 800)
+    self:AttachChild(b)
+  end
+  
+  local a = self.art_box
+  if not a then
+    self.art_box = CUIStatic()
+    a = self.art_box
+    a:SetWindowName("art_box")
+    a:SetAutoDelete(true)    
+    a:SetStretchTexture(true)    
+    self:AttachChild(a)
+  end
+  -- обновляемый элемент схемы
+  a:InitTexture(dialog_cfg.bg_texture)
+  a:Init(dialog_cfg.rc_texture)  
+end
+
+function art_container_dialog:DrawButtons()
+  btn_pos = 0
+  arts_weight = 0
+  wprintf("[~T].~CF0 #DBG: --------------- art_container_dialog(%d):DrawButtons() %d -------------- ~C07", self.dialog_id, cur_cont_id);
+  -- inv_containers:dump()    
+  local i = 1 
+  -- вывод артефактов доступных для закладывания в контейнер          
+  self.put_sections = inventory_arts:keys(true) -- для соответствия индекса кнопки и секции
+  -- misc.dump_table(self.put_sections)
+  wprintf(' inventory artefacts collection: ')
+  inventory_arts:dump()
+    
+  for i, count in inventory_arts:ipairs(true) do
+    local sect  = self.put_sections[i]
+    local rec   = arc_arts.af_decode(sect)   
+    btn_pos = btn_pos + 1        
+    self:AddArtButton(rec, i, count, "put")    
+  end -- for  
+  -- вырезание лишних кнопок
+  while #self.put_buttons > #self.put_sections do
+    i = #self.put_buttons    
+    local btn = self.put_buttons[i]
+    wprintf(" removing unused button~C0D %d~C0A %s~C07", i, DumpVar(btn))
+    self:DeleteButton(btn)       
+    table.remove(self.put_buttons, i)
+  end 
+     
+  if not self.btn_quit then
+     self:AddButton("btn_quit", false, mk_rect(130, 40, 230,90), self.on_quit)    
+  end                                              
+  self.btn_quit:SetText (game.translate_string("tip_door_close") .. sprintf(" %d", cur_cont_id))
+  
+  if not self.btn_drop then
+     self:AddButton("btn_drop", false, mk_rect(130, 690, 230, 710), self.on_drop)    
+  end
+  
+  self.btn_drop:SetText (game.translate_string("st_drop") .. sprintf(" %d", cur_cont_id))
+  
+     
+  if not self.btn_prev then
+     self:AddButton("btn_prev", "<<", mk_rect(050, 40, 100,90), self.prev_container)         
+  end
+  
+  if not self.btn_next then
+     self:AddButton("btn_next", ">>", mk_rect(250, 40, 300,90), self.next_container)    
+  end
+    
+  -- кнопки извлечения артефактов из контейнера, числом не более количества слотов
+  btn_pos = 0
+  -- misc.dump_table(container_arts)  
+  for i = 1, container_size do    
+    local rec = container_arts[i]        
+    if rec ~= nil then       
+       if rec.count == 1 then arts_weight = arts_weight + rec.weight or 0 end
+    else   
+       rec = { x_section = '?', count = 0 }
+       container_arts[i] = rec
+       wprintf("#WARN: no value for slot~C0D %d~C07, size =~C0D %d~C07", i, #container_arts)
+       local btn = self.take_buttons[i]
+       if btn then btn:Show(false) end       
+    end    
+    self:AddArtButton(rec, i, nil, "take")
+  end
+
+end
+
+
+function art_container_dialog:DrawWeight()
+  local w = self.arts_weight
+  if not w then
+    self.arts_weight = CUIStatic()
+    w = self.arts_weight
+    w:SetWindowName("arts_weight")
+    w:SetAutoDelete(true)    
+    self:AttachChild(w)
+  end
+  local rcw = Frect()
+  rcw.x1 = dialog_cfg.rc_weight.x1
+  rcw.y1 = dialog_cfg.put.y_start - 25
+  rcw.x2 = dialog_cfg.rc_weight.x2
+  rcw.y2 = dialog_cfg.put.y_start - 15
+  
+  w:Init(rcw) -- изменяемый параметр  
+  w:SetText(sprintf("Вес артефактов: %.2f кг.", arts_weight))
+end
+
+
+function art_container_dialog:UpdateDialog()
+  wprintf("[~T].~C0E #DBG: art_container_dialog:UpdateDialog() container_size =~C0D %d~C0E, id =~C0D %d~C07", container_size, cur_cont_id)
+  get_container_arts(cur_cont_id) 
+  dialog_cfg = config_list[container_size]
+  self:DrawBackground()
+  self:DrawButtons()
+  self:DrawWeight()
+  
+  for i, btn in ipairs(self.garbage) do
+   self:DetachChild(btn)   
+  end
+  self.garbage = {}
+end
+
+function art_container_dialog:switch_container(id)   
+   
+  inv_containers:save_container()
+  inv_containers:update_container()
+  local ic = inv_containers:get(id)
+  if not ic then return end
+  inv_containers:select(cur_cont_id)  
+  container_size = ic.config.slots
+  dialog_cfg     = config_list[container_size]
+  cur_cont_id = ic.id  
+  -- скрыть кнопки, которые могут быть лишними в схеме
+  local btns = self.take_buttons or {}
+  -- wprintf(" removing buttons: ")
+  -- misc.dump_table(btns)    
+  for i, btn in ipairs(btns) do
+   self:DeleteButton(btn)      
+  end
+  
+  get_inventory_arts()
+  self.take_buttons = {}   
+  self:UpdateDialog()     
+end
+
+function art_container_dialog:next_container()  
+  cur_cont_id = inv_containers:next_id()
+  self:switch_container(cur_cont_id) 
+end
+
+function art_container_dialog:prev_container()  
+  cur_cont_id = inv_containers:prev_id()
+  self:switch_container(cur_cont_id)  
+end
+
+function show_dialog(cont_id)
+  arc_containers.check_container()  
+  inv_containers = arc_containers.inv_containers -- object pointer !
+  if not inv_containers:get(cont_id) then
+    wprintf("[~T].~C0C #ERROR:~C07 invalid container id~C0D %d~C07, cannot show dialog!", cont_id)
+    return
+  end
+  cur_cont_id = cont_id
+  arc_containers.set_dialog_showed(true)
+  local spwn = art_container_dialog (get_hud())
+  level.start_stop_menu(spwn,true)
+  bind_stalker.cont_dialog=false
+end
+
+function art_container_dialog:put_art(num_btn)  -- перемещение реального артефакта в контейнер, с сохранением только логической информации и уничтожением объекта
+  if not self then return end
+  local x_section = self.put_sections[num_btn]
+  if not x_section then return end   
+
+  wprintf("~CF0[~T]. #DBG: process_put_art(%d), section =~C0A %s~C07", num_btn, x_section)
+
+  local have_arts = inventory_arts:get(x_section) -- количественная карта
+  art_desc = af_get_real(x_section)               -- поискать среди списка артефактов
+
+  if (have_arts == 0) or (not art_desc) then
+    wprintf("[~T].~C0C #ERROR:~C07 not found artefact~C0A %s~C07 in inventory_arts/inventory", x_section)
+    inventory_arts:dump()
+    wprintf(" inv_arts: ")
+    arc_arts.inv_arts:dump()    
+    return 
+  end
+    
+  local rad_protection = 0.1
+  local ic = inv_containers:active()
+  
+  if ic then
+     rad_protection = ic.config.protection
+  else
+     return   
+  end
+    
+  local failed = true
+  
+  local rest = 0 -- сколько останется артефактов такого типа
+  local rec = {}    
+  local slot = ic:put_art(x_section)   
+    
+  -- обработка состояния 3-х списков: логический контейнер, артефакты в инвентаре, карта артефактов  
+    
+  if slot > 0 then
+   
+   -- уничтожение реально артефакта в инвентаре, запись в логику контейнера виртуального
+   if arc_arts.remove_item (x_section) then        
+      rec = container_arts[slot]
+      
+      arts_cont = arts_cont + 1              
+      wprintf(" success put artefact~C0A %s~C07 to slot~C0D %d~C07, have_arts =~C0D %d~C07", x_section, slot, have_arts)           
+       
+      if ic:protection_low(rec.radiation) then
+         sak.send_tip("Защита недостаточна.", "Контейнер", 0, 10, "death", "sak", "red")
+      end
+      
+      rest = inventory_arts:pop(x_section) -- потрачено, сохранить                  
+      if rest == 0 then
+         arts_inv = arts_inv - 1                                                         
+      end     
+      
+      wprintf(" rest artefacts in inventory =~C0D %d~C07", rest)     
+      failed = false   
+   else
+      ic:take_art(x_section)    
+   end   
+  else
+   wprintf("[~T].~C0C #WARN:C07 container:put_art returned %d", slot)
+   return
+  end   
+  
+  
+  wprintf("[~T].~C0F #DBG: process_put_art results:~C07")
+  if failed then
+     wprintf(" nothing changed, arts_cont = %d", arts_cont)
+     return
+  end
+  vergas_lib.s_play("scripts\\art_move", 1)  
+  inventory_arts:dump()
+  -- wprintf(" container contents:")
+  -- misc.dump_table(container_arts)
+  -- позиция заранее известна, т.к. кнопка летит в контейнер
+  local tgt_btn = sprintf('btn_take_%d', slot)
+  local src_btn = sprintf('btn_put_%d', num_btn)  
+  local tp = self.pos_buttons[tgt_btn] or vector()
+  local sp = self.pos_buttons[src_btn] or vector()
+  wprintf(" source =~C0E %s~C0A %d x %d~C07, target =~C0E %s~C0A %d x %d~C07", src_btn, sp.x, sp.y, tgt_btn, tp.x, tp.y)
+  if tp.x > 0 and sp.x > 0 then
+    if rest > 0 then
+       self:NewArtButton('slide_btn', rec, sp.x, sp.y)                
+       wprintf(" sliding new button~C0F %s~C07 ", self.slide_btn:WindowName())
+    else       
+       self.slide_btn = self.put_buttons[num_btn]
+       -- wprintf(" sliding exist button~C0F %d~C0A %s~C07 ", num_btn, self['slide_btn']:WindowName())              
+       self[src_btn] = false
+       self.put_buttons[num_btn] = false              
+    end
+      
+    local btn = self.slide_btn  
+    if btn ~= nil then
+      self.slide_btn.remove = true -- уничтожить копию или перемещаемую кнопку
+      start_pt:set(sp)
+      target_pt:set(tp)             
+      if btn.SetSlideTrack then
+       btn:SetSlideTrack(start_pt.x, start_pt.y, target_pt.x, target_pt.y)
+       btn:StartSlide(0, 0.1)
+       wprintf("~CA0 engine slider activated !~C07")
+      end    
+      shift_slide_btn( 0.2 )
+      return
+    end  
+  end     
+  
+  update_dialog() 
+  schedule.add("update_dialog", script_name()..".update_dialog()", 400)    
+end
+
+function btn_put_art(num_btn)
+  if _dialog.disabled_buttons then return end
+  _dialog:disable_buttons()     
+  _dialog:put_art(num_btn)
+end
+
+
+function art_container_dialog:take_art(slot)
+  local ic = inv_containers:active()  
+  if not ic then
+     return   
+  end  
+
+  rec = ic:take_art(slot)
+  wprintf(" btn_take_art(~C0D %d~C07), rec:", slot)
+  misc.dump_table(rec)       
+  
+  if rec and (rec.count > 0) then        
+    local x_section = rec:format()    
+    wprintf("[~T].~CE0 #DBG:   take artefact~CE2 %s~CE7, arts_cont =~CED %d~CE7, condition =~CED %.3f~C07", x_section, arts_cont, rec.condition)   
+    arts_cont = arts_cont - 1
+    local amount = inventory_arts:push(x_section)  -- увеличить число объектов в инвентаре, для перерисовки кнопок   
+    wprintf(" amount artefacts in inventory =~C0D %d~C07", amount or -1)
+                              
+    inventory_arts:dump()    
+    -- TODO: добавить звук вытаскивания арта
+    -- SLIDE CONTAINER->INVENTORY
+    local src_btn = sprintf('btn_take_%d', slot) 
+    self.target_button = "put:"..x_section -- для перехвата позиции при выводе кнопок
+    start_pt:set (self.pos_buttons[src_btn])            
+    target_pt:set(0, 0, 0)
+    -- стирание тейковых кнопок, чтобы все пересоздать
+    for n, btn in ipairs(self.take_buttons) do
+     self:DeleteButton(btn)                               
+    end                           
+    
+    self.take_buttons = {}
+    self.slide_btn    = nil    
+    update_dialog() -- будет выделено место под летящий артефакт    
+    arc_arts.give_item(x_section) -- Спавнить свежак, с потенциальным повреждением
+    
+    if amount > 1 then -- чтобы не было эффекта обратного переноса всей стопки, использовать виртуальную кнопку
+       self.slide_btn = self:NewArtButton('slide_btn', rec, start_pt.x, start_pt.y)
+       self.slide_btn.remove = true           
+    end
+    
+    wprintf(" start_pt =~C0F %d x %d~C07, target_pt =~C0F %d x %d~C07, slide_btn =~C0A %s~C07, target =~C0E %s~C07", 
+              start_pt.x, start_pt.y, target_pt.x, target_pt.y, DumpVar(self.slide_btn), self.target_button)    
+    self.target_button = '?'            
+    vergas_lib.s_play("scripts\\art_move", 1)        
+        
+    -- исходную кнопку изничтожить, она была заново создана update_dialog
+    local btn = self[src_btn]
+    self:DeleteButton(btn)                     
+    self.take_buttons[slot] = false    
+    if start_pt.x > 0 and target_pt.x > 0 and self.slide_btn then
+      btn = self.slide_btn    
+      if btn.SetSlideTrack then
+       btn:SetSlideTrack(start_pt.x, start_pt.y, target_pt.x, target_pt.y)
+       btn:StartSlide(0, 0.1)
+       wprintf("~CA0 engine slider activated !~C07")
+      end     
+
+      shift_slide_btn (0.2) 
+    else
+      update_dialog()
+    end    
+  else
+    wprintf("[~T].~C0C #ERROR:~C07 mistmatch section/count")  
+  end
+end
+
+function btn_take_art(slot)
+  if _dialog.disabled_buttons then return end
+  _dialog:disable_buttons()
+  _dialog:take_art(slot) 
+end  
+
+function on_mouse_over(name)
+ local btn = _dialog[name]
+ if btn and btn.x_section and btn.x_section ~= _dialog.last_shown then
+   local rec = arc_arts.af_decode(btn.x_section)
+   _dialog:UpdateCondition(_dialog, rec.condition)
+   _dialog.last_shown = btn.x_section
+   wprintf("~C0F #EVENT: on_mouse_over('%s') ~C07", name)  
+ end
+end
+
+
+function get_container_arts() -- TODO: check result
+  container_arts = arc_containers.get_inv_container_arts(cur_cont_id) 
+  arts_cont = 0
+  for slot, rec in pairs(container_arts) do
+   if rec and rec.count > 0 then arts_cont = arts_cont + 1 end
+  end -- for
+  return container_arts  
+end
+
+function get_inventory_arts() -- TODO: check result
+  arc_arts.check_artefact()
+  inventory_arts = stack_map()
+  arts_inv = 0
+  for id, rec in arc_arts.inv_arts:pairs() do
+    local sc = rec:format() -- секция с кондицией, разделяющая артефакты разного износа   
+    if arc_arts.is_actor_item(rec.id) then     
+       inventory_arts:push(sc)
+    else
+       wprintf("[~T].~C0C #WARN: in inv_arts holding absent/non-inventory object ~C0A %s ~C0D %d/%d~C07", rec.x_section, rec.id or -1, id)
+       arc_arts.on_remove(rec.id)    
+    end            
+  end  
+  
+  -- wprintf("[~T].~C0F #DBG: get_inventory_arts() source:~C07")
+  -- arc_arts.inv_arts:dump()
+  wprintf("[~T].~C0F #DBG: get_inventory_arts() combining result:~C07")
+  inventory_arts:dump()  
+  return inventory_arts
+end
+
+
+function enable_buttons()
+ if _dialog then _dialog.disabled_buttons = false end
+end
+
+
+function sync_globals(src, dest, dest_name)
+  local count = 1
+  -- local dest = _G[dest_name]  
+  for nv, fv in pairs(src) do
+    dest[nv] = fv   
+    count = count + 1
+  end 
+  wprintf(" sync_globals updated~C0D %d~C07 entries for~C0A %s~C07", count, dest_name)   
+end
+
+function init_module()
+ _dialog = nil
+end
+
+function on_before_save()
+ if _dialog then
+    _dialog:on_quit()  -- дополнительная ловушка против дубляжа артефактов
+ end
+ inv_containers:save_container()
+ inv_containers:update_container()
+end
+
+-- 
+-- sync_globals( getfenv(1), "arc_ui_1container_dialog")
+-- sync_globals( getfenv(1), "arc_ui_container_dialog")
+
+wprintf("[~T].~C0A #DBG: successfully loaded~C0F %s~C07", script_name() or 'nil') 

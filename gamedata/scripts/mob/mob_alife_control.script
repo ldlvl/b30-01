@@ -1,0 +1,41 @@
+----------------------------------------------------------------------------------------------------
+-- Mob Alife Control
+----------------------------------------------------------------------------------------------------
+-- Разработчик: Jim
+----------------------------------------------------------------------------------------------------
+
+class "mob_alife_control"
+
+function mob_alife_control:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function mob_alife_control:reset_scheme()
+	self.st.signals				= {}
+	self.current_state			= self.object:get_fsm_state()
+	self.prev_state				= self.current_state
+end
+
+function mob_alife_control:update(delta)
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then return end
+	self.current_state = self.object:get_fsm_state()
+	if self.prev_state ~= self.current_state then
+		self.st.signals["on_attack"]
+		self.st.signals["on_panic"]
+		self.st.signals["on_idle"]
+	end
+	self.prev_state = self.current_state	
+end
+
+function add_to_binder(npc, ini, scheme, section, storage)
+	local new_action = mob_alife_control(npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local storage = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	if storage==nil then return end
+	storage.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+end
+

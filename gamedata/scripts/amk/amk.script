@@ -1,0 +1,994 @@
+--version_control.reg_changes("amk.script", "alpet", "21.11.2010 12:18:00", "Сведение правок к релизу. Убран отладочный мусор.")
+init_xvars()
+----------------
+local markers={}	--хранит маркеры на карте
+convert_npc={}
+
+is_debug = false
+ver = "0"
+oau_reason=""
+upd_steps = ""
+
+pda_news = xr_sound.get_safe_sound_object([[device\pda\pda_news]])
+pda_tips = xr_sound.get_safe_sound_object([[device\pda\pda_tip]])
+pda_task = xr_sound.get_safe_sound_object([[device\pda\pda_objective]])
+
+tips_icons = {
+	default	= {0, 658},
+	trader	= {332, 893},
+	dolg	= {0, 658},
+	freedom	= {0, 658},
+	ecolog	= {498, 0},
+	arena	= {332, 141},
+	stalker	= {0, 658},
+	krot	= {332, 47},
+	barman	= {332, 235},
+	wolf	= {332, 940},
+	o_soznanie= {498, 893},
+	monolith= {0, 658},
+	saharov	= {332, 470},
+	prizrak	= {0, 658},
+	killer	= {0, 658},
+	death	= {0, 752},
+	gen_info= {0, 658},
+	trade 	= {0, 0},
+	g_g 	= {83, 0},
+	nlc 	= {83, 282},
+	artmod 	= {83, 47},
+	doctor 	= {415, 846},
+	teleport= {166, 470},
+	pribor 	= {83, 893},
+	code 	= {166, 705},
+	uniq	= {498, 47}		--{498, 188}
+}
+----------------
+local bufferedmessages={}
+
+function logct(msg,tag)
+	if true and (tag and (tag=="mcbt" or tag=="temp")) then	
+	end
+end
+
+function rep(npc,msg,tag)
+	if string.find(npc:name(),"gar_dm",1,true) then
+		logct(msg,tag)
+	end
+end
+
+function mylog(msg)
+	if is_debug then 
+		if msg==nil then
+			return 
+		end
+		if db and db.actor then
+			if bufferedmessages then
+				for k,v in ipairs(bufferedmessages) do
+					db.actor:give_game_news(v, "ui\\ui_iconsTotal", Frect():set(0,658,83,47), 0, 15000)
+				end
+				bufferedmessages=nil
+			end
+		db.actor:give_game_news(msg, "ui\\ui_iconsTotal", Frect():set(0,658,83,47), 0, 15000)
+		else
+			if bufferedmessages then
+				table.insert(bufferedmessages,msg)
+			end
+		end
+
+		if get_console() then
+			get_console():execute("flush")
+		end
+
+	end
+end
+
+function send_tip(news_text, header, timeout, showtime, sender, sound)
+	if news_text==nil or db.actor:has_info("pda_is_broken") then return end
+	if header==nil then header=game.translate_string("st_tip") end
+	if timeout==nil then timeout = 0 end
+	if showtime==nil then showtime = 5 end
+	
+	local player
+	if sound=="news" then
+		player=pda_news
+	elseif sound=="task" then
+		player=pda_task
+	else
+		player=pda_tips
+	end	
+	
+	--' Играем дефолтный звук
+	player:play(db.actor, timeout, sound_object.s2d)
+	
+	if sender==nil then
+		sender = "default"
+	end
+	local x = tips_icons[sender][1]
+	local y = tips_icons[sender][2]
+	
+	local news_text = "%c[255,160,160,160]"..header.."\\n".."%c[default]"..news_text
+	db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(x,y,83,47), timeout*1000, showtime*1000)
+	return true
+end
+
+function add_spot_on_map(obj_id,type,text)
+	if obj_id then
+		if text==nil then text=" " end
+		-- Ставим метку на серверный объект чтобы её не пришлось обновлять
+		level.map_add_object_spot_ser(obj_id, type, text)
+	end
+end
+
+function remove_spot_from_map(obj_id,type)
+	if obj_id and level.map_has_object_spot(obj_id, type)~= 0 then
+		level.map_remove_object_spot(obj_id, type)
+	end
+end
+
+function spawn_item(spawn_item, pos, gv,lv)
+	if gv==nil then gv = db.actor:game_vertex_id() end
+	if lv==nil then lv = db.actor:level_vertex_id() end
+	return alife():create(spawn_item, pos, lv, gv)
+end
+
+function spawn_item_in_inv(spawn_item,npc)
+	if npc==nil then 
+		npc=db.actor 
+	end
+	return alife():create(spawn_item, 
+			npc:position(),
+			npc:level_vertex_id(),	
+			npc:game_vertex_id(),
+			npc:id())
+end
+
+function spawn_ammo_in_inv(spawn_item,number,npc)
+	if npc==nil then 
+		npc=db.actor 
+	end
+	if number > 0 then
+		return se_respawn.create_ammo(spawn_item, 
+				npc:position(),
+				npc:level_vertex_id(),	
+				npc:game_vertex_id(),
+				npc:id(),
+				number)
+	end
+end
+
+local rem_it=5
+function remove_item(remove_item)
+	if remove_item~=nil then
+	local obj_id=remove_item:id() or remove_item.id
+	if rem_it~=obj_id then		
+        misc.release_obj(obj_id, 'amk.remove_item')
+		rem_it=obj_id
+		end
+	end
+end
+
+function drop_item(npc,item)
+	local obj = client_obj(item:id())
+	if obj~=nil then
+		npc:drop_item(obj)
+		schedule.add("d_paus", "amk.drop_item_start("..item:id()..")", 300)  
+	end
+end
+function drop_item_start(id)
+	local obj = client_obj(id)
+	if obj~=nil then
+		db.actor:drop_item(obj)
+	end
+end
+
+function make_suicide(npc)
+	npc:kill(npc)
+end
+
+function get_npc_relation(obj,target)
+	local rel = obj:relation(target)
+	local relation
+	if rel==game_object.neutral then
+		relation="neutral"
+	elseif rel==game_object.friend then
+		relation="friend"
+	elseif rel==game_object.enemy then
+		relation="enemy"
+	else
+		return false
+	end
+	return relation
+end
+
+function set_npc_relation(obj,target,relation)
+	local rel
+	if relation=="neutral" then
+		rel=game_object.neutral
+	elseif relation=="friend" then
+		rel=game_object.friend
+	elseif relation=="enemy" then
+		rel=game_object.enemy
+	else
+		return false
+	end 
+	obj:set_relation(rel,target)
+	return true
+end
+
+function get_npc_community(npc)
+	return npc:character_community()
+end
+
+function set_npc_community(npc,community_string)
+	return npc:set_character_community(community_string, 0, 0)
+end
+
+function remove_item_from_inventory_by_name(remove_item_name,npc)
+	return remove_item_from_inventory(npc:object(remove_item_name),npc)
+end
+
+function remove_item_from_inventory(remove_item,npc)
+	if npc==nil then npc=db.actor end
+	if remove_item and remove_item:id() then
+		vergas_medical_elastic.set_flag_help(remove_item)
+		misc.release_obj(remove_item, 'amk.remove_item_from_inventory' )
+		return true
+	end
+	return false
+end
+
+function check_game()
+	if level.present() and(db.actor~=nil) and db.actor:alive() then
+		return true
+	end
+	return false
+end
+
+--[[
+function save_variable(variable_name, value)	   
+    xvars.amk[variable_name] = value 
+end
+
+function load_variable(variable_name, value_if_not_found)        
+    return xvars.amk[variable_name] or xvars[variable_name] or value_if_not_found 
+end
+
+function del_variable(variable_name)
+    xvars.amk[variable_name] = nil
+end
+--]]
+
+function check_npc_in_box(npc, p1,p2,p3)
+	local pos
+	if npc.name then pos=npc:position() else pos=npc end
+	if p3==nil then
+		if is_point_inside_interval(pos.x,p1.x,p2.x) and
+			is_point_inside_interval(pos.y,p1.y,p2.y) and
+			is_point_inside_interval(pos.z,p1.z,p2.z) then
+			return true
+		else
+			return false	
+		end
+	else
+		local v1,v2,r,proj1,proj2,dv1,dv2
+		v1=sub(p2,p1)
+		v2=sub(p3,p2)
+		v1.y=0 
+		v2.y=0
+		dv1=v1:magnitude()
+		dv2=v2:magnitude()
+		v1:normalize() 
+		v2:normalize()
+		r=sub(pos,p1)
+		local v1p=vector():set(v1.z,0,-v1.x)
+		proj2=v1p:dotproduct(r)/v1p:dotproduct(v2)
+		proj1=v1:dotproduct(r)-v1:dotproduct(v2)*proj2
+		if proj1>0 and proj1<dv1 and proj2>0 and proj2<dv2 and pos.y>p1.y and pos.y<p3.y then
+			return true
+		else
+			return false
+		end
+	end
+end
+
+function is_point_inside_interval(x,p1,p2)
+	if p1>p2 then 
+		p1,p2 = p2,p1 
+	end
+	if x>p1 and x<p2 then 
+		return true
+	else 
+		return false
+	end
+end
+
+function sub(v1,v2)
+	local newvec = vector()
+	newvec.x = v1.x-v2.x
+	newvec.y = v1.y-v2.y
+	newvec.z = v1.z-v2.z
+	return newvec
+end
+
+function get_inv_name(section)
+  section = section or 'nil' 
+  SetDbgVar("get_inv_name", section, true)
+  local ini = system_ini()
+  if ini:section_exist(section) then
+     return ini:r_string(section,"inv_name")
+  else
+     abort(" invalid section "..section) 
+  end        
+end
+function get_inv_name_desc(section)
+  local ini = system_ini()
+  if ini:section_exist(section) then
+     return ini:r_string(section,"description")
+  else
+     abort(" invalid section "..section) 
+  end           
+end
+--/------------------------------------------------------------------
+--/ Упаковка таблицы в строку (стринг) и обратная распаковка
+--/------------------------------------------------------------------
+--/ Внимание! Строки в структуре таблицы не должны содержать символов с кодами 0-31.
+--[[--------------------------------------------------------
+  Формат упаковки:
+    table     ::= ( listtable | hashtable )
+    subtable  ::= ( listtable | hashtable )
+    listtable ::= 0x7 valuetype ( value | subtable 0x5 )
+    hashtable ::= keytype key valuetype ( value | subtable 0x5 )
+    keytype   ::= ( 0x1 | 0x2 | 0x7 )
+    valuetype ::= ( 0x1 | 0x2 | 0x3 | 0x4 | 0x7 )
+--]]--------------------------------------------------------
+local tPackChar = { --/ служебная таблица маркеров упаковки
+  d = {1, string.char(1)}, --/(SOH) - 'number' (dec)
+  s = {2, string.char(2)}, --/(STX) - 'string'
+  b = {3, string.char(3)}, --/(ETX) - 'boolean'
+  t = {4, string.char(4)}, --/(EOT) - 'table'
+  e = {5, string.char(5)}, --/(ENQ) - table-end
+  l = {6, string.char(6)}, --/(ACK) - table-list
+  h = {7, string.char(7)}  --/(BEL) - number-hex
+}
+--/--------------------------------------------------------
+--/ функции для совместимости с сэйвами на базе amk.script
+--/--------------------------------------------------------
+--/ упаковка таблицы в строку (стринг)
+function pack_array_to_string(tTbl,bList)
+  return this.Pack_Tbl(tTbl,bList)
+end
+--/ распаковка 'упакованной' строки (стринга) в таблицу
+function unpack_array_from_string(sStr)
+  if sStr and sStr ~= '' then
+    if sStr:sub(1,1) == string.char(1) then
+      if (sStr:sub(2,2) == tPackChar.d[2] or sStr:sub(2,2) == tPackChar.s[2]) then
+        sStr = sStr:sub(2,-1)
+      end
+    end
+    return this.Parse_Str(sStr) or {}
+  end
+  return {}
+end
+--/--------------------------------------------------------
+--/ упаковка таблицы (списка) 'tTbl' в строку 'sStr'
+--/--------------------------------------------------------
+function Pack_Tbl(tTbl,bList)
+  if type(tTbl) ~= 'table' then
+    return ""
+  end
+  local iFirstIdx = next(tTbl)
+  if not iFirstIdx then return "" end
+  local function Pack_Key(key,sType)
+    if sType == 'number' then
+      if key > 9 and key == math.floor(key) then
+        return tPackChar.h[2]..string.format('%X', key)
+      else
+        return tPackChar.d[2]..key
+      end
+    elseif sType == 'string' then
+      return tPackChar.s[2]..key
+    end
+    ODS("[~T].~C0C Pack_Tbl:UnSupported_KeyType="..tostring(sType))
+  end
+  local function Pack_Value(value,sType)
+    if sType == 'number' then
+      if value > 9 and value == math.floor(value) then
+        return tPackChar.h[2]..string.format('%X', value)
+      else
+        return tPackChar.d[2]..value
+      end
+    elseif sType == 'string' then
+      return tPackChar.s[2]..value
+    elseif sType == 'boolean' then
+      return tPackChar.b[2]..((value and "1") or "0")
+    elseif sType == 'table' then
+      return tPackChar.t[2]..this.Pack_Tbl(value)..tPackChar.e[2]
+    end
+    ODS("[~T].~C0C Pack_Tbl:UnSupported_ValueType="..tostring(sType))
+  end
+  local tStr,iCntIdx = {},0
+  if bList == nil then
+    iCntIdx = #tTbl
+    bList = iCntIdx > 0 and not next(tTbl,iCntIdx)
+  end
+  if bList then
+    table.insert( tStr, tPackChar.l[2] )
+    for i=1,iCntIdx do
+      local v = tTbl[i]
+      table.insert( tStr, Pack_Value(v,type(v)) )
+    end
+  else
+    for k,v in pairs(tTbl) do
+      table.insert( tStr, Pack_Key(k,type(k)) )
+      table.insert( tStr, Pack_Value(v,type(v)) )
+    end
+  end
+  return table.concat(tStr),bList
+end
+--/--------------------------------------------------------
+--/ распаковка строки 'sStr' (или части строки от 'at') в таблицу 'tTbl'
+--/--------------------------------------------------------
+function Parse_Str(sStr,at)
+
+  local tTbl = {}
+  local iLen = sStr:len() or 0
+  if iLen <= 0 then
+     --wprintf("[~T].~C0 #ERROR(Parse_Str):~C07 length for string %s = nil/0", sStr)  
+     return tTbl
+  end   
+  
+  if not at then at = 1 end
+  local key,value,iByte = nil,nil,nil
+  iByte,at = Get_Byte(sStr,at)
+  
+  local bList = ( iByte == tPackChar.l[1] )
+  --SetDbgVar("Parse_Str_s", sStr)  
+  
+  if bList then
+    iByte,at = this.Get_Byte(sStr,at)
+  end
+  
+  --SetDbgVar("Parse_Str_len", tostring(iLen))
+  --SetDbgVar("Parse_Str_at",  tostring(at))
+  
+  at = tonumber(at)
+  iLen = tonumber(iLen)
+  
+  while (at > 0) and 
+        (at < iLen) do
+        
+        
+    if iByte == tPackChar.e[1] then
+      return tTbl,at
+    end
+    if not bList then
+      if     iByte == tPackChar.s[1] then
+        key,at = this.Get_Str(sStr,at)
+      elseif iByte == tPackChar.d[1] then
+        key,at = this.Get_Num(sStr,at)
+      elseif iByte == tPackChar.h[1] then
+        key,at = this.Get_Num(sStr,at,true)
+      else
+        ODS("[~T].~C0C Parse_Str:(%s):UnSupported_TypeKey="..tostring(iByte))
+      end
+      iByte,at = this.Get_Byte(sStr,at)
+    end
+    if     iByte == tPackChar.d[1] then
+      value,at = this.Get_Num(sStr,at)
+    elseif iByte == tPackChar.h[1] then
+      value,at = this.Get_Num(sStr,at,true)
+    elseif iByte == tPackChar.s[1] then
+      value,at = this.Get_Str(sStr,at)
+    elseif iByte == tPackChar.b[1] then
+      value,at = this.Get_Bool(sStr,at)
+    elseif iByte == tPackChar.t[1] then
+      value,at = this.Parse_Str(sStr,at)
+    else
+      ODS("[~T].~C0C Parse_Str:(%s):UnSupported_TypeValue="..tostring(iByte))
+    end
+    if bList then
+      table.insert(tTbl, value)
+    else
+      tTbl[key] = value
+    end
+    iByte,at = this.Get_Byte(sStr,at)
+  end
+  return tTbl,at
+end
+
+--/ получение кода at-го символа строки и индекса следующего за ним символа
+function Get_Byte(sStr,at)
+  if at then
+    at = tonumber(at)
+    return string.byte( sStr:sub(at, at) ), at+1 --/>
+  else
+    --wprintf("Get_Byte, strange at = %s ", tonumber(at))
+    return string.byte( sStr:sub(1, 1) ), 2
+  end      
+end
+--/ по-символьный парсер строки 'sStr' от at до 1-го 'управляющего' символа
+function Get_Str(sStr,at)
+  local iLen = sStr:len()
+  for i=at, iLen do
+    if string.byte( sStr:sub(i,i) ) < 32 then
+      if i == at then
+        return "", i
+      end
+      return sStr:sub(at,i - 1), i
+    end
+  end
+  return sStr:sub(at,iLen), iLen+1
+end
+--/ перевод части (от 'at') строки 'sStr' в число (десятичное)
+function Get_Num(sStr,at,bHex)
+  local sSubStr,iNext = this.Get_Str(sStr,at)
+  local iNum = nil
+  if bHex then
+    iNum = tonumber(sSubStr,16)
+  else
+    iNum = tonumber(sSubStr)
+  end
+  if iNum then
+    return iNum, iNext
+  elseif sSubStr == "" then
+    return 0, iNext
+  else
+    ODS("[~T]. ~C0CGet_Num:SubStr="..tostring(sSubStr))
+    return 0, iNext
+  end
+end
+
+function Get_Bool(sStr,at)
+  local sSubStr,iNext = this.Get_Str(sStr,at)
+  return (sSubStr == "1" or string.lower(sSubStr:match('^%s*(%S*)') or '') == 'true'), iNext --/>
+end
+
+function on_info(npc, info_id)
+	news_main.on_info(info_id)
+	sak.on_info(info_id)
+end
+
+function on_item_take(obj)
+	mod_call("check_usable_item",obj)
+	--allcore_mayatniks.on_item_take(obj)
+end
+
+function on_item_take_from_box(obj, item)
+    remove_spot_from_map(obj:id(),"crlc_big")
+    gps_habar.on_item_take_from_box(obj, item)
+end
+
+function on_item_drop(obj)
+    SetDbgVar("on_item_drop", DumpVar(obj))
+    local sc = obj:section()
+	amk_mod.check_for_af_drop(obj)
+	amk_mod.check_beacon_drop(obj)                  
+	if strpos(sc,"^wpn_") or strpos(sc,"outfit") then
+	   amk_mod.fast_wpn_textures()
+	end
+end
+
+local prev_health=0
+function on_actor_update(delta)
+	local new_health=db.actor.health+0.05
+	local new_2_health=new_health+0.25
+	if prev_health>new_health then
+		level.add_pp_effector("amk_shoot.ppe", 2011, false)
+		level.set_pp_effector_factor(2011,(prev_health-new_health)*100)	
+		
+		if prev_health>new_2_health then
+			level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")	
+			local snd_obj = xr_sound.get_safe_sound_object([[actor\pain_3]])
+			snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
+			if lua_random()<0.20 then
+				local active_item = db.actor:active_item()
+				if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
+					db.actor:drop_item(active_item)
+				end
+			end
+		end
+		
+	end
+	prev_health = db.actor.health
+end
+function on_actor_update_2()
+for k,v in pairs(convert_npc) do
+		local obj=client_obj(k)
+		local sobj=alife():object(k)
+		if sobj then
+			if obj==nil and v==true then
+				convert_npc[k]=false
+				switch_online(k)
+			elseif obj and v==false then
+				convert_npc[k]=nil
+			elseif v==1 and obj then
+			alife():set_switch_online(k, false)
+			alife():set_switch_offline(k, true)
+			elseif v==1 then
+				convert_npc[k]=nil
+				switch_online(k)
+			end
+		else
+			convert_npc[k]=nil
+		end
+	end
+end
+
+function on_npc_spawn(npc)
+	if npc==nil then return end
+	if (news_main and news_main.on_spawn) then
+		news_main.on_spawn(npc)
+	end
+end
+
+function __npc_spawn_case(npc,select_string)
+
+end
+
+function on_net_spawn(obj)
+	amk_mod.build_btrs_table(obj)
+end
+
+function on_npc_go_offline(npc)
+	amk_anoms.unreg_in_anom_manager(npc)
+	if check_game()==true then
+	local sobj = alife():object(npc:id())
+		if sobj then
+			amk_offline_alife.process_trade(sobj)
+		end
+	end
+end
+
+function on_monster_go_offline(npc)
+
+end
+
+function on_use(victim, who)
+	if db.actor and who and who:id()==db.actor:id() then
+		mod_call("check_usable_item",victim)
+		sak.on_use_obj(victim)
+	end
+end
+
+function on_death(victim, who)
+	news_main.on_death(victim, who)
+	amk_anoms.unreg_in_anom_manager(victim)
+	mod_call("generate_recipe",victim,who)
+	--mod_call("firebated", victim, 1, nil, who, 14)
+	mod_call("zomby_blow",victim)
+end
+
+function on_npc_hit(obj, amount, local_direction, who, bone_index)
+	if who and IsStalker(who) and who:id()~=db.actor:id() and IsStalker(obj) and who:relation(obj)~=game_object.enemy 
+	then
+	local tmp = client_obj(obj:id())
+		if tmp.health then
+		tmp.health = 1
+		tmp.bleeding = 1
+		end
+	end
+	--mod_call("firebated", obj, amount, local_direction, who, bone_index)
+end
+
+function on_monster_hit(obj, amount, local_direction, who, bone_index)
+  --mod_call("firebated", obj, amount, local_direction, who, bone_index)
+  -- wprintf("[~T]. #DBG: monster %s received hit into bone %d ", obj:name(), bone_index)
+  local vis = obj:get_interface():Visual()
+  if vis and who and who:id() == 0 then
+     ODS(" who == actor ") 
+     local kin = vis:dcast_PKinematics()     
+     if kin then
+         local bn = kin:LL_BoneName(bone_index)
+         if bn ~= "" then
+            local msg = sprintf ("mob %s, hit_bone =~C0A %s~C07, amount = %.3f ", obj:name(), bn, amount)
+            if strpos(bn, "head") then
+               -- db.actor:give_game_news( sprintf("Хедшот! Жертва %s", obj:name()), "ui\\ui_iconsTotal", Frect():set(498,280,83,47), 0, 3000 )
+            end  
+            ODS(msg)
+         else  
+            -- wprintf("~C0C #WARN:~C07 bone name unknown! ")   
+         end
+     else
+       -- wprintf ("~C0E #WARN:~C07 object have not mesh?! interface.visual as kinematics =~C0F %s~C07 ", DumpVar(kin))    
+     end
+  end
+end
+
+amk.on_monster_hit = on_monster_hit
+
+
+function on_ph_obj_hit(obj, amount, local_direction, who, bone_index)
+    local s = nil
+    if obj.name and string.find(obj:name(), "physic_destroyable") then
+		s = " phd "..tostring(bone_index)
+		local sobj = g_sim:object(obj:id())
+		if sobj == nil then return end
+		s = s.." sobj"
+		local pk = get_netpk(sobj,1)
+		local data = pk:get()
+		local v = data.visual_name
+		--[[if string.find(v, "box_wood") then
+		  s = s.." box_wood"
+		  mod_call("firebated", obj, amount, local_direction, who, bone_index)
+		end--]]
+	end
+	if s then
+		if who and who.name then
+		  s = s.." from "..who:name()
+		end
+	end
+end
+
+function enemy_see_actor(obj,typ) 
+	--mod_call("calc_adrenaline","enemy_see_actor",obj,typ)
+end
+function actor_see_enemy(obj,typ) 
+	--mod_call("calc_adrenaline","actor_see_enemy",obj,typ)
+end
+
+function npc_shot_actor(obj) 
+	--mod_call("calc_adrenaline","enemy_hit_actor",obj,"npc")
+end
+
+function on_game_load()
+	if db.storage[db.actor:id()].pstor==nil then
+		db.storage[db.actor:id()].pstor = {}
+	end 
+	mod_call("first_run")    
+	gps_habar.on_game_loading()
+	mod_call("check_spawn")
+	--allcore_mayatniks.on_load()
+end 
+
+function on_game_save() 
+	
+end
+
+function on_game_start()
+	mod_call("on_game_start")
+	ver = get_ver()
+	
+	local strTime = system_ini():r_string("alife", "start_time")
+	local t = str_explode(":", strTime, true)
+	local d = str_explode(".",	system_ini():r_string("alife", "start_date"), true)
+	StartTime = game.CTime()
+	StartTime:set( tonumber(d[3]), tonumber(d[2]), 1, 0, 0, 0, 0)
+	local temp = game.CTime()
+	temp:setHMS(24,0,0)
+	StartTime = StartTime - temp	
+end
+
+function mod_call(i,...)
+    bind_stalker.log_init_stage(sprintf("mod_call('%s')", i))
+    local start = device():frame_elapsed()
+    -- if i ~= "check_armor" and i ~= "blowout_phantoms" and i ~= "weather_manager" and i ~= "check_for_af_drop"	and i ~= "check_metka" then
+    -- end
+
+	if not amk_mod[i] then
+       wprintf("[~T].~C0C #ERROR~C07: mod_call not found function~C0A %s~C07", i)
+       return
+	end
+	amk_mod[i](...)
+    local elps = device():frame_elapsed() - start
+    if elps > 100 then
+       wprintf("[~T/~U/~B].~C0C #PERF_WARN:~C07 amk.mod_call(~C0A'%s'~C07) eats time~C0D %.1f~C07 ms", i, elps) 
+    end 
+    
+end
+
+function sixbit(char) 
+    local byte = string.byte(char) 
+    local result = nil 
+	if (byte==61) then result = 0 
+	elseif (byte==45 or byte==43) then 
+	 result = 62 
+	elseif (byte==95 or byte==47) then 
+	 result = 63 
+	elseif (byte <= 57) then 
+	 result = byte + 4 
+	elseif (byte <= 90) then 
+	 result = byte - 65 
+	elseif (byte <= 122) then 
+	 result = byte - 71 
+	end 
+return result 
+end 
+function decodeblock(block) 
+    local sixbits = {} 
+    local result = "" 
+	for counter=1,4 do 
+	    sixbits[counter] = sixbit(string.sub(block,counter,counter)) 
+	end 
+    result = string.char(sixbits[1]*4 + math.floor(sixbits[2] / 16)) 
+	if (string.sub(block,3,3)~="=") then 
+	   result = result..string.char((sixbits[2] % 16)*16 + math.floor(sixbits[3] / 4)) 
+	end 
+	if (string.sub(block,4,4)~="=") then 
+	   result = result..string.char((sixbits[3] % 4)*64 + sixbits[4]) 
+	end 
+   return result 
+end 
+
+function decode(data)
+ if type(data) ~= "string" then
+    return false
+ end
+
+ wprintf(" amk.decode('%s')", DumpVar(data))
+ local result = ""
+ local str={string.byte("CheckForCheat",1,1000)}
+ local strl=table.getn(str)
+ for c=1,string.len(data),4 do
+  result=result..decodeblock(string.sub(data,c,c+3))
+ end
+ local result1=""
+ for c=1,string.len(result),1 do
+  local sl=string.byte(string.sub(result,c)) sl=bit_xor(sl,str[1+(c-1)%strl]) result1 = result1..string.char(sl)
+ end
+ return result1
+end
+
+function bind_lc(obj)
+end
+
+function dump_table(tbl)
+	for k,v in pairs(tbl) do
+		if type(v)=="table" then
+			dump_table(v)
+		else
+			str=" "..tostring(k).." => "..tostring(v)
+			if string.len(str)>200 then
+				str=string.sub(str,1,200)
+			end
+			ODS(str)
+		end
+	end	
+end
+
+
+function parse_custom_data(str)
+	local t={}
+	if str then
+		for section, section_data in string.gfind(str,"%s*%[([^%]]*)%]%s*([^%[%z]*)%s*") do
+			section = trim(section)
+			t[section]={}
+			for line in string.gfind(trim(section_data), "([^\n]*)\n*") do
+				if string.find(line,"=",1,true)~=nil then
+					for k, v in string.gfind(line, "([^=]-)%s*=%s*(.*)") do
+						k = trim(k)
+						if k~=nil and k~='' and v~=nil then 
+							t[section][k]=trim(v) 
+						end
+					end
+				else
+					for k, v in string.gfind(line, "(.*)") do
+						k = trim(k)
+						if k~=nil and k~='' then
+							t[section][k]="<<no_value>>" 
+						end
+					end
+				end
+			end
+		end
+	end
+	return t
+end
+
+function trim(s)
+	return(string.gsub(s, "^%s*(.-)%s*$", "%1"))
+end
+
+function gen_custom_data(tbl)
+	local str=''
+	for key, value in pairs(tbl) do
+		str = str.."\n["..key.."]\n"
+		for k, v in pairs(value) do
+			if v~="<<no_value>>" then
+				str=str..k.." = "..v.."\n"
+			else
+				str=str..k.."\n"
+			end
+		end
+	end
+	return str
+end 
+
+function point_in_poly(pts, x,y)
+	local cnt,k,j
+	local ret = false
+	cnt = table.getn(pts)
+	j = cnt
+	for k = 1,cnt do
+		if ((pts[k].y <=y) and(y < pts[j].y)) or((pts[j].y <=y) and(y < pts[k].y)) then
+			if (x <(pts[j].x - pts[k].x)*(y - pts[k].y) /(pts[j].y - pts[k].y) + pts[k].x) then
+				ret = not ret
+			end
+			j = k
+		end
+	end
+	return ret
+end
+
+function on_REspawn(obj,respawner)
+	if obj and respawner and respawner.amk_name then
+		mod_call("respawned",obj,respawner)
+		if IsMonster(obj) then
+			if respawner.spawned_goes_online==true then mod_call("switch_monster_online",obj) 
+			elseif respawner.spawned_goes_online==false then mod_call("switch_monster_offline",obj) end
+		end
+	end
+	if obj then
+		news_main.on_spawn(obj)
+	end
+end
+
+function parse_ini_section_to_array(ini,section)
+	local tmp={}
+	if ini:section_exist(section) then
+		local result, id, value = nil, nil, nil
+		for a=0,ini:line_count(section)-1 do
+			result, id, value = ini:r_line(section,a,"","")
+			if id~=nil and trim(id)~="" and trim(id)~=nil then
+				tmp[trim(id)]=trim(value)
+			end
+		end
+	end
+	return tmp
+end
+
+function str_explode(div,str,clear)
+	local t={}
+	local cpt = string.find(str, div, 1, true)
+	if cpt then
+		repeat
+			if clear then
+				table.insert(t, trim(string.sub(str, 1, cpt-1)))
+			else
+				table.insert(t, string.sub(str, 1, cpt-1))
+			end
+			str = string.sub(str, cpt+string.len(div))
+			cpt = string.find(str, div, 1, true)
+		until cpt==nil
+	end
+	if clear then
+		table.insert(t, trim(str))
+	else
+		table.insert(t, str)
+	end
+	return t
+end
+
+function quotemeta(str)
+	return(string.gsub(s, "[%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%1"))
+end
+
+
+function add(v1,v2)
+	local nv=vector()
+	nv.x=v1.x+v2.x
+	nv.y=v1.y+v2.y
+	nv.z=v1.z+v2.z
+	return nv
+end
+
+function get_ver()
+	local ver = "0"
+	local mm = _G.main_menu.get_main_menu()
+	if mm then ver = mm:GetGSVer() end
+	return ver
+end
+
+--[[
+copyright © xStream & Red75
+
+MMMMMMM		MMMMM		MMMMMM	MMMMMMMMMMMMM	MMMMMMMMMMM		MMMMMMMMMMM		MMMMMM		MMMMMMM		MMMMMM
+ MMMMMMM MMMMMM	MMMMMMMMMM MMMMMMMMMMMMMM MMMMMMMMMMMMMM	MMMMMMMMMMM	MMMMMMMM	MMMMMMMM	MMMMMMM
+	MMMMMMMMMMMM	MMMMMMMMMMMM MMMMMMMMMMMMM	MMMMMMMMMMMMMM MMMMMMMMMMM	MMMMMMMM		MMMMMMMM MMMMMMMM
+	MMMMMMMMM		MMMMMMMM MMM	MMMMMMM		MMMMMMMMMMMMMM MMMMMMM			MMMMMMMMMM	MMMMMMMMMMMMMMMMM
+		MMMMMMM			MMMMMMM			MMMMMM			MMMMMMM	MMMMM MMMMMMM			MMMMMMMMMM	MMMMMMMMMMMMMMMMM
+		MMMMMMMM			MMMMMMM			MMMMMM			MMMMMMM MMMM	MMMMMMMMMM	MMMM MMMMMMM	MMMMMMMMMMMMMMMMM
+	MMMMMMMMMM				MMMMM			MMMMMM			MMMMMMMMMMM		MMMMMMM		MMMM	MMMMMM	MMMMMMMMMMMMMMMMM
+	MMMMM	MMMMM		MMMMMMMM			MMMMMM			MMMMMMMMMMMMMM MMMMMMMMMMM MMMMMMMMMMMMM MMMMM MMMMM MMMMM
+ MMMMM	MMMMMM		MMMMMM			MMMMMM			MMMMMMM MMMMM	MMMMMMMMMM MMMMMMM MMMMMM MMMM	MM	MMMM 
+]]
+
+

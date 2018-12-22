@@ -1,0 +1,398 @@
+local libname = 'xr_3da.exe'
+local get_boneID     = "?LL_BoneID@CKinematics@@QAEGABVshared_str@@@Z"
+local get_boneInst   = "?LL_GetBoneInstance@CKinematics@@QAEAAVCBoneInstance@@G@Z"
+local get_boneName   = "?LL_BoneName_dbg@CKinematics@@QAEPBDG@Z"
+local get_boneCount  = "?LL_BoneCount@CKinematics@@QAEGXZ"
+
+get_boneID           = GetProcAddr(libname, get_boneID)
+get_boneInst         = GetProcAddr(libname, get_boneInst)
+get_boneName         = GetProcAddr(libname, get_boneName)
+get_boneCount        = GetProcAddr(libname, get_boneCount)
+
+local bone="wpn_silencer"
+
+if bones == nil then 
+   bones = {}
+end
+
+
+if shared_str.dock_str == nil then
+
+end
+
+
+function r_float(obj, ofs)
+ return ReadDMA (obj, ofs, "float")
+end
+
+function r_vector4(obj, ofs, step)
+ local matrix = { 1.0, 1.0, 1.0, 1.0 }
+ 
+ ofs = ofs - step
+ for i = 1, 4 do
+     matrix [i] = r_float(obj, ofs + i * step)
+ end -- for 
+ return matrix
+end
+
+function dump_vector4(m, name)
+ local s = string.format("[~T]. #DBG: dump vector %20s: ", name)
+ for i = 1, 4 do
+     s = s..string.format("%9.3f ", m[i])
+ end -- for 
+ ODS (s .. "~C07")
+end
+
+function add_vector4(a, b)
+ local result = { 0, 0, 0, 0 }
+ for i = 1, 4 do
+     result[i] = a[i] + b[i]
+ end 
+ return result
+end
+
+
+function mult_vector4(a, b)
+ local result = { 0, 0, 0, 0 }
+ for i = 1, 4 do
+     result[i] = a[i] * b[i]
+ end 
+ return result
+end
+
+function mult_saldo_vector4 (a, b)
+
+ local result = a[1] * b[1] 
+ 
+ for i = 2, 4 do
+    result = result + a[i] * b[i] 
+ end
+  
+ return result 
+end
+
+function GetBoneCount(kobj)
+ if xr_build_id > 5680 then
+    return kobj:LL_BoneCount()
+ end         
+
+ if kobj.valid then
+    return BinThisCall(kobj, get_boneCount)
+ else
+    return 0
+ end    
+end
+
+bones.GetBoneCount = GetBoneCount
+
+function GetBoneID(kobj, bone_name)   
+ -- функция жрет shared_str*
+ local bone_ss = dock_str(bone_name)
+ ODS("[~T]. #DBG: bone_ss = "..FormatPtr(bone_ss)) 
+ local bid = BinThisCall(kobj, get_boneID, "ivar="..FormatPtr(bone_ss))
+ bid = bit_and (bid, 65535) -- результат 16 бит    
+ return bid
+end
+
+bones.GetBoneID = GetBoneID
+
+function GetBoneInst(kobj, bid)
+ local inst = BinThisCall(kobj, get_boneInst, tostring(bid))
+ return CalcPtr(inst, 0, "+") -- data offset ?
+end
+
+function GetBoneName(kobj, bid) 
+ if xr_build_id > 5500 then 
+    return kobj:LL_BoneName(bid) -- LL_BoneName 
+ end
+
+ local list = ReadDMA(kobj, '$90', 'safe_ptr')
+ 
+ if list then 
+   local first = ReadDMA(list, 4, 'uint')
+   local last  = ReadDMA(list, 8, 'uint')
+   
+   for addr = first,last,8 do
+    local test = ReadDMA(addr, 4, 'word')
+    if test == bid then
+       return shared_str.get_shared_str (addr)
+    end      
+   end -- for   
+ end
+ 
+   
+ return '?' 
+ --- return sprintf ( ' list = %s first = $%x, last = $%x ', FormatPtr(list), first, last ) 
+end
+
+bones.GetBoneName = GetBoneName
+
+function GetObjectBones(id)
+ local kobj = xray_visual.GetKinematics (id)
+ 
+ if ( kobj == nil ) or ( not kobj.valid ) then return {} end 
+ 
+ local result = {}
+ local bcnt = GetBoneCount(kobj) 
+ for i = 1,bcnt, 1 do     
+  local bi = i - 1;
+  --SetDbgVar('GetBoneName', sprintf('i=%d/%d', i, bcnt ) ) 
+  local bname = GetBoneName( kobj, bi )
+  if bname ~= '?' then
+     table.insert (result, bname)
+  end  
+ end
+ 
+ return result 
+end
+
+bones.GetObjectBones = GetObjectBones
+
+function cmp_bones(ids, idd)
+ local cobjs = get_CObject(ids)
+ local cobjd = get_CObject(idd)
+ 
+ local kobjs = xray_visual.GetKinematics(cobjs)
+ local kobjd = xray_visual.GetKinematics(cobjd)
+ 
+ ODS( " CKinematics src = " .. FormatPtr(kobjs) .. " dst = " .. FormatPtr(kobj) )
+ 
+  
+ local blends = ReadDMA(kobjs, "$B8", "safe_ptr")
+ local blendd = ReadDMA(kobjd, "$B8", "safe_ptr")
+ local cnt = 0
+ 
+  
+ local base = 0
+ local test = 1 
+ local reft = 1
+ 
+ ODS( " CBlendInstance? src = " .. FormatPtr(blends) .. " dst = " .. FormatPtr(blendd) )
+ 
+ xray_dma.enable_write('cmp_bones')
+                      
+ while ( base < 68 * 50 ) do
+    local s = '~C0E'
+    
+    local srcp, dstp
+    local ofs = 0
+    local err = ''
+    
+    cnt = cnt + 1    
+    
+    while (ofs < 68) and (test > 0) and (reft == 0) do
+      -- копирование недостающих косточек
+      srcp = CalcPtr(blends, base + ofs, "+")
+      dstp = CalcPtr(blendd, base + ofs, "+")               
+      
+      local v = ReadDMA(srcp, 0, "int")
+      
+      if v > 0 then
+         s = s .. FormatPtr(v) .. " "
+      end
+      err = WriteDMA(dstp, 0, v, "int")              
+      ofs = ofs + 4
+      ODS(err)      
+    end -- while int
+    
+    -- ODS (s .. "~C0F  last src_ptr = " .. FormatPtr(srcp) .. " dst_ptr = " .. FormatPtr(dstp) )
+    base = base + 68
+    
+    srcp = CalcPtr(blends, base - 4, "+")
+    dstp = CalcPtr(blendd, base - 4, "+")
+    test = ReadDMA(srcp, 0, "int")
+    reft = ReadDMA(dstp, 0, "int")
+    
+    if ( test > 8 ) or ( test <= 0 ) then -- marker
+       
+       ODS ("[~T]. #DBG: value from "..FormatPtr(srcp).." = ".. tostring(test))        
+    
+       break
+       
+    end    
+    
+    ODS ( string.format("[~T]. #DBG: %3d frame %s vs %s  values = %d vs %d ", cnt, FormatPtr(srcp),  FormatPtr(dstp), test, reft) )
+ end -- while ext   
+   
+ ODS (" count = " .. tostring (cnt) )
+ 
+end -- copy_bones
+
+function enum_bones(id)
+ id = tonumber(id)
+ local cobj = get_CObject(id)
+ if cobj == nil then
+    return
+ end
+ 
+ local obj = client_obj(id)
+ 
+ local kobj = xray_visual.GetKinematics(cobj)
+ 
+ if kobj == nil then
+    return
+ end
+ 
+ 
+ local cnt = BinThisCall(kobj, get_boneCount)
+ if cnt == 0 then
+   ODS("[~T]. #DBG: not found bones in CKinematics "..FormatPtr(kobj))
+   return
+ end
+ 
+ ODS('[~T]. #DBG: bones dump for object #'..tostring(id)..' CKinematics = '.. FormatPtr(kobj))
+ 
+ for n = 1,cnt do
+    local nb = n - 1
+    local name = GetBoneName(kobj, nb)
+    local inst = GetBoneInst(kobj, nb)
+    local s = string.format ('~C0E bone %3d %-20s ~C0D %s~C0B: ', nb, name, FormatPtr(inst))
+    
+    local ofs = 0 
+    
+    while (ofs < 256) do
+     v = r_float(inst, ofs)
+     if ofs == 48 then
+        s = s .. '| '
+     end
+     
+     if ofs % 64 == 0 then
+        s = s .. '\n '
+     end
+     
+     if type(v) == "string" then
+        s = s .. string.format('%7s ', v)
+     else
+        if v >= 0 then
+           s = s .. '~C0F '
+        else
+           s = s .. '~C0C'    
+        end
+     
+        s = s .. string.format('%3.3f ', v)
+     end   
+     ofs = ofs + 4
+    end -- while  
+    
+    local pos = obj:bone_position(name)
+        
+    s = s .. misc.pos2str (pos)  
+        
+    ODS(s .. '~C07')    
+ end  
+ 
+end
+
+function test(id)
+ local cobj = get_CObject(id)
+ if cobj == nil then
+    return
+ end
+ 
+ local kobj = xray_visual.GetKinematics(cobj)
+ 
+ if kobj == nil then
+    return
+ end
+ 
+ 
+ ODS("[~T]. #DBG: CObject wpn = "..FormatPtr(cobj))
+ ODS("[~T]. #DBG: CKinematics m_kinematics = "..FormatPtr(kobj))
+ 
+ SleepEx(200)
+ local cnt = BinThisCall(kobj, get_boneCount)
+ local kobj,whv,swh = wpn_params.get_wpn_hud(cobj)
+ 
+ ODS("[~T]. #DBG: LL_BoneCount returned = "..tostring(cnt))
+ 
+ 
+ if (kobj ~= nil) and (whv ~= nil) then
+    ODS ("[~T]. #DBG: swh = "..FormatPtr (swh))
+    ODS ("[~T]. #DBG: wvh = "..FormatPtr(whv))
+    ODS("[~T]. #DBG: CKinematicsAnimated khud = "..FormatPtr(kobj))
+    cnt = BinThisCall(kobj, get_boneCount)                                                        
+    ODS("[~T]. #DBG: LL_BoneCount returned = "..tostring(cnt))
+                
+ end
+  
+ ------------------------------------------------------------------------------
+ if ( kobj ~= nil ) and ( get_boneID ~= nil ) then
+    local bid = GetBoneID(kobj, bone)        
+    ODS("[~T]. #DBG: returned bone_id = " .. tostring(bid))
+    
+    if bid == 65535 then
+       bid = 1
+    end
+    
+    local bone_m, obj_m
+    
+    if ( bid ~= nil ) and ( bid < 65535 ) then
+                                          
+       local inst = GetBoneInst(kobj, bid)
+       
+       local aobj = get_CObject(0)       
+       local hobj = CalcPtr(swh, 6, "+")     
+       
+       
+       ODS("[~T]. #DBG: hobj = "..FormatPtr(hobj))
+       -- hobj = CalcPtr(cobj, "$50", "+")
+       
+       ODS("[~T]. #DBG: instance = " .. FormatPtr(inst))      
+       
+       local bone_pos = vector()
+       local hud_v = { 1.0, 1.0, 1.0, 0.0 }
+       -- local hud_pos = CalcPtr(kobj, 8, "+")
+       
+       -- bone_m = r_vector4 (inst, 48, 4)
+       hud_v = r_vector4(kobj, 8, 4)  -- at weapon?
+       -- dump_vector4 (hud_v, "hud_v")
+       
+       bone_v = r_vector4 (inst, 48, 4)       
+       dump_vector4 (bone_v, "~C0F bone_v")
+       -- bone_v = hud_v -- add_vector4(bone_v, hud_v)
+       
+       
+       obj_m = r_vector4 (hobj, 00, 16)  -- у объекта и худа есть матрицы преобразований координат, для дочерних косточек     
+       dump_vector4 (obj_m, "~C0E obj_m.x")
+       bone_pos.x = mult_saldo_vector4 (obj_m, bone_v)              
+       obj_m = r_vector4 (hobj, 04, 16)
+       dump_vector4 (obj_m, "~C0D obj_m.y")
+       bone_pos.y = mult_saldo_vector4 (obj_m, bone_v)       
+       obj_m = r_vector4 (hobj, 08, 16)
+       dump_vector4 (obj_m, "~C0A obj_m.z")
+       
+       bone_pos.z = mult_saldo_vector4 (obj_m, bone_v) -- аффинное преобразование?
+       
+       obj_m = r_vector4 (hobj, 12, 16)
+       dump_vector4 (obj_m, "~C0B obj_m.w")
+                                                            
+                                                            
+       ODS ("[~T]. #DBG: bone position = "..misc.pos2str (bone_pos)) 
+       
+       
+       local params = { particle = "explosions\\expl_car_smoke_small", looped = true, pos = bone_pos }
+       
+       amk_particle.amk_particle(params)      
+       
+       c.spawn_at("zone_flame_candle_self", 65535, bone_pos) --          
+       
+    end
+ end       
+ 
+end
+
+   
+
+bones.test = test
+
+
+
+-- test(28456)
+
+bones.enum_bones = enum_bones
+
+-- cmp_bones(257,513)
+-- enum_bones(4097)
+-- copy_bones(513,769)
+-- enum_bones(257)
+-- enum_bones(769)

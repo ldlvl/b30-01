@@ -1,0 +1,174 @@
+if kanistra_flame == nil then
+   _G.kanistra_flame = {}
+end
+
+if kanistra_flame.flame_anoms == nil then
+   -- массив необходим, чтобы случайно не заспавнить больше аномалий от одной канистры.
+   kanistra_flame.flame_anoms = {}
+end
+
+function kanistra_flame.configure(id)
+  local st = anom_params.anom_prop(fid, "start_time") or 0
+  anom_params.anom_prop(fid, "time_to_live", st + 150000)  -- подстраховка 
+end
+
+function kanistra_flame.spawn_fire(id)
+--         wprintf('[~T]. #DBG: kanistra %d wasted. ', id)
+   
+  if kanistra_flame.flame_anoms[id] ~= nil then
+     wprintf('[~T]. #WARN: anomaly already spawned')
+     return
+  end                                
+  
+  local obj = client_obj(id)
+  
+  if not obj then 
+     wprintf('[~T]. #WARN: not found kanistra by id = %d', id)
+     return
+  end 
+    
+  local gi = misc.geo_info(obj)
+  
+  local down_dir = vector():set(0, -1, 0)
+  
+  local range = 0 
+  -- RayTrace ( gi.pos, down_dir, 300, 2 )             
+  if xr_build_id <= 3312 then         
+     -- ранее работало через luaicp   
+     local lvid, target
+     lvid, range, target = RayTrace ( gi.pos, vector():set(0, 1, 0), 300, 2 ) -- -- поиск поверхности для опоры
+  else
+     -- ray_pick(const vector&, const vector&, number, enum collide::rq_target, rq_result&, game_object*);
+     local RP = ray_pick ( gi.pos, vector():set(0, 1, 0), 300, rq_target.rqtStatic, nil )
+     if RP:query() then
+        range = RP:get_distance()
+     end     
+  end      
+    
+  wprintf('[~T]. #DBG: kanistra position =~C0A %s ~C07', misc.pos2str(gi.pos) )
+  
+  if range < 3 then 
+     gi.pos.y = gi.pos.y - range
+  end       
+  
+  if misc.init_vxdb() then  
+     local lvid, gvid, tvid = NearestVertexInfo( gi.pos )
+     gi.lv = lvid
+     gi.gv = gvid
+  end     
+              
+  local flame = misc.easy_anom ("zone_kanistra_flame", gi, 2.738 )
+  local fid = flame.id          
+
+  local pre = kanistra_flame.flame_anoms[id] or -1 
+  
+  schedule.add("configure_flame", sprintf("kanistra_flame.configure(%d)", fid), 1000)
+     
+  kanistra_flame.flame_anoms[id] = fid
+  
+  wprintf('[~T]. #DBG: spawned flame anomaly %d, possibly downstep = %.3f, check = %d vs %d ', fid, range, kanistra_flame.flame_anoms[id], pre )
+  if fid > 1 then
+     g_sim:set_switch_online  ( id, true )
+     g_sim:set_switch_offline ( id, false )         
+  end
+
+end
+
+-- flush !kanistra_flame.update
+function kanistra_flame.update() 
+ 
+ local anoms = registry.sc_objects('zone_kanistra_flame', true, 7, client_obj)
+
+ for i, flame in pairs(anoms) do 
+  if flame then
+     local id = flame:id()          
+     local ap = flame:get_anomaly_power()	 
+	 ap = ap - 0.003      
+     flame:set_anomaly_power (ap)     
+     
+     if ( ap > -1 ) and ( ap < 0.1 ) or ( math.floor(ap) - ap == 0 ) then
+       wprintf('[~T]. #DBG: anom~C0A %s~C07 power updated to =~C0D %.3f~C07', flame:name(), ap )
+     end       
+     
+     if ap < 0.02 then
+        amk_anoms.set_online_anomaly_status (id, 'off')
+        misc.release_obj(id)        
+        -- вычеркивание аномалии из списка блокировок
+        for kid,fid in pairs(kanistra_flame.flame_anoms) do                            	
+            if fid == id then
+               kanistra_flame.flame_anoms[kid] = nil
+               break
+            end
+        end 
+             
+     end -- if ap 
+        
+  end -- if flame   
+ end -- for
+ 
+  
+ local objs = registry.sc_objects('amk_kanistra', true, 7, client_obj)
+ 
+ for i, obj in ipairs(objs) do
+  if obj and obj.condition then
+     local cond = obj:condition()
+     local id = obj:id()
+     
+     if ( cond > -30 ) and ( cond <= 0.2 ) then
+        local owner = obj:parent() 
+        if owner ~= nil then
+           wprintf("[~T]. #DBG: kanistra has owner %s, trying drop ", owner:name())
+		   owner:drop_item(obj)
+		   return		   
+		end
+     
+     
+        wprintf ('[~T]. #DBG: trying safe explode object~C0A %s~C07 ', obj:name())        
+        kanistra_flame.spawn_fire( id )        
+        -- InvokeRegistry('Update_One', id )       
+                     
+        obj:explode(0)               
+        obj:set_condition(-30)
+        
+            
+        local k = 1 / 1000           
+        local x = lua_random( -300, 300 )  * k        
+        local z = lua_random( -300, 300 )  * k
+        
+        local h = hit()
+	    h.power = 0.01
+	    h.direction = vector():set(x, 1, z)
+	    h.draftsman = db.actor
+	    h.impulse = 150
+	    h.type = hit.wound
+	    obj:hit(h) -- изящно пнуть
+        
+        
+        misc.release_obj( obj:id() )
+     elseif cond < 0.9 then
+        -- wprintf ('[~T]. #DBG:~C0A %s~C07 condition =~C0D %.3f~C07 ', obj:name(), cond )           
+     end
+     
+  end  
+ end
+ 
+end
+
+
+function init_module()
+ AddRegularTask("kanistra_update", kanistra_flame.update, nil, 0, 1000)
+end
+
+function kanistra_flame.on_removed_objs(id_list)
+   
+
+  for i,id in ipairs(id_list) do  
+      
+      local t = GameObjectInfo (id)
+      
+      if t and t.section == 'amk_kanistra' then     
+               
+      
+      end -- if is kanistra
+  end -- for 
+end

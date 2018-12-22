@@ -1,0 +1,577 @@
+--[[
+самодельный дешифратор замков дверей
+Vergas
+© NLC 6.0
+]]--
+
+function main()
+	super_dlg = vergas_decoder.cheat()
+	level.start_stop_menu(super_dlg,true) end
+
+class "cheat"(CUIScriptWnd)
+
+local door_code	={}				--сгенерЄнный код (таблица)
+local str_number=""				--стринг собираемого кода
+local tmp_code ={}				--вариант подбираемого кода (таблица)
+local enter_code = {}			--варианты подбираемого кода (таблица)
+local line_n					--номер выводимой строки табло
+local flag_alarm=false			--true - обнаружена попытка взлома
+local attempts					--количество произведенных попыток
+local flag_vkl					--флаг включено(true)/выключено(false)
+local wnd_t=nil
+local wnd_steklo
+local wnd_light_1		
+local wnd_light_2
+local wnd_1			
+local wnd_2			
+local wnd_3			
+local wnd_4			
+local wnd_5			
+local wnd_6			
+local wnd_7			
+local wnd_8
+local wnd_vkl			
+local wnd_vikl
+
+function cheat:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks() end
+
+function cheat:InitControls()
+	self:Init(128,220,768,370)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_decoder.xml")
+	
+	xml:InitStatic("background", self)     								--—обственно рамка
+	self:Register(xml:Init3tButton("btn_1", self),"btn_1")				--  нопка 1 
+	self:Register(xml:Init3tButton("btn_2", self),"btn_2")				--  нопка 2
+	self:Register(xml:Init3tButton("btn_3", self),"btn_3")				--  нопка 3
+	self:Register(xml:Init3tButton("btn_4", self),"btn_4")				--  нопка 4 
+	self:Register(xml:Init3tButton("btn_5", self),"btn_5")				--  нопка 5 
+	self:Register(xml:Init3tButton("btn_6", self),"btn_6")				--  нопка 6 
+	self:Register(xml:Init3tButton("btn_7", self),"btn_7")				--  нопка 7 
+	self:Register(xml:Init3tButton("btn_8", self),"btn_8")				--  нопка 8 
+	self:Register(xml:Init3tButton("btn_9", self),"btn_9")				--  нопка 9 
+	self:Register(xml:Init3tButton("btn_0", self),"btn_0")				--  нопка 0 
+	self:Register(xml:Init3tButton("btn_del", self),"btn_del")			--  нопка сброса ввода
+	self:Register(xml:Init3tButton("btn_bs", self),"btn_bs")			--  нопка забой
+	self:Register(xml:Init3tButton("btn_enter", self),"btn_enter")		--  нопка ввод
+	self:Register(xml:Init3tButton("btn_esc", self),"btn_esc")			--  нопка выход
+	self:Register(xml:Init3tButton("btn_up", self),"btn_up")			--  нопка стрелка вверх
+	self:Register(xml:Init3tButton("btn_down", self),"btn_down")		--  нопка стрелка вниз
+	self:Register(xml:Init3tButton("btn_vkl", self),"btn_vkl")			--  нопка включить/выключить
+	door_code = vergas_decoder_use.code_creation()
+	self:show_wnd_black_screen()
+	self:show_wnd_steklo()
+	--flag_alarm = vergas_decoder_use.get_flag_alarm()
+	line_n = 1
+	attempts = 0
+	self:init_enter_code()
+	self:show_wnd_light_1(0)
+	self:show_wnd_light_2(0)
+	flag_vkl = false
+	self:show_wnd_vikl()
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 				--  нопка 1 
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 				--  нопка 2 
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self) 				--  нопка 3 
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self) 				--  нопка 4 
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED, self.btn_5, self) 				--  нопка 5 
+	self:AddCallback("btn_6", ui_events.BUTTON_CLICKED, self.btn_6, self) 				--  нопка 6 
+	self:AddCallback("btn_7", ui_events.BUTTON_CLICKED, self.btn_7, self) 				--  нопка 7 
+	self:AddCallback("btn_8", ui_events.BUTTON_CLICKED, self.btn_8, self) 				--  нопка 8 
+	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED, self.btn_9, self) 				--  нопка 9 
+	self:AddCallback("btn_0", ui_events.BUTTON_CLICKED, self.btn_0, self) 				--  нопка 0 
+	self:AddCallback("btn_del", ui_events.BUTTON_CLICKED, self.btn_del, self) 			--  нопка сброса ввода 
+	self:AddCallback("btn_bs", ui_events.BUTTON_CLICKED, self.btn_bs, self) 			--  нопка забой
+	self:AddCallback("btn_enter", ui_events.BUTTON_CLICKED, self.btn_enter, self) 		--  нопка ввод
+	self:AddCallback("btn_esc", ui_events.BUTTON_CLICKED, self.btn_esc, self) 			--  нопка выход
+	self:AddCallback("btn_up", ui_events.BUTTON_CLICKED, self.btn_up, self) 			--  нопка стрелка вверх
+	self:AddCallback("btn_down", ui_events.BUTTON_CLICKED, self.btn_down, self) 		--  нопка стрелка вниз
+	self:AddCallback("btn_vkl", ui_events.BUTTON_CLICKED, self.btn_vkl, self) 			--  нопка включить/выключить
+end
+
+function cheat:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:on_quit("esc")
+		end
+	end
+	return true
+end
+
+function cheat:on_quit(param)
+	bind_stalker.restore_weapon()
+	self:GetHolder():start_stop_menu (self,true)
+	used_items.set_get_flag_use_gadget(1,true)
+	if param == "esc" then
+		--self.owner:OnNumberReceive("")
+	else
+		if str_number == self:assembly_door_code() then
+			str_number = "3265987401"
+		end
+		self.owner:OnNumberReceive(str_number,true)
+	end
+	self:del_windows() 
+end
+
+function cheat:btn_1() self:print_number("1") end
+function cheat:btn_2() self:print_number("2") end
+function cheat:btn_3() self:print_number("3") end
+function cheat:btn_4() self:print_number("4") end
+function cheat:btn_5() self:print_number("5") end
+function cheat:btn_6() self:print_number("6") end
+function cheat:btn_7() self:print_number("7") end
+function cheat:btn_8() self:print_number("8") end
+function cheat:btn_9() self:print_number("9") end
+function cheat:btn_0() self:print_number("0") end
+
+function cheat:btn_del(param)
+	if wnd_t ~= nil then self:DetachChild(wnd_t) wnd_t = nil end
+	if str_number == "" then
+		self:set_flag_alarm()
+		return
+	end
+	str_number=""
+	tmp_code ={}
+	if not param then
+		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_decoder_no"),1)
+	end
+end
+
+function cheat:btn_bs()
+	local n = string.len(str_number)
+	if n == 0 then
+		self:set_flag_alarm()
+		return
+	end
+	if n == 1 then
+		self:btn_del()
+		return
+	end
+	str_number = string.sub(str_number,1,n-1)	
+	tmp_code[n] = ""
+	self:show_wnd_t(1)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_decoder_no"),1) 
+end
+
+function cheat:btn_esc() self:on_quit("esc") end
+
+function cheat:btn_enter()
+	if not flag_vkl then
+		self:on_quit()
+		return
+	end
+	local i
+	local j
+	if flag_alarm then
+		self:set_flag_alarm()
+		return
+	end
+	if string.len(str_number) ~= 4 or wnd_t == nil then
+	--ODS("[~T]. #DBG: вот ~C0A"..string.len(str_number).."~C07")
+		self:set_flag_alarm()
+		return
+	end
+	local flag = false
+	for i = 1, 8 do
+		if str_number == string.sub(enter_code[i],1,4) then
+			flag = true
+		end
+	end
+	if flag then
+		self:set_flag_alarm()
+		return
+	end
+	if wnd_steklo ~= nil then self:DetachChild(wnd_steklo) wnd_steklo = nil end
+	local amount = 0
+	local places = 0
+	
+	for i = 1,4 do
+		for j = 1,4 do
+			if tmp_code[i] == door_code[j] then
+				if i == j then
+					places = places + 1
+					amount = amount + 1
+				else
+					amount = amount + 1
+				end
+			end
+		end
+	end
+	if line_n - 1 ~= attempts then
+		if line_n == 2 then self:show_wnd_1(2)
+		elseif line_n == 3 then self:show_wnd_2(2)
+		elseif line_n == 4 then self:show_wnd_3(2)
+		elseif line_n == 5 then self:show_wnd_4(2)
+		elseif line_n == 6 then self:show_wnd_5(2)
+		elseif line_n == 7 then self:show_wnd_6(2)
+		elseif line_n == 8 then self:show_wnd_7(2)
+		end
+	end
+	line_n = attempts + 1
+	enter_code[line_n] = str_number..amount..places
+	if line_n == 1 then self:show_wnd_1(1)
+	elseif line_n == 2 then self:show_wnd_1(2) self:show_wnd_2(1)
+	elseif line_n == 3 then self:show_wnd_2(2) self:show_wnd_3(1)
+	elseif line_n == 4 then self:show_wnd_3(2) self:show_wnd_4(1)
+	elseif line_n == 5 then self:show_wnd_4(2) self:show_wnd_5(1)
+	elseif line_n == 6 then self:show_wnd_5(2) self:show_wnd_6(1)
+	elseif line_n == 7 then self:show_wnd_6(2) self:show_wnd_7(1)
+	elseif line_n == 8 then self:show_wnd_7(2) self:show_wnd_8(1)
+	elseif line_n == 9 then self:show_wnd_8(2) self:set_flag_alarm() self:show_wnd_steklo() return
+	end
+	self:show_wnd_light_1(amount)
+	self:show_wnd_light_2(places)
+	self:show_wnd_steklo()
+	line_n = line_n + 1
+	attempts = attempts + 1
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_decoder_enter"),1)
+	self:btn_del(true)
+end
+
+function cheat:btn_up()
+	if line_n <= 2 then --self:set_flag_alarm() 
+	return end
+	if wnd_steklo ~= nil then self:DetachChild(wnd_steklo) wnd_steklo = nil end
+	self:show_wnd_steklo()
+	if enter_code[line_n-2]~="      " then
+		if line_n == 9 then self:show_wnd_8(2) self:show_wnd_7(1)
+		elseif line_n == 8 then self:show_wnd_7(2) self:show_wnd_6(1)
+		elseif line_n == 7 then self:show_wnd_6(2) self:show_wnd_5(1)
+		elseif line_n == 6 then self:show_wnd_5(2) self:show_wnd_4(1)
+		elseif line_n == 5 then self:show_wnd_4(2) self:show_wnd_3(1)
+		elseif line_n == 4 then self:show_wnd_3(2) self:show_wnd_2(1)
+		elseif line_n == 3 then self:show_wnd_2(2) self:show_wnd_1(1)
+		end
+	self:show_wnd_light_1(tonumber(string.sub(enter_code[line_n-2],5,5)))
+	self:show_wnd_light_2(tonumber(string.sub(enter_code[line_n-2],6,6)))
+	line_n = line_n - 1
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_klik_decoder"),1)
+	end
+end
+
+function cheat:btn_down()
+	if line_n >= 9 then --self:set_flag_alarm() 
+	return end
+	if wnd_steklo ~= nil then self:DetachChild(wnd_steklo) wnd_steklo = nil end
+	self:show_wnd_steklo()
+	if enter_code[line_n] and enter_code[line_n]~="      " then
+		if line_n == 2 then self:show_wnd_1(2) self:show_wnd_2(1)
+		elseif line_n == 3 then self:show_wnd_2(2) self:show_wnd_3(1)
+		elseif line_n == 4 then self:show_wnd_3(2) self:show_wnd_4(1)
+		elseif line_n == 5 then self:show_wnd_4(2) self:show_wnd_5(1)
+		elseif line_n == 6 then self:show_wnd_5(2) self:show_wnd_6(1)
+		elseif line_n == 7 then self:show_wnd_6(2) self:show_wnd_7(1)
+		elseif line_n == 8 then self:show_wnd_7(2) self:show_wnd_8(1)
+		end
+	self:show_wnd_light_1(tonumber(string.sub(enter_code[line_n],5,5)))
+	self:show_wnd_light_2(tonumber(string.sub(enter_code[line_n],6,6)))
+	line_n = line_n + 1
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_klik_decoder"),1)
+	end
+end
+
+function cheat:btn_vkl()
+	if flag_vkl then
+		if wnd_vkl ~= nil then
+			self:DetachChild(wnd_vkl)
+			wnd_vkl = nil
+		end
+		self:show_wnd_vikl()
+		flag_vkl = false
+		if wnd_steklo ~= nil then
+			self:DetachChild(wnd_steklo)
+			wnd_steklo = nil
+		end
+		self:show_wnd_black_screen() self:show_wnd_steklo()
+	else
+		if wnd_black_screen ~= nil then
+			self:DetachChild(wnd_black_screen)
+			wnd_black_screen = nil
+		end
+		if wnd_vikl ~= nil then
+			self:DetachChild(wnd_vikl)
+			wnd_vikl = nil
+		end
+		self:show_wnd_vkl()
+		flag_vkl = true
+	end
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_decoder_vkl"),1) 
+end
+
+
+function cheat:print_number(symbol)
+	if flag_alarm then
+		self:set_flag_alarm()
+		return
+	end
+	if flag_vkl then
+		if string.len(str_number) == 4 then
+			self:set_flag_alarm()
+			return
+		end
+		local i
+		local flag = false
+		for i = 1,4 do
+			if tmp_code[i] == symbol then
+				flag = true
+			end
+		end	
+		
+		if flag then
+			self:set_flag_alarm()
+			return
+		end
+	end
+	str_number = str_number..symbol
+	tmp_code[string.len(str_number)] = symbol
+	self:show_wnd_t(1)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_klik_decoder"),1) 
+end
+
+function cheat:show_wnd_t(mode)
+	if wnd_t~=nil then self:DetachChild(wnd_t) wnd_t=nil end
+	wnd_t = CUIStatic()
+	wnd_t:SetAutoDelete(true)
+	self:AttachChild(wnd_t)
+	wnd_t:SetFont(GetFontLetterica25())
+	if mode == 1 then
+		wnd_t:SetWndRect(140,30,100,33) wnd_t:SetTextColor(255, 207, 207, 207) wnd_t:SetText(str_number)
+	else
+		wnd_t:SetWndRect(80,30,100,33) wnd_t:SetTextColor(255, 255, 0, 0) wnd_t:SetText("ѕќѕџ“ ј ¬«Ћќћј!")
+	end
+end
+
+function cheat:show_wnd_steklo()
+	if wnd_steklo ~= nil then  self:DetachChild(wnd_steklo) wnd_steklo = nil end
+	wnd_steklo = CUIStatic()
+	wnd_steklo:SetAutoDelete(true)
+	self:AttachChild(wnd_steklo)
+	wnd_steklo:SetStretchTexture(true)
+	wnd_steklo:SetWndRect(415,131,248,115)
+	wnd_steklo:InitTexture("ui_dec_steklo") 
+end
+
+function cheat:show_wnd_1(mode)
+	if wnd_1 ~= nil then self:DetachChild(wnd_1) wnd_1 = nil end
+	wnd_1 = CUIStatic()
+	wnd_1:SetAutoDelete(true)
+	self:AttachChild(wnd_1)
+	wnd_1:SetWndRect(450,150,30,18)
+	wnd_1:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_1:SetStretchTexture(true) wnd_1:InitTexture("ui_dec_cursor") wnd_1:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_1:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_1:SetText(string.sub(enter_code[1],1,4)) 
+end
+
+function cheat:show_wnd_2(mode)
+	if wnd_2 ~= nil then self:DetachChild(wnd_2) wnd_2 = nil end
+	wnd_2 = CUIStatic()
+	wnd_2:SetAutoDelete(true)
+	self:AttachChild(wnd_2)
+	wnd_2:SetWndRect(450,170,30,18)
+	wnd_2:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_2:SetStretchTexture(true) wnd_2:InitTexture("ui_dec_cursor") wnd_2:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_2:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_2:SetText(string.sub(enter_code[2],1,4)) 
+end
+
+function cheat:show_wnd_3(mode)
+	if wnd_3 ~= nil then self:DetachChild(wnd_3) wnd_3 = nil end
+	wnd_3 = CUIStatic()
+	wnd_3:SetAutoDelete(true)
+	self:AttachChild(wnd_3)
+	wnd_3:SetWndRect(450,190,30,18)
+	wnd_3:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_3:SetStretchTexture(true) wnd_3:InitTexture("ui_dec_cursor") wnd_3:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_3:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_3:SetText(string.sub(enter_code[3],1,4)) 
+end
+
+function cheat:show_wnd_4(mode)
+	if wnd_4 ~= nil then self:DetachChild(wnd_4) wnd_4 = nil end
+	wnd_4 = CUIStatic()
+	wnd_4:SetAutoDelete(true)
+	self:AttachChild(wnd_4)
+	wnd_4:SetWndRect(450,210,30,18)
+	wnd_4:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_4:SetStretchTexture(true) wnd_4:InitTexture("ui_dec_cursor") wnd_4:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_4:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_4:SetText(string.sub(enter_code[4],1,4)) 
+end
+
+function cheat:show_wnd_5(mode)
+	if wnd_5 ~= nil then self:DetachChild(wnd_5) wnd_5 = nil end
+	wnd_5 = CUIStatic()
+	wnd_5:SetAutoDelete(true)
+	self:AttachChild(wnd_5)
+	wnd_5:SetWndRect(500,150,30,18)
+	wnd_5:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_5:SetStretchTexture(true) wnd_5:InitTexture("ui_dec_cursor") wnd_5:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_5:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_5:SetText(string.sub(enter_code[5],1,4)) 
+end
+
+function cheat:show_wnd_6(mode)
+	if wnd_6 ~= nil then self:DetachChild(wnd_6) wnd_6 = nil end
+	wnd_6 = CUIStatic()
+	wnd_6:SetAutoDelete(true)
+	self:AttachChild(wnd_6)
+	wnd_6:SetWndRect(500,170,30,18)
+	wnd_6:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_6:SetStretchTexture(true) wnd_6:InitTexture("ui_dec_cursor") wnd_6:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_6:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_6:SetText(string.sub(enter_code[6],1,4)) 
+end
+
+function cheat:show_wnd_7(mode)
+	if wnd_7 ~= nil then self:DetachChild(wnd_7) wnd_7 = nil end
+	wnd_7 = CUIStatic()
+	wnd_7:SetAutoDelete(true)
+	self:AttachChild(wnd_7)
+	wnd_7:SetWndRect(500,190,30,18)
+	wnd_7:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_7:SetStretchTexture(true) wnd_7:InitTexture("ui_dec_cursor") wnd_7:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_7:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_7:SetText(string.sub(enter_code[7],1,4)) 
+end
+
+function cheat:show_wnd_8(mode)
+	if wnd_8 ~= nil then self:DetachChild(wnd_8) wnd_8 = nil end
+	wnd_8 = CUIStatic()
+	wnd_8:SetAutoDelete(true)
+	self:AttachChild(wnd_8)
+	wnd_8:SetWndRect(500,210,30,18)
+	wnd_8:SetFont(GetFontGraffiti19Russian())
+	if mode == 1 then
+		wnd_8:SetStretchTexture(true) wnd_8:InitTexture("ui_dec_cursor") wnd_8:SetTextColor(255, 79, 131, 121)
+	else
+		wnd_8:SetTextColor(255, 0, 205, 0)
+	end
+	wnd_8:SetText(string.sub(enter_code[8],1,4)) 
+end
+
+function cheat:show_wnd_light_1(amount)
+	if wnd_light_1 ~= nil then self:DetachChild(wnd_light_1) wnd_light_1 = nil end
+	wnd_light_1 = CUIStatic()
+	wnd_light_1:SetAutoDelete(true)
+	self:AttachChild(wnd_light_1)
+	wnd_light_1:SetStretchTexture(true)
+	wnd_light_1:SetWndRect(683,143,17,91)
+	wnd_light_1:InitTexture("ui_dec_light_"..amount) 
+end
+
+function cheat:show_wnd_light_2(places)
+	if wnd_light_2 ~= nil then self:DetachChild(wnd_light_2) wnd_light_2 = nil end
+	wnd_light_2 = CUIStatic()
+	wnd_light_2:SetAutoDelete(true)
+	self:AttachChild(wnd_light_2)
+	wnd_light_2:SetStretchTexture(true)
+	wnd_light_2:SetWndRect(714,143,17,91)
+	wnd_light_2:InitTexture("ui_dec_light_"..places) 
+end
+
+function cheat:show_wnd_vkl()
+	if wnd_vkl ~= nil then self:DetachChild(wnd_vkl) wnd_vkl = nil end
+	wnd_vkl = CUIStatic()
+	wnd_vkl:SetAutoDelete(true)
+	self:AttachChild(wnd_vkl)
+	wnd_vkl:SetStretchTexture(true)
+	wnd_vkl:SetWndRect(453-20,300,82,37)
+	wnd_vkl:InitTexture("ui_dec_btn_vkl_t")
+end
+
+function cheat:show_wnd_vikl()
+	if wnd_vikl ~= nil then self:DetachChild(wnd_vikl) wnd_vikl = nil end
+	wnd_vikl = CUIStatic()
+	wnd_vikl:SetAutoDelete(true)
+	self:AttachChild(wnd_vikl)
+	wnd_vikl:SetStretchTexture(true)
+	wnd_vikl:SetWndRect(453-20,300,82,37)
+	wnd_vikl:InitTexture("ui_dec_btn_vkl_e")
+end
+
+function cheat:show_wnd_black_screen()
+	if wnd_black_screen ~= nil then self:DetachChild(wnd_black_screen) wnd_black_screen = nil end
+	wnd_black_screen = CUIStatic()
+	wnd_black_screen:SetAutoDelete(true)
+	self:AttachChild(wnd_black_screen)
+	wnd_black_screen:SetStretchTexture(true)
+	wnd_black_screen:SetWndRect(415,131,248,115)
+	wnd_black_screen:InitTexture("ui_dec_black_screen")
+end
+
+function cheat:del_windows()
+	if wnd_t ~= nil then self:DetachChild(wnd_t) wnd_t = nil end
+	if wnd_steklo ~= nil then self:DetachChild(wnd_steklo) wnd_steklo = nil end
+	if wnd_1 ~= nil then self:DetachChild(wnd_1) wnd_1 = nil end
+	if wnd_2 ~= nil then self:DetachChild(wnd_2) wnd_2 = nil end
+	if wnd_3 ~= nil then self:DetachChild(wnd_3) wnd_3 = nil end
+	if wnd_4 ~= nil then self:DetachChild(wnd_4) wnd_4 = nil end
+	if wnd_5 ~= nil then self:DetachChild(wnd_5) wnd_5 = nil end
+	if wnd_6 ~= nil then self:DetachChild(wnd_6) wnd_6 = nil end
+	if wnd_7 ~= nil then self:DetachChild(wnd_7) wnd_7 = nil end
+	if wnd_8 ~= nil then self:DetachChild(wnd_8) wnd_8 = nil end
+	if wnd_light_1 ~= nil then self:DetachChild(wnd_light_1) wnd_light_1 = nil end
+	if wnd_light_2 ~= nil then self:DetachChild(wnd_light_2) wnd_light_2 = nil end
+	if wnd_vkl ~= nil then self:DetachChild(wnd_vkl) wnd_vkl = nil end
+	if wnd_vikl ~= nil then self:DetachChild(wnd_vikl) wnd_vikl = nil end
+	if wnd_black_screen ~= nil then self:DetachChild(wnd_black_screen) wnd_black_screen = nil end
+	wnd_t = nil
+	door_code = {}				
+	str_number = ""				
+	tmp_code = {}				
+	enter_code = {}			
+	line_n = 0				
+	flag_alarm = false				
+end
+
+
+function cheat:set_flag_alarm()
+	self:show_wnd_t(2)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("list_sounds_decoder","snd_decoder_alarm"),1)
+	flag_alarm = true
+	vergas_decoder_use.set_flag_alarm(true) 
+end
+
+function cheat:init_enter_code()
+	local i
+	for i = 1,8 do
+		enter_code[i] = string.rep(" ",6)
+	end
+end
+
+function cheat:assembly_door_code()
+	local i
+	local info_cod = ""
+	for i = 1, 4 do
+		info_cod = info_cod..door_code[i]
+	end
+	return info_cod
+end

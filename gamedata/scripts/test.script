@@ -1,0 +1,623 @@
+tbl_arts = {
+	[ "lvl1" ] = { 			-- 1 УРОВЕНЬ --
+		"af_medusa", "af_vyvert", "af_blood", "af_electra_sparkler",
+		"af_drops", "af_ameba_slime", "af_rusty_thorn"
+	},
+	[ "lvl2" ] = { 			-- 2 УРОВЕНЬ --
+		"af_cristal_flower", "af_gravi", "af_mincer_meat", "af_electra_flash",
+		"af_fireball", "af_ameba_slug",	"af_rusty_kristall"
+	},
+	[ "lvl3" ] = { 			-- 3 УРОВЕНЬ --
+		"af_cristall", "af_electra_moonlight", "af_night_star",	"af_gold_fish",
+		"af_rusty_sea-urchin", "af_soul", "af_ameba_mica"
+	},
+	[ "lvl4" ] = { 			-- ПУСТЫШКИ --
+		"af_dummy_spring", "af_dummy_dummy", "af_dummy_battery",
+		"af_dummy_pellicle", "af_dummy_glassbeads", "af_dummy_kolobok"
+	},
+	[ "lvl5" ] = { 			-- МОДИФИКАТЫ --
+		"af_armor_1", "af_babka_1",	"af_cry_1",	"af_dik_1",
+		"af_kol_1",	"af_pudd_1", "af_spirit_1",	"af_dummy_buliz"
+	},
+	[ "lvl6" ] = { 			-- МЕЗОМОДИФИКАТЫ --
+		"af_armor_2", "af_babka_2",	"af_cry_2",	"af_dik_2",
+		"af_kol_2",	"af_pudd_2", "af_spirit_2"
+	},
+	[ "lvl7" ] = { 			-- ГИПЕРМОДИФИКАТЫ --
+		"af_armor_3", "af_babka_3",	"af_cry_3",	"af_dik_3",
+		"af_kol_3",	"af_pudd_3", "af_spirit_3"
+	},
+	[ "lvl8" ] = { 			-- АБСОЛЮТЫ --
+		"af_armor_4", "af_babka_4",	"af_cry_4",	"af_dik_4",
+		"af_kol_4",	"af_pudd_4", "af_spirit_4"
+	},
+	[ "lvl9" ] = { 			-- КАПСУЛЫ 3ур --
+		"af_night_star_capsule", "af_gold_fish_capsule", "af_cristall_capsule", "af_soul_capsule",
+		"af_electra_moonlight_capsule",	"af_rusty_sea-urchin_capsule", "af_ameba_mica_capsule"
+	},
+	[ "lvl10" ] = { 		-- КАПСУЛЫ ПУСТЫШКИ --
+		"af_dummy_spring_capsule", "af_dummy_dummy_capsule", "af_dummy_battery_capsule",
+		"af_dummy_pellicle_capsule", "af_dummy_kolobok_capsule", "af_dummy_glassbeads_capsule"
+	},
+	[ "lvl11" ] = { 		-- УНИКИ --
+		"af_dummy_green_medusa", "af_dummy_green_vyvert", "af_dummy_green_blood",
+		"af_red_dummy_spring", "af_red_dummy_battery", "af_red_dummy_pellicle",
+		"af_medus_new",
+		"af_crist_new",
+		"af_flower_new",
+		"af_star_new",
+		"af_glass_new",
+		"af_dummy_fire",
+		"af_sul_new"
+	}
+}
+
+tbl_recipt = {
+	[ "lvl1" ] = { 			-- 1 УРОВЕНЬ --
+		"info_artmod_electra_sparkler_mosquito_bald",		--  1 Бенгальский огонь из трамплина  	-- Юрик за мп5
+		"info_artmod_rusty_kristall_gravi_zone",			--  2 Кровь камня из воронки			-- Неумеха за броник
+		"info_artmod_drops_mincer",							--  3 Капля из карусели 				-- Записка у Кабана
+		"info_artmod_rusty_thorn_buzz",						--  4 Колючка из холодца              	-- папка в вагоне на Агро
+		"info_artmod_ameba_slime_zharka",					--  5 Слизь из жарки                  	-- Крот за ПДА
+		"info_artmod_vyvert_buzz",							--  6 Выверт из холодца				 	-- Серый за помощь
+		"info_artmod_medusa_galant"							--  7 Медуза из электры				 	-- Крысюк за помощь
+	},
+	[ "lvl2" ] = { 			-- 2 УРОВЕНЬ --
+		"info_artmod_mincer_meat_mosquito_bald",			--  8 Ломоть мяса из трамплина 		 	-- Толик за хвосты
+		"info_artmod_gravi_gravi_zone",						--  9 Грави из воронки 				 	-- Петруха за ТОЗ
+		"info_artmod_cristall_flower_mincer",				-- 10 Каменный цветок из карусели	 	-- Шустрый за медузу
+		"info_artmod_rusty_kristall_buzz",					-- 11 Кристальная колючка из холодца  	-- Кузя за 10 водки
+		"info_artmod_electra_flash_zharka",					-- 12 Вспышка из жарки 				 	-- Тоннель с электрами
+		"info_artmod_fireball_galant",						-- 13 Огненный шар из электры 		 	-- Лис за аптечки
+		"info_artmod_cristall_flower_galant",				-- 14 Каменный цветок из электры      	-- Пличко за кулемёт
+		"info_artmod_ameba_slug_mosquito_bald",				-- 15 Слизняк из трамплина 			 	-- Прапор за глаза
+		"info_artmod_electra_flash_gravi_zone",				-- 16 Вспышка из воронки 			 	-- Прапор за жвалы
+		"info_artmod_rusty_kristall_mincer",				-- 17 Кристальная колючка из карусели 	-- Переход Кордон-Кишка
+		"info_artmod_fireball_buzz",						-- 18 Огненный шар из холодца         	-- Монгол/Волкодав/пда Волкодава
+		"info_artmod_ameba_slug_ice",						-- 19 Слизняк из снежки               	-- Пуля за Любера
+		"info_artmod_gravi_zharka",							-- 20 Грави из жарки 				 	-- Петренко за гаус??
+		"info_artmod_blood_ice"								-- 21 Ломоть мяса из снежки 			-- Кочерга на ДТ??
+	},
+	[ "lvl3" ] = { 			-- 3 УРОВЕНЬ --
+		"info_artmod_ameba_mica_galant",					-- 22 Слюда из электры 					-- ПДА с Радара, Доцент
+		"info_artmod_cristall_mosquito_bald",				-- 23 Кристалл из трамплина				-- Шинкарь за гравикостюмы
+		"info_artmod_night_star_gravi_zone",				-- 24 Ночная звезда из воронки 			-- Бес за ящик патронов
+		"info_artmod_electra_moonlight_mincer",				-- 25 Лунный свет из карусели 			-- Шинкарь за ящик патронов
+		"info_artmod_cristall_buzz",						-- 26 Кристалл из холодца     			-- Сахаров за бандуры-телепорты?
+		"info_artmod_night_star_zharka",					-- 27 Ночная звезда из жарки 			-- Шинкарь за траву
+		"info_artmod_electra_moonlight_galant",				-- 28 Душа из электры 					-- Любер за ПДА
+		"info_artmod_rusty_sea-urchin_mosquito_bald",		-- 29 Морской ёж из трамплина 			-- Иванцов за что-то??
+		"info_artmod_soul_gravi_zone",						-- 30 Душа из воронки 					-- Бармен за доки какие-то?
+		"info_artmod_ameba_slug_mincer",					-- 31 Слюда из карусели 				-- записка в ТЧ/
+		"info_artmod_night_star_buzz",						-- 32 Золотая рыбка из холодца 			-- Декодер Семёнову
+		"info_artmod_electra_moonlight_zharka",				-- 33 Лунный свет из жарки 				-- Петренко за вспышку
+		"info_artmod_gold_fish_galant",						-- 34 Золотая рыбка из электры 			-- Фанат за ноутбук
+		"info_artmod_rusty_sea-urchin_ice"					-- 35 Морской ёж из снежки	 			-- Влад, рандом??
+	},
+	[ "lvl4" ] = { 			-- ПУСТЫШКИ --
+		"info_artmod_dummy_dummy_mosquito_bald",			-- 36 Пустышка из трамплина 			-- Сахар, прибор на Кордоне
+		"info_artmod_dummy_pellicle_gravi_zone",			-- 37 Пленка из воронки					-- Сахар, доки из х18
+		"info_artmod_dummy_glassbeads_mincer",				-- 38 Мамины бусы из карусели			-- Бармен за какие-то доки?
+		"info_artmod_dummy_battery_zharka",					-- 39 Батарейка из жарки				-- Бармен за какую-то лабу?
+		"info_artmod_dummy_spring_galant",					-- 40 Пружина из электры 				-- Петренко за экзы
+		"info_artmod_fuzz_kolobok_buzz"						-- 41 Колобок из холодца 				-- Семенов, арт Сидору
+	},
+	[ "lvl5" ] = { 			-- МОДИФИКАТЫ --
+		"info_amk_recipt_souls_drops",						-- 42 Капли души 						-- Радар, по заданию Сахара
+		"info_amk_recipt_tears_electra",					-- 43 Слёзы электры 	   -- Бром/Охотник/Сахар-контТД/Солдат-кейс
+		"info_amk_recipt_dikoobraz",						-- 44 Дикобраз 							-- Семенов за зелёный арт.
+		"info_amk_recipt_steel_kolobok",					-- 45 Стальной колобок     -- Бром/Охотник/Сахар-контТД/Солдат-кейс
+		"info_amk_recipt_dummy_fire",						-- 46 Огненная пустышка 				-- Круглов, карты, болота
+		"info_amk_recipt_shkura",							-- 47 Шкура 			   -- Бамажка в казарме на Кордоне
+		"info_amk_recipt_grandmother_glassbeards"			-- 48 Бабкины Бусы  	   -- Бром/Охотник/Сахар-контТД/Солдат-кейс
+	},
+	[ "lvl6" ] = { 		-- МЕЗОМОДИФИКАТЫ --
+		"info_amk_recipt_souls_fire",						-- 49 Огненная душа 					-- Санек за альбом
+		"info_amk_recipt_tears_fire",						-- 50 Слёзы огня 						-- Сахар после х16
+		"info_amk_recipt_electra_dikoobraz",				-- 51 Электрический дикобраз 			-- Иванцов плейбой
+		"info_amk_recipt_titan_kolobok",					-- 52 Титановый колобок                 -- Матвеев?
+		"info_amk_recipt_dummy_bright",						-- 53 Яркая пустышка            		-- Круглов, карты, ТЧ
+		"info_amk_recipt_cheshya",							-- 54 Чешуя 							-- Волк за свой схрон
+		"info_amk_recipt_pra_grandmother_glassbeards"		-- 55 Бусы прабабки 					-- Сидор за собак
+	},
+	[ "lvl7" ] = { 		-- ГИПЕРМОДИФИКАТЫ --
+		"info_amk_recipt_souls_cristal",					-- 56 Кристальная душа 					-- Сахар за маятник?
+		"info_amk_recipt_tears_chimaera",					-- 57 Слёзы химеры 						-- Шинкарь за 3 когтя
+		"info_amk_recipt_sopl_dikoobraz",					-- 58 Сопливый дикобраз 				-- Влад
+		"info_amk_recipt_almaz_kolobok",					-- 59 Алмазный колобок 					-- Круглов, ДТ
+		"info_amk_recipt_dummy_moon",						-- 60 Лунная пустышка 					-- Круглов, карты, РЛ
+		"info_amk_recipt_pancir",							-- 61 Панцирь 							-- Сидор за кейс с блока
+		"info_amk_recipt_burer_grandmother_glassbeards"		-- 62 Бусы бабки бюрера 				-- Фанат, защита ДН
+	},
+	[ "lvl8" ] = { 			-- АБСОЛЮТЫ --
+		"info_amk_recipt_souls_bengal",						-- 63 -Душа Бенгала 					-- Сахар за ботанов на Радаре
+		"info_amk_recipt_tears_gigant",						-- 64 -Слеза гиганта 					-- Глузов, зелень из ТЧ
+		"info_amk_recipt_stone_dikoobraz",					-- 65 -Каменный дикобраз 				-- Сканер в Лиманске
+		"info_amk_recipt_giant_small_brother",				-- 66 -Младший брат гиганта     		-- Танк в РЛ
+		"info_amk_recipt_dummy_puding",						-- 67 -Пудинг 						 	-- Бамажка в х16?
+		"info_amk_recipt_controller_skalp",					-- 68 -Скальп контролёра 				-- Кеп за ПКМ?
+		"info_amk_recipt_burer_pra_grandmother_glassbeards"	-- 69 -Бусы прабабки бюрера 			-- За Теслу
+	}
+}
+
+local tbl_switcheable = {
+	"wpn_aps",
+	"wpn_beretta93",
+	"wpn_mp5",
+	"wpn_bizon",
+	"wpn_pp19",
+	"wpn_ump45",
+	"wpn_ak",
+	"wpn_rpk74",
+	"wpn_abakan",
+	"wpn_val",
+	"wpn_groza",
+	"wpn_vintorez",
+	"wpn_sig550",
+	"wpn_g36",
+	"wpn_m16a4",
+	"wpn_fn2000"
+}
+
+local k1 = amk_vars.r_task_reward or 1
+local k2 = amk_vars.r_treas_items or 2
+local f_sect, m_flag = "?", false
+
+local tbl_med = {
+	[ "bandage" 		] = 1500,
+	[ "medkit"   		] = 3500,
+	[ "medkit_army"  	] = 2500,
+	[ "medkit_scientic" ] = 4500,
+	[ "antirad" 		] = 2000,
+}
+
+local food_anim_time = {
+	[ "bread" 		  	] = { 9000, 0.70, 0.3 },
+	[ "kolbasa"		  	] = { 7500, 0.80, 0.4 },
+	[ "suhpay"		  	] = { 3200, 0.00, 0.0 },
+	[ "green_kolbasa" 	] = { 7500, 0.80, 0.4 },
+	[ "conserva"	  	] = { 9000, 1.05, 0.6 },
+	[ "vodka"		  	] = { 3500, 0.00, 0.0 },
+	[ "energy_drink"  	] = { 4000, 0.00, 0.0 }
+}
+
+function spawn_holod_radio()
+	local obj = alife():create( "radio_custom", sak.v3f( -133.7, 2.55, -277.8 ), 78753,  3377)
+	if obj then
+		obj.direction = sak.v3f( 0, -1.57, 0 )
+		local pk = get_netpk( obj )
+		local data = pk:get()
+		data.custom_data = "[logic]\ncfg = scripts\\march_holod_priemnik.ltx"
+		data.fixed_bones = "link"
+		data.mass = 20
+		pk:set( data )
+	end
+end
+
+function spawn_sultan_radio()
+    local obj1 = g_sim:object( "bar_transiver" )
+    if obj1 then misc.release_obj( obj1.id ) end
+    local obj = alife():create( "radio_custom", sak.v3f( 75.3, 0.9, 102.7 ), 30900,  1222)
+    if obj then
+        obj.direction = sak.v3f( 0, -1.57, 0 )
+        local pk = get_netpk( obj )
+        local data = pk:get()
+        data.custom_data = "[logic]\ncfg = scripts\\bar_sultan_priemnik.ltx"
+        data.fixed_bones = "link"
+        data.mass = 20
+        pk:set( data )
+    end
+end
+
+function add_codelock_on_seif_agro()
+	local obj = g_sim:story_object( story_ids.agr_inventory_box_sak )
+	if obj then
+		local pk = get_netpk( obj )
+		local data = pk:get()
+		data.custom_data = "[logic]\ncfg = scripts\\ttt.ltx"
+		pk:set( data )
+	end
+	if obj.online then
+		alife():set_switch_online ( obj.id, false )
+		alife():set_switch_offline( obj.id, true  )
+		amk.convert_npc[ obj.id ] = 1
+    end
+end
+
+function gg_have_this_bamazhka( sect )
+	local tbl = xray_vars.load_table( nlc_vars, "tbl_pap", {} )
+	if tbl ~= nil then
+		misc.dump_table( tbl )
+		for _, k in ipairs( tbl ) do
+			if k == sect then return true end
+		end
+	end
+	return false
+end
+
+function add_bamazhka_to_vars( sect )
+	local tbl = xray_vars.load_table( nlc_vars, "tbl_pap", {} )
+	if tbl == nil then tbl = {} end
+	table.insert( tbl, sect )
+	nlc_vars.tbl_pap = tbl
+	misc.dump_table( tbl )
+end
+
+function belt_3_docent_task()
+	local docent_txt = ""
+	if k2 == 2 then
+		docent_txt = "Мы тут с Длинным для производственных нужд своим отдельным генератором обзавестись решили. А то общий уже почти не тянет нагрузку. Ну и неплохо бы бензином для этого дела разжиться. Бармен говорил, сталкеры часто приносят в канистрах для обмена. Оказывается, где-то тут в округе заправки ещё остались, на которых можно накачать. С Болот ещё вроде кто-то приносил, хотя где там... Так вот ты эта - притащи нам штук пять канистр, полных, а? Чтобы, как генератор подвезут, сразу со старта запасец-то был какой-никакой. А я тебе за такое доброе дело пояс на три артефакта в обмен за твой двухсеточный подгоню."
+	else
+		docent_txt = "Про коллоидный газ в курсе? Красные баллоны такие небольшие, говорят, что попадается в Зоне. Завозили в тутошние секретные лабы для опытов каких-то, или даже делали здесь - хрен его знает. Так вот, недавно я в одном ПДА на интересную инфу наткнулся: где-то в Забугорьях какой-то учёный смастерил агрегат, позволяющую человеку заснуть, проспать сто-двести лет и проснуться почти в том же физическом состоянии, что и в момент засыпания. Прикинь? И вроде как для работы агрегата этот самый коллоидный газ и нужен, никак без него. Да вот засада - не достать его уже за Периметром. Делать разучились, или опасно сильно - тут уж не знаю. Короче, бывший хозяин ПДА как раз этот газ и собирал тут, для забугорного заказчика. Контакты там остались, я связался - походу и правда серьёзные деньги буржуй даёт за газ этот мерзкий.\nТак что давай так: найдёшь мне этих баллонов, штук шесть - получишь пояс на три артефакта в обмен на твой двухсеточный. Ну а если не устраивает, то гони арт, из пустышек."
+	end
+	db.actor:give_talk_message(
+		"%c[255,216,186,140]" .. game.translate_string( docent_txt ),
+		"ui\\ui_iconsTotal",
+		Frect():set( 0, 0, 0, 0),
+		"simple_answer_item"
+    )
+end
+
+function belt_3_docent_task_have()
+	if k2 == 2 then
+		return sak.have_items_count( "amk_kanistra", 5 ) ~= false
+	else
+		return (
+		    ( sak.have_items_count( "amk_ballon", 6 ) ~= false )
+		    or sak_dialog.have_any_dart()
+		)
+	end
+	return false
+end
+
+function belt_3_docent_task_transfer()
+	if  k2 == 2 then
+		sak_inventory.release_actor_items( "amk_kanistra", 5 )
+	else
+		if  sak.have_items_count( "amk_ballon", 6 ) ~= false then
+			sak_inventory.release_actor_items( "amk_ballon", 6 )
+		else
+			sak_dialog.transfer_any_dart()
+		end
+	end
+end
+
+function get_target_obj()
+	local RP = ray_pick( device().cam_pos, device().cam_dir, 100, rq_target.rqtBoth, db.actor )
+	if RP:query() then return RP:get_object() end
+end
+
+function close_inventory()
+	if db.actor:has_info( "ui_inventory" ) then
+		level.start_stop_menu( level.main_input_receiver(), true )
+	end
+end
+
+function anim_use_med( sect )
+	local med_pause = tbl_med[ sect ]
+	if med_pause then
+		schedule.add( "delay_close", "test.delay_close_inv()", 200 )
+		sak.actor_hide_weapon()
+		level.add_cam_effector( "camera_effects\\item_use.anm", 9773, false, "" )
+		--sak.send_tip( sect, "Использовано:", 2, 20, "uniq", "sak", "green" )
+		--sak.send_tip( tostring( med_pause ) .. " милисекунд", "На:", 2, 20, "uniq", "sak", "green" )
+		schedule.add( "med_pause_time", "sak.restore_weap()", med_pause )
+	end
+end
+
+function anim_eat_start( obj )
+	m_flag = false
+	level.remove_pp_effector ( 7849 )
+	level.remove_cam_effector( 7850 )
+	f_sect, f_id = obj:section(), obj:id()
+	local f_cond = params.get_condition( obj, 0.99 )
+	local t1, poison_chance = 200, 0
+	if food_anim_time[ f_sect ] then
+		if f_sect == "suhpay" then
+			params.upd_condition( f_id, f_cond - 0.05 )
+		end
+		local f_tbl_cond = food_anim_time[ f_sect ][ 2 ]
+		schedule.add( "delay_close", "test.delay_close_inv()", 200 )
+		if vergas_masks.get_flag_mask() == true then
+			t1 = 2000
+			vergas_masks.on_off_mask()
+			m_flag = true
+		end
+		schedule.add( "anim_eat", "test.anim_eat_middle()", t1 )
+		if f_tbl_cond > 0.1 and f_tbl_cond > f_cond then
+			poison_chance = f_tbl_cond - f_cond
+			if lua_random() < poison_chance then
+				timers.start_timer(
+				  "do_poison_gg", lua_random( 15, 25 ), "test.food_poisoning()"
+				)
+			end
+		end
+	end
+end
+
+function food_poisoning()
+	vergas_art.scheme_1()
+	params.satiety_add( ( -0.3 - lua_random( 0.2, 0.6 ) ) )
+end
+
+function delay_close_inv()
+	if db.actor:has_info( "ui_inventory" ) then
+		sak.close_window()
+	end
+end
+
+function anim_eat_middle()
+	sak.actor_hide_weapon()
+	if f_sect ~= "?" then
+		misc.easy_sound( "scripts\\food\\inv_" .. f_sect )		-- NO_FEEDBACK
+		level.add_cam_effector( "camera_effects\\item_use.anm", 9773, false, "" )
+		if f_sect == "vodka" then
+			if
+				nlc_vars.vodka_psi_block == nil
+				or nlc_vars.vodka_psi_block
+			then
+				nlc_vars.vodka_psi_block = true
+				timers.start_timer(
+				    "psi_block_gg", 0, 0, lua_random( 10, 15 ), "test.disable_psi_block()"
+				)
+			end
+			sleep_manager.add_sleepiness( 25 )
+			sleep_manager.test_for_need_sleep_vodka()
+			--level.add_pp_effector( "snd_shock.ppe", 7849, false )
+			--level.add_cam_effector( "camera_effects\\drunk.anm", 7850, false, "" )
+		elseif f_sect == "energy_drink" then
+			level.add_pp_effector( "brighten.ppe", 7851, true )
+			sleep_manager.test_for_need_sleep_nrg()
+			schedule.add( "end_br", "test.end_bright()", 30000 )
+		end
+		local ttime = food_anim_time[ f_sect ][ 1 ]
+		schedule.add( "food_eat_end", "test.anim_eat_end()", ttime )
+	end
+end
+
+function disable_psi_block()
+	if nlc_vars.vodka_psi_block then nlc_vars.vodka_psi_block = nil end
+end
+
+function anim_eat_end()
+	--level.remove_cam_effector( 9773 )
+	if m_flag then
+		vergas_masks.on_off_mask()
+	else
+		sak.restore_weap()
+	end
+end
+
+function end_bright()
+	level.remove_pp_effector( 7851 )
+end
+
+function garik_fix()
+	if db.actor:has_info( "repair_starting" ) and not timers.check_timer( "fix_garik" ) then
+		timers.start_timer( "fix_garik", 0, 0, 5, "test.bar_repair_force_end()" )
+	end
+end
+
+function bar_repair_force_end()
+	local a = db.actor
+	if not a:has_info( "repair_end" ) then
+		a:give_info_portion( "repair_end" )
+		sak.send_tip(
+			"Гарик, клиент не хочет свой фрэнч из химчистки забирать. \\nТы запомни эту рожу, на всякий случай...",
+			"Долговязый:", 2, 20, "uniq", "sak", "red"
+	    )
+	end
+end
+
+function sms_recipt_found( info )
+	if db.actor:has_info( info ) then
+		sak.send_tip( "", "Получен ранее известный рецепт.", 2, 10, "artmod", "pda_news", "red" )
+	else
+		sak.send_tip( "", "Получен новый рецепт!", 2, 10, "artmod", "pda_news", "sky_blue" )
+	end
+end
+
+function rnd_rec_art_info( tbl, lvl, dyn )
+	if nlc_vars.randomizer_k == nil then nlc_vars.randomizer_k = 1 end
+	local unique_k = ( k1 + k2 ) * k1 * k2 + lvl + nlc_vars.randomizer_k
+	local lname = "lvl" .. tostring( lvl )
+	local tbl1 = tbl[ lname ]
+	math.randomseed( unique_k )
+	math.random()
+	math.random()
+	math.random()
+	local info = tbl1[ math.random( 1, #tbl1 ) ] or ""
+	if strposx( info, "af_" ) then
+		if lvl == 1 or lvl == 2 or lvl == 3 or lvl == 9 then
+			if dyn == nil then
+				info = info .. "_dyn" .. tostring( math.random( 1, 4 ) ) .. "d"  -- без зелени
+			else
+				info = info .. "_dyn" .. dyn .. "d"
+			end
+		end
+	end
+	nlc_vars.randomizer_k = nlc_vars.randomizer_k + 1
+	return info
+end
+
+function give_rnd_recipt( r_lvl )
+	local info = rnd_rec_art_info( tbl_recipt, r_lvl )
+	sms_recipt_found( info )
+	db.actor:give_info_portion( info )
+end
+
+function add_to_actor( sect, num )
+	sak.create_items( db.actor, sect, num )
+end
+
+function add_rnd_art_to_actor( lvl, dyn )
+	local sect = ""
+	local test_lvl = tonumber( lvl )
+	if dyn ~= nil then
+		sect = rnd_rec_art_info( tbl_arts, test_lvl, dyn )
+	else
+		sect = rnd_rec_art_info( tbl_arts, test_lvl )
+	end
+	sak.create_items( db.actor, sect, 1 )
+end
+
+function have_remove_tbl_item_cond( tbl, cond, flag_remove )
+	--if tbl == nil then return end
+	for i = 1, #tbl do
+		for sect, id in pairs( sak_inventory.rucksack ) do
+			if strposx( sect, tbl[ i ] ) then
+				for m = 1, #id do
+					if params.get_condition( id[ m ] , 0.99 ) > cond then
+						if flag_remove == false then
+							return true
+						else
+							misc.release_obj( id[ m ] )
+            				sak.relocate_item( db.actor, "out", tbl[ i ], 1 )
+            				return -- ?????
+						end
+					end
+				end
+			end
+		end
+	end
+	if flag_remove == false then return false end
+end
+
+function cond_test()
+	have_remove_tbl_item_cond( sak_rand_nagrad.table_amkdart, 0.9, true )
+end
+
+function have_remove_items_count_cond( section, amount, cond, flag_remove )
+	local result = 0
+	local tbl_to_remove = {}
+	for sect, ids in pairs( sak_inventory.rucksack ) do
+		if strposx( sect, section ) then
+			for m = 1, #ids do
+				if params.get_condition( ids[ m ], 0.999 ) > cond then
+					result = result + 1
+					if flag_remove and result <= amount then table.insert( tbl_to_remove, ids[ m ] ) end
+				end
+			end
+		end
+	end
+	for sect, ids in pairs( sak_inventory.eatable ) do
+		if strposx( sect, section ) then
+			for m = 1, #ids do
+				if params.get_condition( ids[ m ], 0.999 ) > cond then
+					result = result + 1
+					if flag_remove and result <= amount then table.insert( tbl_to_remove, ids[ m ] ) end
+				end
+			end
+		end
+	end
+	--wprintf( "================================================================  RESULT:  " .. result )
+	if flag_remove then
+		for i = 1, #tbl_to_remove do
+			misc.release_obj( tbl_to_remove[ i ] )
+		end
+		sak.relocate_item( db.actor, "out", section, #tbl_to_remove )
+	else
+		if result >= amount then return true end
+		return false
+	end
+end
+
+-- цена зарядки пда по торговцам с повышением через каждые 7 дней
+function calc_pda_recharge_price( vendor )
+	local day = timers.Get_Game_Days() or 1
+	local price
+	if vendor == "vergas" then price = 500 else price = 800 end
+	return math.floor ( math.abs( price + math.floor( day / 7 ) * 1200 - ( 3 * db.actor:character_reputation() ) ) / 500 ) * 500
+end
+
+function show_pda_recharge_price( vendor )
+	db.actor:give_talk_message(
+		"\n%c[255,216,186,140]На сегодня зарядка ПДА будет стоить " .. calc_pda_recharge_price( vendor ) .. " рубликов.",
+		"ui\\ui_iconsTotal",
+		Frect():set( 0, 0, 0, 0),
+		"simple_answer_item"
+    )
+end
+
+function have_money_pda( vendor )
+	return have_money( calc_pda_recharge_price( vendor ) )
+end
+
+function have_money( amount )
+	return db.actor:money() >= amount
+end
+
+function give_money_pda( vendor )
+	local amount = calc_pda_recharge_price( vendor )
+	local actor  = db.actor
+	actor:give_money( -amount )
+	news_manager.relocate_money( actor, "out", amount )
+end
+-- 60 день репа 1662
+
+
+-- отсырение спичек при дожде  -- Апдейт 6 игровых минут.
+function fuckup_matches()
+	local range = 9
+	local lfactor = level.rain_factor()
+	local RP = ray_pick ( db.actor:position(), vector():set( 0, 1, 0 ), 200, rq_target.rqtStatic, nil )
+	if RP:query() then range = RP:get_distance() end
+	--sak.send_tip( "Сила дождя: " .. lfactor .. "    Расстояние над головой: ".. range , "", 2, 20, "uniq", "sak", "green" )
+	if
+		lfactor > 0.15 									-- идёт нормальный дождь
+		and const.ground_levels[ level.name() ]         -- наземные уровни
+		and range > 8                                   -- ГГ под открытым небом или дырявой крышей
+		-- and not sleep_manager.is_sleep_active()
+	then
+		for sect, ids in pairs( sak_inventory.all_items ) do
+			if sect == "matches" then
+				for m = 1, #ids do
+					if lua_random() < lfactor then
+						sak.send_tip(
+						    "От дождя спички отсырели. Вот спасибо тебе, Зона...", "Этого ещё не хватало",
+						    5, 15, "g_g", "sak", "red"
+						)
+						misc.release_obj( ids[ m ] )
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+-- если радейка более 1.5 рентген, то заражаем жратву по таблице.       -- Апдейт 6 игровых минут.
+function fuckup_food()
+	if db.actor.radiation > 0.15 then
+		for sect, ids in pairs( sak_inventory.eatable ) do
+			if food_anim_time[ sect ] then
+				for m = 1, #ids do
+					if lua_random() < food_anim_time[ sect ][ 3 ] then
+						sak.send_tip(
+						    game.translate_string( system_ini():r_string( sect, "inv_name" ) ) ..
+						    " теперь фонит, придётся выбросить...", "Чёртова радейка!",
+						    5, 15, "g_g", "sak", "red"
+						)
+						misc.release_obj( ids[ m ] )
+						return
+					end
+				end
+			end
+		end
+	end
+end
+
+function firemode_switch_try()
+	local active_item = db.actor:active_item()
+    if active_item then
+    	local sect = active_item:section()
+    	for i = 1, #tbl_switcheable do
+    		if strposx( sect, tbl_switcheable[ i ] ) then
+    			misc.easy_sound( "weapons\\firemode_switch" )
+    			--чтобы не показывало статик, если он уже на экране??
+    			if not disp_flag then bind_stalker.use_info() end
+    			return
+    		end
+    	end
+    end
+end

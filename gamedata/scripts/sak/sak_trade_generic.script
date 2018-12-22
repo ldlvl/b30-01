@@ -1,0 +1,1989 @@
+local armors_by_visuals = {
+"green_stalker_1" = a,
+"green_stalker_10" = a,
+"green_stalker_11" = a,
+"green_stalker_2" = a,
+"green_stalker_3" = a,
+"green_stalker_4" = a,
+"green_stalker_5" = a,
+"green_stalker_6" = a,
+"green_stalker_7" = a,
+"green_stalker_8" = a,
+"green_stalker_antigas" = a,
+"soldier_mask" = a,
+"stalker_bandit" = a,
+"stalker_bandit_3" = a,
+"stalker_bandit_4" = a,
+"stalker_bandit_5" = a,
+"stalker_dolg" = a,
+"stalker_killer" = a,
+"stalker_novice" = a,
+"stalker_svoboda_light" = a,
+"hunter1" = b,
+"hunter3" = b,
+"hunter4" = b,
+"hunter5" = b,
+"soldier_bandana" = b,
+"soldier_bandana_1" = b,
+"soldier_bandana_2" = b,
+"soldier_bandana_3" = b,
+"soldier_bandana_4" = b,
+"soldier_bandana_5" = b,
+"soldier_bandana_6" = b,
+"soldier_obichniy" = b,
+"stalker_bandit_8" = b,
+"stalker_bandit_master" = b,
+"stalker_bar_security" = b,
+"stalker_ecolog" = b,
+"stalker_hood" = b,
+"stalker_ki_antigas" = b,
+"stalker_ki_head_1" = b,
+"stalker_ki_head_5" = b,
+"stalker_ki_informator" = b,
+"stalker_ki_mask" = b,
+"stalker_monolit" = b,
+"stalker_neytral_balon_6" = b,
+"stalker_neytral_balon_8" = b,
+"stalker_neytral_hood_2" = b,
+"stalker_neytral_hood_8" = b,
+"stalker_neytral_hood_9" = b,
+"stalker_neytral_hood_uzor" = b,
+"stalker_neytral_rukzak_1" = b,
+"stalker_neytral_rukzak_2" = b,
+"stalker_sv_cook" = b,
+"stalker_sv_hood_91" = b,
+"stalker_sv_rukzak_1" = b,
+"ucheniy_3" = b,
+"ucheniy_4" = b,
+"act_fraer" = c,
+"clear_sky_1" = c,
+"soldier_beret" = c,
+"soldier_beret_1" = c,
+"soldier_beret_3" = c,
+"soldier_beret_5" = c,
+"soldier_spetsnaz" = c,
+"stalker_bandit_borov" = c,
+"stalker_bandit_veteran" = c,
+"stalker_chemical" = c,
+"stalker_do_antigas" = c,
+"stalker_do_balon_1" = c,
+"stalker_do_balon_3" = c,
+"stalker_do_balon_4" = c,
+"stalker_do_balon_5" = c,
+"stalker_do_balon_8" = c,
+"stalker_do_mask" = c,
+"stalker_do_mask_1" = c,
+"stalker_do_nauchniy" = c,
+"stalker_ecolog_military" = c,
+"stalker_ki_nauchniy" = c,
+"stalker_mo_head_1" = c,
+"stalker_mo_hood_9" = c,
+"stalker_mo_mask" = c,
+"stalker_mo_nauchniy" = c,
+"stalker_neytral_balon_1" = c,
+"stalker_neytral_balon_4" = c,
+"stalker_neytral_balon_5" = c,
+"stalker_neytral_hood_4" = c,
+"stalker_neytral_nauchniy" = c,
+"stalker_neytral_rukzak_3" = c,
+"stalker_neytral_rukzak_4" = c,
+"stalker_scien" = c,
+"stalker_specops" = c,
+"stalker_sv_balon_10" = c,
+"stalker_sv_hood_9" = c,
+"stalker_sv_max" = c,
+"stalker_sv_minigamer" = c,
+"stalker_sv_nauchniy" = c,
+"stalker_sv_rukzak_1_1" = c,
+"stalker_sv_rukzak_3" = c,
+"stalker_sv_rukzak_3_1" = c,
+"stalker_svoboda_heavy" = c,
+"vasilev" = c,
+"stalker_bandit_exoskeleton" = d,
+"stalker_do_exoskeleton" = d,
+"stalker_do_komandir" = d,
+"stalker_fang" = d,
+"stalker_ki_exoskeleton" = d,
+"stalker_military_black" = d,
+"stalker_military_green" = d,
+"stalker_mo_exo" = d,
+"stalker_nano" = d,
+"stalker_ne_exoskeleton" = d,
+"stalker_neytral_exoskeleton" = d,
+"stalker_prizrak" = d,
+"stalker_sv_exoskeleton" = d,
+"stalker_sv_leader" = d
+}
+
+local weapons_nps = {
+"wpn_pm" = a,
+"wpn_pb" = a,
+"wpn_fort" = a,
+"wpn_hpsa" = a,
+"wpn_beretta" = a,
+"wpn_walther" = a,
+"wpn_sig220" = a,
+"wpn_colt1911" = a,
+"wpn_usp" = a,
+"wpn_desert_eagle" = a,
+"wpn_bm16" = a,
+"wpn_toz34" = b,
+"wpn_wincheaster1300" = b,
+"wpn_spas12" = b,
+"wpn_ak74u" = b,
+"wpn_ak74u_m4" = b,
+"wpn_mp5" = b,
+"wpn_ak74" = b,
+"wpn_abakan" = b,
+"wpn_l85" = b,
+"wpn_lr300" = b,
+"wpn_ak74u_m4" = c,
+"wpn_mp5_m5" = c,
+"wpn_ak74_m5" = c,
+"wpn_abakan_m5" = c,
+"wpn_l85_m5" = c,
+"wpn_lr300_m5" = c,
+"wpn_sig550" = c,
+"wpn_groza" = c,
+"wpn_val" = c,
+"wpn_vintorez" = c,
+"wpn_svu" = c,
+"wpn_svd" = c,
+"wpn_rg-6" = c,
+"wpn_rpg7" = c,
+"wpn_g36" = c,
+"wpn_fn2000" = c,
+"wpn_ak47" = c,
+"wpn_saiga12c" = c,
+"wpn_ak74_m1" = d,
+"wpn_abakan_m1" = d,
+"wpn_fort_m1" = d,
+"wpn_ak74u_m1" = d,
+"wpn_mp5_m1" = d,
+"wpn_groza_m1" = d,
+"wpn_spas12_m1" = d,
+"wpn_winchester_m1" = d,
+"wpn_l85_m1" = d,
+"wpn_lr300_m1" = d,
+"wpn_svd_m1" = d,
+"wpn_sig_m1" = d,
+"wpn_eagle_m1" = d,
+"wpn_colt_m1" = d,
+"wpn_val_m1" = d,
+"wpn_mp5_m2" = d,
+"wpn_abakan_m2" = d,
+"wpn_l85_m2" = d,
+"wpn_sig_m2" = d,
+"wpn_rg6_m1" = d,
+"wpn_walther_m1" = d,
+"wpn_mp5_m3" = d,
+"wpn_mp5_m4" = d,
+"wpn_mp5_m5" = d,
+"wpn_vintorez_m5" = d,
+"wpn_vintorez_m1" = d,
+"wpn_ak74_m5" = d,
+"wpn_ak74u_m4" = d,
+"wpn_abakan_m5" = d,
+"wpn_l85_m5" = d,
+"wpn_sig550_m5" = d,
+"wpn_lr300_m5" = d,
+"wpn_val_m5" = d,
+"wpn_toz34_m1" = d,
+"wpn_hunters_toz_new" = d
+}
+local lokas = {
+	marsh=a,
+	aver=f,
+	atp_for_test22=g,
+	generators=g,
+	hospital=b,
+	limansk=h,
+	lost_village=b,
+	puzir=b,
+	red_forest=g,
+	av_peshera=f,
+	peshera=c,
+	warlab=g,
+	l01_escape=a,
+	l02_garbage=c,
+	l03_agroprom=d,
+	l03u_agr_underground=d,
+	l04_darkvalley=c,
+	l04u_labx18=f,
+	l05_bar=e,
+	l06_rostok=f,
+	l07_military=f,
+	l08_yantar=f,
+	l08u_brainlab=g,
+	l10_radar=g,
+	l10u_bunker=g,
+	l11_pripyat=i,
+	l12_stancia_new=i,
+	l12_stancia_2_new=i,
+	l12u_control_monolith=i,
+	l12u_sarcofag=i
+}
+
+function nps_trade_class_aaaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,a,a)
+end
+function nps_trade_class_aaab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,a,b)
+end
+function nps_trade_class_aaac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,a,c)
+end
+function nps_trade_class_aaad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,a,d)
+end
+function nps_trade_class_aaba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,b,a)
+end
+function nps_trade_class_aabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,b,b)
+end
+function nps_trade_class_aabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,b,c)
+end
+function nps_trade_class_aabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,b,d)
+end
+function nps_trade_class_aaca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,c,a)
+end
+function nps_trade_class_aacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,c,b)
+end
+function nps_trade_class_aacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,c,c)
+end
+function nps_trade_class_aacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,c,d)
+end
+function nps_trade_class_aada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,d,a)
+end
+function nps_trade_class_aadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,d,b)
+end
+function nps_trade_class_aadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,d,c)
+end
+function nps_trade_class_aadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,a,d,d)
+end
+function nps_trade_class_abaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,a,a)
+end
+function nps_trade_class_abab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,a,b)
+end
+function nps_trade_class_abac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,a,c)
+end
+function nps_trade_class_abad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,a,d)
+end
+function nps_trade_class_abba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,b,a)
+end
+function nps_trade_class_abbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,b,b)
+end
+function nps_trade_class_abbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,b,c)
+end
+function nps_trade_class_abbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,b,d)
+end
+function nps_trade_class_abca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,c,a)
+end
+function nps_trade_class_abcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,c,b)
+end
+function nps_trade_class_abcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,c,c)
+end
+function nps_trade_class_abcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,c,d)
+end
+function nps_trade_class_abda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,d,a)
+end
+function nps_trade_class_abdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,d,b)
+end
+function nps_trade_class_abdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,d,c)
+end
+function nps_trade_class_abdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,b,d,d)
+end
+function nps_trade_class_acaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,a,a)
+end
+function nps_trade_class_acab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,a,b)
+end
+function nps_trade_class_acac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,a,c)
+end
+function nps_trade_class_acad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,a,d)
+end
+function nps_trade_class_acba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,b,a)
+end
+function nps_trade_class_acbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,b,b)
+end
+function nps_trade_class_acbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,b,c)
+end
+function nps_trade_class_acbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,b,d)
+end
+function nps_trade_class_acca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,c,a)
+end
+function nps_trade_class_accb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,c,b)
+end
+function nps_trade_class_accc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,c,c)
+end
+function nps_trade_class_accd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,c,d)
+end
+function nps_trade_class_acda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,d,a)
+end
+function nps_trade_class_acdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,d,b)
+end
+function nps_trade_class_acdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,d,c)
+end
+function nps_trade_class_acdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,c,d,d)
+end
+function nps_trade_class_adaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,a,a)
+end
+function nps_trade_class_adab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,a,b)
+end
+function nps_trade_class_adac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,a,c)
+end
+function nps_trade_class_adad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,a,d)
+end
+function nps_trade_class_adba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,b,a)
+end
+function nps_trade_class_adbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,b,b)
+end
+function nps_trade_class_adbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,b,c)
+end
+function nps_trade_class_adbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,b,d)
+end
+function nps_trade_class_adca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,c,a)
+end
+function nps_trade_class_adcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,c,b)
+end
+function nps_trade_class_adcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,c,c)
+end
+function nps_trade_class_adcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,c,d)
+end
+function nps_trade_class_adda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,d,a)
+end
+function nps_trade_class_addb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,d,b)
+end
+function nps_trade_class_addc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,d,c)
+end
+function nps_trade_class_addd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,a,d,d,d)
+end
+function nps_trade_class_baaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,a,a)
+end
+function nps_trade_class_baab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,a,b)
+end
+function nps_trade_class_baac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,a,c)
+end
+function nps_trade_class_baad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,a,d)
+end
+function nps_trade_class_baba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,b,a)
+end
+function nps_trade_class_babb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,b,b)
+end
+function nps_trade_class_babc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,b,c)
+end
+function nps_trade_class_babd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,b,d)
+end
+function nps_trade_class_baca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,c,a)
+end
+function nps_trade_class_bacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,c,b)
+end
+function nps_trade_class_bacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,c,c)
+end
+function nps_trade_class_bacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,c,d)
+end
+function nps_trade_class_bada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,d,a)
+end
+function nps_trade_class_badb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,d,b)
+end
+function nps_trade_class_badc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,d,c)
+end
+function nps_trade_class_badd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,a,d,d)
+end
+function nps_trade_class_bbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,a,a)
+end
+function nps_trade_class_bbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,a,b)
+end
+function nps_trade_class_bbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,a,c)
+end
+function nps_trade_class_bbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,a,d)
+end
+function nps_trade_class_bbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,b,a)
+end
+function nps_trade_class_bbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,b,b)
+end
+function nps_trade_class_bbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,b,c)
+end
+function nps_trade_class_bbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,b,d)
+end
+function nps_trade_class_bbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,c,a)
+end
+function nps_trade_class_bbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,c,b)
+end
+function nps_trade_class_bbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,c,c)
+end
+function nps_trade_class_bbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,c,d)
+end
+function nps_trade_class_bbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,d,a)
+end
+function nps_trade_class_bbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,d,b)
+end
+function nps_trade_class_bbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,d,c)
+end
+function nps_trade_class_bbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,b,d,d)
+end
+function nps_trade_class_bcaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,a,a)
+end
+function nps_trade_class_bcab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,a,b)
+end
+function nps_trade_class_bcac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,a,c)
+end
+function nps_trade_class_bcad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,a,d)
+end
+function nps_trade_class_bcba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,b,a)
+end
+function nps_trade_class_bcbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,b,b)
+end
+function nps_trade_class_bcbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,b,c)
+end
+function nps_trade_class_bcbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,b,d)
+end
+function nps_trade_class_bcca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,c,a)
+end
+function nps_trade_class_bccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,c,b)
+end
+function nps_trade_class_bccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,c,c)
+end
+function nps_trade_class_bccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,c,d)
+end
+function nps_trade_class_bcda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,d,a)
+end
+function nps_trade_class_bcdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,d,b)
+end
+function nps_trade_class_bcdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,d,c)
+end
+function nps_trade_class_bcdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,c,d,d)
+end
+function nps_trade_class_bdaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,a,a)
+end
+function nps_trade_class_bdab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,a,b)
+end
+function nps_trade_class_bdac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,a,c)
+end
+function nps_trade_class_bdad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,a,d)
+end
+function nps_trade_class_bdba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,b,a)
+end
+function nps_trade_class_bdbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,b,b)
+end
+function nps_trade_class_bdbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,b,c)
+end
+function nps_trade_class_bdbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,b,d)
+end
+function nps_trade_class_bdca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,c,a)
+end
+function nps_trade_class_bdcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,c,b)
+end
+function nps_trade_class_bdcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,c,c)
+end
+function nps_trade_class_bdcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,c,d)
+end
+function nps_trade_class_bdda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,d,a)
+end
+function nps_trade_class_bddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,d,b)
+end
+function nps_trade_class_bddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,d,c)
+end
+function nps_trade_class_bddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,b,d,d,d)
+end
+function nps_trade_class_caaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,a,a)
+end
+function nps_trade_class_caab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,a,b)
+end
+function nps_trade_class_caac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,a,c)
+end
+function nps_trade_class_caad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,a,d)
+end
+function nps_trade_class_caba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,b,a)
+end
+function nps_trade_class_cabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,b,b)
+end
+function nps_trade_class_cabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,b,c)
+end
+function nps_trade_class_cabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,b,d)
+end
+function nps_trade_class_caca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,c,a)
+end
+function nps_trade_class_cacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,c,b)
+end
+function nps_trade_class_cacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,c,c)
+end
+function nps_trade_class_cacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,c,d)
+end
+function nps_trade_class_cada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,d,a)
+end
+function nps_trade_class_cadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,d,b)
+end
+function nps_trade_class_cadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,d,c)
+end
+function nps_trade_class_cadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,a,d,d)
+end
+function nps_trade_class_cbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,a,a)
+end
+function nps_trade_class_cbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,a,b)
+end
+function nps_trade_class_cbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,a,c)
+end
+function nps_trade_class_cbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,a,d)
+end
+function nps_trade_class_cbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,b,a)
+end
+function nps_trade_class_cbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,b,b)
+end
+function nps_trade_class_cbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,b,c)
+end
+function nps_trade_class_cbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,b,d)
+end
+function nps_trade_class_cbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,c,a)
+end
+function nps_trade_class_cbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,c,b)
+end
+function nps_trade_class_cbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,c,c)
+end
+function nps_trade_class_cbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,c,d)
+end
+function nps_trade_class_cbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,d,a)
+end
+function nps_trade_class_cbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,d,b)
+end
+function nps_trade_class_cbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,d,c)
+end
+function nps_trade_class_cbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,b,d,d)
+end
+function nps_trade_class_ccaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,a,a)
+end
+function nps_trade_class_ccab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,a,b)
+end
+function nps_trade_class_ccac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,a,c)
+end
+function nps_trade_class_ccad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,a,d)
+end
+function nps_trade_class_ccba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,b,a)
+end
+function nps_trade_class_ccbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,b,b)
+end
+function nps_trade_class_ccbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,b,c)
+end
+function nps_trade_class_ccbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,b,d)
+end
+function nps_trade_class_ccca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,c,a)
+end
+function nps_trade_class_cccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,c,b)
+end
+function nps_trade_class_cccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,c,c)
+end
+function nps_trade_class_cccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,c,d)
+end
+function nps_trade_class_ccda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,d,a)
+end
+function nps_trade_class_ccdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,d,b)
+end
+function nps_trade_class_ccdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,d,c)
+end
+function nps_trade_class_ccdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,c,d,d)
+end
+function nps_trade_class_cdaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,a,a)
+end
+function nps_trade_class_cdab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,a,b)
+end
+function nps_trade_class_cdac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,a,c)
+end
+function nps_trade_class_cdad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,a,d)
+end
+function nps_trade_class_cdba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,b,a)
+end
+function nps_trade_class_cdbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,b,b)
+end
+function nps_trade_class_cdbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,b,c)
+end
+function nps_trade_class_cdbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,b,d)
+end
+function nps_trade_class_cdca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,c,a)
+end
+function nps_trade_class_cdcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,c,b)
+end
+function nps_trade_class_cdcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,c,c)
+end
+function nps_trade_class_cdcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,c,d)
+end
+function nps_trade_class_cdda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,d,a)
+end
+function nps_trade_class_cddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,d,b)
+end
+function nps_trade_class_cddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,d,c)
+end
+function nps_trade_class_cddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,c,d,d,d)
+end
+function nps_trade_class_daaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,a,a)
+end
+function nps_trade_class_daab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,a,b)
+end
+function nps_trade_class_daac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,a,c)
+end
+function nps_trade_class_daad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,a,d)
+end
+function nps_trade_class_daba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,b,a)
+end
+function nps_trade_class_dabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,b,b)
+end
+function nps_trade_class_dabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,b,c)
+end
+function nps_trade_class_dabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,b,d)
+end
+function nps_trade_class_daca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,c,a)
+end
+function nps_trade_class_dacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,c,b)
+end
+function nps_trade_class_dacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,c,c)
+end
+function nps_trade_class_dacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,c,d)
+end
+function nps_trade_class_dada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,d,a)
+end
+function nps_trade_class_dadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,d,b)
+end
+function nps_trade_class_dadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,d,c)
+end
+function nps_trade_class_dadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,a,d,d)
+end
+function nps_trade_class_dbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,a,a)
+end
+function nps_trade_class_dbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,a,b)
+end
+function nps_trade_class_dbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,a,c)
+end
+function nps_trade_class_dbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,a,d)
+end
+function nps_trade_class_dbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,b,a)
+end
+function nps_trade_class_dbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,b,b)
+end
+function nps_trade_class_dbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,b,c)
+end
+function nps_trade_class_dbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,b,d)
+end
+function nps_trade_class_dbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,c,a)
+end
+function nps_trade_class_dbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,c,b)
+end
+function nps_trade_class_dbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,c,c)
+end
+function nps_trade_class_dbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,c,d)
+end
+function nps_trade_class_dbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,d,a)
+end
+function nps_trade_class_dbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,d,b)
+end
+function nps_trade_class_dbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,d,c)
+end
+function nps_trade_class_dbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,b,d,d)
+end
+function nps_trade_class_dcaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,a,a)
+end
+function nps_trade_class_dcab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,a,b)
+end
+function nps_trade_class_dcac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,a,c)
+end
+function nps_trade_class_dcad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,a,d)
+end
+function nps_trade_class_dcba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,b,a)
+end
+function nps_trade_class_dcbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,b,b)
+end
+function nps_trade_class_dcbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,b,c)
+end
+function nps_trade_class_dcbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,b,d)
+end
+function nps_trade_class_dcca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,c,a)
+end
+function nps_trade_class_dccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,c,b)
+end
+function nps_trade_class_dccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,c,c)
+end
+function nps_trade_class_dccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,c,d)
+end
+function nps_trade_class_dcda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,d,a)
+end
+function nps_trade_class_dcdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,d,b)
+end
+function nps_trade_class_dcdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,d,c)
+end
+function nps_trade_class_dcdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,c,d,d)
+end
+function nps_trade_class_ddaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,a,a)
+end
+function nps_trade_class_ddab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,a,b)
+end
+function nps_trade_class_ddac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,a,c)
+end
+function nps_trade_class_ddad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,a,d)
+end
+function nps_trade_class_ddba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,b,a)
+end
+function nps_trade_class_ddbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,b,b)
+end
+function nps_trade_class_ddbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,b,c)
+end
+function nps_trade_class_ddbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,b,d)
+end
+function nps_trade_class_ddca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,c,a)
+end
+function nps_trade_class_ddcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,c,b)
+end
+function nps_trade_class_ddcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,c,c)
+end
+function nps_trade_class_ddcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,c,d)
+end
+function nps_trade_class_ddda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,d,a)
+end
+function nps_trade_class_dddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,d,b)
+end
+function nps_trade_class_dddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,d,c)
+end
+function nps_trade_class_dddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,d,d,d,d)
+end
+function nps_trade_class_eaaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,a,a)
+end
+function nps_trade_class_eaab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,a,b)
+end
+function nps_trade_class_eaac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,a,c)
+end
+function nps_trade_class_eaad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,a,d)
+end
+function nps_trade_class_eaba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,b,a)
+end
+function nps_trade_class_eabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,b,b)
+end
+function nps_trade_class_eabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,b,c)
+end
+function nps_trade_class_eabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,b,d)
+end
+function nps_trade_class_eaca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,c,a)
+end
+function nps_trade_class_eacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,c,b)
+end
+function nps_trade_class_eacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,c,c)
+end
+function nps_trade_class_eacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,c,d)
+end
+function nps_trade_class_eada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,d,a)
+end
+function nps_trade_class_eadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,d,b)
+end
+function nps_trade_class_eadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,d,c)
+end
+function nps_trade_class_eadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,a,d,d)
+end
+function nps_trade_class_ebaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,a,a)
+end
+function nps_trade_class_ebab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,a,b)
+end
+function nps_trade_class_ebac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,a,c)
+end
+function nps_trade_class_ebad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,a,d)
+end
+function nps_trade_class_ebba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,b,a)
+end
+function nps_trade_class_ebbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,b,b)
+end
+function nps_trade_class_ebbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,b,c)
+end
+function nps_trade_class_ebbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,b,d)
+end
+function nps_trade_class_ebca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,c,a)
+end
+function nps_trade_class_ebcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,c,b)
+end
+function nps_trade_class_ebcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,c,c)
+end
+function nps_trade_class_ebcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,c,d)
+end
+function nps_trade_class_ebda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,d,a)
+end
+function nps_trade_class_ebdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,d,b)
+end
+function nps_trade_class_ebdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,d,c)
+end
+function nps_trade_class_ebdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,b,d,d)
+end
+function nps_trade_class_ecaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,a,a)
+end
+function nps_trade_class_ecab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,a,b)
+end
+function nps_trade_class_ecac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,a,c)
+end
+function nps_trade_class_ecad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,a,d)
+end
+function nps_trade_class_ecba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,b,a)
+end
+function nps_trade_class_ecbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,b,b)
+end
+function nps_trade_class_ecbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,b,c)
+end
+function nps_trade_class_ecbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,b,d)
+end
+function nps_trade_class_ecca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,c,a)
+end
+function nps_trade_class_eccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,c,b)
+end
+function nps_trade_class_eccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,c,c)
+end
+function nps_trade_class_eccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,c,d)
+end
+function nps_trade_class_ecda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,d,a)
+end
+function nps_trade_class_ecdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,d,b)
+end
+function nps_trade_class_ecdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,d,c)
+end
+function nps_trade_class_ecdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,c,d,d)
+end
+function nps_trade_class_edaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,a,a)
+end
+function nps_trade_class_edab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,a,b)
+end
+function nps_trade_class_edac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,a,c)
+end
+function nps_trade_class_edad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,a,d)
+end
+function nps_trade_class_edba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,b,a)
+end
+function nps_trade_class_edbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,b,b)
+end
+function nps_trade_class_edbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,b,c)
+end
+function nps_trade_class_edbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,b,d)
+end
+function nps_trade_class_edca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,c,a)
+end
+function nps_trade_class_edcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,c,b)
+end
+function nps_trade_class_edcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,c,c)
+end
+function nps_trade_class_edcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,c,d)
+end
+function nps_trade_class_edda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,d,a)
+end
+function nps_trade_class_eddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,d,b)
+end
+function nps_trade_class_eddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,d,c)
+end
+function nps_trade_class_eddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,e,d,d,d)
+end
+function nps_trade_class_faaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,a,a)
+end
+function nps_trade_class_faab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,a,b)
+end
+function nps_trade_class_faac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,a,c)
+end
+function nps_trade_class_faad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,a,d)
+end
+function nps_trade_class_faba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,b,a)
+end
+function nps_trade_class_fabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,b,b)
+end
+function nps_trade_class_fabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,b,c)
+end
+function nps_trade_class_fabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,b,d)
+end
+function nps_trade_class_faca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,c,a)
+end
+function nps_trade_class_facb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,c,b)
+end
+function nps_trade_class_facc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,c,c)
+end
+function nps_trade_class_facd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,c,d)
+end
+function nps_trade_class_fada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,d,a)
+end
+function nps_trade_class_fadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,d,b)
+end
+function nps_trade_class_fadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,d,c)
+end
+function nps_trade_class_fadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,a,d,d)
+end
+function nps_trade_class_fbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,a,a)
+end
+function nps_trade_class_fbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,a,b)
+end
+function nps_trade_class_fbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,a,c)
+end
+function nps_trade_class_fbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,a,d)
+end
+function nps_trade_class_fbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,b,a)
+end
+function nps_trade_class_fbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,b,b)
+end
+function nps_trade_class_fbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,b,c)
+end
+function nps_trade_class_fbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,b,d)
+end
+function nps_trade_class_fbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,c,a)
+end
+function nps_trade_class_fbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,c,b)
+end
+function nps_trade_class_fbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,c,c)
+end
+function nps_trade_class_fbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,c,d)
+end
+function nps_trade_class_fbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,d,a)
+end
+function nps_trade_class_fbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,d,b)
+end
+function nps_trade_class_fbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,d,c)
+end
+function nps_trade_class_fbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,b,d,d)
+end
+function nps_trade_class_fcaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,a,a)
+end
+function nps_trade_class_fcab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,a,b)
+end
+function nps_trade_class_fcac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,a,c)
+end
+function nps_trade_class_fcad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,a,d)
+end
+function nps_trade_class_fcba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,b,a)
+end
+function nps_trade_class_fcbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,b,b)
+end
+function nps_trade_class_fcbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,b,c)
+end
+function nps_trade_class_fcbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,b,d)
+end
+function nps_trade_class_fcca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,c,a)
+end
+function nps_trade_class_fccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,c,b)
+end
+function nps_trade_class_fccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,c,c)
+end
+function nps_trade_class_fccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,c,d)
+end
+function nps_trade_class_fcda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,d,a)
+end
+function nps_trade_class_fcdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,d,b)
+end
+function nps_trade_class_fcdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,d,c)
+end
+function nps_trade_class_fcdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,c,d,d)
+end
+function nps_trade_class_fdaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,a,a)
+end
+function nps_trade_class_fdab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,a,b)
+end
+function nps_trade_class_fdac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,a,c)
+end
+function nps_trade_class_fdad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,a,d)
+end
+function nps_trade_class_fdba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,b,a)
+end
+function nps_trade_class_fdbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,b,b)
+end
+function nps_trade_class_fdbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,b,c)
+end
+function nps_trade_class_fdbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,b,d)
+end
+function nps_trade_class_fdca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,c,a)
+end
+function nps_trade_class_fdcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,c,b)
+end
+function nps_trade_class_fdcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,c,c)
+end
+function nps_trade_class_fdcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,c,d)
+end
+function nps_trade_class_fdda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,d,a)
+end
+function nps_trade_class_fddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,d,b)
+end
+function nps_trade_class_fddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,d,c)
+end
+function nps_trade_class_fddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,f,d,d,d)
+end
+function nps_trade_class_gaaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,a,a)
+end
+function nps_trade_class_gaab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,a,b)
+end
+function nps_trade_class_gaac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,a,c)
+end
+function nps_trade_class_gaad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,a,d)
+end
+function nps_trade_class_gaba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,b,a)
+end
+function nps_trade_class_gabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,b,b)
+end
+function nps_trade_class_gabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,b,c)
+end
+function nps_trade_class_gabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,b,d)
+end
+function nps_trade_class_gaca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,c,a)
+end
+function nps_trade_class_gacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,c,b)
+end
+function nps_trade_class_gacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,c,c)
+end
+function nps_trade_class_gacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,c,d)
+end
+function nps_trade_class_gada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,d,a)
+end
+function nps_trade_class_gadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,d,b)
+end
+function nps_trade_class_gadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,d,c)
+end
+function nps_trade_class_gadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,a,d,d)
+end
+function nps_trade_class_gbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,a,a)
+end
+function nps_trade_class_gbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,a,b)
+end
+function nps_trade_class_gbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,a,c)
+end
+function nps_trade_class_gbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,a,d)
+end
+function nps_trade_class_gbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,b,a)
+end
+function nps_trade_class_gbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,b,b)
+end
+function nps_trade_class_gbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,b,c)
+end
+function nps_trade_class_gbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,b,d)
+end
+function nps_trade_class_gbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,c,a)
+end
+function nps_trade_class_gbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,c,b)
+end
+function nps_trade_class_gbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,c,c)
+end
+function nps_trade_class_gbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,c,d)
+end
+function nps_trade_class_gbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,d,a)
+end
+function nps_trade_class_gbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,d,b)
+end
+function nps_trade_class_gbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,d,c)
+end
+function nps_trade_class_gbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,b,d,d)
+end
+function nps_trade_class_gcaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,a,a)
+end
+function nps_trade_class_gcab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,a,b)
+end
+function nps_trade_class_gcac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,a,c)
+end
+function nps_trade_class_gcad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,a,d)
+end
+function nps_trade_class_gcba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,b,a)
+end
+function nps_trade_class_gcbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,b,b)
+end
+function nps_trade_class_gcbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,b,c)
+end
+function nps_trade_class_gcbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,b,d)
+end
+function nps_trade_class_gcca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,c,a)
+end
+function nps_trade_class_gccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,c,b)
+end
+function nps_trade_class_gccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,c,c)
+end
+function nps_trade_class_gccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,c,d)
+end
+function nps_trade_class_gcda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,d,a)
+end
+function nps_trade_class_gcdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,d,b)
+end
+function nps_trade_class_gcdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,d,c)
+end
+function nps_trade_class_gcdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,c,d,d)
+end
+function nps_trade_class_gdaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,a,a)
+end
+function nps_trade_class_gdab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,a,b)
+end
+function nps_trade_class_gdac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,a,c)
+end
+function nps_trade_class_gdad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,a,d)
+end
+function nps_trade_class_gdba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,b,a)
+end
+function nps_trade_class_gdbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,b,b)
+end
+function nps_trade_class_gdbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,b,c)
+end
+function nps_trade_class_gdbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,b,d)
+end
+function nps_trade_class_gdca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,c,a)
+end
+function nps_trade_class_gdcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,c,b)
+end
+function nps_trade_class_gdcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,c,c)
+end
+function nps_trade_class_gdcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,c,d)
+end
+function nps_trade_class_gdda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,d,a)
+end
+function nps_trade_class_gddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,d,b)
+end
+function nps_trade_class_gddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,d,c)
+end
+function nps_trade_class_gddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,g,d,d,d)
+end
+function nps_trade_class_haaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,a,a)
+end
+function nps_trade_class_haab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,a,b)
+end
+function nps_trade_class_haac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,a,c)
+end
+function nps_trade_class_haad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,a,d)
+end
+function nps_trade_class_haba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,b,a)
+end
+function nps_trade_class_habb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,b,b)
+end
+function nps_trade_class_habc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,b,c)
+end
+function nps_trade_class_habd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,b,d)
+end
+function nps_trade_class_haca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,c,a)
+end
+function nps_trade_class_hacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,c,b)
+end
+function nps_trade_class_hacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,c,c)
+end
+function nps_trade_class_hacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,c,d)
+end
+function nps_trade_class_hada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,d,a)
+end
+function nps_trade_class_hadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,d,b)
+end
+function nps_trade_class_hadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,d,c)
+end
+function nps_trade_class_hadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,a,d,d)
+end
+function nps_trade_class_hbaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,a,a)
+end
+function nps_trade_class_hbab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,a,b)
+end
+function nps_trade_class_hbac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,a,c)
+end
+function nps_trade_class_hbad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,a,d)
+end
+function nps_trade_class_hbba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,b,a)
+end
+function nps_trade_class_hbbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,b,b)
+end
+function nps_trade_class_hbbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,b,c)
+end
+function nps_trade_class_hbbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,b,d)
+end
+function nps_trade_class_hbca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,c,a)
+end
+function nps_trade_class_hbcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,c,b)
+end
+function nps_trade_class_hbcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,c,c)
+end
+function nps_trade_class_hbcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,c,d)
+end
+function nps_trade_class_hbda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,d,a)
+end
+function nps_trade_class_hbdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,d,b)
+end
+function nps_trade_class_hbdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,d,c)
+end
+function nps_trade_class_hbdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,b,d,d)
+end
+function nps_trade_class_hcaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,a,a)
+end
+function nps_trade_class_hcab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,a,b)
+end
+function nps_trade_class_hcac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,a,c)
+end
+function nps_trade_class_hcad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,a,d)
+end
+function nps_trade_class_hcba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,b,a)
+end
+function nps_trade_class_hcbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,b,b)
+end
+function nps_trade_class_hcbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,b,c)
+end
+function nps_trade_class_hcbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,b,d)
+end
+function nps_trade_class_hcca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,c,a)
+end
+function nps_trade_class_hccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,c,b)
+end
+function nps_trade_class_hccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,c,c)
+end
+function nps_trade_class_hccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,c,d)
+end
+function nps_trade_class_hcda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,d,a)
+end
+function nps_trade_class_hcdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,d,b)
+end
+function nps_trade_class_hcdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,d,c)
+end
+function nps_trade_class_hcdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,c,d,d)
+end
+function nps_trade_class_hdaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,a,a)
+end
+function nps_trade_class_hdab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,a,b)
+end
+function nps_trade_class_hdac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,a,c)
+end
+function nps_trade_class_hdad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,a,d)
+end
+function nps_trade_class_hdba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,b,a)
+end
+function nps_trade_class_hdbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,b,b)
+end
+function nps_trade_class_hdbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,b,c)
+end
+function nps_trade_class_hdbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,b,d)
+end
+function nps_trade_class_hdca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,c,a)
+end
+function nps_trade_class_hdcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,c,b)
+end
+function nps_trade_class_hdcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,c,c)
+end
+function nps_trade_class_hdcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,c,d)
+end
+function nps_trade_class_hdda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,d,a)
+end
+function nps_trade_class_hddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,d,b)
+end
+function nps_trade_class_hddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,d,c)
+end
+function nps_trade_class_hddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,h,d,d,d)
+end
+function nps_trade_class_iaaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,a,a)
+end
+function nps_trade_class_iaab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,a,b)
+end
+function nps_trade_class_iaac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,a,c)
+end
+function nps_trade_class_iaad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,a,d)
+end
+function nps_trade_class_iaba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,b,a)
+end
+function nps_trade_class_iabb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,b,b)
+end
+function nps_trade_class_iabc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,b,c)
+end
+function nps_trade_class_iabd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,b,d)
+end
+function nps_trade_class_iaca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,c,a)
+end
+function nps_trade_class_iacb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,c,b)
+end
+function nps_trade_class_iacc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,c,c)
+end
+function nps_trade_class_iacd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,c,d)
+end
+function nps_trade_class_iada(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,d,a)
+end
+function nps_trade_class_iadb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,d,b)
+end
+function nps_trade_class_iadc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,d,c)
+end
+function nps_trade_class_iadd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,a,d,d)
+end
+function nps_trade_class_ibaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,a,a)
+end
+function nps_trade_class_ibab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,a,b)
+end
+function nps_trade_class_ibac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,a,c)
+end
+function nps_trade_class_ibad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,a,d)
+end
+function nps_trade_class_ibba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,b,a)
+end
+function nps_trade_class_ibbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,b,b)
+end
+function nps_trade_class_ibbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,b,c)
+end
+function nps_trade_class_ibbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,b,d)
+end
+function nps_trade_class_ibca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,c,a)
+end
+function nps_trade_class_ibcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,c,b)
+end
+function nps_trade_class_ibcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,c,c)
+end
+function nps_trade_class_ibcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,c,d)
+end
+function nps_trade_class_ibda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,d,a)
+end
+function nps_trade_class_ibdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,d,b)
+end
+function nps_trade_class_ibdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,d,c)
+end
+function nps_trade_class_ibdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,b,d,d)
+end
+function nps_trade_class_icaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,a,a)
+end
+function nps_trade_class_icab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,a,b)
+end
+function nps_trade_class_icac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,a,c)
+end
+function nps_trade_class_icad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,a,d)
+end
+function nps_trade_class_icba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,b,a)
+end
+function nps_trade_class_icbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,b,b)
+end
+function nps_trade_class_icbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,b,c)
+end
+function nps_trade_class_icbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,b,d)
+end
+function nps_trade_class_icca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,c,a)
+end
+function nps_trade_class_iccb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,c,b)
+end
+function nps_trade_class_iccc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,c,c)
+end
+function nps_trade_class_iccd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,c,d)
+end
+function nps_trade_class_icda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,d,a)
+end
+function nps_trade_class_icdb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,d,b)
+end
+function nps_trade_class_icdc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,d,c)
+end
+function nps_trade_class_icdd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,c,d,d)
+end
+function nps_trade_class_idaa(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,a,a)
+end
+function nps_trade_class_idab(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,a,b)
+end
+function nps_trade_class_idac(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,a,c)
+end
+function nps_trade_class_idad(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,a,d)
+end
+function nps_trade_class_idba(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,b,a)
+end
+function nps_trade_class_idbb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,b,b)
+end
+function nps_trade_class_idbc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,b,c)
+end
+function nps_trade_class_idbd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,b,d)
+end
+function nps_trade_class_idca(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,c,a)
+end
+function nps_trade_class_idcb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,c,b)
+end
+function nps_trade_class_idcc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,c,c)
+end
+function nps_trade_class_idcd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,c,d)
+end
+function nps_trade_class_idda(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,d,a)
+end
+function nps_trade_class_iddb(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,d,b)
+end
+function nps_trade_class_iddc(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,d,c)
+end
+function nps_trade_class_iddd(first_speaker, second_speaker)
+return nps_trade_class(second_speaker,i,d,d,d)
+end
+
+function nps_trade_class(npc,loka,rang_gg,armor_class,wpn_class)
+local pk = get_netpk(npc)
+local data = pk:get()
+local item_in_slot_1 = npc:item_in_slot(1)
+local item_in_slot_2 = npc:item_in_slot(2)
+local item_in_slot,rang
+local lname = level.name()
+local actor_rank = db.actor:rank()
+	if actor_rank~=nil then 
+		if actor_rank <= 300 then rang=a
+		--elseif actor_rank > 300 and actor_rank >= 600 then rang=b
+		elseif actor_rank > 300 and actor_rank <= 600 then rang=b
+		elseif actor_rank > 600 and actor_rank <= 900 then rang=c
+		elseif actor_rank > 900 then rang=d
+		end
+	end
+	if data~=nil then
+		local vis = data.visual_name
+		vis = amk.str_explode("\\",vis)
+		vis = vis[3]
+		if item_in_slot_2 then
+		item_in_slot=item_in_slot_2
+		elseif item_in_slot_1 then
+		item_in_slot=item_in_slot_1
+		else
+		item_in_slot="wpn_pm"
+		end
+		if rang==rang_gg and lokas[lname]==loka and armors_by_visuals[vis]==armor_class and weapons_nps[item_in_slot]==wpn_class then
+		return true
+		else
+		return false
+		end
+	end
+end

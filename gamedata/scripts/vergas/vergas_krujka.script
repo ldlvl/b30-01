@@ -1,0 +1,1563 @@
+--[[
+Кружка Вергаса
+Vergas
+© NLC 7.1
+]]--
+
+local str_data
+local complexity
+local krujka_inv
+local krujka_id
+local sec_prize		--секция приза, от которого отказывается ГГ
+local tbl_prize_no = {}	--таблица предметов от которых отказался ГГ
+local txt_nomer = lua_random(1,14)			--номер последней фразы Вергаса при смене приза
+
+function init_module()
+vergas_lib.logmsg("КРУЖКА: Вошел в скрипт init_module")													------------------------УБРАТЬ!!!!!
+	if nlc_vars.vergas_vars == nil then 
+		--начинаю процесс формирования кружки
+		nlc_vars.vergas_vars = {}
+		if lua_random() > 0 then
+			complexity = back_complexity()
+			init_krujka_vergas()
+		end
+	end
+
+end
+
+function init_krujka_vergas()
+	local obj = spawn_krujka(lua_random(1,6))
+
+	--определяю, а будет ли кружка настоящей
+	if lua_random()>0 then
+		--кружка настоящая
+		prize_vergas()
+		-- вставляю данные в кастом-дату
+		str_data = str_data.."0|"
+	else 
+		str_data = "2|0|0|0|0|0|"
+	end
+	set_get_krujka_custom(1,obj.id,str_data)
+end
+
+function spawn_krujka(nomer)
+	--непосредственный спавн кружки
+----Тестовые точки в ДН--------------------------------------------------------------
+	--[[
+	local tbl_tsk = {
+					{-186.89888000488,-19.386596679688,-131.0440826416,56,64301},
+					{-195.64637756348,-19.490900039673,-131.54258728027,56,63641},
+					{-165.20309448242,-20.013549804688,-133.97189331055,55,81353}
+					}
+	]]--
+-------------------------------------------------------------------------------------
+	local tbl_tsk = {
+					{-78.185493469238,31.960248947144,680.02685546875,3061,6069},
+					{-94.207489013672,33.949703216553,696.31695556641,3037,1247},
+					{-92.165840148926,31.949663162231,746.55053710938,3052,2127},
+					{-83.125801086426,26.429527282715,746.8701171875,3043,4251},
+					{-95.560546875,24.942228317261,745.43615722656,3043,2494},
+					{-85.29231262207,25.489839553833,751.91711425781,3043,4258},
+					{-94.19303894043,32.153106689453,720.65911865234,3034,1262},
+					{-98.985359191895,25.15460395813,722.52160644531,3035,366},
+					{-83.065818786621,24.958192825317,736.69689941406,3054,4668},
+					{-81.212127685547,25.012052536011,717.39483642578,3058,5523},
+					{-86.772644042969,24.809377670288,696.27331542969,3046,3101},
+					{-69.5048828125,25.087858200073,666.47613525391,3064,7786},
+					{-77.916244506836,24.956544876099,653.94750976563,3044,6451},
+					{-69.533615112305,25.091049194336,635.12103271484,3057,7803},
+					{-88.02108001709,25.63366317749,619.78558349609,3057,3032},
+					{-87.463684082031,25.148231506348,650.29266357422,3040,4400},
+					{-102.98415374756,25.090642929077,666.34545898438,3036,214},
+					{-105.40942382813,34.253959655762,615.12432861328,3028,65},
+					{-105.4437713623,25.100086212158,620.28491210938,3029,81},
+					{-91.361610412598,21.697580337524,567.32745361328,3045,2523}
+					}
+	local n = lua_random(1,20)
+	local sec = "krujka_"..nomer
+	local obj=amk.spawn_item(sec,sak.v3f(tbl_tsk[n][1],tbl_tsk[n][2],tbl_tsk[n][3]),tbl_tsk[n][4],tbl_tsk[n][5])
+	
+	return obj
+	
+end
+
+function prize_vergas()		--формирую первоначальные призы за кружку
+	local prize_kol_vo = 0
+	
+	str_data = "1|"
+	--определяю количество призов (1 или 2)
+	if lua_random()>0.3 then
+		prize_kol_vo = true
+	else
+		prize_kol_vo = false
+	end
+	--формирую первый приз
+	
+	local n = lua_random(1,7)
+
+	if n == 1 then											--это оружие
+		local wpn = prize_weapons()
+		str_data = str_data..wpn.."|1|"
+		-- формирую соответствующие патроны как второй приз
+		if prize_kol_vo then 
+			str_data = str_data..prize_ammo2(wpn)
+		else
+			str_data = str_data.."0|0|"
+		end
+	elseif n == 2 then
+		local ammo = prize_ammo()							-- это патроны
+		str_data = str_data..ammo.."|"..lua_random(1,complexity).."|"
+		-- формирую второй приз
+		if prize_kol_vo then 
+			str_data = str_data..prize2_ammo(ammo)
+		else
+			str_data = str_data.."0|0|"
+		end
+	elseif n == 3 then
+		local che = prize_chemistry()						-- это химия
+		str_data = str_data..che.."|"..lua_random(1,complexity).."|"
+		-- формирую второй приз
+		if prize_kol_vo then
+			str_data = str_data..prize2_chemistry(che)
+		else
+			str_data = str_data.."0|0|"
+		end	
+	elseif n == 4 then
+		str_data = str_data..prize_armor().."1|0|0|"		-- это бронька
+	elseif n == 5 then
+		local food = prize_food()
+		str_data = str_data..food.."|"..lua_random(1,complexity).."|"		-- это еда
+		-- формирую второй приз
+		if prize_kol_vo then
+			str_data = str_data..prize2_food(food)
+		else
+			str_data = str_data.."0|0|"
+		end
+	elseif n == 6 then
+		str_data = str_data.."skiing|1|0|0|"				-- это лыжи
+	elseif n == 7 then
+		local thing = prize_things()
+		str_data = str_data..thing.."|1|0|0|"					-- это штучки
+	end
+
+end
+
+function prize_weapons()	--определяю приз из группы "оружие"
+	local m
+	local tbl_weapons = {"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_bm16_full","wpn_mp5"}
+	
+	m = lua_random(1,complexity)
+	
+	return tbl_weapons[m]
+end
+
+function prize_ammo()		--определяю приз из группы "боеприпасы"
+	local m = lua_random(1,6)
+
+	if m == 1 then
+		m = prize_ammo3()
+	elseif m == 2 then
+		m = "grenade_rgd5"
+	elseif m == 3 then
+		m = "grenade_f1"
+	elseif m == 4 then
+		m = "repair_itemoutfit_feik"
+	elseif m == 5 then
+		m = "repair_item_weapon_feik"
+	elseif m == 6 then
+		m = "batt_torch"
+	end
+	
+	return m
+end
+
+function prize_ammo2(wpn)		--определяю патроны и их количество для первого приза "оружие"
+	
+	local tbl_ammo = vergas_lib.ammo_for_slot(wpn)
+	
+	return tbl_ammo[1].."|"..lua_random(1,complexity).."|"
+	
+end
+
+function prize_ammo3()		--определяю тип патронов просто для приза
+
+	local tbl_ammo = {"ammo_9x19_fmj","ammo_9x18_fmj","ammo_5.45x39_fmj","ammo_12x70_buck"}
+		
+	return tbl_ammo[lua_random(1,4)]	
+end
+
+function prize2_ammo(prize_1)		--определяю второй приз для первого = боеприпасы
+	
+	local m
+	local n = lua_random(1,3)
+	
+	if n == 3 then
+		m = prize_food()
+	elseif n == 2 then
+		m = prize_chemistry()
+	elseif n == 1 then
+		m = prize2_ammo2(prize_1)
+	end
+	return m.."|"..lua_random(1,complexity).."|"
+
+end
+
+function prize2_ammo2(prize_1) 		--определяю приз_2 из "боеприпасов", если приз_1="боеприпасы"
+	
+	local tbl_ammo = {"ammo","grenade_rgd5","grenade_f1","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch"}
+	if  string.sub(prize_1,1,4) == "ammo" then
+		tbl_ammo = {"grenade_rgd5","grenade_f1","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch"}
+	elseif prize_1 == "grenade_rgd5" then
+		tbl_ammo = {"ammo","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch"}
+	elseif prize_1 == "grenade_f1" then
+		tbl_ammo = {"ammo","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch"}
+	elseif prize_1 == "repair_itemoutfit_feik" then
+		tbl_ammo = {"grenade_rgd5","grenade_f1","ammo","batt_torch"}
+	elseif prize_1 == "repair_item_weapon_feik" then
+		tbl_ammo = {"grenade_rgd5","grenade_f1","ammo","batt_torch"}
+	elseif prize_1 == "batt_torch" then
+		tbl_ammo = {"grenade_rgd5","grenade_f1","repair_itemoutfit_feik","repair_item_weapon_feik","ammo"}
+	end
+	
+	local n = lua_random(1,#tbl_ammo)
+	
+	if tbl_ammo[n] ~= "ammo" then
+		return tbl_ammo[n]
+	else
+		--это патроны
+		return prize_ammo3()
+	end
+end
+
+
+function prize_chemistry()		--определяю приз_1 из группы "медицина"
+	
+	local tbl_che = {"medkit","antirad","drag_cat_eyes","energy_drink","matches","bandage"}
+	
+	return tbl_che[lua_random(1,6)]
+
+end
+
+function prize2_chemistry(prize_1)		--определяю приз_2 для приз_1="медицина"
+
+	local m
+	local n = lua_random(1,3)
+	
+	if n == 3 then
+		m = prize_food()
+	elseif n == 1 then
+		m = prize_ammo3()
+	elseif n ==2 then
+		m = prize2_chemistry2(prize_1)
+	end
+
+	return m.."|"..lua_random(1,complexity).."|"
+end
+
+function prize2_chemistry2(prize_1)		--определяю приз_2 из "медицины", если приз_1="медицина"
+	
+	local tbl_che = {"medkit","antirad","drag_cat_eyes","energy_drink","matches","bandage"}
+	
+	if prize_1 == "medkit" then
+		tbl_che = {"antirad","drag_cat_eyes","energy_drink","matches","bandage"}
+	elseif prize_1 == "antirad" then
+		tbl_che = {"medkit","drag_cat_eyes","energy_drink","matches","bandage"}
+	elseif prize_1 == "drag_cat_eyes" then
+		tbl_che = {"medkit","antirad","energy_drink","matches","bandage"}
+	elseif prize_1 == "energy_drink" then
+		tbl_che = {"medkit","antirad","drag_cat_eyes","matches","bandage"}
+	elseif prize_1 == "matches" then
+		tbl_che = {"medkit","antirad","drag_cat_eyes","energy_drink","bandage"}
+	elseif prize_1 == "bandage" then
+		tbl_che = {"medkit","antirad","drag_cat_eyes","energy_drink","matches"}
+	end
+	
+	return tbl_che[lua_random(1,#tbl_che)]
+
+end
+
+function prize_armor()		--определяю приз_1 из группы "броня"
+
+	local tbl_armor = {"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","stalker_guard_outfit"}
+	
+	return tbl_armor[lua_random(1,complexity)]
+end
+
+function prize_food()		--определяю приз_1 из группы "еда"
+	
+	local tbl_food = {"conserva","green_kolbasa","kolbasa","bread","suhpay","vodka"}
+	
+	return tbl_food[lua_random(1,6)]
+end
+
+function prize2_food(prize_1)		--определяю приз_2 для приз_1="еда" 
+	local n = lua_random(1,3)
+	
+	if n == 2 then
+		m = prize_chemistry()
+	elseif n == 1 then
+		m = prize2_ammo2(prize_1)
+	elseif n == 3 then
+		m = prize2_food2(prize_1)
+	end
+	return m.."|"..lua_random(1,complexity).."|"
+end
+
+function prize2_food2(prize_1)		--определяю приз_2 из группы "еда", если приз_1="еда"
+
+	local tbl_food = {"conserva","green_kolbasa","kolbasa","bread","suhpay","vodka"}
+	
+	if prize_1 == "conserva" then
+		tbl_food = {"green_kolbasa","kolbasa","bread","suhpay","vodka"}
+	elseif prize_1 == "green_kolbasa" then
+		tbl_food = {"conserva","kolbasa","bread","suhpay","vodka"}
+	elseif prize_1 == "kolbasa" then
+		tbl_food = {"conserva","green_kolbasa","bread","suhpay","vodka"}
+	elseif prize_1 == "bread" then
+		tbl_food = {"conserva","green_kolbasa","kolbasa","suhpay","vodka"}
+	elseif prize_1 == "suhpay" then
+		tbl_food = {"conserva","green_kolbasa","kolbasa","bread","vodka"}
+	elseif prize_1 == "vodka" then
+		tbl_food = {"conserva","green_kolbasa","kolbasa","bread","suhpay"}
+	end
+
+	return tbl_food[lua_random(1,#tbl_food)]
+end
+
+function prize_things()		--определяю приз_1 из группы "штучки"
+	
+	local tbl_things = {"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic","timer"}
+	
+	return tbl_things[lua_random(1,6)]
+
+end
+
+function  prize2_things(prize_1)		--определяю приз_2 для приз_1="штучки"
+	return "0|0|"
+	--[[
+	local m
+	local n = lua_random(1,4)
+	
+	if n == 3 then
+		m = prize_food()
+	elseif n == 2 then
+		m = prize_chemistry()
+	elseif n == 1 then
+		m = prize2_ammo2(prize_1)
+	elseif n == 4 then
+		m = prize2_things2(prize_1)
+		return m.."|1|"
+	end
+	return m.."|"..lua_random(1,complexity).."|"
+	]]--
+end
+
+function prize2_things2(prize_1)		--определяю приз_2 из группы "штучки", если приз_1="штучки"
+	local tbl_things
+	
+	if prize_1 == "sleeping_bag" then
+		tbl_things = {"wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic","timer"}
+	elseif prize_1 == "wpn_binoc" then
+		tbl_things = {"sleeping_bag","af_full_akkum","belt_3_art","arc_art_box_8basic","timer"}
+	elseif prize_1 == "af_full_akkum" then
+		tbl_things = {"sleeping_bag","wpn_binoc","belt_3_art","arc_art_box_8basic","timer"}
+	elseif prize_1 == "belt_3_art" then
+		tbl_things = {"sleeping_bag","wpn_binoc","af_full_akkum","arc_art_box_8basic","timer"}
+	elseif prize_1 == "arc_art_box_8basic" then
+		tbl_things = {"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","timer"}
+	elseif prize_1 == "timer" then
+		tbl_things = {"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic"}
+	end
+	
+	return tbl_things[lua_random(1,5)]
+end
+
+function back_complexity()		--определяю уровень сложности игры
+	
+	local nn = level.get_game_difficulty()
+	
+	if nn == 0 then
+		nn = 5			--новичек
+	elseif nn == 1 then
+		nn = 4			--сталкер
+	elseif nn == 2 then
+		nn = 3			--ветеран
+	elseif nn == 3 then
+		nn = 2			--мастер
+	end
+	
+	return nn
+
+end
+
+function set_get_krujka_custom(mode,krujka_id,krujka_custom)	--запись\чтение кастом-даты кружки
+  local sobj = alife():object(krujka_id)
+  if sobj then
+	  if mode == 2 then 			--читаю из кастом_даты
+		local custom="0"
+		local pk = get_netpk(sobj,1)
+		if pk:isOk() then
+			 local data = pk:get()
+			 custom = data.custom_data
+		end
+		return custom
+	  elseif mode == 1 then			--записываю в кастом_дату
+		local pk = get_netpk(sobj,1)
+		local data = pk:get()
+		data.custom_data=krujka_custom
+		pk:set(data)
+	  end
+  end
+end
+
+function get_tbl_custom(mode)	--возвращает кастом-дату в виде таблицы
+	set_krujka_id()
+	local custom = set_get_krujka_custom(2,krujka_id)
+	local tbl_custom = vergas_lib.str_explode("|",custom,true)
+	return tbl_custom
+end
+
+function set_krujka_id()		--устанавливает переменные krujka_inv и krujka_id
+	local i
+	local flag = false
+	for i = 1, 6 do
+		local obj = "krujka_"..i
+		local obj_t = db.actor:object(obj)
+		if obj_t ~= nil then				--кружка у ГГ есть
+			krujka_inv = obj
+			krujka_id=obj_t:id()
+			flag = true
+		end
+	end
+	return flag
+end
+-------------------------------------------------------------ДИАЛОГОВЫЕ ФУНКЦИИ---------------------------------------------------
+function talk_to_vergas_1()					--флаг разрешения на первый разговор с Вергасом
+	if set_krujka_id() then
+		local n = processing_custom(6)
+		if n == "0" then
+			return true
+		end
+	end
+	return false
+end
+
+function processing_custom(n)
+	local i
+	complexity = back_complexity()
+	set_krujka_id()
+	local tbl_custom = get_tbl_custom()
+	
+	return tbl_custom[n]
+end
+
+function talk_to_vergas_2()			--флаг разрешения 2 и 3 разговоров с Вергасом
+	local flag
+	local tbl_custom = get_tbl_custom()
+	if tbl_custom[6] == "0" then
+		if tbl_custom[1] == "1" then
+			--кружка настоящая и вывожу на разговор 2
+			tbl_custom[6] = "1"
+		elseif tbl_custom[1] == "2" then
+			--кружка не настоящая и вывожу на разговор 3
+			tbl_custom[6] = "3"
+		end
+		--tbl_custom[6] = "1"
+		set_get_krujka_custom(1,krujka_id,tbl_custom[1].."|"..tbl_custom[2].."|"..tbl_custom[3].."|"..tbl_custom[4].."|"..tbl_custom[5].."|"..tbl_custom[6].."|")
+		flag = true
+	end
+end
+
+function krujka_1()							-- флаг кружка=стакан
+	if krujka_inv == "krujka_1" then
+			return true
+	end
+	return false
+end
+
+function krujka_2()							-- флаг кружка=кружка
+	if krujka_inv == "krujka_2" then
+			return true
+	end
+	return false
+end
+
+function krujka_3()							-- флаг кружка=чашка
+	if krujka_inv == "krujka_3" then
+			return true
+	end
+	return false
+end
+
+function krujka_4()							-- флаг кружка=грааль
+	if krujka_inv == "krujka_4" then
+			return true
+	end
+	return false
+end
+
+function krujka_5()							-- флаг кружка=гиря
+	if krujka_inv == "krujka_5" then
+			return true
+	end
+	return false
+end
+
+function krujka_6()							-- флаг кружка=пивная кружка
+	if krujka_inv == "krujka_6" then
+			return true
+	end
+	return false
+end
+
+function krujka_yes_1()							-- стакан
+	if krujka_inv == "krujka_1" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_yes_2()							-- кружка
+	if krujka_inv == "krujka_2" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_yes_3()							-- чашка
+	if krujka_inv == "krujka_3" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_yes_4()							-- грааль
+	if krujka_inv == "krujka_4" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_yes_5()							-- гиря
+	if krujka_inv == "krujka_5" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_yes_6()							-- пивная кружка
+	if krujka_inv == "krujka_6" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "1" then
+		-- кружка настоящая
+			return true
+		end
+	end
+	return false
+end
+
+function krujka_no_1()
+	if krujka_inv == "krujka_1" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка настоящая
+	return false
+end
+
+function krujka_no_2()
+	if krujka_inv == "krujka_2" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка настоящая
+	return false
+end
+
+function krujka_no_3()
+	if krujka_inv == "krujka_3" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка настоящая
+	return false
+end
+
+function krujka_no_4()
+	if krujka_inv == "krujka_4" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка настоящая
+	return false
+end
+
+function krujka_no_5()
+	if krujka_inv == "krujka_5" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка настоящая
+	return false
+end
+
+function krujka_no_6()
+	if krujka_inv == "krujka_6" then
+		local tbl_custom = get_tbl_custom()
+		if tbl_custom[1] == "2" then
+		-- кружка не настоящая
+			return true
+		end
+	end
+	--кружка астоящая
+	return false
+end
+
+function show_icon()		--ГГ паоказывает найденную кружку
+	
+	db.actor:give_talk_message("","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+	
+	if krujka_inv == "krujka_1" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_3",Frect():set(950,200,50,50),"iconed_item_1")
+	elseif krujka_inv == "krujka_2" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_3",Frect():set(950,250,50,50),"iconed_item_1")
+	elseif krujka_inv == "krujka_3" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_3",Frect():set(950,300,50,50),"iconed_item_1")
+	elseif krujka_inv == "krujka_4" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_3",Frect():set(950,350,50,50),"iconed_item_1")
+	elseif krujka_inv == "krujka_5" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_3",Frect():set(900,400,100,100),"iconed_item_3")
+	elseif krujka_inv == "krujka_6" then
+		db.actor:give_talk_message("", "ui\\ui_icon_equipment_1",Frect():set(950,950,50,50),"iconed_item_1")
+	end
+	
+	if  krujka_inv == "krujka_5" then
+		db.actor:give_talk_message("","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")				
+	end
+end
+
+function item_from_vergas() 	--ГГ отдает Вергасу кружку.
+	
+	if krujka_inv == "krujka_1" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Стакан в подстаканнике"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_3",Frect():set(950,200,50,50),"iconed_item_5")
+	elseif krujka_inv == "krujka_2" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Кружка"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_3",Frect():set(950,250,50,50),"iconed_item_5")
+	elseif krujka_inv == "krujka_3" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Чашка"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_3",Frect():set(950,300,50,50),"iconed_item_5")
+	elseif krujka_inv == "krujka_4" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Грааль"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_3",Frect():set(950,350,50,50),"iconed_item_5")
+	elseif krujka_inv == "krujka_5" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Гиря с кружкой"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_3",Frect():set(900,400,100,100),"iconed_item_4")
+	elseif krujka_inv == "krujka_6" then
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_out_item").."\\n".."%c[default]".."Пивная кружка"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment_1",Frect():set(950,950,50,50),"iconed_item_5")
+	end
+	
+end
+
+function vergas_prizes()			--Вергас назначает призы при разговоре 1
+	if krujka_id == nil then
+		set_krujka_id()	
+	end
+	local tbl_custom = get_tbl_custom()
+	if tbl_custom[2] == "0" and tbl_custom[4] == "0" then
+		re_vergas_prize_2()
+	end
+	show_prize(2)
+	show_prize(4)
+end
+
+function re_vergas_prize_2()		--Разговор 2 (кружка была ненастоящая при разговоре 1, но потом Вергас её признал)
+	local i
+	local quantity_1 = "0"
+	local quantity_2 = "0"
+	local prize_2 ="0"
+	local tbl_items = {"ammo_9x19_fmj","ammo_9x18_fmj","ammo_5.45x39_fmj","ammo_12x70_buck","grenade_rgd5","grenade_f1","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch",
+						"medkit","antirad","drag_cat_eyes","energy_drink","matches","bandage",
+						"conserva","green_kolbasa","kolbasa","bread","suhpay","vodka"
+					  }
+	local prize_1 = tbl_items[lua_random(1,#tbl_items)]
+	if lua_random() > 0.5 then
+		local tbl_items_2 ={}
+		for i = 1,#tbl_items do
+			if tbl_items[i] ~= prize_1 then
+				table.insert( tbl_items_2,tbl_items[i])
+			end
+		end
+		prize_2 = tbl_items[lua_random(1,#tbl_items_2)]
+	end
+	--определяю количества
+	quantity_1 = lua_random(1,back_complexity())
+	if prize_2 ~= "0" then
+		quantity_2 = lua_random(1,back_complexity())
+	end
+	local str = "1|"..prize_1.."|"..quantity_1.."|"..prize_2.."|"..quantity_2.."|".."4|"
+	set_get_krujka_custom(1,krujka_id,str)
+end
+
+function show_prize(k)		--Демонстрация призов в диалоговом окне.
+	local tbl_custom = get_tbl_custom()
+	if str_data == nil then
+		str_data = set_custom_data(tbl_custom)
+	end
+	if tbl_custom[k] == "0" then
+		return
+	end
+	
+	local x,y,dx,dy,n,m = get_config_item(tbl_custom[k])
+	local iconed_item = "ico_item_"..n.."_"..m
+	local sht
+	--определяю количество штук
+	local sht = quantity_item(tbl_custom,k)
+	local grup = vergas_lib.set_pr_from_config(tbl_custom[k],"icon_group")
+	local icon
+	if grup ~= 0 then
+		icon =  "ui\\ui_icon_equipment_"..grup
+	else
+		icon =  "ui\\ui_icon_equipment"
+	end
+	db.actor:give_talk_message(game.translate_string(vergas_lib.set_pr_from_config_str(tbl_custom[k],"inv_name"))..sht, icon,Frect():set(x,y,dx,dy),iconed_item)
+	-- добавляю приз в таблицу исключений
+	if not scan_in_tbl_prize_no(tbl_custom[k],tbl_prize_no) then
+		table.insert( tbl_prize_no,tbl_custom[k])
+	end
+end
+
+function vergas_prizes_2()    			--замена одного приза на другой
+
+	local tbl_item = get_tbl_custom()
+	
+	--ощчищаю отвергнутый приз
+	if sec_prize == tbl_item[2] then
+		tbl_item[2] = "0"
+		tbl_item[3] = "0"
+	elseif sec_prize == tbl_item[4] then
+		tbl_item[4] = "0"
+		tbl_item[5] = "0"
+	end
+
+	--если убираю ствол, то очищаю и второй приз (там могут быть патроны к нему)
+	if string.sub(sec_prize,1,3) == "wpn" and sec_prize ~= "wpn_binoc" then
+		local nn = vergas_lib.ammo_for_slot(sec_prize)
+		if  nn[1] == tbl_item[4] then
+			--table.insert( tbl_prize_no,nn[1])
+			tbl_item[4] = "0"
+			tbl_item[5] = "0"
+		end
+	end
+
+	--формирую новые призы
+	if tbl_item[2] == "0" then
+		tbl_item[2], tbl_item[3] = vergas_prizes_2_1(tbl_item) 
+	end
+	
+	if tbl_item[4] == "0" then
+		if lua_random() > 0.3 then
+			tbl_item[4], tbl_item[5] = vergas_prizes_2_1(tbl_item) 
+		end
+	end
+
+	local tbl_tmp = {
+					"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_bm16_full","wpn_mp5",
+					"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","stalker_guard_outfit",
+					"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic","timer","skiing"
+					}
+	local flag = false
+	for i = 1,#tbl_tmp do
+		if tbl_item[2] == tbl_tmp[i] then
+			flag = true
+		end	
+	end
+	if flag  and string.sub(tbl_item[2],1,3) ~= "wpn" then 
+		tbl_item[3] = "1"
+		tbl_item[4] = "0"
+		tbl_item[5] = "0"
+	end
+	if tbl_item[2] ==  "wpn_binoc" then
+		tbl_item[3] = "1"
+		tbl_item[4] = "0"
+		tbl_item[5] = "0"
+	end
+	
+	if string.sub(tbl_item[2],1,3) == "wpn" and tbl_item[2] ~=  "wpn_binoc" then
+		--это ствол. Подсовываю нужные патроны
+		if lua_random() >0.4 then
+			local tbl_ammo = vergas_lib.ammo_for_slot(tbl_item[2])
+			if sec_prize ~= tbl_ammo[1] then
+				tbl_item[4] = tbl_ammo[1]
+				tbl_item[5] = lua_random(1,complexity)
+			end
+		end
+	end	
+	
+	set_get_krujka_custom(1,krujka_id,set_custom_data(tbl_item))
+	local txt = set_text_exchange()
+	db.actor:give_talk_message(txt, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"simple_answer_item")
+	vergas_prizes()
+end
+
+function vergas_prizes_2_1(tbl_custom)		--Выбор приза для замены
+
+	local tbl_prizes = {}
+	local tbl_items_all = {
+						"ammo_9x19_fmj","ammo_9x18_fmj","ammo_5.45x39_fmj","ammo_12x70_buck",
+						"grenade_rgd5","grenade_f1","repair_itemoutfit_feik","repair_item_weapon_feik","batt_torch",
+						"medkit","antirad","drag_cat_eyes","energy_drink","matches","bandage",
+						"conserva","green_kolbasa","kolbasa","bread","suhpay","vodka"
+						}
+			
+	--давать другие ствол, броник или скобяной товар
+	if lua_random() > 0.5 and tbl_custom[2] == "0" then
+		local tbl_wpn = {}	
+		if complexity == 2 then
+			tbl_wpn = {"wpn_walther","wpn_pb"}
+			table.insert( tbl_wpn,"neytral_novice_gaz_outfit_m1")
+			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
+		elseif complexity == 3 then
+			tbl_wpn = {"wpn_walther","wpn_pb","wpn_ak74u"}
+			table.insert( tbl_wpn,"neytral_novice_gaz_outfit_m1")
+			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
+			table.insert( tbl_wpn,"killer_outfit")
+		elseif complexity == 4 then
+			tbl_wpn = {"wpn_walther","wpn_pb","wpn_ak74u","wpn_wincheaster1300"}
+			table.insert( tbl_wpn,"neytral_novice_gaz_outfit_m1")
+			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
+			table.insert( tbl_wpn,"killer_outfit")
+			table.insert( tbl_wpn,"outfit_soldier_m1")
+		elseif complexity == 5 then
+			tbl_wpn = {"wpn_walther","wpn_pb","wpn_ak74u","wpn_wincheaster1300","wpn_bm16_full","wpn_mp5"}
+			table.insert( tbl_wpn,"neytral_novice_gaz_outfit_m1")
+			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
+			table.insert( tbl_wpn,"killer_outfit")
+			table.insert( tbl_wpn,"outfit_soldier_m1")
+			table.insert( tbl_wpn,"stalker_guard_outfit")
+		end
+		table.insert( tbl_wpn,"sleeping_bag")
+		table.insert( tbl_wpn,"wpn_binoc")
+		table.insert( tbl_wpn,"af_full_akkum")
+		table.insert( tbl_wpn,"belt_3_art")
+		table.insert( tbl_wpn,"arc_art_box_8basic")
+		table.insert( tbl_wpn,"timer")
+		table.insert( tbl_wpn,"skiing")
+		
+		for i = 1,#tbl_wpn do
+			if not scan_in_tbl_prize_no(tbl_wpn[i],tbl_prize_no) then
+				table.insert(tbl_prizes,tbl_wpn[i])
+			end
+		end
+		return tbl_prizes[lua_random(1,#tbl_prizes)], "1"
+	end
+	
+	--а теперь всякие штучки-дрючки	
+	local tbl_tmp_no = tbl_prize_no
+	if tbl_custom[2] ~= "0" then
+		table.insert(tbl_tmp_no,tbl_custom[2])
+	end
+	if tbl_custom[4] ~= "0" then
+		table.insert(tbl_tmp_no,tbl_custom[2])
+	end
+	
+	--исключаю повторы в призах (ammo\ammo или grenade\grenade)
+	if string.sub(tbl_custom[2],1,4) == "ammo" or string.sub(tbl_custom[2],1,7) == "grenade" or string.sub(tbl_custom[2],1,6) == "repair" then
+		tbl_tmp_no = thinning_items(tbl_tmp_no,tbl_custom[2])
+	end
+	if string.sub(tbl_custom[4],1,4) == "ammo" or string.sub(tbl_custom[4],1,7) == "grenade" or string.sub(tbl_custom[4],1,6) == "repair" then
+		tbl_tmp_no = thinning_items(tbl_tmp_no,tbl_custom[4])
+	end
+	
+
+	for i = 1,#tbl_items_all do
+		if not scan_in_tbl_prize_no(tbl_items_all[i],tbl_tmp_no) then
+			table.insert(tbl_prizes,tbl_items_all[i])
+		end
+	end
+	
+	local n_prize
+	if #tbl_prizes == 1 then
+		n_prize = tbl_prizes[1] 	--это штучка
+	elseif #tbl_prizes > 1 then
+		n_prize = tbl_prizes[lua_random(1,#tbl_prizes)] 	--это штучка
+	elseif #tbl_prizes == 0 then
+		return 0,0
+	end
+	
+	return n_prize,lua_random(1,complexity)
+				
+end
+
+function thinning_items(tbl_no,sec)			--исключение повторов в предложенных призах
+	local i
+	if string.sub(sec,1,4) == "ammo" then
+		local tbl_tmp = {"ammo_9x19_fmj","ammo_9x18_fmj","ammo_5.45x39_fmj","ammo_12x70_buck"}
+		for i = 1, 4 do
+			if sec ~= tbl_tmp[i] then
+				if not scan_in_tbl_prize_no(tbl_tmp[i],tbl_no) then
+					table.insert( tbl_no,tbl_tmp[i])
+				end
+			end
+		end
+	end
+	if sec == "grenade_rgd5" then
+		if not scan_in_tbl_prize_no("grenade_f1",tbl_no) then
+			table.insert( tbl_no,"grenade_f1")
+		end
+	elseif sec == "grenade_f1" then
+		if not scan_in_tbl_prize_no("grenade_rgd5",tbl_no) then
+			table.insert( tbl_no,"grenade_rgd5")
+		end
+	end
+	if sec == "repair_itemoutfit_feik" then
+		if not scan_in_tbl_prize_no("repair_item_weapon_feik",tbl_no) then
+			table.insert( tbl_no,"repair_item_weapon_feik")
+		end
+	elseif sec == "repair_item_weapon_feik" then
+		if not scan_in_tbl_prize_no("repair_itemoutfit_feik",tbl_no) then
+			table.insert( tbl_no,"repair_itemoutfit_feik")
+		end
+	end
+	return tbl_no
+end
+
+function set_text_exchange()		--варианты ответов Вергаса на замену приза
+	local tbl_str = {
+					"Могу взамен вот что предложить:",
+					"Но не вопрос. Как тебе это?",
+					"А если такой расклад:",
+					"Возьми тогда крайнюю заначку:",
+					"Уж даже не знаю... А это возьмешь?",
+					"Отблагадарю тогда вот так:",
+					"Но от этого ты явно не откажешься:",
+					"И хотя здесь не супермаркет, но выбор есть:",
+					"При таких раскладах, могу и так отблагодарить:",
+					"Ну а вот такое как тебе?",
+					"Так...Что же ещё можно в моих сусёках наскребсти? А вот:",
+					"Однако борзеем потихоньку, а, Меченный? Ладно. Дядька Вергас сегодня добрый",
+					"Ну а вот от этого только полный придурок откажется:",
+					"Ладно, держи. От сердца отрываю."
+					}
+	txt_nomer = txt_nomer + 1
+	
+	if txt_nomer > #tbl_str then
+		txt_nomer = 1
+	end
+	return tbl_str[txt_nomer]				
+end
+
+function scan_in_tbl_prize_no(sec,tbl)		--поиск секции в предложенной таблице
+	local i
+	local flag = false
+	for i = 1,#tbl do
+		if sec == tbl[i] then
+			flag = true
+		end
+	end
+	return flag
+end
+
+function release_krujka()				-- удаление кружки из инвентаря ГГ
+	local obj = db.actor:object(krujka_inv)
+	if obj then
+		alife():release(alife():object(obj:id()), true)
+	end
+end
+
+function gg_take_prize()				-- Спавн призов в инвентарь ГГ
+	spawn_prizes(2)
+	spawn_prizes(4)
+end
+
+function spawn_prizes(k)				-- Спавн приза 
+	local x,y,dx,dy,m,n,iconed_item
+	local tbl_custom = get_tbl_custom()
+	if tbl_custom[k] ~= "0" then
+		x,y,dx,dy,n,m = get_config_item(tbl_custom[k])
+		iconed_item = "ico_item_spawn_"..n.."_"..m
+		--определяю количество штук
+		local sht = quantity_item(tbl_custom,k)
+		local grup = vergas_lib.set_pr_from_config(tbl_custom[k],"icon_group")
+		local icon
+		if grup ~= 0 then
+			icon =  "ui\\ui_icon_equipment_"..grup
+		else
+			icon =  "ui\\ui_icon_equipment"
+		end
+		local message_text = "%c[255,255,1,1]"..game.translate_string("general_in_item").."\\n".."%c[default]"..game.translate_string(vergas_lib.set_pr_from_config_str(tbl_custom[k],"inv_name"))..sht
+		db.actor:give_talk_message(message_text, icon,Frect():set(x,y,dx,dy),iconed_item)
+		spawn_prizes_2(tbl_custom[k],tbl_custom[k+1])
+	end
+end
+
+function spawn_prizes_2(sec,n)		--Спавн приза
+	local i
+	if string.sub(sec,1,4) == "ammo" then
+		--это патроны
+		 misc.spawn_to(sec, db.actor, vergas_lib.get_box_size(sec)*tonumber(n))
+	else
+		--штучные итемы
+		 if tonumber(n) == 1 then
+			misc.spawn_to(sec, db.actor)
+		else
+			for i = 1,tonumber(n) do
+				misc.spawn_to(sec, db.actor)
+			end
+		 end
+	end
+end
+
+function get_config_item(config_nime)
+
+	--local item_name = vergas_lib.set_pr_from_config_str(config_nime,"inv_name")
+	local x = 50*vergas_lib.set_pr_from_config(config_nime,"inv_grid_x")
+	local y = 50*vergas_lib.set_pr_from_config(config_nime,"inv_grid_y")
+	local dx = 50*vergas_lib.set_pr_from_config(config_nime,"inv_grid_width")
+	local dy = 50*vergas_lib.set_pr_from_config(config_nime,"inv_grid_height")
+	
+	local iconed_item
+	local n
+	local m
+	
+	if dx ==50 then
+		n = 1
+	elseif dx == 100 then
+		n = 2
+	elseif dx == 150 then
+		n = 3
+	elseif dx == 200 then
+		n = 4
+	elseif dx == 300 then
+		n = 6
+	elseif dx == 350 then
+		n = 7
+	end
+	if dy == 50 then
+		m = 1
+	elseif dy == 100 then
+		m = 2
+	elseif dy == 150 then
+		m = 3
+	end
+	
+	return x,y,dx,dy,n,m
+end
+
+function quantity_item(tbl,k)
+	local sht
+	--определяю количество штук
+	if string.sub(tbl[k],1,3) == "wpn" or string.find (tbl[k],"outfit") or tbl[k] == "sleeping_bag" or tbl[k] == "wpn_binoc" or 
+		tbl[k] == "af_full_akkum" or tbl[k] == "belt_3_art" or tbl[k] == "arc_art_box_8basic" or tbl[k] == "timer" then
+		n = 1
+	elseif string.sub(tbl[k],1,4) == "ammo" then
+		n = vergas_lib.get_box_size(tbl[k])*tbl[k+1]
+	else
+		n = tbl[k+1]
+	end
+
+	sht = " - "..n.." шт."
+	
+	return sht
+end
+
+function set_custom_data(tbl_item)
+	str = tbl_item[1].."|"..tbl_item[2].."|"..tbl_item[3].."|"..tbl_item[4].."|"..tbl_item[5].."|"..tbl_item[6].."|"
+	return str 
+end 
+
+------------------------------------Ответы Меченного с предложениями обмена призов-------------------------
+function gg_exchange_2()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "skiing" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_3()
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,3) == "wpn" and tbl_item[2] ~= "wpn_binoc" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_4()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "sleeping_bag" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_5()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "wpn_binoc" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_6()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "af_full_akkum" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_7()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "belt_3_art" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_8()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "arc_art_box_8basic" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_9()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "timer" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_10()
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,4) == "ammo" or string.sub(tbl_item[4],1,4) == "ammo" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_11()
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,6) == "repair" or string.sub(tbl_item[4],1,6) == "repair"then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_12()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "batt_torch" or tbl_item[4] == "batt_torch" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_13()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "medkit" or tbl_item[4] == "medkit"  then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_14()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "matches" or tbl_item[4] == "matches" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_15()
+	local tbl_item = get_tbl_custom()
+	if string.find (tbl_item[2], "outfit") and tbl_item[2] ~= "repair_itemoutfit_feik" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_16()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "suhpay" or tbl_item[4] == "suhpay" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_17()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "vodka" or tbl_item[4] == "vodka" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_18()
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,7) == "grenade" or string.sub(tbl_item[4],1,7) == "grenade" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_19()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "antirad" or tbl_item[4] == "antirad" then
+		return true
+	end
+	return false
+end
+function gg_exchange_20()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "drag_cat_eyes" or tbl_item[4] == "drag_cat_eyes" then
+		return true
+	end
+	return false
+end
+function gg_exchange_21()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "energy_drink" or tbl_item[4] == "energy_drink" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_22()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "bandage" or tbl_item[4] == "bandage" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_23()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "conserva" or tbl_item[4] == "conserva" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_24()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "green_kolbasa" or tbl_item[4] == "green_kolbasa" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_25()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "kolbasa" or tbl_item[4] == "kolbasa" then
+		return true
+	end
+	return false
+end
+
+function gg_exchange_26()
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "bread" or tbl_item[4] == "bread" then
+		return true
+	end
+	return false
+end
+
+function set_sec_prize()		--3,4,5,6,7,8,9,15
+	local tbl_item = get_tbl_custom()
+	sec_prize = tbl_item[2]
+end
+function set_sec_prize_10()		
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,4) == "ammo" then
+		sec_prize = tbl_item[2] 
+	elseif string.sub(tbl_item[4],1,4) == "ammo" then
+		sec_prize = tbl_item[4]
+	end
+end
+function set_sec_prize_11()		
+	local tbl_item = get_tbl_custom()
+	if string.sub(tbl_item[2],1,6) == "repair" then
+		sec_prize = tbl_item[2] 
+	elseif string.sub(tbl_item[4],1,6) == "repair" then
+		sec_prize = tbl_item[4]
+	end
+end
+function set_sec_prize_12()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "batt_torch"  or tbl_item[4] == "batt_torch" then
+		sec_prize = "batt_torch" 
+	end
+end
+function set_sec_prize_13()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "medkit"  or tbl_item[4] == "medkit" then
+		sec_prize = "medkit" 
+	end
+end
+function set_sec_prize_14()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "matches"  or tbl_item[4] == "matches" then
+		sec_prize = "matches" 
+	end
+end
+function set_sec_prize_16()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "suhpay"  or tbl_item[4] == "suhpay" then
+		sec_prize = "suhpay" 
+	end
+end
+function set_sec_prize_17()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "vodka"  or tbl_item[4] == "vodka" then
+		sec_prize = "vodka" 
+	end
+end
+function set_sec_prize_18()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "grenade_rgd5"  or tbl_item[4] == "grenade_rgd5" then
+		sec_prize = "grenade_rgd5" 
+	end
+	
+	if tbl_item[2] == "grenade_f1"  or tbl_item[4] == "grenade_f1" then
+		sec_prize = "grenade_f1" 
+	end
+	
+end
+function set_sec_prize_19()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "antirad"  or tbl_item[4] == "antirad" then
+		sec_prize = "antirad" 
+	end
+end
+function set_sec_prize_20()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "drag_cat_eyes"  or tbl_item[4] == "drag_cat_eyes" then
+		sec_prize = "drag_cat_eyes" 
+	end
+end
+function set_sec_prize_21()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "energy_drink"  or tbl_item[4] == "energy_drink" then
+		sec_prize = "energy_drink" 
+	end
+end
+function set_sec_prize_22()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "bandage"  or tbl_item[4] == "bandage" then
+		sec_prize = "bandage" 
+	end
+end
+function set_sec_prize_23()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "conserva"  or tbl_item[4] == "conserva" then
+		sec_prize = "conserva" 
+	end
+end
+function set_sec_prize_24()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "green_kolbasa"  or tbl_item[4] == "green_kolbasa" then
+		sec_prize = "green_kolbasa" 
+	end
+end
+function set_sec_prize_25()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "kolbasa"  or tbl_item[4] == "kolbasa" then
+		sec_prize = "kolbasa" 
+	end
+end
+function set_sec_prize_26()		
+	local tbl_item = get_tbl_custom()
+	if tbl_item[2] == "bread"  or tbl_item[4] == "bread" then
+		sec_prize = "bread" 
+	end
+end
+
+function exchange_yes_no()
+	--если больше предлагать нечего
+	if #tbl_prize_no == 39 then
+		exchange = false
+	else
+		if lua_random() > 0.2 then
+			exchange = true
+		else
+			exchange = false
+		end
+	end
+	
+	return exchange
+end
+
+function get_exchange()
+	
+	if  exchange then
+		return false
+	else
+		 exchange = false
+		 return true
+	end
+end
+
+function answer_vergas_no()
+	if krujka_id == nil then
+		set_krujka_id()
+	end
+	local tbl_item = get_tbl_custom()
+	local message_text = "Вергас"
+	db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"name_actor_dialog")
+	if lua_random() > 0.5 then
+		--приз остается у ГГ
+		message_text = "Всё, торг здесь неуместен. Забирай, что дадено. Продашь, обменяешь или 'за так' подаришь. Мало ли... Даренному коню в зубы не смотрят. \\nВсё понятно?"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"simple_answer_item")
+		gg_take_prize()
+	else
+		--приз у ГГ забирается
+		message_text = "Ну как знаешь. Не надо, так не надо. Засим, прими за хлопоты простое спасибо. \\nЗона привередливых не любит. Дают - бери, бьют - беги. \\nУсвоил?"
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"simple_answer_item")
+	end	
+	release_krujka()
+end
+
+----------------------------------Второй разговор с Вергасом--------------------------------------------------
+function re_talking_to_vergas_1()			--второй разговор с Вергасом (кружка настоящая)
+	if set_krujka_id() then
+		local n = processing_custom(6)
+		if n == "1" then
+			return true
+		end
+	end
+	return false
+end
+
+function re_talking_to_vergas_2()			--второй разговор с Вергасом (кружка не настоящая)
+	if set_krujka_id() then
+		local n = processing_custom(6)
+		if n == "3" then
+			return true
+		end
+	end
+	return false
+end
+
+function stop_vergas_dialogs()		--прекращаю все диалоги о кружке
+
+	if krujka_id == nil then
+		set_krujka_id()
+	end
+	local tbl_custom = get_tbl_custom()
+	tbl_custom[6] = "4"
+	set_get_krujka_custom(1,krujka_id,tbl_custom[1].."|"..tbl_custom[2].."|"..tbl_custom[3].."|"..tbl_custom[4].."|"..tbl_custom[5].."|"..tbl_custom[6].."|")
+end
+
+function inspection_krujka()
+	if krujka_id == nil then
+		set_krujka_id()
+	end
+	local tbl_custom = get_tbl_custom()
+	
+	local message_text = "Вергас"
+	db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"name_actor_dialog")
+	local flag = false
+	if lua_random() > 0.5 then
+		--Вергас признает кружку своей
+		tbl_custom[1] = "1"
+		message_text = "Да ёшкин же кот,моя. Точно моя."
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"simple_answer_item")
+		flag = true
+	else
+		--Вергас кружку не узнает
+		if tbl_custom[1] == "2" then
+			message_text = "Не, теперь точно вижу: похожа, но не моя."
+		else
+			message_text = "В прошлый раз показалась, что моя. Но теперь точно вижу: похожа, но не моя."
+		end
+		tbl_custom[1] = "2"
+		talking_1_krujka_no()
+		db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(0,0,0,0),"simple_answer_item")
+		flag = false
+	end
+	set_get_krujka_custom(1,krujka_id,tbl_custom[1].."|"..tbl_custom[2].."|"..tbl_custom[3].."|"..tbl_custom[4].."|"..tbl_custom[5].."|"..tbl_custom[6].."|")
+	return flag
+end
+
+function inspection_krujka_yes()
+	local n = processing_custom(1)
+	if n == "1" then
+		return true
+	else
+		return false
+	end
+end
+
+function inspection_krujka_no()
+	local n = processing_custom(1)
+	if n == "2" then
+		return true
+	else
+		return false
+	end
+end
+
+function gg_take_consolation_prize()
+	local x,y,dx,dy,n,m = get_config_item("bandage")
+	iconed_item = "ico_item_spawn_"..n.."_"..m
+	--определяю количество штук
+	local sht = " - 1 шт."
+	local message_text = "%c[255,255,1,1]"..game.translate_string("general_in_item").."\\n".."%c[default]"..game.translate_string(vergas_lib.set_pr_from_config_str("bandage","inv_name"))..sht
+	db.actor:give_talk_message(message_text, "ui\\ui_icon_equipment",Frect():set(x,y,dx,dy),iconed_item)
+	spawn_prizes_2("bandage",1)
+end
+
+function talking_1_krujka_no()
+	--Вергас не узнает кружку при первом разговоре
+	if krujka_id == nil then
+		set_krujka_id()
+	end
+	local tbl_custom = get_tbl_custom()
+	tbl_custom[6] = "3"
+	set_get_krujka_custom(1,krujka_id,tbl_custom[1].."|"..tbl_custom[2].."|"..tbl_custom[3].."|"..tbl_custom[4].."|"..tbl_custom[5].."|"..tbl_custom[6].."|")
+end
+
+function start_quest_bilbo_baggins()
+	nlc_vars.bilbo_baggins = true --разговор о Фродьке-хомяке состоялся
+end
+
+

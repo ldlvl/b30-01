@@ -1,0 +1,27 @@
+
+local g_ranks = CalcPtr("xrGame.dll", "$560AD4", "+");
+function get_ranks_list(n)
+  local p0 = ReadDMA(g_ranks, n * 4, "safe_ptr")
+  return ReadDMA(p0, 12, "ansi")
+end
+
+function do_get_rank_patch()
+
+  local jmp_byte = CalcPtr("xrGame.dll", "$443DBD", "+")
+  
+  local b = ReadDMA(jmp_byte, 0, "byte")
+  if b == 117 then
+     local s = UnlockDMA(jmp_byte, 0)
+     if string.find (s, "#SUCCESS") then
+        WriteDMA(jmp_byte, 0, 235, "byte")
+     end      
+     b = ReadDMA(jmp_byte, 0, "byte")
+     ODS("[~T]. #DBG: jmp_byte = "..tostring(b))
+  else
+     ODS("[~T]. #DBG: jmp_byte at "..FormatPtr(jmp_byte).." = "..tostring(b))   
+  end 
+
+end  
+  
+  
+  

@@ -1,0 +1,49 @@
+function hide_inventory_static(name)
+  local wnd = ui.get_inventory_wnd()
+  if wnd then
+     -- wprintf(" inventory opened!")  
+     local st = wnd:GetStatic(name)
+     if st then 
+        st:Show(false)
+        st:SetWndPos(-300, -300)
+     end     
+  end   
+end
+
+function move_inventory_static(name, x, y)
+  local wnd = ui.get_inventory_wnd()
+  if wnd then
+     -- wprintf(" inventory opened!")
+  
+     local st = wnd:FindChild(name) 
+     if st then
+       local r = Frect()
+       st:GetWndRect(r)
+       -- wprintf(" static rect = { %.1f, %.1f, %.1f, %.1f } ", r.x1, r.y1, r.x2, r.y2)
+       if (x ~= nil) then r.x1 = tonumber(x) end
+       if (y ~= nil) then r.y1 = tonumber(y) end     
+       st:SetWndPos(r.x1, r.y1)
+     else
+       wprintf("~C0C #ERROR(move_inventory_static)~C07: no static~C0A %s~C07 ", name)  
+     end
+  end
+end
+
+function move_mainwnd_static(name, x, y)
+   local wnd = get_main_window()
+   if wnd then           
+      local st = wnd:GetStatic(name)        
+         
+      if st then
+         local r = Frect()
+         st:GetWndRect(r)
+         wprintf(" static rect = { %.1f, %.1f, %.1f, %.1f } ", r.x1, r.y1, r.x2, r.y2)
+         if (x ~= nil) then r.x1 = tonumber(x) end
+         if (y ~= nil) then r.y1 = tonumber(y) end     
+         st:SetWndPos(r.x1, r.y1)
+      end
+   end
+end
+
+
+--hide_inventory_static("sleep_wnd")

@@ -1,0 +1,207 @@
+
+tTimers = {}
+local iTimeRN,iTimeGN = 0,0
+local i,idx,k,v,o
+
+local time_factor  = system_ini():r_float("alife","time_factor")
+local tm_count_max = 100
+
+function Set_Game_StartTime()
+	db.oGameStartTime = game.CTime()
+	db.oGameStartTime:set(2012, 05, 01, 12, 10, 0, 0)
+	iTimeRN,iTimeGN = 0,0
+end
+function Get_Game_Seconds()
+	return game.get_game_time():diffSec(db.oGameStartTime)
+end
+function Get_Game_Minutes()
+	return math.floor(this.Get_Game_Seconds()/60)
+end
+function Get_Game_Hours()
+	return math.floor(this.Get_Game_Seconds()/3600)
+end
+
+function Get_Game_Days()
+	return math.ceil(this.Get_Game_Hours()/24)
+end
+
+function initialize_timers()
+	tTimers = {}
+	local tTimersTmp = {}
+    if nlc_vars.timers == nil then
+       nlc_vars.timers = {}
+    end
+    
+    
+	local function Load_Timer(sIdx)
+        local t_list = xray_vars.load_table(nlc_vars, "timers", {})         
+        local tS = t_list[sIdx]        
+        if tS == nil then return end                    
+        tTmr = {} 
+
+		if type(tS[1]) == "string" then
+			tTmr = { n=tS[1], t=tS[2], p=tS[3]}
+			if string.find(sIdx,"^rt") then
+				tTmr.m = true
+			else
+				tTmr.m = false
+			end
+		else
+			return
+		end
+		if not tTmr.t then return end
+		local tTmp = tTimersTmp[tTmr.n]
+		if not (tTmp and tTmp.p == tTmr.p) then
+			tTimers[sIdx] = tTmr
+			tTimersTmp[tTmr.n] = {i=sIdx, t=tTmr.t, p=tTmr.p}
+		else
+			if tTmr.t > tTmp.t then
+				tTimers[sIdx] = tTmr
+				tTimers[tTmp.i] = nil
+				tTimersTmp[tTmr.n] = {i=sIdx, t=tTmr.t, p=tTmr.p}
+			end
+		end
+		nlc_vars.timers[sIdx] = nil
+	end
+	local i,sIdx
+	for i=1,tm_count_max do
+		sIdx = string.format("rt%d",i)
+		Load_Timer(sIdx)
+		sIdx = string.format("gt%d",i)
+		Load_Timer(sIdx)
+	end
+	--amk_offline_alife.load_angry_npc_timer()
+end
+
+function save_timers()
+    if nlc_vars.timers == nil then
+       nlc_vars.timers = {}
+    end
+
+	local sIdx,tTmr
+	for sIdx,tTmr in pairs(tTimers) do
+		--ODS("[~T]. #DBG: сохраняем таймеры ~C0A"..sIdx.."   "..tTmr.n.." время таймера : "..tostring(tTmr.t).." действие : "..tTmr.p.."~C07")
+		nlc_vars.timers[sIdx] = {tTmr.n,tTmr.t,tTmr.p}
+	end
+	--amk_offline_alife.save_angry_npc_timer()
+end
+
+function start_timer(...)
+	local tArg = {...}
+	local sName = tArg[1]
+	if type(sName) == "string" and sName ~= "" then
+		local tTmr,sType = {n=sName},""
+		if #tArg <= 3 then
+			tTmr.t = tArg[2]*1000*time_factor + game.time()
+			tTmr.p = tArg[3]
+			tTmr.m = true
+			sType  = "rt"
+		elseif type(tArg[4]) == "number" then
+			tTmr.t = math.floor(tArg[2]*1440 + tArg[3]*60 + tArg[4]) + this.Get_Game_Minutes()
+			tTmr.p = tArg[5]
+			tTmr.m = false
+			sType  = "gt"
+		else
+			return false
+		end
+		local i = 1
+		local sIdx = string.format("%s%d",sType,i)
+		while tTimers[sIdx] ~= nil do
+			if sName == tTimers[sIdx].n and (not tTmr.p or (type(tTmr.p) == type(tTimers[sIdx].p) and  tTmr.p == tTimers[sIdx].p)) then
+				tTimers[sIdx] = tTmr
+				return true
+			end
+			i = i +1
+			if i > tm_count_max then
+				return false
+			end
+			sIdx = string.format("%s%d",sType,i)
+		end
+		tTimers[sIdx] = tTmr
+		if tTmr.m then
+			iTimeRN = math.min(iTimeRN,tTmr.t)
+		else
+			iTimeGN = math.min(iTimeGN,tTmr.t)
+		end
+		return true
+	end
+	return false
+end
+
+function check_timers()
+	if not sak.game_began then return false end
+	local iTimeR, iTimeG = game.time(), this.Get_Game_Minutes()
+
+	if iTimeR >= iTimeRN or iTimeG >= iTimeGN then
+		iTimeRN,iTimeGN = iTimeR +360 * 1000 * time_factor,iTimeG+60
+		local sNextR,sNextG
+		local tTmrDone = {}
+		for k,v in pairs(tTimers) do
+		--ODS("[~T]. #DBG: проверяем сколько таймеров в tTimers ~C0A"..k.."   "..v.n.." время таймера : "..tostring(v.t).." время сейчас : "..iTimeG.."~C07")
+		--if type(v.t) == "string" then return end
+			if v.m then
+				if v.t <= iTimeR then
+					table.insert(tTmrDone, {id=k, n=v.n, p=v.p, t=iTimeR-v.t})
+					v.p = ""
+				elseif v.t <= iTimeRN then
+					iTimeRN,sNextR = v.t,v.n
+				end
+			elseif v.t <= iTimeG then
+				table.insert(tTmrDone, {id=k, n=v.n, p=v.p, t=(iTimeG-v.t)*60000})
+				v.p = ""
+			elseif v.t <= iTimeGN then
+				iTimeGN,sNextG = v.t,v.n
+			end
+		end
+		local iCnt = #tTmrDone
+		if iCnt > 0 then
+			if iCnt > 1 then
+				table.sort(tTmrDone, function(a,b) return a.t > b.t end)
+			end
+			for idx,v in ipairs(tTmrDone) do
+				tTimers[v.id] = nil
+				--ODS("[~T]. #DBG: проверяем tTimers ~C0A"..v.n.." время таймера : "..tostring(v.t).." вызываем : "..tostring(v.p).."~C07")
+				if v.p and v.p~="" then
+                   LuaSafeCall(v.p, "#code")
+				   -- loadstring(v.p)()
+				end
+			end
+		end
+	end
+end
+
+function check_timer(sName,sParam,bMask)
+	if sName and sName ~= "" then
+		local sIdx,tTmr
+		for sIdx,tTmr in pairs(tTimers) do
+			if tTmr.n == sName or (bMask and string.find(tTmr.n, "^"..sName)) then
+				if sParam and sParam ~= "" and tTmr.p and tTmr.p == sParam then
+					local iTime = tTmr.t or 0
+					if tTmr.m then
+						iTime = (iTime - game.time())/1000
+					else
+						iTime = iTime - this.Get_Game_Minutes()
+					end
+					if iTime <= 0 then
+						iTime = 0
+					end
+					return true, iTime
+				end
+				return true, 0
+			end
+		end
+	end
+	return false, 0
+end
+
+function stop_timer(sName)
+	if sName and sName ~= "" then
+		local sIdx,tTmr
+		for sIdx,tTmr in pairs(tTimers) do
+			if tTmr.n == tostring(sName) or string.find(tTmr.n, "^"..sName) then
+				tTmr.p=""
+				tTmr.t=2
+			end
+		end
+	end
+end

@@ -1,0 +1,555 @@
+--[[
+Динамический худ v 4
+Vergas
+© NLC-6.0
+имитация дыхания и расчет зума © AMK
+]]--
+
+local actor = db.actor
+local wnd_mask_osnova = nil
+local wnd_mask
+local mask_old = "?"
+local armor_old	= "?"
+
+local flag_dirt = false
+local flag_add_dirt = false
+local flag_blurs = false
+local flag_zoom = false
+local mask_on_off
+local flag_exet_show 
+
+local tbl_condition
+local blurs = nil
+local blurval = 0
+local blurlt = 0
+local blurcyctime = 0
+local blurlastphase = 0
+
+local sch_panel_1 = 0
+local sch_panel_2 = 0
+local watch_flag = false
+local tip_brth = {
+["?"] = "wht",
+["hud_gas"] = "gas",
+["hud_sci"] = "scn",
+["hud_mer"] = "gas",
+["hud_exo"] = "mil",
+["hud_mil"] = "mil",
+}
+tip_breath = "wht"
+
+function set_flag_minimap(param)
+	if mask_on_off then
+		mask_on_off = param
+		watch_flag = true
+	else
+		if watch_flag then
+		mask_on_off = param
+		watch_flag = false
+		end
+	end
+end
+
+function mask_update()
+	local mask
+	local armor
+	flag_add_dirt = false
+	if not actor then return end
+	if flag_dirt then return end
+	if wnd_mask_osnova == nil then
+		init_mask()
+	end
+	if actor.health <= 0 then
+		if mask_old~= "?" then
+			wnd_mask_osnova:SetWndPos(-2000,-2000)
+			mask_old = "?"
+			flag_blurs = false
+		end
+		return
+	end
+	mask, armor = mask_definition()
+	if mask == "?" and mask_old == "?" then	return end
+	if armor == "?" and armor_old == "?" then return end
+	if mask~= "?" and armor == armor_old then
+		if mask_on_off == false and mask_old~= "?" then 
+			flag_blurs = false
+			if wnd_mask~= nil then
+			   wnd_mask:Show(false)
+ 			   flag_blurs=false    -- не знаю пока, но по моему именно из-за отсутствия здесь этого влага == 0 появляется запотевание без маски.
+			end
+			mask_old = "?"
+			tip_breath = tip_brth["?"]
+			return
+		elseif mask_on_off == true then
+			if mask_old == "?" or mask_old~= mask then
+			set_mask(mask)
+			wnd_mask:Show(true)
+			flag_blurs = true
+			tip_breath = tip_brth[string.sub(mask,1,7)]
+			end
+		end
+	end
+	if armor == "?" and armor_old~= "?" then
+		if mask_old~= "?" then
+			wnd_mask:Show(false)
+			mask_on_off = false
+			flag_blurs = false
+			mask_old = "?"
+		end
+		armor_old = "?"
+		return
+	end
+	if armor~= armor_old then
+		if mask_old~= "?" then
+			wnd_mask:Show(false)
+			mask_on_off = false
+			flag_blurs = false
+			mask_old = "?"
+			if mask~= "?" then
+			set_mask(mask)
+			end
+		end
+		armor_old = armor
+		return
+	end
+	if armor == armor_old then
+		flag_add_dirt = true
+	end
+end
+
+function add_time_dirt_phase()
+	if mask_on_off == true and flag_add_dirt == true then
+		local armor_custom = set_get_armor_custom(2)
+		local tbl_custom = vergas_lib.str_explode("|",armor_custom,true)
+		if tonumber(tbl_custom[2]) < 6 then
+			local tm_dirt = tonumber(tbl_custom[3]) or 5
+			local base_dirt = 12
+			local mask, armor = mask_definition()
+			if strpos(armor,"killer_",1,true) or strpos(armor,"merc_",1,true) or armor == "outfit_stalker_m1" then base_dirt = 24 end
+			if strpos(armor,"bandit",1,true) then base_dirt = 6 end
+			if tm_dirt<base_dirt then tm_dirt = tm_dirt+1 else
+			tbl_custom[2]= tostring(tonumber(tbl_custom[2]) + 1)
+			mask = string.sub(mask,1,string.len(mask)-1)..tbl_custom[2]
+			set_mask(mask)
+			tm_dirt = 0
+			end
+			set_get_armor_custom(1,tbl_custom[1].."|"..tbl_custom[2].."|"..tm_dirt)
+		end
+	end
+end
+
+function init_mask()
+	local mask
+	local armor
+	if (not blurs) or get_hud():GetCustomStatic("hud_blur1") == nil then
+		blurs = {}
+        wprintf(' initalizing mask blur from:\n~C0A %s ~C07', debug.traceback(2, ' '))  
+		for i = 1,4 do
+			get_hud():AddCustomStatic("hud_blur"..i)
+			blurs[i]= get_hud():GetCustomStatic("hud_blur"..i):wnd()
+			--blurs[i]:SetWidth(0)
+		end
+       set_blurs(false)
+	end
+	get_hud():AddCustomStatic("dynamic_hud",true)
+	wnd_mask_osnova = get_hud():GetCustomStatic("dynamic_hud"):wnd()
+	wnd_mask = CUIStatic()
+	wnd_mask:SetAutoDelete(true)
+	wnd_mask:SetStretchTexture(true)
+	wnd_mask_osnova:AttachChild(wnd_mask)
+	wnd_mask:Init(0,0,1024,768)
+	wnd_mask:InitTexture("hud_logo_0_0")
+	if tbl_condition == nil then
+		tbl_condition = {}
+		local i
+		for i = 1, 5 do
+			table.insert(tbl_condition,vergas_lib.set_pr_from_config("list_parameters","condition_"..tostring(i)))
+		end
+	end
+	mask, armor = mask_definition()
+	if mask ~= "?" then
+		mask_on_off = nlc_vars.var_mask_on_off or false
+		nlc_vars.var_mask_on_off = nil
+		if mask_on_off then
+			set_mask(mask)
+			flag_blurs = true
+		else
+			wnd_mask:Show(false)
+			mask_old = "?"
+		end
+	else
+		mask_old = "?"
+	end
+	armor_old = armor
+	if mask_on_off == nil then
+		mask_on_off = false
+	end
+end
+
+function set_mask(mask)
+	texman.swap_mask(mask)
+	mask_old = mask
+	texman.swap_mask(mask)
+end
+
+function mask_condition()
+	local armor = db.actor:item_in_slot(6)
+	if armor then
+       local obj = armor:get_outfit()
+       local cval = armor:condition()
+       if obj then
+          cval = obj:condition_ex(1) -- only mask/head damage
+       end         
+       return cval
+   end
+   return -1
+end
+
+
+function mask_definition()
+    actor = actor or db.actor
+	local armor_custom
+	local mask = "?"
+	local cond
+	local n_phase
+	local combez
+	local armor = actor:item_in_slot(6)
+	if armor then
+		combez = armor:section()
+        local cval = mask_condition()    
+		cond = set_hud_textur(cval)
+		armor_custom = set_get_armor_custom(2)
+		if armor_custom == "" then
+			local ms = vergas_lib.set_pr_from_config_str("list_masks",combez)
+			if ms~= "?" then
+				armor_custom = ms.."|"
+				mask = ms
+				mask = mask..cond
+				if tonumber(string.sub(cond, 2,2)) == 1 then
+					n_phase = 1
+					armor_custom = armor_custom.."1|"..(lua_random(1,6))
+				else
+					n_phase = lua_random(1,6)
+					armor_custom = armor_custom..n_phase.."|"..(lua_random(1,6))
+				end
+				mask = mask.."_"..n_phase
+			else
+				mask = "?"
+				armor_custom = "none|none|none" 
+			end
+			set_get_armor_custom(1,armor_custom)
+		else
+			local tbl_custom = vergas_lib.str_explode("|",armor_custom,true)
+			if tbl_custom and tbl_custom[1]~= "none" then
+				mask = tbl_custom[1]..cond.."_"..tbl_custom[2]
+			else
+				mask = "?"
+			end
+		end
+	else
+		mask = "?"
+		combez = "?"
+	end
+	return mask,combez
+end
+
+function allcore_mask_is_on()
+	local mask, armor = mask_definition()
+	if mask_on_off and mask ~= "?" then return true end
+	return false
+end
+
+function set_get_armor_custom(mode,armor_custom)
+	local armor = actor:item_in_slot(6)
+	if armor == nil then return end
+	local armor_id = armor:id()
+	local sobj = alife():object(armor_id)
+	if mode == 2 then
+		local custom = ""
+		local pk = get_netpk(sobj,1)
+		if pk:isOk() then
+		local data = pk:get()
+		custom = data.custom_data
+		end
+		--if custom == "" then custom = "none|none|none" end
+		return custom
+	elseif mode == 1 then
+		local pk = get_netpk(sobj,1)
+		local data = pk:get()
+		data.custom_data = armor_custom
+		pk:set(data)
+	end
+end
+
+function set_hud_textur(condition)
+	local m_s
+	if tbl_condition == nil then
+		tbl_condition = {}
+		for i = 1, 5 do
+			table.insert(tbl_condition,vergas_lib.set_pr_from_config("list_parameters","condition_"..tostring(i)))
+		end
+	end
+	if condition > tbl_condition[1] then
+		m_s = "_1"
+	elseif condition > tbl_condition[2] then
+		m_s = "_2"
+	elseif condition > tbl_condition[3] then
+		m_s = "_3"
+	elseif condition > tbl_condition[4] then
+		m_s = "_4"
+	elseif condition > tbl_condition[5] then
+		m_s = "_5"
+	else 
+		m_s = "_6"
+	end
+	return m_s
+end
+
+function get_flag_mask()
+	return mask_on_off
+end
+
+function on_off_mask()
+	sak.actor_hide_weapon()
+    local timeout = 50
+	if mask_on_off == false then
+		schedule.add("off_eye", "vergas_masks.on_off_mask_eye()", 800)
+		local mask, armor = mask_definition()
+		if mask ~= "?" then
+			level.add_cam_effector( "camera_effects\\item_use_slow.anm", 9773, false, "" ) -- покачивание камеры
+    		tip_breath = tip_brth[string.sub(mask,1,7)]
+    		local sound = "device\\masks\\"..tip_breath.."_on"
+    		snd_obj = xr_sound.get_safe_sound_object(sound)
+    		snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 0.5)
+            timeout = 2000
+		end       
+    end
+    
+    schedule.add("off_mask", "vergas_masks.on_off_mask_end()", timeout)
+    flag_blurs = false
+end
+function on_off_mask_eye()
+	level.add_pp_effector("zevok.ppe", 1237, false)
+end
+function on_off_mask_end()
+   local timeout = 50
+	if mask_on_off then
+        -- выключение маски
+        schedule.add("off_eye", "vergas_masks.on_off_mask_eye()", 50)
+		mask_on_off = false
+		level.add_cam_effector( "camera_effects\\item_use_slow.anm", 9773, false, "" ) -- покачивание камеры
+		local sound = "device\\masks\\"..tip_breath.."_off"
+		snd_obj = xr_sound.get_safe_sound_object(sound)
+		snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1)
+        timeout = 1300
+	else
+		mask_on_off = true
+	end
+	schedule.add("off_mask_end", "sak.restore_weap()", timeout)
+    flag_blurs = false 
+end
+
+function save_mask_on_off()
+	nlc_vars.var_mask_on_off = mask_on_off
+end
+
+local d_fov = 67.49
+function update_zoom()
+	if mask_on_off then
+		local fov_n = device().fov
+		local dlt = d_fov-fov_n
+		if dlt>0.1 then
+			d_fov = fov_n
+			if flag_zoom then
+				return
+			else
+				mask_zoom_stretchy(true)
+			end
+		elseif dlt<-0.1 then
+			d_fov = fov_n
+			if flag_zoom then
+				mask_zoom_stretchy(false)
+			else
+				return
+			end
+		end
+	end
+end
+
+function mask_zoom_stretchy(param)
+	if param then
+		if  actor:active_slot() == 4 then
+			wnd_mask:Init(-512,-384-192,2048,1536+384)
+		elseif 	actor:active_slot() == 1 or actor:active_slot() == 2 then
+			wnd_mask:Init(-512,-32,1536,800)
+		end
+		flag_blurs = false
+		flag_zoom = true
+	else
+		wnd_mask:Init(0,0,1024,768)
+		flag_blurs = true
+		flag_zoom = false
+	end
+end
+
+function update_blurs()
+	set_blurs(flag_blurs)
+end
+
+function set_blurs(enabled)
+	local rect = set_zoom_stretchy_rect()
+	if not blurs then return end
+	if not enabled then
+		for i = 1,4 do
+          if blurs[i] then blurs[i]:SetWidth(0) end
+		end
+		return		
+	end
+	local power = actor.power
+	local period = 1.0+power^2 -- текущая частота дыхания от 30 до 120 циклов в минуту
+	local expirt = 0.3
+	local breathpower = 3
+	
+	local delta = (time_global()-blurlt)/1000
+	local phase = (time_global()-blurcyctime)/1000
+	blurlt = time_global()
+	if phase>period then
+		phase = phase%period
+		blurcyctime = blurlt-phase*1000
+	end
+	if blurlastphase>phase then
+		blurlastphase = 0
+	end
+	
+	local blurdelta = delta*-0.7
+	if blurlastphase<expirt and phase<expirt then
+		blurdelta = blurdelta+(phase-blurlastphase)*breathpower
+	elseif blurlastphase<expirt then
+		blurdelta = blurdelta+(expirt-blurlastphase)*breathpower
+	end
+	blurlastphase = phase
+	
+	blurval = blurval+blurdelta
+	if blurval>0.999 then
+		blurval = 0.999
+	elseif blurval<0 then
+		blurval = 0
+	end
+	
+	local tm = math.floor(blurval*3)
+	local tmn = (tm+1)
+	local v = blurval*3-math.floor(blurval*3)
+	v = 1-v
+	local v1 = 1-v
+	if tm~= 0 then
+		blurs[tm]:SetColor(GetARGB(v*255,255,255,255))
+	end
+	if tmn~= 0 then
+		blurs[tmn]:SetColor(GetARGB(v1*255,255,255,255))
+	end
+	for i = 1,4 do
+		if i == tm or i == tmn then
+			blurs[i]:SetWndRect(rect.x,rect.y,rect.w,rect.h)
+		else
+			blurs[i]:SetWndRect(rect.x,rect.y,0,0)
+		end	
+	end
+end
+
+function set_zoom_stretchy_rect()
+	local zoom = 67.5/device().fov
+	zoom = (zoom-1)*1.5+1
+	if zoom<1.001 then
+		zoom = 1.001
+	end
+	local stretchy = 0.75/(math.floor(device().aspect_ratio*1000)/1000)
+	if stretchy<1 then 
+		stretchy = 1 
+	end
+	local rect = {x = -768*zoom+768,y = (-512*zoom+512)*stretchy-(stretchy-1)*300,w = 1024*zoom,h = 768*zoom*stretchy}
+	
+	return rect
+end
+
+function set_flag_dirt(param)
+	flag_dirt = param
+end
+function replace_dirt_phase()
+	local armor = actor:item_in_slot(6)
+	if armor then
+		local armor_custom = set_get_armor_custom(2)
+		if armor_custom ~= "none|none|none" then
+			mask_clearing()
+			local t = vergas_lib.str_explode("|",armor_custom,true)
+			local number_dirt_phase = tonumber(t[2])
+			number_dirt_phase = number_dirt_phase - lua_random(2)
+			if number_dirt_phase < 1 then
+				number_dirt_phase = 1
+			end
+			armor_custom = t[1].."|"..tostring(number_dirt_phase).."|0"
+			set_get_armor_custom(1,armor_custom)
+		else
+			vergas_lib.s_play("device\\masks\\water_flask",5)
+		end
+	else
+		vergas_lib.s_play("device\\masks\\water_flask",5)
+	end
+end
+
+function mask_clearing()
+	vergas_lib.s_play("device\\masks\\mask_"..lua_random(1,5),1)
+	schedule.add("clean_end", "vergas_masks.mask_clean_end()", 1500) 
+end
+
+function mask_clean_end()
+	level.add_pp_effector("black_off_slowly.ppe", 2121, false)
+	schedule.add("cleaned_end", "vergas_masks.mask_cleaned_end()", 4000) 
+	schedule.add("flask_end", "sak.restore_weap()", 9000) 
+end
+
+function mask_cleaned_end()
+	used_items.set_get_flag_use_gadget(1,true)
+	flag_dirt = false
+	mask_old = "?" 
+end
+
+function fill_flask()
+	local i,j,k
+	local flag_fill = false
+	local portions_of_water = vergas_lib.set_pr_from_config("flask_army","portions_of_water")
+	level.disable_input()
+	bind_stalker.hide_weapon()
+	for i,k in pairs(sak_inventory.rucksack) do
+		if i == "flask_army" or i == "flask_army_on_belt" then
+			for j = 1, table.getn(k) do
+				local d_custom = tonumber(vergas_flask.set_get_flask_custom(2,k[j]))
+				--if d_custom ~= portions_of_water then
+					vergas_flask.set_get_flask_custom(1,k[j],tostring(portions_of_water))
+					vergas_flask.replace_flask_weight(k[j],tostring(portions_of_water))
+					flag_fill = true
+				--end
+			end
+		end
+	end
+	if flag_fill then
+		vergas_lib.s_play([[ambient\waterflow]],1)
+		timers.start_timer("fill_timer",14,"vergas_masks.end_fill_timer()")					--запускаю таймер
+		sak.send_tip("Набираем...", "Ага! Есть водичка", 1, 10, "g_g", "sak", "sky_blue")
+	else
+		sak.send_tip("Некуда воды набрать...", "Эх! Вот те раз!", 1, 10, "g_g", "sak", "red")
+		vergas_lib.s_play([[device\masks\water_no]],1)
+		bind_stalker.restore_weapon()
+		level.enable_input()
+	end
+end
+
+function end_fill_timer()
+	bind_stalker.restore_weapon()
+	vergas_lib.s_play([[device\masks\water_ok]],1)
+	level.enable_input()
+end
+
+function force_next_dirt_phase()
+	flag_add_dirt = true
+    add_time_dirt_phase()
+end

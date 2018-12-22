@@ -1,0 +1,169 @@
+
+function show(param)
+ if windows.active_dialog then
+   if param then
+      windows.active_dialog:ToggleMap(param)
+   else
+      windows.active_dialog:CloseDialog()
+   end
+ elseif param then
+   local new = minimap_dialog(get_hud())
+   -- level.start_stop_menu(new,true) -- включать диалог не нужно!
+ end
+end
+
+function hide()
+ show(false)
+end
+
+function toggle()
+  if windows.active_dialog then
+     windows.active_dialog:CloseDialog()
+     bind_stalker.restore_weapon()
+  else
+     show(true)
+  end
+end
+
+if windows.active_dialog then
+   wprintf(" active_dialog =~C0A %s~C07", DumpVar(windows.active_dialog))
+   windows.active_dialog:CloseDialog()
+else
+   windows.active_dialog = false
+   -- bind_stalker.self_weapon_hide = false
+   -- db.act_binder.weapon_hide = false
+end
+
+class "minimap_dialog" (CUIScriptDialog)
+
+function minimap_dialog:__init(owner)
+ super(owner)
+ -- CUIScriptDialog.__init(self, owner)
+ windows.set_active(self)
+ self.owner  = owner
+ self.map    = {}
+ self.comp   = {}
+ self.center = {}
+ self:Init(0, 0, 1, 1) -- сам диалог не видно
+ self:InitCoords()
+ self:SetWindowName("minimap_dialog")
+ self:Prepare()
+ -- TODO: add keys from config
+ self.exit_keys[DIK_keys.DIK_Q] = true
+ misc.dump_table(self.exit_keys)
+ wprintf("~CF0[~T]. #DBG: created minimap_dialog object ~CF1 %s~C07", DumpVar(windows.active_dialog))
+end
+
+function minimap_dialog:InitCoords()
+  ratio_mode = vergas_pda.set_ratio_mode()
+  self.map  = {503,346,765,550}
+  self.comp = {520,361,35,35}
+
+  if ratio_mode == 4 then        --1280x1024
+    self.map  = {510,350,760,550}
+    self.comp = {520,370,35,35}
+  elseif ratio_mode == 3 then      --1024x768
+  elseif ratio_mode == 2 then      --1680x1050
+  elseif ratio_mode == 1 then      --1600x900
+    self.map  = {510,350,760,550}
+    self.comp = {515,365,35,35}
+  end
+end
+
+function minimap_dialog:CloseDialog()
+  wprintf("[~T].~CE0 #DBG: closing minimap_dialog ~C07")
+  self:Hide()
+  CUIScriptDialog.CloseDialog(self)
+end
+
+function minimap_dialog:Hide()
+  self.map[1]  = -1000
+  self.map[3]  = -738
+  self.comp[1] = -1000
+  self.back_g  = -1050
+  -- level.enable_input()
+  vergas_masks.set_flag_minimap(true)
+  self:ToggleMap(false)
+  schedule.add('restore_weap', 'bind_stalker.restore_weapon()', 500)
+end
+
+function minimap_dialog:Prepare()
+  if db.actor:object("watch") == nil then
+    return
+  end
+  if ratio_mode == nil then
+     init_show_mode()
+  end
+
+  self.map[1] = 503
+  self.map[3] = 765
+
+   if ratio_mode == 4 then        --1280x1024
+     self.map[1] = 510
+     self.map[3] = 760
+     self.comp[1] = 520
+    elseif ratio_mode == 3 then      --1024x768
+     self.comp[1] = 520
+    elseif ratio_mode == 2 then      --1680x1050
+     self.comp[1] = 520
+    elseif ratio_mode == 1 then      --1600x900
+     self.map[1] = 510
+     self.map[3] = 760
+     self.comp[1] = 515
+   end
+  self.back_g = 0
+  bind_stalker.hide_weapon()
+  vergas_masks.set_flag_minimap(false)
+  schedule.add('draw_minimap', 'ui_minimap.show(true)', 500)
+end
+
+function minimap_dialog:ToggleMap(param)
+  local minimap, back, frame, center, compass  = statics.get_minimap()
+  if minimap == nil then
+     return
+  end
+  --statics.move_point (back,back_g, 0)
+  back:SetWndPos(self.back_g, 0)
+  -- statics.move_rect ( rect, map[1],map[2],map[3],map[4])
+  local r = Frect()
+  local map  = self.map
+  local comp = self.comp
+  r:set( unpack(map) ) -- map[1], map[2], map[3], map[4]
+  minimap:SetClipRect(r)
+  if param then
+    if self.hud_back then return end
+    wprintf("[~T].~C0E #DBG: restoring minimap and creating statics...~C07")
+    self.hud_back = get_hud():AddCustomStatic("hud_mm_back", true)
+    get_hud():GetCustomStatic("hud_mm_back")
+    for i= 1,4 do
+     get_hud():AddCustomStatic("hud_mm_watch_back_"..i, true)
+     get_hud():GetCustomStatic("hud_mm_watch_back_"..i)
+    end
+  else
+    if not self.hud_back then return end
+    wprintf("[~T].~C0E #DBG: trying hiding map and statics...~C07")
+    self.hud_back = false
+    get_hud():RemoveCustomStatic("hud_mm_back")
+    for i = 1,4 do
+     get_hud():RemoveCustomStatic("hud_mm_watch_back_"..i)
+    end
+  end
+  r:set( comp[1], comp[2], comp [1] + comp[3] - 1, comp [2] + comp[4] - 1)
+  if compass then
+     compass:SetWndRect ( r )
+  end
+
+function minimap_dialog:OnKeyboard( dik, keyboard_action )
+  CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+  if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+    -- на выход повесим Esc 
+    if dik == DIK_keys.DIK_ESCAPE then
+      self:CloseDialog()
+      bind_stalker.restore_weapon()
+    end
+  end
+  return true
+end
+
+end
+

@@ -1,0 +1,171 @@
+local item_by_community = {}
+local mul_by_level = {}
+local count_by_level = {}
+local ammo_sections = {}
+local death_ini = ini_file("misc\\ph_box_generic.ltx")
+
+class "ph_item_box"
+
+function ph_item_box:__init(obj)
+	self.obj = obj
+	local community_list = { "def_box", "small_box_generic", "small_box_ussr", "small_box_nato", "small_box_army", "small_box_science", "big_box_generic", "big_box_dungeons", "big_box_arsenal"}	
+	for k,v in pairs(community_list) do
+        item_by_community[v] = {}
+        if death_ini:section_exist(v) then
+		    local n = death_ini:line_count(v)
+		    local id, value = "", ""
+		    for i=0,n-1 do
+			    result, id, value	= death_ini:r_line(v,i,"","")
+                item_by_community[v][id] = 100*tonumber(value)
+		    end
+        end
+    end
+    local level_name = level.name()
+	
+	if not death_ini:section_exist(level_name) then
+		level_name = "default"
+	end
+
+    local n = death_ini:line_count(level_name)
+	local id, value = "", ""
+	for i=0,n-1 do
+		result, id, value	= death_ini:r_line(level_name,i,"","")
+        mul_by_level[id] = tonumber(value)
+	end        
+
+    local item_count_section = "item_count_" .. level.get_game_difficulty()
+    local n = death_ini:line_count(item_count_section)
+	for i=0,n-1 do
+		result, id, value	= death_ini:r_line(item_count_section,i,"","")
+        local t = parse_nums(value)
+		if t[1]==nil then
+            abort("Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id))
+        end
+        local min = t[1]
+        local max = t[2]
+        if max==nil then
+            max = min
+        end
+        
+        if mul_by_level[id]==nil then
+            mul_by_level[id] = 0
+        end
+        min = tonumber(min) * mul_by_level[id]
+        max = tonumber(max) * mul_by_level[id]
+        count_by_level[id] = {min = min, max = max}
+	end        
+   ammo_sections = {}
+    local n = death_ini:line_count("ammo_sections")
+	local id, value = "", ""
+	for i=0,n-1 do
+		result, id, value	= death_ini:r_line("ammo_sections",i,"","")
+        ammo_sections[id] = true
+	end        
+end
+
+function ph_item_box:spawn_items()
+	local spawn_items = {}
+	local ini = self.obj:spawn_ini()
+	local community	= utils.cfg_get_string(ini, "drop_box", "community", self.obj, false, "", "def_box")
+	if r_items(ini, "drop_box", "items")~=nil then
+		local items = r_items(ini, "drop_box", "items")
+		for k,v in pairs(items) do
+			create_obligatory_items(self.obj, v.section, v.count)
+		end
+		return
+	end
+ 
+    local spawn_items = item_by_community[community]
+	if spawn_items == nil then 
+       wprintf("[~T].~C0C #ERROR:~C07 not exists item_by_community.%s", community)
+	   spawn_items = item_by_community["def_box"]
+	end
+    if spawn_items == nil then return end 
+   
+    
+    for k,v in pairs(spawn_items) do		
+		local number = math.ceil(lua_random(count_by_level[k].min, count_by_level[k].max))
+		 create_items(self.obj, k, number, v)			
+    end
+end	
+
+function create_items(obj, section, number, rnd)
+    if ammo_sections[section]==true then
+		if lua_random(100) <= rnd	then
+			if number > 0 then
+				local position = vector():set(0,0,0)
+				position.x = obj:position().x + lua_random(-30,30)/100
+				position.z = obj:position().z + lua_random(-30,30)/100
+				position.y = obj:position().y + lua_random(30,50)/100
+				se_respawn.create_ammo(section,position,obj:level_vertex_id(),obj:game_vertex_id(),BAD_OBJ_ID,number)
+			end
+		end
+    else
+        for i=1,number do
+            if lua_random(100) <=  rnd then
+			local position = vector():set(0,0,0)
+			position.x = obj:position().x + lua_random(-30,30)/100
+			position.z = obj:position().z + lua_random(-30,30)/100
+			position.y = obj:position().y + lua_random(30,50)/100
+				if string.find(section,"af_",1,true) and not string.find(section,"af_dummy_",1,true) and not string.find(section,"_dyn",1,true) and not string.find(section,"_new",1,true) and not string.find(section,"af_full_akkum",1,true) then 
+				local b=lua_random(1,3)
+				section=section.."_dyn"..b.."d"
+				end
+				misc.spawn_obj(section, position)
+			end
+        end
+    end    
+end
+
+function parse_names(s)
+    local t = {}
+    for name in string.gfind(s, "([%w_%-.\\]+)%p*") do
+        table.insert(t, name)
+    end
+    return t
+end
+
+function r_items(spawn_ini, section, line)
+	if spawn_ini:line_exist(section, line) then
+		local t = parse_names(spawn_ini:r_string(section, line))
+		local n = table.getn(t)
+		
+		local ret_table = {}
+		local k = 1
+		while k <= n do
+			local item = {}
+			item.section = t[k]
+			if t[k+1]~=nil then
+				local p = tonumber(t[k+1])
+				if p then
+					item.count = p
+					k = k + 2
+				else
+					item.count = 1
+					k = k + 1
+				end
+			else
+				item.count	 = 1
+				k = k + 1
+			end
+			table.insert(ret_table, item)	
+		end
+		return ret_table
+	end
+	return nil
+end
+
+function create_obligatory_items(obj, item , count)
+	for i = 1,count do
+		local position = vector():set(0,0,0)
+		position.x = obj:position().x + lua_random(-30,30)/100
+		position.z = obj:position().z + lua_random(-30,30)/100
+		position.y = obj:position().y + lua_random(30,50)/100
+			if string.find(item,"af_",1,true) and not string.find(item,"af_dummy_",1,true) and not string.find(item,"_dyn",1,true) and not string.find(item,"_new",1,true) then 
+			local b=lua_random(1,3)
+			item=item.."_dyn"..b.."d"
+			end
+			misc.spawn_obj(item, position)
+		--alife():create(item,position,obj:level_vertex_id(),obj:game_vertex_id())
+	end
+end

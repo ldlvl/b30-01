@@ -1,0 +1,223 @@
+function gettable_dispatcher()
+ local gg = game_graph()
+ local mt = getmetatable(gg)
+ return mt.__orig_index or mt.__index
+end
+
+xray_vars.ext_props = {}
+
+-- методы расширения функционала game_object 
+-- ==== property readers ===== 
+function def_get_prop(obj, index)
+ local mt = getmetatable(obj)
+ return mt.__orig_index(obj, index)
+end
+
+function _G.save_variable(name, value)
+  xvars.nlc[name] = value
+  wprintf("xvars.nlc[~C0A%s~C07] =~C0F %s~C07, verify =~C0E %s~C07", name, DumpVar(value), DumpVar(xvars.nlc[name]))  
+  
+  if xvars.nlc[name] ~= value then
+     abort(" variable save unsuccessful ")
+  end                                         
+end
+
+function _G.load_variable(name, value_if_not_found)  
+  local res = xvars.nlc[name] 
+  if res ~= nil then
+    return res 
+  else
+    return xvars[name] or value_if_not_found         
+  end
+end
+
+function _G.del_variable(name)
+  xvars.nlc[name] = nil
+end
+
+function _G.stored_table(name, unpack, default) -- альтернатива xray_vars.load_table
+ if nil == xvars.nlc[name] then
+    xvars.nlc[name] = default or {}
+ end
+
+ local t = xvars.nlc[name]
+ if unpack then t = t() end
+ return t
+end
+
+function _G.stored_flag(name, upd)
+ local t = stored_table("flags")
+ if nil == upd then
+   return t[name]
+ end
+
+ if upd then
+    upd = true
+ else
+    upd = false
+ end
+ t[name] = upd
+end
+
+
+function save_table(name,tbl)
+  --	save_variable(name,amk.encode_array_to_string(tbl))
+  wprintf("xvars.nlc[~C0A%s~C07] << table", name)
+  -- misc.dump_table(tbl)  
+  xvars.nlc[name]   = tbl
+  -- wprintf(" what saved: ")
+  -- misc.dump_table(xvars.nlc[name](true))
+end
+
+function load_table(from, name, default)
+  if from == nil then
+     abort(" trying execute load_table(nil, ...) ") 
+  end
+
+  local tobj = from[name]
+  if tobj then
+     local t = type(tobj)
+     if t == "userdata" then 
+        return vars_table_dump(tobj, true) or default -- (true)
+     elseif t == "string" then
+        wprintf("[~T].~C0C #WARN:~C0A %s~C07 possible packed table~C0E %s~C07 ", name, tobj)
+        return amk.decode_array_from_string(tobj)
+     end   
+  else
+     -- wprintf("[~T].~C0C #WARN:~C07 no saved table~C0F %s~C07 in xvars ", name)
+     return default
+  end 	
+end
+
+--[[
+function read_var(t, name) 
+ local r = load_variable(name)
+ -- encoded table detection
+ if ( r ~= nil ) and ( r:len() > 1 ) and ( r:byte() <= 7 ) then
+    r = amk.decode_array_from_string(r)
+ end  
+ return r
+end
+
+function write_var(t, name, value) 
+ if value == nil then
+    del_variable(name)
+ elseif type(value) == "table" then
+    save_table(name, value) 
+ else
+    save_variable(name, tostring(value))
+ end 
+end
+]]
+
+function xray_vars.__obj_index_upgrade(obj, key)  -- alternative __index for game_object 
+ if ( type(key) ~= "string" ) then
+   -- return abort("xray_vars:__index key type = %s, value = %s ", type(key), DumpVar(key))
+   return def_get_prop (obj, key)
+ end     
+  
+ if ( key:byte() == 95 ) and ( key:byte(2) ~= 95 ) then -- props starting with _
+    local f = xray_vars.ext_props[key]           
+    if f ~= nil then
+       return f(obj)
+    end  
+ end
+ return def_get_prop (obj, key) -- __index = luabind::detail::class_rep::gettable_dispatcher(lua_State *)  
+end
+
+function xray_vars.dump_mt(obj)
+  local mt = getmetatable(obj)
+  
+  wprintf(" mt.type = %s", type(mt))
+  for k, v in pairs(mt) do
+    wprintf("~C0F %-30s~C0B =~C0A %s~C07 ", k, DumpVar(v))
+  end
+  return mt
+end
+
+--[[
+function upgrade_mt(obj, name)  
+  local mt = getmetatable(obj)
+  if mt == nil then
+     wprintf("[~T]. #DBG: metatable not assigned for~C0A %s~C07", name)
+     mt = { __index = xray_vars.__obj_index_upgrade, __orig_index = function(obj, index) return nil end }
+     setmetatable (obj, mt)
+     return true      
+  end
+  
+  if mt.__orig_index == nil then                  
+     mt.__orig_index = mt.__index
+     mt.__index = xray_vars.__obj_index_upgrade               
+     ReplaceMT(obj, mt)
+     wprintf("[~T]. #DBG: upgraded metatable for~C0A %s~C07", name)
+     xray_vars.dump_mt(obj)
+     return true     
+  end     
+ 
+ return false -- object metatable already upgraded
+end
+--]]
+--[[
+function upgrade_all_mt()
+ local sim = alife()
+ local ok = 0
+ 
+ 
+ for id = 0,BAD_OBJ_ID do
+    local sobj = sim:object(id)
+    if sobj then   
+    
+       if not upgrade_mt (sobj, sobj:name().. ":SObject") then
+          ok = ok + 1
+       end 
+       
+       
+       local obj = client_obj(id)
+       if obj then
+          if not upgrade_mt (obj, obj:name()..":CObject") then
+             ok = ok + 1
+          end 
+       end -- if obj                     
+    end -- if sobj
+    
+    if ok > 100 then
+       break  -- possible MT repeats
+    end     
+ end    
+     
+ wprintf("[~T]. #DBG: already upgraded %d objects ", ok)     
+end
+--]]
+
+function xray_vars.read_obj(t, id)  -- возможно это весьма медленная функция(!)
+ return client_obj (tonumber(id))
+end
+
+function xray_vars.write_obj(t, index, value)
+ abort("_G.level_objects[] is read-only array")
+end
+
+function init_module()
+ 
+ -- upgrade_all_mt()
+   
+
+ 
+ _G.vars = get_stored_vars()
+              
+ local mt = { __index = xray_vars.read_obj, __newindex = xray_vars.write_obj }
+ _G.level_objects = {}
+ setmetatable ( _G.level_objects, mt )
+ 
+ -- dump_mt ( _G.level_objects[0] )
+end
+
+function test()
+ -- vars.test = "101"
+ 
+ vars.test = { nope = "101" }
+ wprintf("test = %s", vars.test.nope)
+ vars.test = nil -- delete var
+end
+
+init_priority=950

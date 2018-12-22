@@ -1,0 +1,514 @@
+prefetch("params")
+
+basic_main_ofs = 1388 -- 1280 for 1.0004
+condition_main_ofs = 0 -- for 1.0004 = 140
+slot_ctrl_ofs = 664 -- $298 for 1.0006, active slot select at [$48, $4C]
+jump_main_ofs = 784
+inv_main_ofs =  0
+mvctl_main_ofs  = 224
+
+basic_params = {
+	hit_probability		 		= -396,
+	pickup_info_radius			= 0032,	-- "$520" in 2945, "$58C" in 1.0006
+	walk_accel	 				= 0052,	-- "$534" in 2945, "$5A0" in 1.0006
+	run_coef					= 0060,	-- "$53C",
+	run_back_coef 				= 0064,	-- "$540",
+	walk_back_coef				= 0068,	-- "$544", -236 -âûñîòà êàìåðû
+	crouch_coef					= 0072,	-- "$548",
+	climb_coef	 				= 0076,	-- "$54C",
+	sprint_koef					= 0080,	-- "$550",
+
+	disp_vel_factor				= 0104,	-- "$568",
+	disp_accel_factor	 		= 0108,	-- "$56C",
+	disp_crouch_no_acc_factor 	= 0116,	-- "$574",
+	missile_throw_offset 		= 0120,	-- "$578"		-- òðè çíà÷åíèÿ float ïîäðÿä!
+	unk_max_offset				= 0124
+}
+condition_params = {
+	health				= 4,
+	power				= 88,
+	radiation			= 92,
+	psy_health			= 96,
+	power_max			= 104,
+	psy_health_max		= 112,
+	radiation_v			= 144,
+	psy_health_v		= 148,
+	morale		        = 152,
+	morale_v			= 156,
+	radiation_health_v	= 160,
+	bleeding_v			= 164,
+	wound_incarnation_v = 168,
+	health_restore_v	= 172,
+	min_wound_size		= 176,
+	health_hit_part		= 184,
+	power_hit_part		= 188,	
+	alcohol_health		= 248,
+	alcohol_v			= 252,
+	satiety		        = 256,
+	satiety_v			= 260,
+	satiety_power_v		= 264,
+	satiety_health_v	= 268,
+	max_power_leak_speed= 272,
+	jump_power			= 276,
+	stand_power			= 280,
+	walk_power			= 284,
+	jump_weight_power	= 288,
+	walk_weight_power	= 292,
+	overweight_walk_k	= 296,
+	overweight_jump_k	= 300,
+	accel_k				= 304,
+	sprint_k			= 308,
+	max_walk_weight		= 312,	
+	limping_power_begin	= 320,
+	limping_power_end	= 324,
+	cant_walk_power_begin= 328,
+	cant_walk_power_end	 = 332,
+	cant_spint_power_begin= 336,
+	cant_spint_power_end= 340,
+	limping_health_begin= 344,
+	limping_health_end	= 348,
+	unk_max_offset		= 352
+}
+
+jump_params = {
+	jump_speed	 			= 12,
+	air_control_param	 	= 24,
+	unk_max_offset			= 28
+}
+
+inv_params = {
+    target                  = 68,
+	max_weight	 			= 104,
+	carr_weight	 			= 108,
+    total_weight            = 108,
+	max_belt				= 112,  -- int
+	take_dist	  			= 116,
+	unk_max_offset			= 120
+}
+
+-- movement control
+mvctl_params = {
+	ph_mass		 			= 20,
+	crash_speed_min			= 24,
+	crash_speed_max			= 28,
+	-- óñêîðåíèå ïî òðåì îñÿì
+	ac_pos_x				= 40,
+	ac_pos_y				= 44,
+	ac_pos_z				= 48,
+	-- ïîçèöèÿ ïî òðåì îñÿì
+	ph_pos_x				= 52,
+	ph_pos_y				= 56,
+	ph_pos_z				= 60,
+	unk_max_offset			= 64
+}
+
+actor_params.condition_params = condition_params 
+
+-- ctab
+immun_params = {
+	burn_immunity 				= 0016,
+	strike_immunity 			= 0020,
+	shock_immunity 				= 0024,
+	wound_immunity				= 0028,
+	radiation_immunity 			= 0032,
+	telepatic_immunity 			= 0036,
+	chemical_burn_immunity 		= 0040,
+	explosion_immunity 			= 0044,
+	fire_wound_immunity  		= 0048,
+	unk_max_offset	 			= 0052
+}
+
+-- wtab
+wound_params = {
+	wound_1			= 0016,
+	wound_2			= 0020,
+	wound_3			= 0024,
+	wound_4			= 0028,
+	wound_5			= 0032,
+	wound_6			= 0036,
+	wound_7			= 0040,
+	wound_8			= 0044,
+	unk_max_offset	= 0048
+}
+
+actor_obj = nil
+
+
+
+function find_tables()
+    
+	local result = { btab = nil, ctab = nil, jtab = nil, ptab = nil, itab = nil, wtab = nil }
+ 
+    if xr_build_id > 5500 then
+       return result     
+    end      
+
+	result.btab = xray_dma.get_CObject (0)
+	if result.btab ~= nil then
+	   result.ctab = ReadDMA(result.btab, "#CActor.entity_condition", "safe_ptr")
+	   result.itab = ReadDMA(result.btab, "#CActor.inventory", "safe_ptr") -- CInventoryOwner.m_pInventory
+	else
+	return result
+	end
+	local ph_sup = ReadDMA(result.btab,  "#CActor.physics_support", "safe_ptr") -- CCharacterPhysicsSupport		*m_pPhysics_support;
+	if ph_sup ~= nil then 
+	   result.mtab = ReadDMA(ph_sup, "#CPS.movement_control", "safe_ptr") -- CPHMovementControl					*m_PhysicMovementControl																															;
+		if result.mtab ~= nil then
+			result.jtab = ReadDMA(result.mtab,  "$01C", "safe_ptr")
+		end
+	end
+	if result.ctab ~= nil then
+		local wfirst = ReadDMA(result.ctab, "#CActorConditions.first", "ptr")
+		local wlast  = ReadDMA(result.ctab, "#CActorConditions.last", "ptr")
+		if ( wfirst ~= nil ) and ( wfirst ~= wlast ) then
+		     result.wtab = ReadDMA (wfirst, 0, "safe_ptr")
+		end
+	end
+	return result
+end
+
+function cmp_offset(a, b)
+ if a > b then
+	 return true
+ else
+	 return false
+ end
+end
+
+function dump_table(name, ptr_table, offsets, ofs_main)
+
+ local ofs_table = {}
+ for key,ofs in pairs(offsets) do
+	local kofs = tostring(ofs)
+	ofs_table[kofs] = key
+ end
+ 
+ if (ptr_table ~= nil) and (ofs_table ~= nil) then
+	 local count = table.getn(ofs_table)
+	 --ODS( string.format ("#~C0F #DBG: params(%d) for~C0A %s~C0F at %s + %d :~C07", count, name, FormatPtr(ptr_table), ofs_main) )
+ 
+	 local max_ofs = offsets.unk_max_offset
+	 
+	 
+	 for ofs = -200, max_ofs, 4 do
+
+		  local kofs = tostring(ofs)
+		  local key = ofs_table[kofs]
+		  
+		  if ( key ~= nil ) and ( string.find(key, "unk") == nil ) then
+			local val = ReadDMA(ptr_table, ofs  + ofs_main, "float")
+			if val ~= nil then
+			ODS( string.format ("~C0F %-20s~C0B at ~C0F %5d~C0B =~C0D %.10f~C07", key, ofs, val) )
+			end
+		  end
+	 end
+ end
+end
+
+actor_params.dump_table = dump_table
+
+function test()
+	local tabs = find_tables()
+	dump_table("actor basic params",	  tabs.btab,		 basic_params,	  basic_main_ofs)
+	dump_table("actor condition params", tabs.ctab,		 condition_params, condition_main_ofs)
+	dump_table("actor immunity params",  tabs.ctab,		 immun_params,	  0)
+	dump_table("actor wound params",	  tabs.wtab,		 wound_params,	  0)
+	dump_table("jump params",			tabs.jtab,		 jump_params,		jump_main_ofs)
+	dump_table("mov  params",			tabs.mtab,		  mvctl_params,		 mvctl_main_ofs)
+	dump_table("inv  params",			tabs.itab,		 inv_params,		 inv_main_ofs)	 
+ end
+
+actor_params.test = test
+
+
+if _G.get_actor_obj == nil then
+   _G.get_actor_obj = function ()
+      -- TODO: ñîçäàíèå ãåíåðàòîðà ïîääåëüíîãî îáúåêòà CActor
+      return          nil;
+   end   
+end
+
+
+function calc_ofs(id, ofs_table, ofs_main)
+ if ofs_table == nil then return nil end
+ local ofs = ofs_table[id]
+ if ofs == nil then return nil end
+ return tonumber(ofs) + ofs_main
+end
+
+function read_write_param(id, ptr_table, ofs_table, ofs_main, newval, int)
+
+ local ofs = calc_ofs (id, ofs_table, ofs_main)
+ if (ptr_table == nil) then return end
+ if (ofs == nil) then return end
+
+ local typs="float"
+ if int then typs="int" end
+ local val = ReadDMA(ptr_table, ofs, typs)
+ if (val ~= nil) and (newval ~= nil)  then
+	  local res = WriteDMA(ptr_table, ofs, tonumber(newval), typs)
+ end
+ return val
+end
+
+
+-- ÓÑÒÀÐÅÂØÈÅ ÔÓÍÊÖÈÈ ÄÎÑÒÓÏÀ Ê ÑÂÎÉÑÒÂÀÌ ÀÊÒÎÐÀ
+--[[
+function getp(id)
+ if xr_build_id ~= 3312 then 
+    return 0
+ end
+
+ local tabs = find_tables()
+ local v1 = read_write_param(id, tabs.btab, basic_params,	  basic_main_ofs)
+ local v2 = read_write_param(id, tabs.ctab, condition_params, condition_main_ofs)
+ local v3 = read_write_param(id, tabs.ctab, immun_params,	  0)
+ local v4 = read_write_param(id, tabs.jtab, jump_params,		jump_main_ofs)
+ local v5 = read_write_param(id, tabs.itab, inv_params,		 inv_main_ofs)
+ local v6 = read_write_param(id, tabs.mtab, mvctl_params,		  mvctl_main_ofs)
+ local v7 = read_write_param(id, tabs.wtab, wound_params,	  0)
+
+ return (v1 or v2 or v3 or v4 or v5 or v6 or v7)
+end
+
+function setp(id, newval, int)
+ if xr_build_id ~= 5500 then 
+    return 0 -- actor_prop(id, newval) 
+ end
+
+ local tabs = find_tables()
+ read_write_param(id, tabs.btab, basic_params,	  basic_main_ofs,			newval, int)
+ read_write_param(id, tabs.ctab, condition_params, condition_main_ofs,	  newval, int)
+ read_write_param(id, tabs.ctab, immun_params,	  0,			newval, int)
+ read_write_param(id, tabs.jtab, jump_params,		jump_main_ofs,			newval, int)
+ read_write_param(id, tabs.itab, inv_params,		 inv_main_ofs,			newval, int)
+ read_write_param(id, tabs.mtab, mvctl_params,		  mvctl_main_ofs,			newval, int)
+ read_write_param(id, tabs.wtab, wound_params,	  0,			newval, int)
+end
+--]]        
+--- ÍÎÂÛÅ ÔÓÍÊÖÈÈ ÄÎÑÒÓÏÀ Ê ÑÂÎÉÑÒÂÀÌ ÀÊÒÎÐÀ        
+                          
+local prop_found = false                          
+                        
+                          
+function actor_prop(id, newval, int)
+ prop_found = false
+ local a = get_actor_obj()
+ if a then                     
+    local v = update_prop(a, id, newval)        
+    if v ~= nil then         
+       prop_found = true
+       return v       
+    end
+ else
+    wprintf("[~T].~C0C #WARN:~C07 get_actor_obj() return nil. Probably actor dead")       
+ end        
+ 
+ local tabs = find_tables() 
+ return read_write_param(id, tabs.btab, basic_params,	  basic_main_ofs,			newval, int) or 0  
+end
+
+function cond_prop(id, newval, int)
+ prop_found = false
+ if strpos(id, "_immunity") then
+    wprintf("[~T].~C0C #WARN:~C07 actor_params.cond_prop bad id = '%s', must be used actor_params.immun_prop ", id)
+ end
+ 
+ local a = actor_obj
+ if a then                     
+    v = update_prop(a.condition, id, newval)          
+    if v ~= nil then
+       prop_found = true
+       return v
+    end
+ end 
+ return 0  
+end
+
+function immun_prop(id, newval)
+ prop_found = false
+ local a = actor_obj
+ if a then                     
+    v = update_prop(a.immunities, id, newval)          
+    if v ~= nil then
+       prop_found = true              
+       return v
+    end
+ end 
+ return 0 
+end
+
+function inv_prop(id, newval)
+ prop_found = false
+ local a = actor_obj
+ if a then
+    v = update_prop(a.inventory, id, newval)
+    if v ~= nil then
+       prop_found = true                                  
+       return v    
+    end                     
+                      
+ end
+ return 0
+end
+function mov_prop(id, newval)
+ prop_found = false
+ local a = get_actor_obj()
+ if a then
+    v = update_prop(a.movement, id, newval)
+    if v then
+       prop_found = true   
+       return v    
+    end                     
+                      
+ end
+ return 0
+end
+                                      
+function get_wound_total_size(bone_id)
+ local a = get_actor_obj()
+ if a then
+    return a.condition:get_wound_total_size(bone_id)
+ end      
+ return 0                  
+end                                      
+                                        
+function get_camera_mgr()
+
+ if xr_build_id > 5500 then 
+    return   
+ end
+
+ local actor = get_CObject(0)
+ if actor == nil then return nil end
+ return actor:read('$554', 'ptr') -- use $53C for 2945   
+end
+
+function actor_state()
+  if xr_build_id > 5500 then
+     return actor_obj.state or 0
+  end
+
+  local a = get_CObject(0) -- CActor object
+  local b = GetTempBuff(0)
+  local func = CalcPtr('xrGame.dll', '$1D6160', '+') -- CActor::g_State
+  --wprintf('CActor *g_actor  = %s', a:format())
+  -- wprintf(' buff ptr = %s, func ptr = %s ', b:format(), func:format())
+  BinThisCall (a, func, b:format())
+  local v = b:read(0, 'int')
+  --wprintf('~C0F flags =~C0D $%x ~C07', v)
+  local result = { }
+  table.insert (result, v)
+  for i = 1, 2 do
+   v = b:read(i * 4)
+   --wprintf (' v%d = %f ', i, v )
+   table.insert (result, v)
+  end
+  return result 
+end  
+
+function crouch_flags()
+ local a = get_CObject(0) -- CActor object 
+ return a:read('$598', 'int')
+end
+
+last_target = nil
+
+function update()
+ if xr_build_id > 5500 then
+    local t = inv_prop("selected_item")
+    local name = DumpVar(t)
+    if t and type(t) == 'userdata' then name = t:name() end      
+    if name ~= actor_params.last_target then
+       wprintf(" inventory target = %s ", name)
+       actor_params.last_target = name
+    end 
+ end    
+end
+
+
+function get_inventory(id)
+ if xr_build_id > 5500 then
+   return client_obj(id).inventory 
+ else
+   return ReadDMA (get_CObject(id), "$298", "safe_ptr") -- CInventory *m_inventory, field of CAlifeObject(?)
+ end
+ 
+end
+function to_belt(id)
+ if xr_build_id > 5670 then
+    local aobj = get_actor_obj()   
+    aobj.inventory:to_belt(id)
+    return
+ end
+
+ local cobj = xray_dma.get_CObject(0)          -- actor
+ local cart = xray_dma.get_CObject(id)
+ if (cobj == nil) or(cart == nil) then return end 
+ local inv = get_inventory(cobj)  
+  
+ cart = cast_inv_item(cart) 
+ local inv_belt_func = "$204BE0"
+ inv_belt_func = CalcPtr("xrGame.dll", inv_belt_func, '+')       
+ -- SetVerbosity(8)
+ BinThisCall(inv, inv_belt_func, cart, "EAX="..FormatPtr(inv)) -- not Thiscall... crazy 
+ -- SetVerbosity(3) 
+end
+
+
+function toggle_slot(id, to_slot)
+ if xr_build_id > 5670 then
+    local aobj = get_actor_obj()    
+    if to_slot then
+       aobj.inventory:to_slot(id, false)
+    else
+       aobj.inventory:to_ruck(id)
+    end
+    return       
+ end
+ 
+
+ if const.xrGameVer ~= '3312rls' then 
+    return
+ end
+ --[[
+ local cobj = xray_dma.get_CObject(0)          -- actor
+ if cobj == nil then return end
+ local inv = get_inventory(cobj) 
+ local wpn_addr = xray_dma.get_CObject(id)     -- wpn
+ if wpn_addr == nil then return end
+ wpn_addr = cast_inv_item(wpn_addr) 
+ 
+ -- ODS("[~T]. #DBG: CInventory *m_inventory at "..FormatPtr(inv))
+ local inv_slot_func = "$204A90"
+ local inv_ruck_func = "$204D90"
+
+ inv_slot_func = CalcPtr("xrGame.dll", inv_slot_func, "+")  -- at 281E3DA3
+ inv_ruck_func = CalcPtr("xrGame.dll", inv_ruck_func, "+")  -- at 281E3DA3
+
+
+ -- ODS("[~T]. #DBG: CInventory::Slot() at "..FormatPtr(inv_slot_func))
+ -- ODS("[~T]. #DBG: CInventory::Ruck() at "..FormatPtr(inv_ruck_func))
+ -- SleepEx(100)
+
+ -- SetVerbosity(8)
+ if to_slot then
+    BinThisCall(inv, inv_slot_func, "0", "EAX="..FormatPtr(wpn_addr))  -- CInventory::Slot
+ else
+     BinThisCall(inv, inv_ruck_func, wpn_addr, "ESI="..FormatPtr(inv))  -- CInventory::Ruck, other reg for thiscall?
+ end
+ -- SetVerbosity(5)
+ --]]
+end
+
+
+
+
+function init_module()
+ actor_obj = get_actor_obj()
+end
+
+function late_init()
+ -- AddRegularTask("actor_params.update", actor_params.update, nil, 0, 1000)
+ actor_obj = get_actor_obj()
+end

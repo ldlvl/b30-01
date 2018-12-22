@@ -1,0 +1,297 @@
+
+if this == nil then
+   _G.windows = {}   
+end
+
+local need_gc = 0
+local list_objects = {}
+
+if db.g_statics == nil then
+   db.g_statics = {}
+end   
+
+function set_active(dlg)
+ local last = DumpVar(windows.active_dialog)
+ local new  = DumpVar(dlg)
+
+ if last ~= new then
+    wprintf("[~T] active_dialog updated to~C0A %s~C07", new)
+ end
+ local prev = windows.active_dialog
+ windows.active_dialog = dlg
+ if prev and prev.opened then
+    wprintf("[~T].~C0C #WARN:~C07 opened dialog object replace detected!")
+    prev:CloseDialog()
+ end
+end
+
+function get_active()
+ return windows.active_dialog
+end
+
+set_active(get_active())
+if windows.active_dialog then
+   windows.active_dialog:CloseDialog()
+end
+
+set_active(false)
+
+class "CUIScriptDialog" (CUIScriptWnd)
+
+function CUIScriptDialog:__init(owner)
+  if super then super() end
+  self.opened = false
+  self.owner  = owner
+  self.statics = {}    
+  self.exit_keys = {}
+  self.exit_keys[DIK_keys.DIK_ESCAPE] = true
+  self:InitCallbacks()
+  set_active(self)
+  wprintf("[~T]. #DBG: CUIScriptDialog instance created =~C0A %s~C07, owner =~C0A %s~C07 ", DumpVar(self), DumpVar(owner))
+  table.insert(list_objects, DumpVar(self))
+end
+
+function CUIScriptDialog:__finalize()
+  local sname = DumpVar(self)
+  for i, name in ipairs(list_objects) do
+   if name == sname then
+      table.remove(list_objects, i)
+      break
+   end
+  end
+
+  wprintf("[~T].~CF6 #DBG: CUIScriptDialog:__finalize(), self =~CF2 %s~CF6, need_gc =~CFD %d~CF6, list_objects =~CF3 { %s }~C07",
+                           sname, need_gc or -100, table.concat(list_objects, ","))
+  need_gc = need_gc - 1
+end
+
+function CUIScriptDialog:add_static(name, rect, text, texture, params, icon_sect)
+  params = params or ""           
+  local wnd = CUIStatic()
+  wnd:SetWindowName (name, 0)
+  wnd:SetAutoDelete ( params:find("manual_delete") == nil )
+  
+  wnd:SetStretchTexture ( params:find("no_stretch") == nil )
+  if rect and #rect >= 4 then  
+     wnd:SetWndRect (unpack(rect))
+  end
+           
+  if texture then
+     wnd:InitTexture (texture)
+  end     
+  
+  if icon_sect then
+     self:set_icon(wnd, icon_sect)
+  end
+        
+  wnd:SetFont(GetFontMedium())
+  wnd:SetTextColor(255, 225, 225, 240)
+  wnd:SetText(text)
+    
+  self:AttachChild (wnd)
+  self.statics[name] = wnd       
+  return wnd               
+end 
+
+function CUIScriptDialog:set_icon(static, sect)
+  sect = sect or 'nil'
+  local tex = "ui\\ui_icon_equipment"
+  local sini = system_ini()
+  local oini = sini:object()
+  local sc = oini[sect] 
+  if not sc then
+    wprintf("[~T].~C0C #ERROR(set_icon):~C07 invalid section specified~C0A %s~C07", sect) 
+  end
+    
+  local x = (sc.inv_grid_x or 0) * 50 
+  local y = (sc.inv_grid_y or 0) * 50
+  local w = (sc.inv_grid_width or 0) * 50
+  local h = (sc.inv_grid_height or 0) * 50
+  if sc.icon_group then
+     tex = sprintf("%s_%d", tex, sc.icon_group)
+     -- wprintf(" used icons texture~C0A %s~C07", tex) 
+  end                            
+
+  static:InitTexture(tex)
+  static:SetOriginalRect(x, y, w, h)  
+  return static
+end
+
+function CUIScriptDialog:on_quit()
+  self:CloseDialog()
+end
+
+function CUIScriptDialog:remove_static(name, ...)
+  name = sprintf(name, ...)
+  local wnd = self.statics[name]   
+  self.statics[name] = nil
+  if wnd == nil then 
+     return false
+  end
+  self:DetachChild(wnd)
+  return true  
+end
+
+
+function CUIScriptDialog:get_method(fmt, ...)
+ local mname = sprintf(fmt, ...) 
+ local m = self[mname]
+ if m == nil then        
+    wprintf("~C0C #ERROR(CUIScriptDialog):~C07 method self.%s == nil ", mname)       
+ end
+ return m  
+end
+
+function CUIScriptDialog:CloseDialog()
+ if self then
+    self.owner = nil
+    self.opened = false
+    local keys = {}
+    for name, wnd in pairs(self.statics) do
+      table.insert(keys, name)
+    end
+
+    for i, name in ipairs(keys) do
+      self:remove_static(name)
+    end
+    self.statics = {}
+
+    local wn = self:WindowName() or 'nil'
+    wprintf("[~T].~CF0 #DBG: CUIScriptDialog:CloseDialog(), active =~CF1 %s~CF0, self =~CF2 %s (%s)~C07 ",
+            DumpVar(windows.active_dialog), DumpVar(self), wn)
+    wprintf("~C0A %s~C07", lua_traceback(' '))
+    local holder = self:GetHolder()
+    if holder then
+       holder:start_stop_dialog(self, true)
+    end
+    level.remove_dialog_to_render(self)
+    need_gc = need_gc + 1
+
+    if self.Destroy then -- level.destroy_dialog
+       wprintf("[~T]. #DBG: using new method CUIScriptDialogEx::Destroy / level.destroy_dialog, need_gc = %d", need_gc)
+       self:Destroy()    -- предположительно через 3.5 сек будет уничтожен объект диалога, и станет доступной сборка мусора
+     end
+    self = nil
+    holder = nil
+    windows.late_init()
+ end
+ set_active(false)
+ used_items.set_use_gadget(true) -- после любого диалога, в теории становиться доступно?
+ windows.garbage_collect(false)
+end
+
+function CUIScriptDialog:InitCallbacks()
+end
+
+function CUIScriptDialog:OnKeyboard(dik, keyboard_action)
+  if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+    if self.exit_keys[dik] then
+       self:on_quit()
+       return true
+    end
+  end
+  return CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+end
+
+
+
+function window_id(wnd)
+ local name = wnd:WindowName()
+ if name and name:len() > 0 then
+    return name
+ end
+ return  FormatPtr(wnd) 
+end
+
+_G.CUIScriptDialog = CUIScriptDialog
+
+-- для добавления текстовых статиков прямо в худ или иное искусственное нечто
+function windows.simple_static(parent, name, rect, text, color)
+  local wnd  = nil
+  local id   = window_id(parent)
+  local list = db.g_statics[id]
+  if list then
+     wnd = list[name] -- повторное использование статика
+  else
+     wprintf(" not found static list~C0A %s~C07 - creating new", id)
+     list = {}
+     db.g_statics[id] = list
+  end -- если список не был выделен
+
+    
+  if not wnd then
+     wnd = CUIStatic()
+     parent:AttachChild(wnd)
+     wnd:SetAutoDelete(true)
+     wnd:SetStretchTexture(true)
+     wnd:SetWindowName(name)
+     wnd:SetFont(GetFontMedium())
+     list[name] = wnd
+     wprintf("[~T]. #DBG: for window~C0A %-12s~C07 added simple static~C0E %s~C07", parent:WindowName(), name)
+     dump_table(db.g_statics)
+  end
+    
+  wnd:SetWndRect( unpack(rect) )
+  wnd:SetText( tostring(text) )
+ 
+  color = color or { 255, 225, 225, 240 }
+  if #color == 4 then
+     wnd:SetTextColor(unpack(color))
+  end
+
+  return wnd
+end 
+
+function windows.del_simple_statics(parent, name)
+   local id = window_id(parent)
+   local list = db.g_statics[id]
+   if list == nil then
+      wprintf("[~T].~C0C #WARN:~C07 for window~C0A %-12s~C07 no child statics list", id)
+      dump_table(db.g_statics)
+      wprintf("~C0A %s~C07", lua_traceback(" "))
+      return
+   end                 
+   if name then
+      if list[name] then
+         wprintf("[~T]. #DBG: for window~C0A %-12s~C07 removed simple static~C0E %s~C07", parent:WindowName() or 'nil', name)
+         parent:DetachChild(list[name])
+      end
+      list[name] = nil           -- удаление конкретного статика
+   else
+      db.g_statics[id] = nil    -- удаление всех статиков
+   end 
+end
+
+function garbage_collect(force)
+ if level.main_input_receiver() and (not force) then return end
+ for i = 1, 100 do
+   if need_gc > 0 then
+      collectgarbage("step", 500)
+   else
+      break
+   end
+   if not force then break end
+   SleepEx(100) -- чтобы таймаут подошел
+ end
+
+ if need_gc > 0 then
+    collectgarbage("stop", 0) -- prevent auto collect, before next step
+ else
+    collectgarbage("step", 50) -- light
+ end
+end
+
+function init_module()
+ db.g_statics = {}
+end
+
+function late_init()
+ AddRegularTask ("garbage_collect", windows.garbage_collect, nil, 0, 500)
+end
+
+
+function stop_module()
+ db.g_statics = {} -- cleanup
+ garbage_collect(true)
+ collectgarbage("collect")
+end

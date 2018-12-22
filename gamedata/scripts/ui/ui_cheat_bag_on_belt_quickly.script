@@ -1,0 +1,244 @@
+--[[
+—умка на по€се v 1.0
+Vergas
+© NLC-6.0
+]]--
+class "bag_dialog" (windows.CUIScriptDialog)
+
+
+
+local info_bag_box  --информаци€ дл€ сумки (что лежит)
+local wnd_coordinates = {}		  --координаты окон карманов, вектор из пар значений (точек)
+
+local template = ""					--шаблон размещени€ предметов
+
+
+function bag_dialog:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function bag_dialog:InitControls()
+
+	--определ€ю содержимое сумки
+	info_bag_box = bag_on_belt_use.load_bag_content()
+	--≈сли надо, добавл€ю в таблицe записи-пустышки
+    info_bag_box:set_size(4)
+	--составл€ю шаблон размешени€ предметов
+	template = self:set_template()
+	
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("podsumok","snd_deselect"),1)
+	
+	-- ѕоложение и размеры окна
+	self:Init(196,0,526,344)
+	-- файл-описатель элементов
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_cheat_bag_on_belt.xml")
+	
+	xml:InitStatic("background_0", self)     
+	xml:InitStatic("background_quickly", self)     	--—обственно рамка
+	--xml:InitStatic("background_2", self)   	--надпись —”ћ ј
+	
+	self:Register(xml:Init3tButton("btn_quickly_stop", self),"btn_stop")				--  нопка ¬ыкл
+	self:Register(xml:Init3tButton("btn_quickly_empty", self),"btn_empty")				--  нопка ¬ыгрузить
+	
+	if template == "2" then
+		self:Register(xml:Init3tButton("btn_quickly_2_1", self),"btn_1")				--  нопка 1
+		wnd_coordinates = { {228,66} }	
+	elseif template == "22" then
+		self:Register(xml:Init3tButton("btn_quickly_22_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_22_2", self),"btn_2")				--  нопка 2
+		wnd_coordinates = { {196,66}, {262,66} }
+	elseif template == "21" then
+		self:Register(xml:Init3tButton("btn_quickly_21_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_21_2", self),"btn_2")				--  нопка 2
+		wnd_coordinates = { {199,66}, {290,33} }
+	elseif template == "12" then
+		self:Register(xml:Init3tButton("btn_quickly_12_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_12_2", self),"btn_2")				--  нопка 2
+		wnd_coordinates = { {199,33}, {257,66} }
+	elseif template == "211" then
+		self:Register(xml:Init3tButton("btn_quickly_211_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_211_2", self),"btn_2")				--  нопка 2
+		self:Register(xml:Init3tButton("btn_quickly_211_3", self),"btn_3")				--  нопка 3
+		wnd_coordinates = { {185,66}, {262,33}, {306,33} }
+	elseif template == "121" then
+		self:Register(xml:Init3tButton("btn_quickly_121_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_121_2", self),"btn_2")				--  нопка 2
+		self:Register(xml:Init3tButton("btn_quickly_121_3", self),"btn_3")				--  нопка 3
+		wnd_coordinates = { {185,33}, {229,66}, {306,33} }
+	elseif template == "112" then
+		self:Register(xml:Init3tButton("btn_quickly_112_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_112_2", self),"btn_2")				--  нопка 2
+		self:Register(xml:Init3tButton("btn_quickly_112_3", self),"btn_3")				--  нопка 3
+		wnd_coordinates = { {185,33}, {229,33}, {273,66}}
+	elseif template == "1" then
+		self:Register(xml:Init3tButton("btn_quickly_1_1", self),"btn_1")				--  нопка 1
+		wnd_coordinates = { {246,33} }
+	elseif template == "11" then
+		self:Register(xml:Init3tButton("btn_quickly_11_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_11_2", self),"btn_2")				--  нопка 2
+		wnd_coordinates = { {210,33}, {279,33} }
+	elseif template == "111" then
+		self:Register(xml:Init3tButton("btn_quickly_111_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_111_2", self),"btn_2")				--  нопка 2
+		self:Register(xml:Init3tButton("btn_quickly_111_3", self),"btn_3")				--  нопка 3
+		wnd_coordinates = { {193,33}, {245,33}, {297,33} }
+	elseif template == "1111" then
+		self:Register(xml:Init3tButton("btn_quickly_1111_1", self),"btn_1")				--  нопка 1
+		self:Register(xml:Init3tButton("btn_quickly_1111_2", self),"btn_2")				--  нопка 2
+		self:Register(xml:Init3tButton("btn_quickly_1111_3", self),"btn_3")				--  нопка 3
+		self:Register(xml:Init3tButton("btn_quickly_1111_4", self),"btn_4")				--  нопка 4
+		wnd_coordinates = { {182,33}, {223,33}, {264,33}, {305,33} }
+	end	
+end
+
+function bag_dialog:InitCallBacks()
+
+	self:AddCallback("btn_stop", ui_events.BUTTON_CLICKED, self.btn_stop, self) 					--  нопка ¬ыкл
+	self:AddCallback("btn_empty", ui_events.BUTTON_CLICKED, self.btn_empty, self) 					--  нопка ¬ыгрузить
+	
+	if string.len(template) == 1 then
+		self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 						--  нопка 1
+	elseif string.len(template) == 2 then
+		self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 						--  нопка 1
+		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 						--  нопка 2 
+	elseif string.len(template) == 3 then
+		self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 						--  нопка 1
+		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 						--  нопка 2 
+		self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self) 						--  нопка 3 
+	elseif string.len(template) == 4 then
+		self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self) 						--  нопка 1
+		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self) 						--  нопка 2 
+		self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self) 						--  нопка 3 
+		self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self) 						--  нопка 4 
+	end	
+
+	-- расставл€ю иконки на кнопки
+	self:set_bag_pocket()
+
+end
+
+function bag_dialog:OnKeyboard(dik, keyboard_action)
+	CUIScriptDialog.OnKeyboard(self,dik,keyboard_action)
+	return true
+end
+--------------------------------------------------
+--–абота динамических кнопочек
+--------------------------------------------------
+function bag_dialog:CloseDialog()
+	--убираю "дырки" в таблице
+	info_bag_box = bag_on_belt_use.clean_holes_table(info_bag_box)
+	--записываю инфу в переменную
+	bag_on_belt_use.save_bag_content(info_bag_box)
+	schedule.add ("bag_weight", "bag_on_belt_use.calculate_bag_weight()", 500)
+	info_bag_box = {}
+	self:del_windows_pocket()
+	wnd_coordinates = { }
+	template = ""
+	used_items.set_get_flag_use_gadget(1,true)
+	vergas_lib.s_play(vergas_lib.set_pr_from_config_str("podsumok","snd_deselect"),1)
+	bind_stalker.restore_weapon()				--восстанавливаю руки и оружие на худе
+    CUIScriptDialog.CloseDialog(self) -- inherited
+end
+
+function bag_dialog:btn_stop()
+	self:CloseDialog()
+end
+
+function bag_dialog:btn_empty()
+	if info_bag_box(1).sect == "?" then	--в сумке пусто и выбрасывать нечего
+	   return
+	end
+	--трансферю предметы в инвентарь
+	bag_on_belt_use.drop_habar_from_bag(info_bag_box,1)	
+	self:del_windows_pocket()
+    info_bag_box:set_default(1, 4)
+	self:btn_stop()
+end
+
+function bag_dialog:btn_n(n)
+   if info_bag_box(n).sect == "?" then
+      return
+   end 
+   if self:check_on_edibility(n) then
+      self:remove_static("wnd_pocket_"..tostring(n))
+   end
+end
+
+function bag_dialog:btn_1() self:btn_n(1) end
+function bag_dialog:btn_2() self:btn_n(2) end
+function bag_dialog:btn_3() self:btn_n(3) end
+function bag_dialog:btn_4() self:btn_n(4) end
+
+function bag_dialog:check_on_edibility(n)
+	--а съедобна ли эта вещь?
+    local rec = info_bag_box(n)
+    
+	if vergas_lib.set_pr_from_config("bag_"..rec.sect,"edible") == 0 then
+		--др€нь несъедобна€
+		return false
+	end
+
+	--вещь "вкусна€" и питательна€, стало быть трансферю в рюкзак из хранилища
+	if bag_on_belt_use.transfer_item_from_hran(rec.id) then
+	    bag_on_belt_use.set_eat_grub(rec.sect)
+    else
+       return false -- кака€-то проблема с хранилищем 
+    end   
+	
+	if vergas_lib.set_pr_from_config("bag_"..rec.sect,"edible") == 2 then
+		--др€нь несъедобна€, но класса еды
+		schedule.add ("transfer_item", "bag_on_belt_use.eat_grub()", 1000)
+	    rec.sect = "?"
+	    rec.id   = 0
+		self:btn_stop()
+	end
+	--запускаю таймер 
+	schedule.add ("transfer_item", "bag_on_belt_use.eat_grub()", 500)
+	
+	--обнул€ю инфу по карману
+    rec.sect = "?"
+	rec.id   = 0
+	
+	return true
+end
+--------------------------------------------------------
+--‘ункции расстановки иконок
+--------------------------------------------------------
+function bag_dialog:set_template()
+	template = ""
+	for i, rec in info_bag_box:ipairs() do 
+		if rec.sect ~= "?" then
+		   template = template..tostring(vergas_lib.set_pr_from_config("bag_"..rec.sect, "size_icon"))
+		end
+	end -- for	
+	return template
+end
+
+function bag_dialog:set_bag_pocket()
+	self:del_windows_pocket()     
+	for i=1, #wnd_coordinates do
+        local point = wnd_coordinates[i] 
+        self:set_wnd_pocket_n(i, point[1], point[2])
+	end
+end
+
+------------------------------------------------------
+--‘ункции вывода окон
+------------------------------------------------------
+
+function bag_dialog:del_windows_pocket()
+	--убираю объ€вленные статики
+    for i = 1, 4 do
+       self:remove_static("wnd_pocket_"..tostring(i)) 
+    end	
+end
+
+function  bag_dialog:set_wnd_pocket_n(n, x, w)
+    local rec  = info_bag_box(n)
+    local rect = { x, 280, w, 33 }
+    self:add_static("wnd_pocket_"..tostring(n), rect, "", nil, "", rec.sect)
+end
+

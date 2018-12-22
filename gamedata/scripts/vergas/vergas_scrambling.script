@@ -1,0 +1,112 @@
+--[[
+PDA npc
+Vergas
+© NLC 6.0
+]]--
+
+local login
+local pass
+
+function set_number_scrambling(pass_in, rang)
+	local n
+	local  path = "vergas_scrambling.scrambling_"
+	
+	pass = pass_in
+	if rang < 300 then --novichok
+		n = 1
+	elseif rang < 600 then --stalker
+		n = 2
+	elseif rang < 900 then --veteran
+		n = 3
+	elseif rang < 2000 then --master
+		n = 4
+	end
+	
+	local str = path..n.."()"
+	
+	loadstring(str)() 
+	
+	return login
+end
+
+--==============Шифрование=========================================
+
+function scrambling_1()
+	--для новичков (пароль: половинки наоборот)
+	word_half(pass) 
+end
+
+function scrambling_2()
+	--для сталкеров (пароль-наоборот: половинки наоборот)
+	word_half(string.reverse(pass)) 
+end
+
+function scrambling_3()
+	--для ветеранов (гласные+согласные или наоборот)
+	local i
+	local symbol
+	local gl = ""
+	local sgl = ""
+	local tbl = disassemble_on_letters()
+	
+	for i = 1, table.getn(tbl) do
+		if tbl[i] == "а" or tbl[i] == "е" or tbl[i] == "ё" or tbl[i] == "и" or tbl[i] == "о" or tbl[i] == "у" or tbl[i] == "ы" or tbl[i] == "э" or tbl[i] == "ю" or tbl[i] == "я" then
+			gl = gl..tbl[i]
+		else
+			sgl = sgl..tbl[i]
+		end	
+	end
+	
+	if lua_random() <= 0.5 then
+		login = gl..sgl
+	else
+		login = sgl..gl
+	end
+end
+
+function scrambling_4()
+	--для мастеров (мешанина)
+	local tbl = disassemble_on_letters()
+	local i
+	local j
+	local tbl_tmp = {}
+	login = ""
+	
+	for i = 1, table.getn(tbl) - 1 do
+		j = lua_random(1, table.getn(tbl))
+		login = login..tbl[j]
+		tbl[j] = 0
+		tbl_tmp = {}
+		for j = 1,table.getn(tbl) do
+			if tbl[j] ~= 0 then
+				table.insert(tbl_tmp,tbl[j])
+			end
+		end
+		tbl = tbl_tmp
+	end
+	login = login..tbl[1]
+end
+
+--==============Вспомогательные функции=============================
+
+function word_half(pas)
+	local n = math.floor(string.len (pas)/2)
+	local half_1 = string.sub (pas, 1 ,n)
+	local half_2 = string.sub (pas, n+1 ,string.len (pas))
+	
+	login = half_2..half_1
+end
+
+function disassemble_on_letters()
+	--разбираю стринг по буквам
+	local i
+	local symbol
+	local tbl_symbol = {}
+	
+	for i = 1,string.len (pass) do
+		symbol = string.sub (pass, i , i)
+		table.insert(tbl_symbol,symbol)
+	end
+	
+	return tbl_symbol
+end

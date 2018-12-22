@@ -1,0 +1,524 @@
+if vertex_dump == nil then
+   _G.vertex_dump = {}
+end   
+
+vertex_dump.frecs = {}   
+
+function vertex_dump.range()
+ local lname = level.name() 
+ local gv_range = const.game_vertices[lname] 
+ return gv_range[1], gv_range[2], const.vertices_count 
+end
+
+function vertex_dump.collect()
+ local gvn,gvx,lvx = vertex_dump.range() 
+ 
+  
+ local result = {} -- ассоциативный массив, связывающий lvid с координатами и gvid 
+ local pt = vector()
+ 
+ 
+ for lvid = 0, lvx - 1 do 
+  -- SetDbgVar("collect_lvid", lvid)
+  pt = level.vertex_position(lvid)  
+  result [lvid] = { pos = pt }     
+ end 
+  
+ wprintf(' storage size = %d ', #result )
+ 
+ return result
+end
+
+function find_line(lines, name)
+ local s = sprintf('name = %s', name)
+ for i,l in ipairs(lines) do
+  if strpos(l, s, 1, true) then
+     return i
+  end 
+ end
+ return 0
+end
+
+function next_pos_key(lines, start, key)
+ local cmpf = strposx
+ if start == 0 then
+    return 0
+ end
+ 
+ for i = start,#lines do
+  local s = lines[i]
+  local t = cmpf(s, key)
+  if t and ( t == 1 ) then
+     return i
+  end
+ end
+ return 0
+end
+
+
+local function gct_reader(lname)
+  return getFS():r_open("$game_levels$", lname.."\\level.gct") 
+end
+
+function vertex_dump.level_vertex_count (lname)
+  local rr = gct_reader(lname)  
+  if rr then
+     rr:r_seek(12)
+     local v = rr:r_u32()
+     getFS():r_close(rr)
+     return v     
+  else
+     return 0
+  end
+end
+
+function vertex_dump.load_gct(lname, gvn, gvx)
+  local lvid_map = {} 
+  local rr = gct_reader(lname)
+  local cnt = 0
+  
+  if rr then
+   rr:r_seek(12)
+   local lvx_count = rr:r_u32() or -1
+   const.low_level_init()      
+   if lvx_count ~= const.vertices_count then
+      wprintf("~C0C #FATAL:~C07 level %s vertex count =~C0D %d~C07, const.vertices_count =~C0D %d~C07", lname, lvx_count, const.vertices_count or - 1)
+      
+      -- ExitProcess("script have mistake")      
+   end
+    
+   rr:r_seek(60) -- data begin
+   for lvid = 0, lvx_count - 1 do
+       local gvid = rr:r_u16()
+       local test = rr:r_float()          
+       
+       if ( gvid >= gvn ) and ( gvid <= gvx ) then       
+            lvid_map["lvid_"..lvid] = gvid
+            cnt = cnt + 1
+       else
+           wprintf("~C0C #OUTBOUND:~C07 lvid =~C0E %7d~C07, gvid =~C0F %5d~C07, test =~C0D %.5f~C07 ", lvid, gvid, test) 
+       end    
+        
+   end
+   
+   getFS():r_close(rr)
+  else
+   wprintf("cannot open level.gct for ~C0A %s~C07", lname) 
+  end -- if rr
+  
+  wprintf("[~T]. #DBG: vertex_dump.load_gct associated %d level vertexed", cnt)
+   
+  return lvid_map
+end
+
+function vertex_dump.dump(force)
+ local lname = level.name()
+ local fname = sprintf("$mod_dir$\\vxdb\\vxd_%s.dat", lname)
+  
+ if FileExists(fname) and (not force) then
+    return
+ end 
+  
+ ftext = ''
+ local gvn,gvx,lvx = vertex_dump.range()
+ local lvid_map = vertex_dump.load_gct(lname, gvn, gvx)  -- карта связывания уровневых вертексов с игровыми         
+ 
+ 
+  
+ wprintf ('[~T/~B].~CF0 #DBG(vertex_dump): gvn = %5d, gvx = %5d, lvx = %5d ~C07', gvn or -1, gvx or -1, lvx or -1 )
+ if ( lvx == 0 ) then return end
+ 
+ local vpts = vertex_dump.collect()
+ local base = #vpts 
+ wprintf ('[~T/~B]. #DBG(vertex_dump): collected vertices~C0D %d~C07', base)
+ 
+ SaveVertexList('create file', fname)
+ 
+ local gg = game_graph()
+ 
+ device():pause(true)
+ -- SetUpdTimeout(900000, "dump")
+
+   
+  
+ SaveVertexList('vertex count', base)
+ 
+ local gv_found = 0
+ local cnt = 0
+ local fake_used = 0
+ local fake_gvid = 65535
+ local last_lvid = base - 1
+ 
+ -- SaveVertexInfo (fake_gvid, last_lvid, 0, 0, 0)
+ 
+ -- for lvid,info in pairs(vpts) do
+ for lvid = 0, last_lvid do
+   local info = vpts[lvid]
+   if info == nil then
+      wprintf("~C0C #ERROR: no info for lvid =~C07 %7d~C07", lvid)      
+   else   
+      local p = info.pos     
+      
+      local gvid = lvid_map ["lvid_"..lvid] 
+      if gvid ~= nil then
+         SaveVertexInfo (gvid, lvid, p) -- save with real game_vertex_id
+      else
+         wprintf(" for lvid =~C0D %8d~C07, used fake gvid ", lvid)      
+         SaveVertexInfo (fake_gvid, lvid, p) -- для этого вертекса при поиске будет что-то найдено из ближайших гейм-вертексов (что не совсем правильно!)
+         fake_used = fake_used + 1
+         if fake_used > 200 then 
+             break
+         end           
+      end                                                                                          
+       
+      if lvid == 1e6 then
+         wprintf("   lvid =~C0D %7d~C07, pos =~C0F %s ~C07", lvid, misc.pos2str(p)) 
+      end
+   end       
+ end -- for
+ 
+  
+ -- fake level vertices, for next association
+ 
+ if fake_used > 0 then
+   for gvid = gvn,gvx do
+     -- base == outrange lvid 
+     local vx = gg:vertex(gvid)
+     local p = vx:level_point()      
+     local lvid_base = vx:level_vertex_id() 
+     local test = gg:vertex_id(vx)
+     SaveVertexInfo (gvid, base, p.x, p.y, p.z) 
+     SaveVertexInfo (gvid, lvid_base, p.x, p.y, p.z)   
+     if gvid < 65 then
+        wprintf("   gvid =~C0D %2d~C07, lvid_base =~C0D %7d -> %5d~C07,  pos =~C0E %s~C07", gvid, lvid_base, test, misc.pos2str(p))
+     end     
+     gv_found = gv_found + 1
+     base = base + 1  
+   end
+   wprintf ('[~T/~B].~C0C #WARN:~C07 fake gvid used = %d ', fake_used)
+ end 
+
+ SaveVertexList('close file', fname);
+ 
+ wprintf ('[~T/~B].~C0F #COMPLETE: vertices saved to file ~C07')
+ 
+ device():pause(false)
+ 
+ if gold == nil then
+   return false
+ end
+ 
+end
+
+
+function LoadLines (fname)
+ local frec = { fname = fname, patched = 0 }  
+ frec.lines = FileLoad (frec.fname, 'lines') 
+ wprintf(' for file~C0A %-40s~C07 loaded~C0D %d~C07 lines ', frec.fname, #frec.lines)
+ return frec
+end
+
+
+function vertex_dump.store_ltx(i)
+ local fr = vertex_dump.frecs[i] 
+ if fr.fname and fr.lines and fr.patched then
+   --SetDbgVar('dump_file', fr.fname)  
+   FileWrite (fr.fname, fr.lines)
+   wprintf (' dumped back file~C0A %s ~C07, patched lines =~C0D %d~C07', fr.fname, fr.patched)
+ else
+   wprintf ('~C0C #WARN: vertex_dump.frecs[%d] is empty ~C07', i)      
+ end   
+ 
+end     
+
+function vertex_dump.improve_one(irec, name, best_lvid, best_gvid)
+ local frec = vertex_dump.frecs[irec]
+ local lines = frec.lines 
+ 
+ local i = find_line(lines, name)
+ 
+ if i > 0 then
+    frec.patched = frec.patched + 1
+     
+    for l = i, i + 10 do       
+     local ls = tostring( lines[l] )
+     if strposx(ls, 'game_vertex_id') then
+        vertex_dump.frecs[irec].lines [l] = sprintf('game_vertex_id = %d', best_gvid)
+     end 
+     if strposx(ls, 'level_vertex_id') then
+        vertex_dump.frecs[irec].lines [l] = sprintf('level_vertex_id = %d', best_lvid)
+     end
+    end -- for
+    
+    return 1 
+ else
+    return 0
+ end -- if line found                                   
+                                                    
+end
+
+
+function vertex_dump.improve_portion(start)
+
+ -- порционная обработка объектов из спавн-реестра (медленно и хз. качественно-ли)
+ -- wprintf ('[~T/~B]. #DBG: processing impove_portion from $%x ', start) 
+
+ local offsets = coord_params.se_obj_params2
+ 
+ local gvn,gvx,lvx = vertex_dump.range()
+ 
+ local rcnt = #vertex_dump.frecs
+ 
+ local last = math.min (MAX_OBJ_ID, start + 253)
+ 
+ device():pause(true)
+ 
+ for n = start, last do
+    local name, proto = FindSpawnIDS (n)
+    -- если объект в спавне есть... надо его обработать
+    if name and proto then
+       local pos  = ReadVectorDMA (proto, offsets.pos_x)      
+       local lvid = ReadDMA (proto, offsets.lvid_int,   'int') 
+       local gvid = ReadDMA (proto, offsets.gvid_word,  'word')
+       local clid = ReadDMA (proto, offsets.clsid_word, 'word')       
+       local pid =  ReadDMA (proto, offsets.pid_word,   'word')
+
+       local best_lvid, best_gvid, best_tvid = NearestVertexInfo (pos.x, pos.y, pos.z)
+       
+       -- пропускать мобильные объекты, или в чей-либо собственности
+       local skip = IsStalker(nil, clid) or IsMonster(nil, clid) or ( pid < BAD_OBJ_ID )       
+       local out_level = ( gvid < gvn ) or ( gvid > gvx )  
+       
+       if ( best_gvid > 30000 ) then
+         wprintf('~C0C #FATAL:~C07 wrong best game_vertex_id = %d ', best_gvid )  
+       end
+       
+       -- only on-level objects
+       if (not skip) and ( best_lvid >= 0 ) and ( best_gvid >= 0 ) and ( best_gvid < 30000 ) and ( tonumber(lvid) ~= best_lvid ) then       
+                  
+         local pc = 0        
+         
+         for i = 1,rcnt do         
+           local r = vertex_dump.improve_one (i, name,  best_lvid, best_gvid )                      
+           vertex_dump.cnt = vertex_dump.cnt + r
+           pc = pc + r    
+           -- для объектов за пределами уровня, не оптимизировать глобальные файлы       
+           if out_level then 
+              break
+           end           
+         end 
+         
+         if pc > 0 then
+            wprintf ("~CF0 %5d object %-30s lvid = %7d, gvid = %5d, best_lvid = %7d, best_gvid = %5d ~C07", n, name,  lvid or -1, gvid or -1, best_lvid, best_gvid  )
+         end         
+       end -- if optimal found            
+    end -- if object filtered
+ end -- for main
+ 
+ 
+ if last < MAX_OBJ_ID then
+ 
+  local code = (last + 1)
+  schedule.add("improve_portion", "vertex_dump.improve_portion("..code..")", 1) 
+ else
+ 
+  --wprintf("[~T/~B].~CE0 #DBG: total optimized ~CED %d ~C07", vertex_dump.cnt)  
+  for i = 1,rcnt do
+     vertex_dump.store_ltx(i)
+  end
+ 
+  wprintf ('[~T/~B].~CE0 #MSG: files improve complete!~C07')                                                            
+  SleepEx(300)  
+ end  
+ 
+ device():pause(false)
+end
+
+
+function vertex_dump.process_ltx(nfile)
+ local fr = vertex_dump.frecs[nfile]
+ 
+ local nline = 3 
+ 
+ local gvn,gvx,lvx = vertex_dump.range()
+ 
+ wprintf('~CB0 processing file ~CB8 %s ~C07', fr.fname)
+ 
+ while true do
+  -- поиск следующей строки позиции  
+  nline = next_pos_key (fr.lines, nline, 'section_name = ')
+  nline = next_pos_key (fr.lines, nline, 'position = ')      
+  xline = next_pos_key (fr.lines, nline + 1, 'custom_data =')
+  
+  
+  local l_gvid = next_pos_key (fr.lines, nline,  'game_vertex_id = ')
+  local l_lvid = next_pos_key (fr.lines, l_gvid, 'level_vertex_id = ')
+  
+  if ( nline == 0 ) or ( l_givd == 0 ) or ( l_lvid == 0 ) then
+     -- wprintf('~C0C #WARN: not found next marker ~C07') 
+     break
+  end
+  
+  if ( l_gvid < xline ) and ( l_lvid < xline ) then
+     
+      local name = fr.lines[nline - 1]    
+         
+      if strposx(name, 'name =') then
+         name = string.gsub(name, 'name = ', '')
+      else
+         wprintf('~C0C #WARN: for line %d name line not correct = %s ~C07', nline - 1, name)    
+      end     
+         
+         
+      local s = fr.lines [nline]    
+      s = string.gsub(s, 'position = ', '')
+      local sl = SplitStr(s, ',')
+      
+      local pt = {}
+      for ii = 1,#sl do
+       table.insert (pt, tonumber( sl[ii] ))   
+      end 
+    
+      local ps = fr.lines[l_lvid] .. ' ' .. fr.lines[l_gvid]
+      
+      for sub,v in string.gmatch(ps, '%d+') do
+       table.insert (pt, tonumber(sub))
+      end 
+      
+         
+      
+      if #pt == 5 then 
+        local pos = vector()
+        pos.x = pt[1]
+        pos.y = pt[2]
+        pos.z = pt[3]
+        local lvid = pt [4]
+        local gvid = pt [5]
+        
+             
+        local in_level = ( gvn <= gvid ) and ( gvid <= gvx ) 
+        
+        -- обработка только "местных" gvid для глобальных файлов
+        if ( nfile == 1 ) or in_level then  
+             
+          local best_lvid, best_gvid, best_tvid = NearestVertexInfo (pos, true)
+             
+         
+          if best_lvid < 0 then
+             best_lvid, best_gvid, best_tvid = NearestVertexInfo (pos, true)                      
+          end
+          
+          if best_tvid > 0 then
+             best_lvid = best_tvid
+          end                          
+          
+          
+          if ( best_gvid > 0 ) and ( best_lvid > 0) and ( best_lvid ~= lvid ) or ( best_gvid ~= gvid ) then
+            wprintf ("~CF0 name = %-35s pos =~CF1 { %s }~CF0, lv =~CF2 %7d~CF0, gv =~CFD %5d~CF0, best_lv =~CF2 %7d~CF0, best_gv =~CFD %5d ~C07", name, misc.pos2str(pos), lvid, gvid, best_lvid, best_gvid  )
+            
+            fr.lines [nline]  = sprintf('position = %.4f,%.4f,%.4f', pos.x, pos.y, pos.z)
+            fr.lines [l_lvid] = sprintf('level_vertex_id = %d', best_lvid)
+            fr.lines [l_gvid] = sprintf('game_vertex_id = %d', best_gvid)        
+            
+            vertex_dump.cnt = vertex_dump.cnt + 1
+            fr.patched = fr.patched + 1
+          else  
+            vertex_dump.opt = vertex_dump.opt + 1       
+                   
+          end    
+              
+        end  -- if nfile      
+            
+            
+      else
+        wprintf (' ~C0C #WARN: collected numbers = %d, s = {%s}, ps = {%s} ~C07 ', #pt, s, ps )    
+      end -- if  
+  end
+      
+  nline = xline              
+ end
+ 
+  
+end
+
+
+function vertex_dump.improve(lname)
+
+ if lname == nil then
+    lname = level.name()
+ end   
+ 
+ local fname = sprintf("$mod_dir$\\nlc\\vxd_%s.dat", lname)
+  
+ SetUpdTimeout(900000, "dump") 
+ 
+ if LoadVertexList(fname) ~= '#OK' then
+    wprintf('~C0C #FATAL: vertex dump not exists for level~C0F %s~C07', lname) 
+    return 
+ end
+ 
+ local tname = sprintf("$mod_dir$\\alife\\alife_%s.ltx", lname)
+ 
+ if not FileExists(tname) then
+    wprintf('~C0C #FATAL: source file not exists ~C0F %s~C07', tname)
+    return
+ end
+ 
+ vertex_dump.frecs = {}
+ 
+ local frec = LoadLines (tname)
+ table.insert ( vertex_dump.frecs, frec )
+ -- глобальные файлы после первого 
+ -- frec = LoadLines ("$mod_dir$\\alife\\alife_new_level_changer.ltx")
+ -- table.insert ( vertex_dump.frecs, frec )
+ -- frec = LoadLines ("$mod_dir$\\alife\\alife_nlc6_spawn.ltx")
+ -- table.insert ( vertex_dump.frecs, frec )
+ vertex_dump.cnt = 0
+ vertex_dump.opt = 0 
+ 
+ 
+ device():pause(true)
+ local rcnt = #vertex_dump.frecs
+  
+ for i = 1,rcnt do 
+  vertex_dump.process_ltx(i)
+ end
+  
+ 
+ wprintf("[~T/~B].~CE0 #DBG: total optimized lines ~CED %d ~CE0, already optimal =~CED %d ~C07", vertex_dump.cnt, vertex_dump.opt)  
+ for i = 1,rcnt do    
+  vertex_dump.store_ltx(i)  
+ end
+ 
+ vertex_dump.frecs = {}
+ 
+ wprintf ('[~T/~B].~CE0 #MSG: files improve complete!~C07')                                                            
+ 
+ device():pause(false)
+ -- get_console():execute("stat_memory")
+ -- DumpMMStat() 
+ -- wprintf (' file lines = %d, patched_lv = %d, patched_gv = %d ', #lines, patched_lv, patched_gv ) 
+ -- SleepEx(300) 
+  
+end
+
+function vertex_dump.improve_all()
+
+ local last = 1
+ local t = {} 
+ for lname,num in pairs(const.level_number) do
+    t[num] = lname
+    last = math.max(last, num)
+ end
+ 
+ wprintf(' max level number = %d, level_number.total = %d ', last, const.level_number.total )  
+ 
+ for i = 1,last do
+  local lname = t[i]
+  vertex_dump.improve(lname)
+ end
+ 
+end
+
+
+-- vertex_dump.dump()

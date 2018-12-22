@@ -1,0 +1,139 @@
+local self_inv_boxes={}
+function OnActorSave()
+	local soActor = g_sim:actor()
+	local idGv = soActor and soActor.m_game_vertex_id
+	local idMap = idGv and game_graph():valid_vertex_id(idGv) and game_graph():vertex(idGv):level_id()
+	
+	local sMapNow,idMapNow = db.sMapNow,db.idMapNow
+	if idMap and idMap ~= idMapNow then
+	local sMapNew=g_sim:level_name(idMap)
+		db.tMapNew = {map=idMap, pos=soActor.position, lv=soActor.m_level_vertex_id, gv=idGv}
+		move_invbox(sMapNow,sMapNew)
+		move_bag(sMapNow,sMapNew)
+		move_nap(sMapNow,sMapNew)
+	end
+end
+
+function create_treasurebox()
+	local robjd
+	local actor=db.actor
+	local dir=device().cam_dir
+	local a=vector() a.y=math.atan2(dir.x,dir.z)
+	local xdelta=math.sin(a.y)
+	local zdelta=math.cos(a.y)
+	local act_pos=actor:position()
+	local lvid=actor:level_vertex_id()
+	local gvid=actor:game_vertex_id()
+	robjd=amk.spawn_item("m_inventory_box",sak.v3f((act_pos.x+xdelta),(act_pos.y+0.1),(act_pos.z+zdelta)),gvid,lvid)
+	if robjd then
+		local pk = get_netpk(robjd,1)
+		local data = pk:get()
+		data.custom_data = "[logic]\ncfg = scripts\\self_inv_box.ltx"
+		pk:set(data)
+		local clozer = alife():create_ammo("closer_inv", robjd.position, robjd.level_vertex_id, robjd.game_vertex_id, robjd.id,1)
+		self_inv_boxes = xray_vars.load_table(nlc_vars, "self_inv_boxes", {})
+		self_inv_boxes[clozer.id] = robjd.id
+		--table.insert(self_inv_boxes[clozer.id], robjd.id)
+		nlc_vars.self_inv_boxes = self_inv_boxes
+	end
+end
+function treasurebox_close(obj)
+	self_inv_boxes = xray_vars.load_table(nlc_vars, "self_inv_boxes", {})
+	local objd=tonumber(self_inv_boxes[obj:id()])
+	local robjd=g_sim:object(objd)
+	if robjd then
+		amk.remove_item(obj)
+		return_inv_in_actor(objd)
+		treasurebox_closed(objd)
+	end
+	local self=level.main_input_receiver()
+	if self then
+	self:GetHolder():start_stop_menu(self,true)
+	end
+	nlc_vars.self_inv_boxes[obj:id()]=nil
+end
+
+function return_inv_in_actor(objd)
+local out_object = client_obj(objd)
+local in_object = db.actor
+	local ids,cnt = registry.inv_objects(out_object:id(), true)
+    for n = 1,cnt do
+       local id = ids[n]
+       local sobj = client_obj(id)
+       if sobj then 
+         out_object:transfer_item(sobj, in_object) 
+       end 
+    end
+end
+
+function treasurebox_closed(obj)
+	local robjd=g_sim:object(obj)
+	local pos=robjd.position
+	local lvid=robjd.level_vertex_id
+	local gvid=robjd.game_vertex_id
+		if robjd then
+			g_sim:release(g_sim:object(obj), true)
+		end
+	set_inactivate_input_time(5)
+	amk.spawn_item("treasure_item",pos,gvid,lvid)
+end
+
+function move_invbox(sMapNow,sMapNew)
+	--self_inv_boxes = xray_vars.load_table(nlc_vars, "self_inv_boxes", {})
+	local ids = registry.sc_objects("rucksack", false, 7)
+	if ids=={} then return end
+	local a=0
+	local actor=db.actor
+	local act_pos=actor:position()
+	local cnt = #ids
+      for n=1,cnt do
+      local id = ids[n]
+      local obj = client_obj(id)
+        if obj and db.tMapNew then
+			if act_pos:distance_to(obj:position())<5 then
+				obj:transfer_item(obj, actor)
+				--[[local sobj = server_obj(id)
+				local pk = get_netpk(sobj,1)
+				local data = pk:get()
+				ODS("[~T]  вот рюкзаки  "..obj:name().."  "..act_pos:distance_to(obj:position()).."     "..data.level_vertex_id.."   "..data.game_vertex_id)
+				data.level_vertex_id, data.game_vertex_id = db.tMapNew.lv, db.tMapNew.gv
+				pk:set(data)
+				sobj.position = sak.v3f(db.tMapNew.pos.x, db.tMapNew.pos.y+(0.4*a), db.tMapNew.pos.z)
+				a=a+1--]]
+			end
+		end
+	end
+end
+
+function move_bag(sMapNow,sMapNew)
+	local bag_obj=g_sim:story_object(story_ids.hran_sumka)
+	if bag_obj then
+		local obj=g_sim:object(bag_obj.id)
+		if obj and db.tMapNew then 
+			local pk = get_netpk(obj)
+			local data = pk:get()
+			data.level_vertex_id, data.game_vertex_id = db.tMapNew.lv, db.tMapNew.gv
+			-- pk:set(data)
+            obj.m_level_vertex_id, obj.m_game_vertex_id = db.tMapNew.lv, db.tMapNew.gv    
+            
+			obj.position = sak.v3f(db.tMapNew.pos.x, db.tMapNew.pos.y-100, db.tMapNew.pos.z)
+		end
+	end
+end
+
+function move_nap(sMapNow,sMapNew)
+	local nap=g_sim:story_object(story_ids.assistant2)
+	local actor=db.actor
+	if nap and actor:has_info("assistant_go_to_mil") then
+		local obj=g_sim:object(nap.id)
+		local act_pos=actor:position()
+		if obj and obj.position:distance_to(act_pos)<25 and db.tMapNew then 
+			local pk = get_netpk(obj)
+			local data = pk:get()
+			data.level_vertex_id, data.game_vertex_id = db.tMapNew.lv, db.tMapNew.gv
+			pk:set(data)
+obj.m_level_vertex_id, obj.m_game_vertex_id = db.tMapNew.lv, db.tMapNew.gv
+			obj.position = sak.v3f(db.tMapNew.pos.x+1, db.tMapNew.pos.y, db.tMapNew.pos.z+1)
+		end
+	end
+end

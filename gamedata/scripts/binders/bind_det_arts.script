@@ -1,0 +1,23 @@
+function bind_artefact( obj )
+	--if not get_bool( obj:section(), "bind_det_arts.ignore", false ) then
+		obj:bind_object( artefact_binder( obj ) )
+	--end
+end
+
+class "artefact_binder"( object_binder )
+
+function artefact_binder:__init( obj ) super( obj )
+	self.first_update = false
+end
+
+function artefact_binder:update()
+	if not self.first_update then
+		local item = self.object
+		local ps   = item:get_physics_shell()
+		if ps and not item:parent() then
+			ps:apply_force( 0, item:mass() * 900, 0 )
+			wprintf( "///////////////////////     M-MM!.. THE FORCE IS STRONG WITH THIS ONE!    /////////////////////////" )
+		end
+		self.first_update = true
+	end
+end

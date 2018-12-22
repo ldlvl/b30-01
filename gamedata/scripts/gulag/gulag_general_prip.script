@@ -1,0 +1,346 @@
+local t
+local ltx
+function load_job(sj, gname, type, squad, groups, st)
+	ltx = 	"[meet@generic_lager_guard]\n"..
+			"meet_state		= 10|wait@wait\n"..
+			"meet_state_wpn	= 10|backoff@threat_weap\n"..
+			"victim			= 10|actor\n"..
+			"victim_wpn		= 10|actor\n"..
+			"use				= true\n"..
+			"use_wpn			= false\n"..
+			"syndata			= backoff@threat_weap\n"..
+			"precond			= visibility\n"..
+			
+			"[danger@generic_lager_danger]\n"..
+			"ignore_types                    = corpse\n"..
+			"ignore_distance_sound           = 3\n"..
+			"danger_inertion_time_sound      = 10000\n"..
+			"danger_inertion_time_ricochet   = 10000\n"..
+			"ignore_distance_corpse    = 2\n"..
+			"ignore_distance = 0\n"..
+			
+			"[combat_ignore@"..gname.."]\n"..
+			"combat_ignore_cond	= always\n"..
+			
+			"[meet@generic_lager_patrol]\n"..
+			"meet_state		= 2|wait@wait\n"..
+			"meet_state_wpn	= 2|backoff@threat_weap\n"..
+			"victim			= 5|actor\n"..
+			"victim_wpn		= 10|actor\n"..
+			"use				= true\n"..
+			"use_wpn			= false\n"..
+			"syndata			= backoff@threat_weap\n"..
+			"precond			= visibility\n"..
+			
+			"[meet@generic_lager_sniper]\n"..
+			--"meet_state		= 5|wait@wait\n"..
+			"meet_state_wpn	= 10|backoff@threat_weap\n"..
+			--"victim			= 5|actor\n"..
+			--"victim_wpn		= 10|actor\n"..
+			"use				= false\n"..
+			"use_wpn			= false\n"..
+			"syndata			= backoff@threat_weap\n"..
+			"precond			= visibility\n"
+
+	if type=="general_lager_prip" then
+		local it = 1
+		while level.patrol_path_exists(gname.."_kamp_"..it) do
+			local way_name = gname.."_kamp_"..it
+			local ptr = patrol(way_name)
+			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			local job_count = 5
+			if wp_prop.count~=nil then
+				job_count = wp_prop.count
+			end
+
+			for i = 1, job_count do
+				t = {section = "logic@"..way_name,
+					idle = 0,
+					prior = 8-i, state = {0,1}, squad = squad, group = groups[1],
+					position_threshold = 500,
+					in_rest = "", out_rest = ""
+				}
+				table.insert(sj, t)
+			end
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active 		= kamp@"..way_name.."\n"..
+							"combat_ignore	= combat_ignore@"..gname.."\n"..
+
+							"[kamp@"..way_name.."]\n"..
+							"center_point 	= kamp_"..it.."\n"..
+							"meet 			= meet@"..way_name.."kampers\n"..
+							"danger 		= danger@generic_lager_danger\n"..
+							"show_spot 		= false\n"..
+							"soundgroup 	= "..way_name.."\n"..
+							"combat_ignore_cond	= always\n"..
+							
+							"[meet@"..way_name.."kampers]\n"..
+							"meet_state		= sit_ass\n"..
+							"meet_state_wpn	= sit_ass\n"..
+							"use			= true\n"..
+							"use_wpn		= false\n"..
+							"abuse 			= false\n"..
+							"meet_dialog	= apaty_stalkers_start_dialog\n"
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+		it = 1
+		while level.patrol_path_exists(gname.."_sleep_"..it) do
+			local way_name = gname.."_sleep_"..it
+
+			t = {section = "logic@"..way_name,
+				idle = 0,
+				prior = 4, state = {0,1}, squad = squad, group = groups[1],
+				position_threshold = 500,
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = sleeper@"..way_name.."\n"..
+
+							"[sleeper@"..way_name.."]\n"..
+							"danger = danger@generic_lager_danger\n"..
+							"show_spot = false\n"..
+							"path_main = sleep_"..it.."\n"
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+		it = 1
+		while level.patrol_path_exists(gname.."_walker_"..it.."_walk") do
+			local way_name = gname.."_walker_"..it.."_walk"
+
+			t = {section = "logic@"..way_name,
+				idle = lua_random(40,60)*60*1000, timeout = lua_random(10,20)*60*1000,
+				prior = 5, state = {0,1}, squad = squad, group = groups[1],
+				position_threshold = 500,
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = walker@"..way_name.."\n"..
+
+							"[walker@"..way_name.."]\n"..
+							"sound_idle = state\n"..
+							"danger = danger@generic_lager_danger\n"..
+							"show_spot = false\n"..
+							"path_walk = walker_"..it.."_walk\n"
+
+			if level.patrol_path_exists(gname.."_walker_"..it.."_look") then
+				job_ltx = job_ltx.."path_look = walker_"..it.."_look\n"
+			end
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+		it = 1
+		while level.patrol_path_exists(gname.."_walker2_"..it.."_walk") do
+			local way_name = gname.."_walker2_"..it.."_walk"
+
+			t = {section = "logic@"..way_name,
+				idle = 0,
+				prior = 5, state = {0,1}, squad = squad, group = groups[1],
+				position_threshold = 500,
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = walker@"..way_name.."\n"..
+
+							"[walker@"..way_name.."]\n"..
+							"sound_idle = state\n"..
+							"danger = danger@generic_lager_danger\n"..
+							"show_spot = false\n"..
+							"path_walk = walker2_"..it.."_walk\n"
+
+			if level.patrol_path_exists(gname.."_walker2_"..it.."_look") then
+				job_ltx = job_ltx.."path_look = walker2_"..it.."_look\n"
+			end
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+		it = 1
+		while level.patrol_path_exists(gname.."_patrol_"..it.."_walk") do
+			local way_name = gname.."_patrol_"..it.."_walk"
+			local ptr = patrol(way_name)
+			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			local job_count = 3
+			if wp_prop.count~=nil then
+				job_count = wp_prop.count
+			end
+
+			for i = 1, job_count do
+				t = {section = "logic@"..way_name,
+					idle = lua_random(60,120)*60*1000,
+					prior = 6, state = {0,1}, squad = squad, group = groups[1],
+					position_threshold = 500,
+					in_rest = "", out_rest = ""
+				}
+				table.insert(sj, t)
+			end
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = patrol@"..way_name.."\n"..
+
+							"[patrol@"..way_name.."]\n"..
+							"meet = meet@generic_lager_patrol\n"..
+							"formation = back\n"..
+							"path_walk = patrol_"..it.."_walk\n"..
+							"show_spot = false\n"..
+							"on_signal = end| %=search_gulag_job%\n"
+
+			if level.patrol_path_exists(gname.."_patrol_"..it.."_look") then
+				job_ltx = job_ltx.."path_look = patrol_"..it.."_look\n"
+			end
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+		it = 1
+		while level.patrol_path_exists(gname.."_guard_"..it.."_walk") do
+			local way_name = gname.."_guard_"..it.."_walk"
+			t = {section = "logic@"..way_name,
+				idle = 0,
+				prior = 7, state = {0,1}, squad = squad, group = groups[1],
+				position_threshold = 500,
+				in_rest = "", out_rest = ""
+			}
+			table.insert(sj, t)
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = camper@"..way_name.."\n"..
+
+							"[camper@"..way_name.."]\n"..
+							"meet = meet@generic_lager_guard\n"..
+							"show_spot = false\n"..
+							"path_walk = guard_"..it.."_walk\n"
+
+			if level.patrol_path_exists(gname.."_guard_"..it.."_look") then
+				job_ltx = job_ltx.."path_look = guard_"..it.."_look\n"
+			end
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+		it = 1
+		while level.patrol_path_exists(gname.."_sniper_"..it.."_walk") do
+
+			local way_name = gname.."_sniper_"..it.."_walk"
+
+
+			t = {section = "logic@"..way_name,
+				idle = 0,
+				prior = 10, state = {0,1}, squad = squad, group = groups[1],
+				position_threshold = 500,
+				in_rest = "", out_rest = "",
+				predicate = function(npc_info)
+								return npc_info.is_sniper==true
+										end
+			}
+			table.insert(sj, t)
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = camper@"..way_name.."\n"..
+
+							"[camper@"..way_name.."]\n"..							
+							"path_walk = sniper_"..it.."_walk\n"..
+							"path_look = sniper_"..it.."_look\n"..
+							"show_spot = false\n"..
+							"meet = meet@generic_lager_sniper\n"..
+							"sniper = true\n"
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+		it = 1
+		local job_count = 5
+		while level.patrol_path_exists(gname.."_raid_"..it.."_walk") do
+
+			local way_name = gname.."_raid_"..it.."_walk"
+			local ptr = patrol(way_name)
+			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			if wp_prop.count~=nil then
+				job_count = wp_prop.count
+			end
+
+			for i = 1, job_count do
+
+				t = {section = "logic@"..way_name,
+					idle = 0,
+					prior = 10, state = {1}, squad = squad, group = groups[1],
+					fill_idle = xr_gulag.idle_once,
+					position_threshold = 500,
+					in_rest = "", out_rest = ""
+				}
+				table.insert(sj, t)
+			end
+
+			local job_ltx = "[logic@"..way_name.."]\n"..
+							"active = patrol@"..way_name.."\n"..
+
+							"[patrol@"..way_name.."]\n"..
+							"meet = meet@generic_lager_patrol\n"..
+							"formation = around\n"..
+							"show_spot = false\n"..
+							"path_walk = raid_"..it.."_walk\n"
+
+			if level.patrol_path_exists(gname.."_raid_"..it.."_look") then
+				job_ltx = job_ltx.."path_look = raid_"..it.."_look\n"
+			end
+
+			ltx = ltx..job_ltx
+			it = it + 1
+		end
+
+	end
+end
+
+function load_states(gname, type)
+	if type=="general_lager_prip" then
+		return function(gulag)
+			if gulag.state==0 then
+				if gulag.population_comed==0 then
+					return 0
+				end
+				if xr_logic.pick_section_from_condlist(db.actor, gulag.smrttrn, gulag.state_switch_1)~=nil then
+					return 1
+				end
+				return 0
+			elseif gulag.state==1 then
+				if not db.zone_by_name[gulag.name] then
+					return 1
+				end
+				if gulag.population_comed==0 then
+					return 0
+				end
+				if xr_logic.pick_section_from_condlist(db.actor, gulag.smrttrn, gulag.state_switch_0)~=nil then
+					return 0
+				end
+				return 1
+			end
+		end
+	end
+end
+
+
+function checkStalker(npc_community, type, npc_rank, se_obj, preset_name)
+	return type=="general_lager_prip"
+end
+function checkMonster(npc_community, type, npc_rank, se_obj, preset_name)
+	return type=="general_lair"
+end
+
+function load_ltx(gname, type)
+	if type=="general_lager_prip" then
+		return ltx
+	end
+	return nil
+end

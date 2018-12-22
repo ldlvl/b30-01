@@ -1,0 +1,1183 @@
+cond_old=0.1
+--[[
+local cond_wpn_old0=0
+local cond_wpn_old1=0
+local cond_wpn_old2=0
+local cond_wpn_old3=0
+local cond_wpn_old4=0
+local cond_wpn_old5=0
+--]]
+cond_wpn_old = { 0, 0, 0, 0, 0, 0 }
+
+local add_outfit_weight=0
+
+local cl_condition = {}
+
+matches_flame=-1
+pwr_restore=0
+add_coll=0
+
+
+params.con_commands = {}
+
+local game_difficulty=tonumber(level.get_game_difficulty())
+local game_difficulty_by_num = {
+  [0] = "novice",
+  [1] = "stalker",
+  [2] = "veteran",
+  [3] = "master"
+  }
+local immunity="actor_immunities_gd_"..game_difficulty_by_num[game_difficulty]
+local hit_probability = system_ini():r_float("actor", "hit_probability_gd_"..game_difficulty_by_num[game_difficulty])
+
+local offsets_xrGame_3312R =
+ {
+   console_add             = 1160,
+   const_0_75f             = "$4D246C",    -- __real@3f400000 = 0.75 ?
+   actor_fov               = "$53C598",    -- g_fov = 67.5f
+   unbind                  = "$5616E8",
+   cldcs                   = "$561E48",
+   hud_info                = "$561E98"   
+ } 
+
+local offsets_xrGame_all = { xr3312release = offsets_xrGame_3312R } 
+
+
+wprintf("~C0B[~T/~B]. #PERF: params.script 0~C07")
+local xrgame = GetModuleInfo('xrGame.dll').release
+offsets_xrGame = offsets_xrGame_all ['xr'..xrgame] or {} -- offsets for functions
+wprintf("~C0B[~T/~B]. #PERF: params.script 1~C07")
+RunCommand('REINIT_DMA') -- reload offsets
+wprintf("~C0B[~T/~B]. #PERF: params.script 2~C07")
+
+if xr_build_id > 5500 then   
+   offsets_xrGame.console_add = CalcPtr('#CConsole.commands', 0, '+', '@int')
+  -- wprintf("[~T]. #PARAM: build_%d console_add =~C0D %s ~C07", xr_build_id, FormatPtr(offsets_xrGame.console_add) or 'nil')  
+   --offsets_xrGame.actor_fov =   GetVarPtr('xrGame.dll', 'g_fov', 'RVA')
+end
+
+function value2str(v)
+ if type(v) == "number" then
+    if math.abs(v) > 0.1 then 
+       return sprintf("%.2f", v)
+    else
+       return sprintf("%.7f", v)
+    end   
+ else
+    return DumpVar(v)
+ end
+end
+
+_G.value2str = value2str
+
+function update_prop(intf, key, newval)
+ if intf == nil then
+   wprintf("[~T].~C0C #ERROR:~C07 trying get/update nil table for property %s ", key)
+   wprintf(" %s", debug.traceback(' ', 2))
+   return 0
+ end 
+ 
+ 
+ if intf[key] == nil then
+    if key ~= 'selected_item' then
+       wprintf("[~T].~C0C #ERROR(params):~C0F table %s[%s] = nil ~C07", intf.class_name or '?', key)
+    end   
+    return nil
+ end
+
+ local v = intf[key] 
+ if newval ~= nil then
+    intf[key] = newval
+    local sold = value2str(v)
+    local snew = value2str(newval)
+    if sold ~= snew then
+       -- wprintf("~C0E %-30s ~C0B[~C0A%s~C0B] =~C0F %s~C07 =>>~C0F %s~C07", intf.class_name or '?', key, v, newval)
+    end   
+ end
+ return v
+end  
+
+_G.update_prop = update_prop
+
+function hit_probability_add(key)
+  local new_hit_prob = hit_probability*key
+  if new_hit_prob>1 then new_hit_prob=1 end
+  actor_params.actor_prop ("hit_probability", new_hit_prob)
+end
+local mass=system_ini():r_float("actor","ph_mass")
+function add_actor_mass(key)
+  local new_mass = mass+key
+  actor_params.mov_prop("ph_mass", new_mass)
+end
+
+function set_torch_param(id,r,g,b,sw)
+  lightman.set_lamp_rgb(id,r,g,b)
+  if not sw then return end
+  local range = 18*r*sw
+  local spot  = 1.4/(sw)
+  lightman.set_light_range(id, range)
+  lightman.set_spot_angle(id, spot);
+end
+
+params.set_torch_param = set_torch_param
+
+function spawn_matches_flame(msec) 
+
+ if matches_flame > 0 then return end
+
+ local dir = db.actor:direction():mul(0.3) -- 0.3 m
+ local pos = db.actor:position():add(dir)
+ pos.y = pos.y + 1.7
+ 
+ local sobj = misc.spawn_obj ( 'zone_flame_matches', pos )
+ matches_flame = sobj.id
+ if msec == nil then
+    msec = 1000
+ end
+ linker.link_obj( sobj.id, 0.3 ) 
+ schedule.add ("del_matches_flame", "params.del_matches_flame("..sobj.id..")", msec)
+end
+
+params.spawn_matches_flame = spawn_matches_flame
+
+function del_matches_flame(id)
+ linker.unlink_obj(id)
+ misc.release_obj (id, "del_matches_flame", true)
+ matches_flame = -1
+ --wprintf('[~T/~B].~C0F #SYNC: matches flame %d off ~C07', id)
+end
+
+function get_nv_on_off(id)
+  local sw=tonumber( nvd_params.get_NVD_powered() )
+  return sw
+end
+function get_torch_on_off(id)  
+  return tonumber( lightman.get_lamp_active() )
+end
+function set_direction(coor_x,coor_y,coor_z)
+  local dir_d = vector()
+  dir_d:set(coor_x, coor_y, coor_z)
+  local h_rad = -dir_d:getH()
+  local p_rad = -dir_d:getP()
+  coord_params.camera_angles(h_rad, p_rad)
+end
+
+local sleeve = {
+    [ "without_outfit"                      ] = { "000", "css", "001", "001" },
+    [ "novice_outfit"                       ] = { "002", "css", "003", "003" },
+    [ "novice_q_outfit"                     ] = { "002", "css", "003", "003" },
+    [ "outfit_novice_m1"                    ] = { "002", "css", "003", "003" },
+    [ "outfit_q_novice_q_m1"                ] = { "002", "css", "003", "003" },
+    [ "neytral_novice_outfit_m1"            ] = { "001", "css", "002", "002" },
+    [ "neytral_q_novice_q_outfit_q_m1"      ] = { "001", "css", "002", "002" },
+    [ "neytral_novice_gaz_outfit_m1"        ] = { "001", "css", "002", "002" },
+    [ "neytral_q_novice_q_gaz_q_outfit_q_m1"] = { "001", "css", "002", "002" },
+    [ "stalker_outfit"                      ] = { "008", "008", "007", "007" },
+    [ "stalker_q_outfit"                    ] = { "008", "008", "007", "007" },
+    [ "neytral_gaz_outfit_m1"               ] = { "008", "008", "007", "007" },
+    [ "neytral_q_gaz_q_outfit_q_m1"         ] = { "008", "008", "007", "007" },
+    [ "neytral_gaz_outfit_m2"               ] = { "008", "008", "007", "007" },
+    [ "neytral_q_gaz_q_outfit_q_m2"         ] = { "008", "008", "007", "007" },
+    [ "outfit_stalker_m1"                   ] = { "008", "008", "007", "007" },
+    [ "outfit_q_stalker_q_m1"               ] = { "008", "008", "007", "007" },
+    [ "outfit_stalker_m2"                   ] = { "008", "008", "007", "007" },
+    [ "outfit_q_stalker_q_m2"               ] = { "008", "008", "007", "007" },
+    [ "stalker_outfit_m3"                   ] = { "008", "008", "007", "007" },
+    [ "stalker_q_outfit_q_m3"               ] = { "008", "008", "007", "007" },
+    [ "scientific_outfit"                   ] = { "019", "019", "_mm", "tch" },
+    [ "scientific_q_outfit"                 ] = { "019", "019", "_mm", "tch" },
+    [ "exo_outfit"                          ] = { "026", "css", "018", "018" },
+    [ "exo_q_outfit"                        ] = { "026", "css", "018", "018" },
+    [ "exo_outfit_m1"                       ] = { "026", "css", "018", "018" },
+    [ "exo_q_outfit_q_m1"                   ] = { "026", "css", "018", "018" },
+    [ "outfit_exo_m1"                       ] = { "026", "css", "018", "018" },
+    [ "outfit_q_exo_q_m1"                   ] = { "026", "css", "018", "018" },
+    [ "neytral_exo_antigas_outfit"          ] = { "026", "css", "018", "018" },
+    [ "neytral_q_exo_q_antigas_q_outfit"    ] = { "026", "css", "018", "018" },
+    [ "bandit_outfit"                       ] = { "003", "css", "004", "004" },
+    [ "bandit_q_outfit"                     ] = { "003", "css", "004", "004" },
+    [ "outfit_bandit_m1"                    ] = { "003", "css", "004", "004" },
+    [ "outfit_q_bandit_q_m1"                ] = { "003", "css", "004", "004" },
+    [ "bandit_gaz_outfit_m1"                ] = { "003", "css", "004", "004" },
+    [ "bandit_q_gaz_q_outfit_q_m1"          ] = { "003", "css", "004", "004" },
+    [ "bandit_veteran_outfit"               ] = { "005", "css", "005", "005" },
+    [ "bandit_veteran_outfit_gas"           ] = { "005", "css", "005", "005" },
+    [ "bandit_veteran_outfit_m1"            ] = { "005", "css", "005", "005" },
+    [ "bandit_q_veteran_q_outfit"           ] = { "005", "css", "005", "005" },
+    [ "bandit_q_veteran_q_outfit_q_gas"     ] = { "005", "css", "005", "005" },
+    [ "bandit_q_veteran_q_outfit_q_m1"      ] = { "005", "css", "005", "005" },
+    [ "bandit_master_outfit"                ] = { "004", "css", "006", "006" },
+    [ "bandit_q_master_q_outfit"            ] = { "004", "css", "006", "006" },
+    [ "bandit_master_outfit_gas"            ] = { "004", "css", "006", "006" },
+    [ "bandit_q_master_q_outfit_q_gas"      ] = { "004", "css", "006", "006" },
+    [ "bandit_master_outfit_m1"             ] = { "004", "css", "006", "006" },
+    [ "bandit_q_master_q_outfit_q_m1"       ] = { "004", "css", "006", "006" },
+    [ "exo_bandit_outfit"                   ] = { "024", "css", "016", "016" },
+    [ "exo_q_bandit_q_outfit"               ] = { "024", "css", "016", "016" },
+    [ "killer_outfit"                       ] = { "012", "css", "013", "tch" },
+    [ "killer_q_outfit"                     ] = { "012", "css", "013", "tch" },
+    [ "killer_gaz_outfit_m1"                ] = { "012", "css", "013", "tch" },
+    [ "killer_q_gaz_q_outfit_q_m1"          ] = { "012", "css", "013", "tch" },
+    [ "outfit_killer_m1"                    ] = { "012", "css", "013", "tch" },
+    [ "outfit_q_killer_q_m1"                ] = { "012", "css", "013", "tch" },
+    [ "merc_scientific_outfit"              ] = { "017", "017", "_mm", "tch" },
+    [ "merc_q_scientific_q_outfit"          ] = { "017", "017", "_mm", "tch" },
+    [ "killer_blue_exoskeleton"             ] = { "022", "017", "020", "020" },
+    [ "killer_q_blue_q_exoskeleton"         ] = { "022", "017", "020", "020" },
+    [ "monolit_outfit"                      ] = { "011", "css", "010", "010" },
+    [ "monolit_q_outfit"                    ] = { "011", "css", "010", "010" },
+    [ "monolit_gaz_outfit_m1"               ] = { "011", "css", "010", "010" },
+    [ "monolit_q_gaz_q_outfit_q_m1"         ] = { "011", "css", "010", "010" },
+    [ "monolit_scientific_outfit"           ] = { "018", "018", "_mm", "tch" },
+    [ "monolit_q_scientific_q_outfit"       ] = { "018", "018", "_mm", "tch" },
+    [ "monolit_exoskeleton"                 ] = { "025", "css", "021", "021" },
+    [ "monolit_q_exoskeleton"               ] = { "025", "css", "021", "021" },
+    [ "specops_outfit"                      ] = { "013", "013", "015", "tch" },
+    [ "specops_q_outfit"                    ] = { "013", "013", "015", "tch" },
+    [ "outfit_specnaz_m1"                   ] = { "013", "013", "015", "tch" },
+    [ "outfit_q_specnaz_q_m1"               ] = { "013", "013", "015", "tch" },
+    [ "military_outfit"                     ] = { "013", "013", "015", "tch" },
+    [ "military_q_outfit"                   ] = { "013", "013", "015", "tch" },
+    [ "militaryspec_outfit"                 ] = { "013", "013", "015", "tch" },
+    [ "militaryspec_q_outfit"               ] = { "013", "013", "015", "tch" },
+    [ "stalker_guard_outfit"                ] = { "012", "css", "013", "tch" },
+    [ "stalker_q_guard_q_outfit"            ] = { "012", "css", "013", "tch" },
+    [ "svoboda_light_outfit"                ] = { "010", "010", "009", "009" },
+    [ "svoboda_q_light_q_outfit"            ] = { "010", "010", "009", "009" },
+    [ "outfit_svoboda_m1"                   ] = { "010", "010", "009", "009" },
+    [ "outfit_q_svoboda_q_m1"               ] = { "010", "010", "009", "009" },
+    [ "svoboda_gaz_outfit_m1"               ] = { "010", "010", "009", "009" },
+    [ "svoboda_q_gaz_q_outfit_q_m1"         ] = { "010", "010", "009", "009" },
+    [ "svoboda_heavy_outfit"                ] = { "010", "010", "009", "009" },
+    [ "svoboda_q_heavy_q_outfit"            ] = { "010", "010", "009", "009" },
+    [ "svoboda_heavy_gaz_outfit_m1"         ] = { "010", "010", "009", "009" },
+    [ "svoboda_q_heavy_q_gaz_q_outfit_q_m1" ] = { "010", "010", "009", "009" },
+    [ "freedom_scientific_outfit"           ] = { "020", "020", "_mm", "tch" },
+    [ "freedom_q_scientific_q_outfit"       ] = { "020", "020", "_mm", "tch" },
+    [ "svoboda_yellow_exo_outfit_m1"        ] = { "021", "010", "019", "019" },
+    [ "svoboda_q_yellow_q_exo_q_outfit_q_m1"] = { "021", "010", "019", "19" },
+    [ "svoboda_exoskeleton"                 ] = { "021", "010", "019", "019" },
+    [ "svoboda_q_exoskeleton"               ] = { "021", "010", "019", "019" },
+    [ "dolg_outfit"                         ] = { "009", "009", "008", "008" },
+    [ "dolg_q_outfit"                       ] = { "009", "009", "008", "008" },
+    [ "outfit_dolg_m1"                      ] = { "009", "009", "008", "008" },
+    [ "outfit_q_dolg_q_m1"                  ] = { "009", "009", "008", "008" },
+    [ "dolg_gaz_outfit_m1"                  ] = { "009", "009", "008", "008" },
+    [ "dolg_q_gaz_q_outfit_q_m1"            ] = { "009", "009", "008", "008" },
+    [ "dolg_scientific_outfit"              ] = { "016", "016", "_mm", "tch" },
+    [ "dolg_q_scientific_q_outfit"          ] = { "016", "016", "_mm", "tch" },
+    [ "dolg_black_exoskeleton"              ] = { "023", "009", "017", "017" },
+    [ "dolg_q_black_q_exoskeleton"          ] = { "023", "009", "017", "017" },
+    [ "dolg_black_exoskeleton_m1"           ] = { "023", "009", "017", "017" },
+    [ "dolg_q_black_q_exoskeleton_q_m1"     ] = { "023", "009", "017", "017" },
+    [ "ecolog_outfit"                       ] = { "006", "006", "011", "tch" },
+    [ "ecolog_q_outfit"                     ] = { "006", "006", "011", "tch" },
+    [ "ecolog_outfit_m1"                    ] = { "019", "019", "_mm", "tch" },
+    [ "ecolog_q_outfit_q_m1"                ] = { "019", "019", "_mm", "tch" },
+    [ "protection_outfit"                   ] = { "007", "007", "012", "tch" },
+    [ "protection_q_outfit"                 ] = { "007", "007", "012", "tch" },
+    [ "broken_exoskeleton"                  ] = { "026", "css", "018", "tch" },
+    [ "broken_q_exoskeleton"                ] = { "026", "css", "018", "tch" },
+    [ "outfit_soldier_m1"                   ] = { "014", "css", "014", "tch" },
+    [ "outfit_q_soldier_q_m1"               ] = { "014", "css", "014", "tch" },
+    [ "soldier_outfit"                      ] = { "014", "css", "014", "tch" },
+    [ "soldier_q_outfit"                    ] = { "014", "css", "014", "tch" },
+    [ "cs_light_outfit"                     ] = { "015", "css", "_mm", "tch" },
+    [ "cs_q_light_q_outfit"                 ] = { "015", "css", "_mm", "tch" },
+    [ "cs_heavy_outfit"                     ] = { "015", "css", "_mm", "tch" },
+    [ "cs_q_heavy_q_outfit"                 ] = { "015", "css", "_mm", "tch" },
+    [ "military_stalker_outfit"             ] = { "014", "css", "014", "tch" },
+    [ "military_commander_outfit"           ] = { "014", "css", "014", "tch" },
+    [ "super_scientific_outfit"             ] = { "019", "019", "_mm", "tch" },
+    [ "super_q_scientific_q_outfit"         ] = { "019", "019", "_mm", "tch" }
+}
+function outfit_weight_cond(item_in_slot_6,cond,fast)
+  if item_in_slot_6~=nil then
+    if math.abs(cond-cond_old)>0.05 or fast then
+      local section=item_in_slot_6:section()
+      local id=item_in_slot_6:id()
+      --[[local sys_weight = system_ini():r_float(section, "additional_inventory_weight")
+      local sys_weight2 = system_ini():r_float(section, "additional_inventory_weight2")
+      local new_weight = ((math.ceil(cond*10))/10)*sys_weight
+      local new_weight2 = ((math.ceil(cond*10))/10)*sys_weight2
+      outfit_params.outfit_prop(id, "additional_inventory_weight", new_weight)
+      outfit_params.outfit_prop(id, "additional_inventory_weight2", new_weight2)--]]
+      actor_immunities_add(section,cond)
+      --add_outfit_weight=new_weight
+      texman.swap_sleeve(sleeve[section][1],sleeve[section][2],sleeve[section][3],sleeve[section][4])
+      cond_old=cond
+    end
+  else
+    if math.abs(cond-cond_old)>0.05 then
+    actor_immunities_add()
+    cond_old=0.03
+    --add_outfit_weight=0
+    texman.swap_sleeve("000","css","001","001")
+    end
+  end  
+end
+function actor_immunities_add(out_sect,key)
+  local old_param = 0.6+tonumber(level.get_game_difficulty())*0.4
+  for i,k in pairs(actor_params.immun_params) do
+    if i~="unk_max_offset" then
+    local new_param
+      if out_sect then
+      local out_prot=string.gsub(i, "_immunity", "_protection")
+      local param_out_prot = system_ini():r_float(out_sect, out_prot)
+      if i=="telepatic_immunity" then old_param=(old_param+0.2) end
+      new_param = old_param*(1-(param_out_prot*key))
+      else
+      new_param = old_param*5
+      end
+    --new_param = 0
+    if i=="telepatic_immunity" then new_param=(new_param*sak.black_bonus) end
+       actor_params.immun_prop (i, new_param)
+    end
+  end
+end
+function weapon_mag_size_cond_check(item_in_slot, index )
+  if item_in_slot~=nil then 
+    local cond_wpn = item_in_slot:condition()        
+    if math.abs(cond_wpn - cond_wpn_old[index + 1]) > 0.02 then
+      params.weapon_mag_size_cond(item_in_slot, cond_wpn)
+      cond_wpn_old[index + 1] = cond_wpn
+    end
+  end  
+end
+--[[
+function weapon_mag_size_cond1(item_in_slot)
+  if item_in_slot~=nil then 
+    local cond_wpn=item_in_slot:condition()
+    if math.abs(cond_wpn-cond_wpn_old1)>0.01 then
+      weapon_mag_size_cond(item_in_slot,cond_wpn)
+      cond_wpn_old1=cond_wpn
+    end
+  end  
+end
+function weapon_mag_size_cond2(item_in_slot)
+  if item_in_slot~=nil then 
+    local cond_wpn=item_in_slot:condition()
+    if math.abs(cond_wpn-cond_wpn_old2)>0.01 then
+      weapon_mag_size_cond(item_in_slot,cond_wpn)
+      cond_wpn_old2=cond_wpn
+    end
+  end  
+end
+function weapon_mag_size_cond4(item_in_slot)
+  if item_in_slot~=nil then 
+    local cond_wpn=item_in_slot:condition()
+    if math.abs(cond_wpn-cond_wpn_old4)>0.01 then
+      weapon_mag_size_cond(item_in_slot,cond_wpn)
+      cond_wpn_old4=cond_wpn
+    end
+  end  
+end
+--]]
+
+function params.weapon_mag_size_cond(item_in_slot, cond)
+	if true then return end
+    local section=item_in_slot:section()
+  local id=item_in_slot:id()
+    local sys_mag_size = system_ini():r_float(section, "ammo_mag_size")
+    local new_mag_size = math.ceil(sys_mag_size*cond)
+  wpn_params.wpn_prop(id, "ammo_mag_size", new_mag_size)
+ 
+  local wpn = item_in_slot:get_weapon()
+    if wpn == nil then
+       wprintf(" const_deviation not updated, due item %s is not CWeapon ", item_in_slot:name())
+       return 
+    end
+    -- если выпадение id случайно, повезет не каждому стволу
+    -- получаютс€ коэффициенты от -1 до +1 
+    local rnd_y = ( id % 256 ) / 256 - 0.5 
+    local rnd_p = ( id % 400 ) / 400 - 0.5
+    
+    local cdt = type(wpn.const_deviation) 
+  if (wpn_params.zoom_time <= 1) and (cdt == "userdata") then
+     local yaw_wpn   =  0.03 * cond * rnd_y 
+     local pitch_wpn =  0.03 * cond * rnd_p 
+     wpn.const_deviation.yaw = yaw_wpn
+     wpn.const_deviation.pitch = pitch_wpn
+       wprintf("~C0A #SUCCES:~C07 const_deviation updated to~C0D %.5f~C07 x~C0D %.5f~C07", yaw_wpn, pitch_wpn)
+    else   
+       wprintf("~C0C #FAIL:~C07 const_deviation:%s not updated , zoom_time =~C0D %f~C07 ", cdt, wpn_params.zoom_time or -2)    
+  end  
+end
+
+-- params.weapon_mag_size_cond = weapon_mag_size_cond
+
+function zapal_add(grena,zapal)
+  if grena~=nil then 
+    local id=grena:id()
+    wpn_params.wpn_prop(id, "destroy_time", zapal)
+  end  
+end
+function weapon_slots(num)
+  for i,k in pairs(sak_inventory.rucksack) do
+    if strpos(i, "wpn_",1,true) and (i~="wpn_binoc") and (i~="bolt") and not strpos(i, "addon",1,true) then
+      local kol = #k
+      for a=1,kol do
+          local id=k[a]
+                item_params.item_prop(id, "slot", num)
+      end
+    end
+  end  
+end
+
+function set_inv_weight(id, add)
+ item_params.item_prop(id, "inv_weight", add)
+end
+  
+local sys_repbox_weight = system_ini():r_float("repair_boxoutfit", "inv_weight")
+function repbox_weight_add()
+  if sak_inventory.eatable["repair_boxoutfit"] then
+    for a=1,#sak_inventory.eatable["repair_boxoutfit"] do
+        local repbox_id=sak_inventory.eatable["repair_boxoutfit"][a]
+        local rem={}
+        local sobj = alife():object(repbox_id)
+      if sobj then
+          local pk = get_netpk(sobj)
+          local data = pk:get()
+          local str=data.custom_data
+          rem = vergas_lib.str_explode(",",str,true)
+          local repiout=tonumber(rem[1]) or 0
+          local repiweap=tonumber(rem[2]) or 0
+          local new_weight = sys_repbox_weight+(0.35*repiout)+(0.35*repiweap)
+          set_inv_weight(repbox_id, new_weight) -- for CInventoryItem descedants
+      end
+    end
+  end
+end
+
+local sys_razgruzka_weight = system_ini():r_float("razgruzka", "inv_weight")
+function razgruzka_weight_add(add)
+  if sak_inventory.eatable["razgruzka"] then
+      local razgruzka_id=sak_inventory.eatable["razgruzka"][1]
+      local new_weight = sys_razgruzka_weight+add
+        set_inv_weight(razgruzka_id, new_weight)
+  end
+end  
+
+function mem_weight_add(add)
+  if sak_inventory.eatable["podsumok_mem"] then
+     local podsumok_id=sak_inventory.eatable["podsumok_mem"][1]
+     set_inv_weight(podsumok_id, add)
+  end
+end
+local sys_podsumok_weight = system_ini():r_float("podsumok", "inv_weight")
+function podsumok_weight_add(add)
+  if sak_inventory.eatable["podsumok"] then
+     local podsumok_id=sak_inventory.eatable["podsumok"][1]
+     local new_weight = sys_podsumok_weight+add
+       set_inv_weight(podsumok_id, add)     
+  end
+end
+local run_coef = system_ini():r_float("actor", "run_coef")
+local sprint_koef = system_ini():r_float("actor", "sprint_koef")
+local walk_accel = system_ini():r_float("actor", "walk_accel")
+local climb_coef = system_ini():r_float("actor", "climb_coef")
+local w_w_power = system_ini():r_float("actor_condition", "walk_weight_power")
+local ww_power = w_w_power
+local tiredness_timer = misc.game_timer()
+local sleep_time = 0
+-- nlc_vars.ph_tiredness = -100
+
+function tiredness_add()
+  --local weapon = db.actor:item_in_slot(2)
+  local act = db.actor
+  local armor = act:item_in_slot(6)
+  local gg_heal  = 15*(math.ceil((db.actor.health - 0.01) * 10))
+  
+  local ph_t = nlc_vars.ph_tiredness or 0 -- накопленна€ физическа€ усталость, восстанавливаетс€ со временем
+  
+  local delay = tiredness_timer:elapsed(true) / 60.0 -- сколько игровых минут между замером    
+  
+  local sleepiness = sleep_manager.get_sleepiness()
+  
+  local state = get_actor_obj().state
+  local sleep = sleep_manager.is_sleep_active()
+  
+  local delta = -0.1
+  
+  if state.crouch then delta = delta + 0.1 end
+  if state.sprint then delta = delta + 0.1 end
+  if state.jump   then delta = delta + 0.5 end  
+
+  if act.power == act.max_power and ph_t > 5 then
+     ph_t = ph_t * 0.98 -- 2% процентное восстановление при высокой усталости
+  end  
+                                 
+  local have_power = ( act.power + 0.1 ) / act.max_power  -- краткосрочна€ перегрузка
+  local action = "ADD"
+  if sleep then 
+     action = "RESTOR"
+     have_power = 1
+     delta = delta * sleep_manager.restore_coef() -- в защите, с оружием и рюкзаком спать неудобно!
+  else   
+     delta = delta + (act.max_power - act.power)
+     sleepiness = sleepiness + delay / 6.0       -- раз в 360 игровых секунд добавл€етс€ 1 пункт сонливости
+  end  
+  
+  if delta < 0 and ph_t < 0 then
+     if (not sleep) or (ph_t < -100) then
+         delta = 0
+     end     
+  end 
+
+  ph_t = ph_t + delta * delay         
+  if (delta > 0) and (not sleep) then
+     sleepiness = sleepiness + delta * delay * 0.1 -- физическа€ нагрузка приближает желание поспать
+  end
+
+  if sleepiness > 270 then
+     sleepiness = 270
+  end
+
+  local diff = sleep_manager.change_sleepiness(sleepiness)
+
+  nlc_vars.ph_tiredness = ph_t
+    
+  local new_coef = ( 960 + sleepiness + ph_t ) / ( 700 + 100 * have_power + gg_heal )
+  if new_coef < 1 then new_coef = 1 end
+  
+  local wpn_wobble = math.min (1.5, new_coef / 1.5)
+  wpn_wobble = math.max(wpn_wobble, 0.9) 
+  wpn_params.gg_tired = wpn_wobble * wpn_wobble 
+  
+  if armor then      -- дамажить экзу только при спринте, в 50 раз больше чем было до этого
+    local section = armor:section()
+    local state = get_actor_obj().state
+    local ex_dam_k = 0.001
+    if section == "svoboda_q_exoskeleton" then      -- экза свободы изнашиваетс€ медленнее
+      ex_dam_k = ex_dam_k * 0.65
+    end
+    if strposx( section, "exo" ) and state.sprint then 
+      local out_id = armor:id()
+      local last_condition = armor:condition()
+      local new_condition = last_condition - ex_dam_k
+      --wprintf("[~T]. #DBG: script damaged applied to~C0F %s~C07, condition =~C0D %.4f~C07 ", armor:name(), new_condition)
+      --wprintf(" from\n ~C0A %s~C07", lua_traceback(' ')) 
+      armor:set_condition( new_condition )
+    end
+  end
+
+  local new_run_coef    = run_coef    / new_coef
+  local new_sprint_koef = sprint_koef / new_coef
+  local new_walk_accel  = walk_accel  / new_coef
+  local new_climb_coef  = climb_coef  / new_coef
+  local inert= math.floor( 8 - (db.actor.health * 5)) * 0.1
+  inert = math.min(inert, 0.5)
+  inert = sprintf ('%.2f', inert)  
+  -- cam_inert=~C0D %s~C07 inert,
+  wprintf("~C1F[~T]. #TIREDNESS_%s:~C17 new_coef =~C1D %.5f~C17, sleepiness =~C1D %.3f~C17, stamina =~C1D %.3f~C17 (max_power =~C1D %.1f~C17), pht =~C1D %.3f~C17, diff =~C1D %.4f~C17, delay =~C1D %.1f~C17 min ~C07",
+                                     action, new_coef, sleepiness, have_power, act.max_power, ph_t, diff, delay)
+  -- wprintf("~C0A %s~C07", lua_traceback(' '))
+  ww_power = w_w_power * new_coef
+  act.max_power = 1 - ph_t * 0.02
+  
+  actor_params.actor_prop("run_coef",    new_run_coef)
+  actor_params.actor_prop("sprint_koef", new_sprint_koef)
+  actor_params.actor_prop("walk_accel",  new_walk_accel)
+  actor_params.actor_prop("climb_coef",  new_climb_coef)
+  tired_owermass()
+  
+  execute_command('cam_inert',inert)
+  if not act:is_talking() then gnzi.trade_many_add() end
+end
+function container_weight_add(container_id, add)
+  if container_id then     
+       set_inv_weight(container_id, add)
+  end
+end
+local max_weight = system_ini():r_float("inventory", "max_weight")
+local max_walk_weight = system_ini():r_float("actor_condition", "max_walk_weight")
+function max_item_mass_add(add)
+  local new_max_weight = max_weight+add+(sak.mass_add)
+  local new_weight = max_walk_weight+add+(sak.mass_add)
+  actor_params.inv_prop("max_weight", new_max_weight)
+  actor_params.cond_prop("max_walk_weight", new_weight)
+end
+
+local psy_health_v = system_ini():r_float("actor_condition", "psy_health_v")
+function psy_restore_speed_add(add)
+  local new_psy = psy_health_v+add
+  actor_params.cond_prop("psy_health_v", new_psy)
+end
+
+function tired_owermass()
+  --[[local carr_norm = actor_params.inv_prop("max_weight")+add_outfit_weight+pwr_restore+add_coll
+  local carr_weight = actor_params.inv_prop("total_weight")
+  local new_weight_power=ww_power    
+  if carr_weight>carr_norm then
+      local coef=(carr_weight-carr_norm)
+    new_weight_power=ww_power+0.0000005*(coef^2)
+  end
+    actor_params.cond_prop("walk_weight_power", ww_power) -- остальное добавит движок через коэффициенты перевеса ]]
+  -- actor_params.cond_prop("walk_weight_power", new_weight_power)
+end
+
+function radiation_add(add)
+  local radiat = actor_params.cond_prop("radiation")
+  local r_health=radiat+add
+  if r_health>1 then r_health=1 end
+  actor_params.cond_prop("radiation", r_health)
+end
+function health_add(add)
+  local healt = actor_params.cond_prop("health")
+  local health=healt+add
+  if health>1 then health=1 end
+ 
+    if health <= 0 then
+       --wprintf(" heath_add: %.3f += %.3f   actor killing from: \n %s ", healt, add, debug.traceback(" ", 2))
+       -- health = 1
+    end
+ 
+  if health < 0 then health=0 end
+ 
+  actor_params.cond_prop("health", health)
+end
+local psy_health_v = system_ini():r_float("actor_condition", "psy_health_v")
+function psy_health_v_add(key)
+  local new_psy_health_v = psy_health_v*key 
+  actor_params.cond_prop("psy_health_v", new_psy_health_v) 
+end
+
+function satiety_v_add (multv, divider)
+  local satiety_v = balance.satiety.lost_velocity
+  --  
+  local new_satiety_v = satiety_v * multv / divider
+  local prev_v = actor_params.cond_prop("satiety_v")
+  actor_params.cond_prop("satiety_v", new_satiety_v)  
+  if math.abs (prev_v - new_satiety_v) > 0.00001  then 
+     wprintf("[~T]. #DBG: satiety velocity updated from~C0D %8f~C07 to~C0D %.8f~C07, satiety health =~C0D %.8f~C07", prev_v, new_satiety_v, params.actor_satiety_health())
+     -- wprintf("\t\t from:~C0A %s~C07", lua_traceback(' '))
+  end       
+end
+function health_v_add (multv, divider)
+  local health_v = balance.health.restore_speed       
+  local new_health_v = health_v * multv / divider
+  local new_bleed_v = (health_v * 20) * multv / divider
+  actor_params.cond_prop("health_restore_v",    new_health_v)
+  actor_params.cond_prop("satiety_health_v",    new_health_v)
+  actor_params.cond_prop("wound_incarnation_v", new_bleed_v)
+end
+
+function satiety_add(add)
+  if sleep_manager.sleeping then return end
+  local satiety = actor_params.cond_prop("satiety")
+  local s_health=satiety+add
+  if s_health<0 then s_health=0 end
+  actor_params.cond_prop("satiety", s_health)
+end
+function actor_health_v()
+  for k, v in pairs(actor_params.condition_params) do
+      local b = actor_params.cond_prop(k)
+  end
+end
+function actor_satiety_health()
+  return actor_params.cond_prop("satiety")
+end
+function actor_bleeding()
+    local blood = 0                                      
+    local bcnt = 5
+    local kobj = xray_visual.GetKinematics (get_actor_obj())
+    if kobj then
+       bcnt = kobj:LL_BoneCount()
+    end 
+    
+    for b = 0, bcnt - 1 do 
+        blood = blood + actor_params.get_wound_total_size(b)
+    end    
+  return blood or 0
+end                                
+function psy_health_add(add)
+  local p_heal = actor_params.cond_prop("psy_health")
+  local p_health=p_heal+add
+  if p_health<0 then p_health=0 end
+  actor_params.cond_prop("psy_health", p_health)
+end
+
+function power_health_add(add)
+  actor_params.cond_prop("power", add)
+end
+function power_max_out(par)
+  actor_params.cond_prop("power_max", par)
+end
+function bleeding_add(add)
+  --local b_heal = actor_params.getp("wound_3")
+  --local b_health=b_heal+add
+  --if b_health<0 then b_health=0 end
+    -- TODO: refactor
+  -- actor_params.cond_prop("wound_3", add)
+end
+function actor_alcohol_health()
+  return actor_params.cond_prop("alcohol_health")
+end
+function actor_psy_health()
+  return actor_params.cond_prop("psy_health")
+end
+local jump_speed = system_ini():r_float("actor", "jump_speed")
+function jump_speed_add(add)
+  local new_jump_speed = jump_speed+add
+  actor_params.actor_prop("jump_speed", new_jump_speed)
+end
+local air_control_param = system_ini():r_float("actor", "air_control_param")
+function air_param_add(add)
+  local new_air_control_param = air_control_param*add
+  actor_params.cond_prop("air_control_param", new_air_control_param)
+end
+
+function belt_param_add(count)
+  count = count or 0
+  local new_belt_param = count        
+  if count ~= 0 then count = count - 1 end -- потому что одна €чейка уходит на аккумул€тор по старой логике
+    -- wprintf("[~T]. #DBG: belt_param_add value =~C0D %d~C07", add)
+  if count > 0 then
+     ui_params.move_inventory_static("accum_static", 371, 478) 
+  else
+     ui_params.move_inventory_static("accum_static", -371, 478)
+  end                                        
+  wprintf(" max_belt updated to~C0D %d~C07", count)                        
+  actor_params.inv_prop("max_belt", count, true)
+  if new_belt_param == 1 then  
+     new_belt_param = 0
+  end
+  texman.swap_belt(new_belt_param)      
+end
+
+function faked_artefacts(sect,id)
+    local obj = client_obj(id)
+    if obj == nil then
+       wprintf("~C0C #ERROR(faked_artefacts):~C07 no client object with id =~C0D %d ~C07", id)
+       return   
+    end                          
+    --[[
+    local art = obj:get_artefact()
+    if art and art.properties_enabled then       
+       return
+    end 
+    
+
+  for key,ofs in pairs(arts_params.art_param_immunity) do      
+        item_params.immun_prop(id, key, 1.0)
+  end
+ 
+  for key,ofs in pairs(arts_params.art_param_restore) do      
+    if key~="radiation_restore_speed" then
+     arts_params.art_prop(id, key, 0)
+    elseif system_ini():r_float(sect, key) < 0 then
+       arts_params.art_prop(id, key, 0)
+    end
+  end
+    --]]
+end
+
+function restored_artefacts(sect,id)
+    local obj = client_obj(id)
+    if obj == nil then
+       wprintf("~C0C #ERROR(faked_artefacts):~C07 no client object with id =~C0D %d ~C07", id)
+       return   
+    end                          
+    --[[
+    local art = obj:get_artefact()
+    if art and not art.properties_enabled then
+       art.properties_enabled = true        
+    end 
+    --]]
+
+  if not strpos(sect,"af_mayatnik_",1,true) then
+    for key,ofs in pairs(arts_params.art_param_immunity) do        
+        local old_param = system_ini():r_float(sect.."_absorbation", key)
+        item_params.immun_prop(id, key, old_param)
+    end
+    
+    for key,ofs in pairs(arts_params.art_param_restore) do    
+        local old_param = system_ini():r_float(sect, key)
+      if key=="health_restore_speed" then old_param=old_param*5 end
+      arts_params.art_prop(id, key, old_param)
+    end
+  else
+    local koeff=amk_vars.mayat_koeff or 0
+    for key,ofs in pairs(arts_params.art_param_immunity) do        
+        local old_param = system_ini():r_float(sect.."_absorbation", key) or 0
+        if old_param~=1 then old_param=1+(koeff*(1-old_param)) end
+        item_params.immun_prop(id, key, old_param)
+    end
+    
+    for key,ofs in pairs(arts_params.art_param_restore) do    
+        local old_param = system_ini():r_float(sect, key) or 0
+           if old_param ~=0 then old_param=old_param*koeff end
+          arts_params.art_prop(id, key, old_param)
+      end
+  end
+end
+
+
+function params.load_console_cmds()
+  if not offsets_xrGame.console_add then
+     --wprintf ("[~T].~C0C #ERROR:~C07 params.load_console_cmds() not compatible with build %d ", xr_build_id)
+     return 
+  end
+
+  -- get_console():execute("help")
+
+
+  local pcon = GetProcAddr ('xr_3da.exe', '?Console@@3PAVCConsole@@A')
+  local pcon2 = ReadPtr ( get_console() )
+  --
+  
+  local stor = pcon2 + offsets_xrGame.console_add  -- this offset vary relative xrGame.dll version 
+  local tree = stor ^ 0
+  local rnode = tree ^ 4
+  
+  -- wprintf("[~T]. #DBG(traverse_tree): root node = %s @ %s ", FormatPtr(rnode), type(rnode))
+  
+  params.con_cmdcnt = 0
+  params.con_commands = {}
+  
+  local svcb = GetGlobalVar('svcb')
+  
+  if ( svcb ~= '' ) then
+      params.con_commands.save = CalcPtr(svcb, 0, '+')  
+  end 
+  
+  
+  local ps_con_node = function(node) 
+   -- ключ в каждом узле - ссылка на строку LPCSTR
+   local key = registry.node_key(node, 'lpcstr') -- ReadPtr(node, 12)
+   local val = registry.node_obj(node) -- node:read_ptr(16)
+   
+   if key ~= nil then 
+      -- local key = pk:read(0, 'ansi')           
+      
+      if key:len() > 1 then      
+         params.con_commands [key] = val -- ICommand ptr remebmer      
+         params.con_cmdcnt = params.con_cmdcnt + 1
+         if GetVerbosity() > 5 then
+            --wprintf ('~C0D %5d~C0B = ~C0D %s~C07 ~C0F %-35s  ~C07 =>>~C0E %s ~C07', params.con_cmdcnt, node:format(), key, val:format() )
+         end         
+         
+      end   
+      
+   end  
+  end -- local function
+  
+  
+  if type(rnode) ~= "userdata" then
+     --wprintf("[~T].~C0C #FATAL:~C07 root node for console commands tree = $%x", rnode)
+     --wprintf ('         pcon = %s, pcon2 = %s', pcon, pcon2:format()) 
+    -- wprintf ('         store = %s, tree = %s', stor:format(), tree:format())
+     return
+  end
+   
+  registry.traverse_tree(rnode, ps_con_node)
+  local size = 0
+  for i, v in pairs(params.con_commands) do
+      size = size + 1
+  end
+  
+  if size < 10 then
+     --wprintf ("[~T].~C0C #FATAL(load_console_cmds)~C07: console commands not traversed correctly: %d commands added from %d ", size, params.con_cmdcnt)
+  end           
+  
+  svcb = params.con_commands['save']
+  params.con_commands['xsave'] = svcb
+  SetGlobalVar('svcb', svcb:format() ) -- переменна€ должна пережить перезагрузку об€зательно!  
+  -- params.con_commands['save'] = nil -- protect command from disable
+  --wprintf('[~T]. #COMPLETE: load_console_commands')
+end
+
+
+function execute_command(cmd_name, s)
+    local this = params.con_commands[cmd_name]
+    if this == nil then 
+       wprintf("[~T].~C0C #ERROR:~C07 execute_command 'this' for~C0F %s~C07 = nil ", cmd_name)
+       return 
+    end   
+  local vftable = this ^ 0
+  if vftable ~= nil then
+    local Execute = vftable ^ 4  -- CCC_***::Execute      
+        --wprintf("[~T]. #DBG(execute_command): cmd =~C0A %-25s~C07, param =~C0F %s~C07, this =~C0D %s~C07, vftable =~C0D %s~C07, this->Execute =~C0D %s~C07", cmd_name, s, this:format(), vftable:format(), Execute:format())   
+        this:call_func(Execute, "avar="..s)
+    else
+        wprintf("[~T].~C0C #ERROR:~C07 execute_command vftable for~C0F %s~C07 = nil ", cmd_name)    
+    
+  end  
+end
+
+params.execute_command = execute_command
+
+function disable_command(cmd_name)
+ local func = GetProcAddr ('xr_3da.exe', '?RemoveCommand@CConsole@@QAEXPAVIConsole_Command@@@Z')
+ local cons = ReadPtr ( get_console() )
+ local cmdobj = params.con_commands[cmd_name]
+ if cmdobj then 
+    cons:call_func (func, cmdobj:format() )  -- pass indirect var
+ else   
+    --wprintf("[~T].~C0C #ERROR(disable_command):~C07 params.con_commands[%s] = nil ", cmd_name) 
+ end     
+ 
+end
+
+params.disable_command = disable_command
+
+function command_unbind(s)
+    --wprintf("[~T]. #DBG: trying unbind~C0A %s~C07", s)
+    SetVerbosity(20)
+  execute_command ( 'unbind', s)
+    SetVerbosity(1)
+end
+
+function command_cldcs(s)
+    execute_command ( 'cl_dynamiccrosshair', s)  
+end
+
+function command_hud_info(s)
+  execute_command ( 'hud_info', s)
+end
+
+function offs_huds()
+    local vrem=level.get_game_difficulty()
+    vrem=amk_vars.g_diff or vrem
+  game_difficulty=tonumber(vrem)
+  if game_difficulty > 0 then
+    sak.get_command("hud_crosshair off")
+    sak.get_command("hud_crosshair_dist off")
+  end
+  if has_alife_info("pda_is_broken") then
+    command_unbind("map")
+    command_unbind("active_jobs")
+  else
+    local key_map=ReadIni(db.stor_ltx,"stor","map")
+    if key_map=="" then key_map="bind map kM" end
+    sak.get_command(key_map)
+    local key_pda=ReadIni(db.stor_ltx,"stor","pda")
+    if key_pda=="" then key_map="bind active_jobs kP" end
+    sak.get_command(key_pda)
+  end
+  sak.amb_clear()
+  command_unbind("contacts")
+  command_hud_info("off")
+  command_cldcs("off")
+  local dif_by_num = {
+  [0] = "gd_novice",
+  [1] = "gd_stalker",
+  [2] = "gd_veteran",
+  [3] = "gd_master"
+  }
+  sak.get_command("g_game_difficulty "..dif_by_num[game_difficulty])
+end
+
+function actor_set_fov(new_fov)
+    if set_global_fov then
+       set_global_fov (new_fov)
+    elseif offsets_xrGame.actor_fov then         
+     WriteDMA("xrGame.dll", offsets_xrGame.actor_fov, new_fov, "float" )       
+    end   
+        
+end
+
+function actor_get_fov(new_fov)
+    if get_global_fov then
+       return get_global_fov (new_fov)
+    elseif offsets_xrGame.actor_fov then         
+     return ReadDMA("xrGame.dll", offsets_xrGame.actor_fov, "float" )       
+    end           
+end
+
+--trade_flag_byte: true = 246 ($F6), false = 242 ($F2)
+--2 (4) = trade flag
+--3 (8) = belt flag
+--6 (64) = default_to_ruck
+--7 (128) = sprint_allowed
+
+function cant_trade_add(id)
+ local value= item_params.item_prop (id, "item_flags")
+ value = bit_and(value, 65535 - global_flags.FCanTrade )
+ item_params.item_prop(id, "item_flags", value)
+end
+
+function can_trade_add(id)
+ local value= item_params.item_prop (id, "item_flags")
+ value = bit_or (value, global_flags.FCanTrade )
+ item_params.item_prop(id, "item_flags", value)
+end
+
+function test_params()
+  for i, k in pairs(actor_params.condition_params) do
+      local test = actor_params.cond_prop(i)
+      actor_params.cond_prop(i, test)
+  end
+end
+
+function params.test_ofs()
+  wprintf(' %s', CalcPtr('xrGame.dll', offsets_xrGame.cldcs, '+'):format() )
+end  
+
+params.load_console_cmds()
+
+function params.start_dialog(dlg, hide_indicators)
+ if ui.start_dialog then
+    return ui.start_dialog(dlg, hide_indicators) -- build 5600+
+ end
+
+ local IR = level.main_input_receiver() 
+ if dlg and (IR == nil) then
+   -- если статус окна не соответствует требуемому
+  if not dlg:IsShown() then
+    level.start_stop_menu(dlg, hide_indicators)              
+  end       
+ end
+end
+
+function params.stop_dialog(dlg)
+ if ui.stop_dialog then
+    return ui.stop_dialog(dlg) -- build 5600+
+ end
+
+ -- если статус окна не соответствует требуемому
+ if dlg and dlg:IsShown() then
+    level.start_stop_menu(dlg, false)              
+ end       
+ 
+end
+
+function obj_condition(id, newval)
+  local obj = client_obj(id)
+  if obj then 
+    cl_condition[id] = nil
+    local cond = obj:condition()
+    if newval then
+       obj:set_condition(newval)
+    end             
+    return cond
+  else
+    cl_condition[id] = newval    
+  end
+  
+  if server_obj(id) then 
+     return 1 -- хрен ведь угадаешь, ага?
+  else
+     return -1
+  end     
+end
+
+function params.get_condition(obj, limit)
+ limit = limit or 100
+ local id = misc.get_object_id(obj)
+ 
+ obj = client_obj (id) 
+ if obj then
+    local cv = obj:condition() 
+    if cv > limit then cv = limit end
+    if cv > 0 and cv < 10 then return cv end 
+ end
+  
+ local sobj = g_sim:object(id)
+ if sobj then 
+    local pk = get_netpk(obj, 1)
+    local data = pk:get()
+    if data.condition > limit then 
+      return limit
+    else    
+      return data.condition
+    end   
+ end     
+ 
+ return -1
+end 
+ 
+function params.upd_condition(obj, newval)
+ local id = misc.get_object_id(obj)
+ local sobj = obj 
+ if (type(sobj) ~= 'userdata') or (nil == sobj.m_game_vertex_id) then
+    sobj = g_sim:object(id)
+ end
+    
+ if sobj then 
+    local pk = get_netpk(sobj, 1)
+    local data = pk:get()
+    data.condition = new_cond
+    pk:set(data)
+ end 
+ obj_condition(id, newval)
+end
+
+function add_condition(obj, add)
+ local cv = params.get_condition(obj, 0.9999) or 0
+ if cv >= 0 then
+    cv = cv + add
+    params.upd_condition (obj, cv)    
+ end      
+ return cv
+end
+
+function set_obj_usable(id, newval)
+ local obj = client_obj(id) 
+ if obj then 
+    obj:set_nonscript_usable(newval)
+ end                                       
+end
+
+function show()
+ local aobj = engine_object(0)
+ local speed_info = sprintf(" walk_accel = %7.3f run_koef = %7.3f  sprint_koef = %7.3f, jump_speed = %7.3f ",
+                             aobj.walk_accel or -1, aobj.run_coef or -1, aobj.sprint_koef or - 1, aobj.jump_speed or - 1)
+
+ local static = get_hud():GetCustomStatic("dynamic_hud")
+ if not static then
+    static = get_hud():AddCustomStatic("dynamic_hud",true)
+    
+ end
+ if static then
+    local parent = static:wnd() 
+    -- windows.del_simple_statics(parent, "params_speed") -- удал€ть не об€зательно  
+    windows.simple_static(parent, "params_speed", { 10, 750, 50, 16 }, speed_info)
+ end    
+ return speed_info
+end
+
+
+function binded_key(pattern)
+ local s = FindConfigStr( pattern ) or ""
+ if #s > 1 then
+    s = string.gsub(s, pattern, "")
+ end 
+ return s 
+end
+
+function extract_key(bind_func, default)
+ local key = binded_key ( sprintf("bind %s ", bind_func) )       
+ if key ~= "" then 
+    wprintf(" extracted key for~C0F %25s~C07 =~C0E %s~C07 ", bind_func, key) 
+    WriteIni(db.stor_ltx, "stor", bind_func..'_key', key)
+ else
+    wprintf("[~T].~C0C #FAILED:~C07 binded_key for %s returns nothing, assumed %s", bind_func, default)
+    WriteIni(db.stor_ltx, "stor", bind_func..'_key', default)      
+ end
+ return key
+end
+
+
+function init_module()
+ _G.nv_state = false 
+end
+
+function late_init()
+ if nlc_vars.ph_tiredness > 30 then 
+    nlc_vars.ph_tiredness = 5
+ end 
+ --db.g_statics = {}
+ --get_hud():RemoveCustomStatic("dynamic_hud")  
+ --AddRegularTask("params_show", params.show, nil, 0, 500)
+ -- AddRegularTask("tiredness_add", params.tiredness_add, nil, 0, 12000)
+ --wprintf(" test params:~C0F %s ~C07", params.show())
+end
+
+function on_cl_spawned(list) -- postponed update condition
+ for i, id in ipairs(list) do
+  if cl_condition[id] then
+     obj_condition(id, cl_condition[id])
+  end
+ end
+end

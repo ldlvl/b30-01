@@ -1,0 +1,325 @@
+local trees_p={}
+local stons_p={}
+local briks_p={}
+local plak_p={}
+local arm_r={}
+local arm_p={}
+local gas={}
+
+local name_updated = false 
+local new_name = "?"
+
+
+if TexFindList == nil then
+   _G.TexFindList = TexFind
+end
+
+function raw_texture_load (t) 
+ TexLoad(t, true)  
+end
+
+function raw_texture_unload (t)    
+ TexLoad(t, false)
+end
+  
+function texture_set_name (t, n) 
+ TexFile (t, n)
+ name_updated = true
+ new_name = new_name .. sprintf("%s;", tr or 'nil')
+end
+
+function texture_upd_name (t, n)
+ raw_texture_unload (t)
+ texture_set_name (t, n)
+ raw_texture_load (t)
+end
+
+function texture_info(t)
+ if t and t.combine then 
+   local ld = {}
+   local lc = {}
+   ld[true] = "~C0Eloaded~C0B"
+   ld[false] = "~C0Cnot loaded~C0B"
+   lc[true]  = "~C0Elocked~C0B"
+   lc[false] = "~C0Funlocked~C0B"
+   
+   return sprintf("%s(%s):%s:%s:~C0F%dx%d:~C06%s", DumpVar(t), t.format, ld[t.loaded] or 'nil',  lc[t.locked] or 'nil', t.width, t.height, t.last_error or 'nil')
+ else
+   return sprintf("~C0C%s~C07", DumpVar(t))
+ end
+
+end
+
+
+function unpack_texture(target, from, load_flags)
+  local dest = target
+  if type(target) == "string" then
+     dest = texture_create(target, nil == target:find("~vmt"), load_flags)
+  end      
+
+  if dest and from then else return nil end  
+  local params = {}
+  local tf = texture_create(from, true, load_flags)    
+  params.t0 = tf
+  if not tf.loaded then tf:load(load_flags) end     
+  if dest.locked   then dest:lock_rect(false, 0) end                      
+  if tf.locked     then tf:lock_rect(false, 0)  end                      
+  
+  params.operation = "unpack:sync"
+  dest:combine(params) 
+  if dest.loaded then  
+     return dest
+  else
+     wprintf("~C0C unpack failed, t(%s).loaded =~C0F false~C07, from =~C0A '%s'~C0B:~C0E%s~C07", texture_info(dest), from, texture_info(tf))   
+  end  
+  return nil          
+end
+
+
+
+function visual_all_textures (v)
+ local result = {}        
+ if v then
+    -- texture_to_visual(v, "wpn")          
+    for c = 0,3 do
+      local child = v:child(c) 
+      if child then                          
+        for n = 0,3 do
+            t = texture_from_visual(child, n)
+            if t then
+               local set = { n, child, t }            
+               table.insert (result, set )
+               --wprintf("     hud visual %d texture~C0D %2d~C07 =~C0A %s~C07", c, n, t:get_name())
+            else
+               -- wprintf("     hud visual %d no texture at %d ", c, n )  
+            end
+        end -- for n
+      else
+        -- wprintf("  no child at %d ", c )  
+      end   
+    end -- for c  
+ else
+   -- wprintf(" visual_obj =  nil ")
+ end
+ return result
+end
+
+
+function iterate_hud_textures(callback, ctx)
+ local a = db.actor 
+ for i = 0, 5 do
+    local itm = a:item_in_slot(i)     
+    if itm and itm.get_hud_visual then
+      -- wprintf("~C09 checking textures for item~C0A %s~C07", itm:name()) 
+       local vobj = itm:get_hud_visual()
+       local tlist = visual_all_textures(vobj)
+       for k, s in ipairs(tlist) do 
+           if callback(s, ctx) then 
+              break
+           end
+       end -- for k, v       
+    end -- if
+ end -- for i   
+end        
+
+function texture_replace(set, proto, tr, bump_sfx)
+    
+ local index = set[1]
+ local vobj  = set[2]
+ local tobj  = set[3]
+ 
+ local f = tobj:get_name()
+          
+ if strpos(f, proto) then
+    -- wprintf(" checking~C0F %-32s~C07 good for~C0E %s~C07 ", f, tr)
+ else
+    return   
+ end   
+ 
+ if bump_sfx then 
+    tr = tr .. bump_sfx
+ end
+ 
+ if bump_sfx and ( false == strpos(f, bump_sfx) ) then -- bump textures 
+    return     
+ end
+  
+ if ( tr ~= f ) then 
+    wprintf("~C0B replacing texture~C0D %d ~C0F %-35s~C07 to ~C0E %s~C07", index, f, tr)
+   -- vobj:set_texture_name(tr)   
+   tobj:set_name(tr)
+   tobj:reload()        
+   name_updated = true
+   new_name = new_name .. sprintf("%s;", tr)
+   
+   return true
+ else
+   return false               
+ end -- if
+end 
+
+function raw_texture_replace(p, f, tr, bump_sfx)  
+  if bump_sfx then
+     tr = tr .. bump_sfx
+     if not strpos(f, bump_sfx, 1, true) then 
+        return false
+     end
+  else
+     if strpos(f, "_bump", 1, true) then
+        return false
+     end         
+  end
+  if( tr ~= f ) and ( tr:len() == f:len() ) then
+   	 texture_upd_name(p, tr)	 
+     return true
+  end 
+end
+        
+function replace_multi(proto, suffix)
+    local tr = proto..suffix         
+    local tlist = TexFindList (proto)
+    if type(tlist) ~= "table" then
+       wprintf("[~T].~C0C #ERROR:~C07 TexFindList returned %s ", DumpVar(tlist))
+       return
+    end                                                                      
+    for f, p in pairs(tlist) do       
+        if     raw_texture_replace(p, f, tr, "_bump#") then
+        elseif raw_texture_replace(p, f, tr, "_bump") then
+        else 
+          raw_texture_replace(p, f, tr) 
+        end
+	end          
+end        
+        
+function swap_sleeve(tip, arm, ui_mm,watch)
+    new_name = "" 
+    replace_multi("act\\act_arm_perchatka", tip)
+    replace_multi("act\\act_arm_",          arm)           
+    replace_multi("ui\\ui_hud",             ui_mm)
+	replace_multi("ui\\ui_chss",             ui_mm)
+end
+
+function swap_simple(pattern, suffix)
+    local tr = pattern..suffix
+	local tlist = TexFindList(pattern)
+	for f, p in pairs(tlist) do
+		if ( string.len(tr) == string.len(f)) and (tr ~= f) then
+		 texture_upd_name(p, tr)		 
+		 break
+		end   
+	end
+end
+
+function swap_bolt() 
+	local tip=lua_random(5)
+    swap_simple ("wpn\\bolt\\wpn_bol", tostring(tip))
+end
+
+function swap_bun_screen(tip) 
+    swap_simple ("fx\\fx_komp_scree", tostring(tip))   
+end
+function swap_belt(count) 
+    swap_simple ("ui\\amk_ui_base_textur", tostring(count)) 
+end
+function swap_mask(mask)
+    local tr = "verg\\masks\\"..mask
+	local tlist = TexFindList("verg\\masks\\hud_")
+	for f, p in pairs(tlist) do
+		if ( string.len(tr) == string.len(f) ) and ( tr ~= f ) then
+		 texture_upd_name(p, tr)		 
+		 break
+		end   
+	end 
+end
+
+function replace_briks_tex(tlist, tip, suffix)
+  local tr = "ston\\"..tip.."_bricks_j10"..suffix
+  local cnt = 0          
+  for f, p in pairs(tlist) do
+    cnt = cnt + 1
+    if ( string.len(tr) == string.len(f) ) and ( tr ~= f ) then
+     texture_upd_name(p, tr)		 
+     briks_p[p]="_bricks_j10"..suffix
+     break
+    end -- if   
+  end -- for
+  
+  if cnt == 0 then
+    wprintf("~C0C #WARN:~C07 replace_briks_tex tr =~C0F %-34s~C07 length(tlist) == 0 ", tr)
+    return false 
+  end
+  
+  return true
+end
+
+function swap_briks(tip) 
+    local tlist = TexFindList("_bricks_j10", "ston")
+    if replace_briks_tex(tlist, tip, "") and 
+       replace_briks_tex(tlist, tip, "_bump") and 
+       replace_briks_tex(tlist, tip, "_bump#") then
+    else
+       wprintf("~C0C #ERROR:~C07 swap_briks failed to found textures ")
+    end
+end
+
+function swap_sid_plakat(tip) 
+    local tlist = TexFindList("lakat_plakat1", "plakat")
+	local tr = "plakat\\"..tip.."lakat_plakat1"
+	for f, p in pairs(tlist) do
+		if ( string.len(tr) == string.len(f) ) and ( tr ~= f ) then
+		 texture_upd_name(p, tr)		 
+		 plak_p[p]="lakat_plakat1"
+		 break
+		end   
+	end 
+end
+
+function replace_tree_tex(tree, tip)
+    local tlist = TexFindList(tree, "trees")
+	local tr = "trees\\"..tip..tree
+	for f, p in pairs(tlist) do
+		if ( string.len(tr) == string.len(f) ) and ( tr ~= f ) then
+		 texture_upd_name(p, tr)		 
+		 trees_p[p]=tree
+		 break
+		end   
+	end 
+end  
+
+
+function swap_trees(tip) 
+    local tree_list = {"rees_elka", "rees_elka_sux", "rees_sosna", "rees_sosna_sux", "rees_sosna_low", 
+                        "rees_sosna_red_low", "rees_vetkabig", "rees_vetkagreen1", "rees_vetkagreen3", "rees_vetkagreen5", "rees_vetkasux1_v", "rees_vetkasux2", "rees_orex", "rees_orex_red", "rees_dub", "rees_dub_red", "rees_kamysh", "rees_kamish_big_01", "rees_kamish_big_02"}   
+    for i, name in ipairs(tree_list) do          
+        replace_tree_tex(name, tip)     	
+    end
+end
+
+function ret_tex_trees(tip)
+	local map = {}
+    map["trees\\t"]   = tree_list
+    map["ston\\s"]    = stons_p
+    map["ston\\ston"] = briks_p
+    map["plakat\\p"]  = plak_p   
+    -- compacted code
+    for tr, list in pairs(map) do     
+    	for p, f in pairs(list) do
+            --wprintf(" restoring original texture~C07 %-25s~C07 =~C0D %s~C07 ", f, FormatPtr(p))
+            if p ~= nil then 
+    		   texture_upd_name(p, tr..f)
+            end   		 
+    	end
+    end
+end
+function swap_stons(tip) 
+	local tlist = TexFindList("ton_rocks1", "ston")
+	local tr = "ston\\"..tip.."ton_rocks1"
+	for f, p in pairs(tlist) do
+		if ( string.len(tr) == string.len(f) ) and ( tr ~= f ) then
+		--SetDbgVar("last_texture_target", tr)
+		 texture_upd_name(p, tr)		 
+		 stons_p[p]="ton_rocks1"
+		 break
+		end   
+	end
+end

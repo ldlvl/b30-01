@@ -1,0 +1,126 @@
+
+local Buttons = {"абвгдежз","ийклмноп","рстуфхцч","шщыьъэюя","        "}
+local ButtonsU ={"АБВГДЕЖЗ","ИЙКЛМНОП","РСТУФХЦЧ","ШЩЫЬЪЭЮЯ","        "}
+local State ={CurString = "",LastButton=0,NPress=0,CapsLock=true}
+
+function CommandPrint()
+	db.actor:give_talk_message(">"..State.CurString.."<","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+end
+
+function CommandClear() Command("Clear") end
+function CommandButton1() Command("PressButton",1) end
+function CommandButton2() Command("PressButton",2) end
+function CommandButton3() Command("PressButton",3) end
+function CommandButton4() Command("PressButton",4) end
+function CommandButton5() Command("PressButton",5) end
+--function CommandButton6() Command("PressButton",6) end
+--function CommandButton7() Command("PressButton",7) end
+--function CommandButton8() Command("PressButton",8) end
+--function CommandButton9() Command("PressButton",9) end
+function CommandNext() Command("Next") end
+function CommandBackSpace() Command("BackSpace") end
+function CommandCaps() Command("CapsLock") end
+
+function CommandWork(t1,t2)
+	local rezult = "Надиктовал ты мне >"..State.CurString.."<.\n"
+	db.actor:give_talk_message(rezult,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+	local isntFind = true
+	for i = 1,MAX_OBJ_ID do
+		obj = alife():object(i)
+		if obj and obj.m_game_vertex_id and db.actor and db.actor:id() ~= obj.id and IsStalker(obj) and obj:community()~="zombied" and obj:community()~="monolith" and obj:community()~="military" and obj:community()~="killer" then
+			local name = amk_offline_alife.get_npc_name(obj)
+			if name~="" and string.find(State.CurString,"^"..name) then 
+				isntFind = false
+				local m_level = news_main.get_point_description(news_main.get_object_levelname(obj), news_main.get_object_position(obj))
+				if m_level=="" then m_level="Живой вроде был. Блин, давно он не включался, даже приблизительно не понять, где этот" 
+				else 
+					m_level=m_level..", по моим данным,"
+				end
+				local pos = ""
+				if sak_dialog.docent_npc_money_have() then
+					if obj.alive and obj:alive() and obj.health and obj:health()>0 then 
+						pos = "Да есть такой в базе. "..m_level.." "..name.." находится. Гони деньги за работу."
+						db.actor:give_talk_message(pos,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+						sak_dialog.give_docent_npc_money(t1,t2)
+						return
+					else
+						pos = "Был такой сталкер, мда... "..name.." ушел в мир иной. "..m_level.." труп видели. Вот такие вот дела..."
+						db.actor:give_talk_message(pos,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+						sak_dialog.give_docent_npc_money(t1,t2)
+						return
+					end
+				else
+					db.actor:give_talk_message("Блин, да я вижу, у тебя деньги кончились... Извини, Потом подходи.","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+					return
+				end
+			end
+		end
+	end
+	if isntFind then 
+		rezult = "Мне ничего не известно про такого. Извини. На нет и суда нет. Денег не возьму."
+		db.actor:give_talk_message(rezult,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+	end
+end
+
+function new_npc()
+	State = {CurString = "",LastButton=0,NPress=0,CapsLock=true}
+end 
+
+function revert(c)
+	local L = "абвгдежзийклмнопрстуфхцчшщыьъэюя"
+	local U = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЫЬЪЭЮЯ"
+	local US = string.find(U,c,1,true)
+	if US then return string.sub(L,US,US) end
+	local LS = string.find(L,c,1,true)
+	if LS then return string.sub(U,LS,LS) end
+	return c
+end 
+--print(revert("А"))
+function Command(CommandType,CommandArgument)
+	if string.find(CommandType,"Clear",1,true) then
+		State.CurString = ""
+		LastButton=0
+		NPress=0
+	end
+	if string.find(CommandType,"BackSpace",1,true) and string.len(State.CurString)>0 then
+		State.CurString = string.sub(State.CurString,1,string.len(State.CurString)-1)
+		LastButton=0
+		NPress=0
+	end
+	if string.find(CommandType,"SetString",1,true) then
+		State.CurString = CommandArgument
+		LastButton=0
+		NPress=0
+	end
+	if string.find(CommandType,"PressButton",1,true) then
+		if CommandArgument == nil or Buttons[CommandArgument]==nil then return end
+		if State.LastButton == CommandArgument then
+			State.NPress = (State.NPress)%8+1
+			State.CurString = string.sub(State.CurString,1,string.len(State.CurString)-1)
+		else
+			State.NPress = 1
+			State.LastButton = CommandArgument
+		end
+		local AddChar = string.sub(Buttons[State.LastButton],State.NPress,State.NPress)
+		if State.CapsLock then 
+			AddChar = string.sub(ButtonsU[State.LastButton],State.NPress,State.NPress)
+		else
+			AddChar = string.sub(Buttons[State.LastButton],State.NPress,State.NPress)
+		end
+		State.CurString= State.CurString..AddChar
+	end
+	if string.find(CommandType,"Next",1,true) then
+		State.LastButton = 0
+	end
+	if string.find(CommandType,"CapsLock",1,true) then
+--		State.LastButton = 0
+		State.CapsLock = not State.CapsLock
+		local slen = string.len(State.CurString)
+		if slen then
+			local char = string.sub(State.CurString,slen,slen)
+			State.CurString = string.sub(State.CurString,1,slen-1)
+			State.CurString= State.CurString..revert(char)
+		end
+	end
+--print(State.NPress,">"..State.CurString.."<")
+end

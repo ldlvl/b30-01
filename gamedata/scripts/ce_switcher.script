@@ -1,0 +1,105 @@
+class "ce_switcher" (CGameObject)
+
+function ce_switcher:__init() super()
+	self.m_state = 0
+end
+
+function ce_switcher:SetState(s)
+	if self.m_state == s then
+		return
+	end
+	local old = self.m_state
+	self.m_state = s
+	self:OnStateChanged(old, self.m_state)
+end
+
+function ce_switcher:GetState()
+	return self.m_state
+end
+
+function ce_switcher:PlayAnim(anim_name)
+	local visual = self:Visual()
+	local ska = visual:dcast_PKinematicsAnimated()
+	ska:PlayCycle(anim_name)
+end
+
+function ce_switcher:Load(section)
+	CGameObject.Load(self, section)
+end
+
+function ce_switcher:shedule_Update(dt)
+	CGameObject.shedule_Update(self,dt)
+end
+
+function ce_switcher:net_Export(packet)
+	CGameObject.net_Export(self, packet)
+	packet:w_u32(self.m_state)
+end
+
+function ce_switcher:net_Import(packet)
+	CGameObject.net_Import(self, packet)
+	self.m_state = packet:r_u32()
+end
+
+function ce_switcher:net_Spawn(se_object)
+	CGameObject.net_Spawn(self, se_object)
+	self.m_state = se_object.m_state
+	local anm = se_object:getStartupAnimation()
+	self:PlayAnim(anm)
+	self:setVisible(1)
+	self:setEnabled(1)
+	return true
+end
+
+function ce_switcher:net_Destroy()
+	CGameObject.net_Destroy(self)
+end
+
+function ce_switcher:OnStateChanged(old_state, new_state)
+	if new_state==0 then
+		self:PlayAnim("idle")
+	end
+	if new_state==1 then
+		self:PlayAnim("idle_on")
+	end
+end
+
+
+function ce_switcher:use(who)
+	if self.m_state==0 then 
+		self:SetState(1)
+	else
+		self:SetState(0)
+	end
+	return true;
+end
+
+class "switcher_handler"
+
+function switcher_handler:on_use(what,who)
+	local state = self.o:GetState()
+	if state==0 then 
+		self.o:SetState(1)
+	else
+		self.o:SetState(0)
+	end
+end
+
+function switcher_handler:__init()
+end
+
+function switcher_handler:init()
+	self.o = level.object("trigger")
+	if self.o==nil then 
+		return
+	end
+	o:set_use_callback( self,"on_use")
+end
+
+function main()
+	local sh = switcher_handler()
+	sh:init()
+	while true do
+		wait(10000)
+	end
+end

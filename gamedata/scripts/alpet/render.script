@@ -1,0 +1,26 @@
+local rwc = 0
+local last_frame = 0
+ 
+if attach_luaicp then
+   attach_luaicp("render.script", false)
+end                                     
+
+local sprintf = string.format
+local wprintf = function(msg, ...)
+ ODS(sprintf(msg, ...)) 
+end
+-- https://yadi.sk/i/F-Lho9UBowuRH
+
+function wait(avail_ms, rw) 
+ local dev = device()
+ if (avail_ms > 20) and (dev.frame ~= last_frame)  then
+    last_frame = dev.frame     
+    UpdateRegistry(true) -- может занять over 5ms?
+    rwc = rwc + 1
+    if (rwc % 100) == 0 then
+       wprintf("[~T/~U]. #PERF: render.wait used~C0D %d~C07 times, avail_ms =~C0D %.1f ms~C07", rwc, avail_ms)  
+    end                                         
+ end 
+end
+
+_G.on_render_wait = wait 

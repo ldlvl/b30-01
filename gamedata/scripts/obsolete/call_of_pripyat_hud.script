@@ -1,0 +1,16 @@
+local step_time=2
+local flag_sec_old=0
+
+
+function main(delta)	
+	local time_sec = timers.Get_Game_Seconds()
+	local delta_t=(time_sec-flag_sec_old)
+	
+	if delta_t>=step_time or delta_t<=-step_time then
+		sak.show_time()
+		flag_sec_old=time_sec
+		--vergas_masks.update_mini_bar()
+		--vergas_masks.mask_update()
+	end
+end
+

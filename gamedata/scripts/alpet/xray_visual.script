@@ -1,0 +1,246 @@
+if xray_visual == nil then 
+ _G.xray_visual = {}
+end
+
+
+local xr_3da = "xr_3da.exe"
+local set_visible = "?setVisible@CObject@@QAEXH@Z"
+set_visible = GetProcAddr(xr_3da, set_visible)
+local set_enabled = "?setEnabled@CObject@@QAEXH@Z"
+set_enabled = GetProcAddr(xr_3da, set_enabled)
+local set_visual = "?cNameVisual_set@CObject@@QAEXVshared_str@@@Z"  
+set_visual = GetProcAddr(xr_3da, set_visual)  
+local updateCL = "?UpdateCL@CAI_Stalker@@WCDI@AEXXZ"
+updateCL = GetProcAddr("xrGame.dll", updateCL)   
+
+local CM_updateCL = CalcPtr("xrGame.dll", "$70921", "+") -- CCustomMonster updateCL
+
+local RD_obj = GetProcAddr(xr_3da, "?Device@@3VCRenderDevice@@A")
+local RD_pause = GetProcAddr(xr_3da, "?Pause@CRenderDevice@@QAEHXZ")
+
+
+local select_anim = CalcPtr("xrGame.dll", "$EB3E4", "+")
+
+local anm_ns_nu   = CalcPtr("xrGame.dll", "$F1CD9", "+") -- CStalkerAnimationManager::non_script_need_update
+local upd_posanim = CalcPtr("xrGame.dll", "$6EB07", "+") --
+ 
+
+
+function dump3b(ptr)
+ local d = ReadDMA(ptr, 0, "dump", 3)
+ return tostring(d) 
+end
+                                             
+
+function GetKinematics(target)
+ local tt = type(target)
+if ( tt == 'number' ) or ( tt == 'string' ) then
+      target = engine_object (target)
+end
+if target then                       
+    local K = target:Visual():dcast_PKinematicsAnimated()
+    if K == nil then
+       K = target:Visual():dcast_PKinematics()
+    end
+return K
+else
+    return nil   
+end     
+end
+
+function reload_anim(id)
+ local cobj = get_CObject(id)
+ if cobj == nil then
+    return
+ end
+ 
+ if xr_build_above(5500) then 
+    return 
+ end
+ 
+ 
+ local anm =  ReadDMA(cobj, "$59C", "safe_ptr") -- CStalkerAnimationManager
+ -- local cinf = ReadDMA(cobj, "$494", "safe_ptr")
+ local vft  = ReadDMA(anm,       0, "safe_ptr")      -- vftable
+ local anm_reload = ReadDMA(vft, 4, "safe_ptr")      -- reload
+ local anm_update = ReadDMA(vft, 8, "safe_ptr")      -- update
+ 
+ local dump = dump3b (anm_reload)
+
+ ODS("~C0F              CAI_Stalker = " .. FormatPtr(cobj))
+ ODS("~C0E CStalkerAnimationManager = " .. FormatPtr(anm))
+ -- ODS("~C0D           CCharacterInfo = " .. FormatPtr(cinf))
+ ODS("~C0A                  vftable = " .. FormatPtr(vft))
+ ODS("~C07                   reload = " .. FormatPtr(anm_reload) .. " : " .. dump )    
+
+ 
+ if (anm ~= nil) and (vft ~= nil) then
+           
+    
+    if dump == "8B 44 24" then    
+       BinThisCall(anm, anm_reload, cobj)  -- indirect push object
+    end   
+        
+    SetVerbosity(5)
+           
+    kobj = GetKinematics (cobj)    
+    WriteDMA(kobj, "$98", 1, "int") -- visibility invalidate
+    WriteDMA(kobj, "$9C", 0, "int") -- 
+    WriteDMA(kobj, "$A0", 32, "int") -- psSkeletonUpdate
+    if set_visible ~= nil then
+      BinThisCall(cobj, set_visible, "ivar=1")
+      BinThisCall(cobj, set_enabled, "ivar=1")
+    end   
+      
+    
+    if ( dump3b(RD_pause) == "A1 20 34" ) and ( RD_obj ~= nil ) then
+       ODS("[~T]. #DBG:        CRenderDevice::Pause = " .. RD_pause)
+       BinThisCall (RD_obj, RD_pause)
+    end 
+    
+    if dump3b(anm_update) == "B8 3A 4F" then
+       ODS("[~T]. #DBG:        CStalkerAnimationManager::update = " .. FormatPtr(anm_update))
+       -- ReadLn()
+       -- local orig = ReadDMA(anm, "$18", "int") -- played script already?
+       WriteDMA(anm, "$18", 0, "int")
+       BinThisCall(anm, anm_update)  
+       -- WriteDMA(anm, "$18", 2, "int")
+            
+    end
+        
+    if dump3b (CM_updateCL) == "55 8D 6C" then
+       ODS("[~T]. #DBG:        CCustomMonster::updateCL = " .. FormatPtr(CM_updateCL))
+       -- ReadLn()
+       -- BinThisCall(cobj, CM_updateCL) 
+    end       
+ end
+end
+
+
+function change_visual(id, file, no_anim)  
+  local cobj = get_CObject(id)  -- must be object with visual !!!
+  -- ODS ("[~T] #DBG: CObject::cNameVisual = "..set_visual)  
+  local file_ss = shared_str.dock_str(file) 
+    
+  if (cobj ~= nil) and (set_visual ~= nil) and ( file_ss ~= nil ) then
+    
+     local dump = ""
+  
+     ODS("[~T]. #DBG: registered string at "..tostring(file_ss) .. " = " .. file )          
+     -- SetVerbosity(10)
+     kobj = GetKinematics (cobj)
+     
+     if RD_pause ~= nil then       
+       dump = ReadDMA(RD_pause, 0, "dump", 3)
+       ODS("[~T]. #DBG: getting pause dump from "..RD_pause .. " = " .. tostring(dump) )
+     end
+    
+     if ( dump == "A1 20 34" ) and ( RD_obj ~= nil ) then
+       ODS("[~T]. #DBG:        CRenderDevice::Pause = " .. RD_pause)
+       BinThisCall (RD_obj, RD_pause)
+     end 
+     
+     
+     ODS("[~T]. #DBG: changing visual for CObject = "..FormatPtr(cobj).." kinematics = "..FormatPtr(kobj))
+     
+     BinThisCall(cobj, set_visual, FormatPtr(file_ss))
+     
+     
+     
+     if kobj ~= nil then
+        -- ReadLn()
+        local bid = bones.GetBoneID(kobj, "bip01_head")
+        if bid ~= 65535 then
+           ODS("[~T]. #DBG: setting bone ID = "..tostring(bid))
+           -- WriteDMA(cobj, "$38C", bid, "int")
+        else
+           ODS("[~T].~C0C #ERROR: not found bone_head for~C0F "..FormatPtr(kobj).."~C07")   
+        end -- if bid     
+     end -- if kobj
+
+    
+
+    local npc = client_obj(id)
+    
+    if ( npc ~= nil ) and ( no_anim == nil ) then
+           
+       if npc.add_sound and npc.play_sound then
+          -- local i = npc:add_sound ("characters_voice\\human_01\\stalker\\talk\\jokes\\joke_1.ogg", 1, snd_type.talk, 2, 1, 5222)
+          -- ODS("[~T]. #DBG: trying speak "..tostring(i) )
+          npc:play_sound(3, 1)
+       end   
+       
+       -- c.spawn_obj ("wpn_binoc", id) 
+       reload_anim(id)
+       
+       npc:clear_animations()       
+       state_mgr.set_state(npc, "idle", nil, nil, { look_object = db.actor }, { animation = true } )
+       
+    else   
+       state_mgr.set_state(npc, "idle", nil, nil, { look_object = db.actor }, { animation = true } )
+       -- npc:add_animation("salut_free",true)   
+    end
+    
+    
+         
+  else
+    ODS("[~T]. #ERROR: set_visual = "..set_visual.." file_ss = "..FormatPtr(file_ss))   
+  end
+  
+end
+
+
+function eat_food(id, fid)
+  local npc = client_obj(id)
+  local food = client_obj(fid)
+  if (npc ~= nil) and (food ~= nil) then
+      npc:clear_animations()
+      npc:eat(food) 
+  end -- if
+end
+
+
+function change_hud_visual(id, section)
+  if section == nil then                                    
+     section = "wpn_g36_hud"
+  end
+  if xr_build_above(5500) then return end 
+
+  local cobj = get_CObject(id)  -- must be object with visual !!!
+  ODS("[~T]. #DBG: CWeapon = "..FormatPtr(cobj))
+  -- local load_hud = CalcPtr("xrGame.dll", "$239520", "+")  -- 3312
+  local load_hud = CalcPtr("xrGame.dll", "$20E64B", "+") -- 2945
+  local dump = ReadDMA(load_hud, 0, "dump", 3)
+  
+  local kobj,whv,cwh = wpn_params.get_wpn_hud(cobj)
+  
+  if ( dump ~= "53 56 57" ) and ( dump ~= "56 8B F1" ) or ( cobj == nil ) then
+     ODS("[~T]. #ERROR: mistmath leading bytes of function "..dump.." at "..FormatPtr(load_hud).." or bad cobj = " ..FormatPtr(cobj))
+     return
+  end  
+  
+  SetVerbosity(9)
+  ODS("[~T]. #DBG: using this = "..FormatPtr(cwh))
+  BinThisCall(cwh, load_hud, "avar="..section)
+  SetVerbosity(4)  
+end
+
+function test(id)
+ change_visual(id, "weapons\\ak-47\\wpn_ak47_sk1.ogf")
+end
+
+function magic(id, v)
+ if v == nil then
+   change_visual(id, "actors\\woman\\girl")
+ else
+   change_visual(id, 'actors\\ecolog\\stalker_ecolog')
+ end  
+end
+
+xray_visual.GetKinematics = GetKinematics 
+xray_visual.test = test
+xray_visual.magic = magic
+xray_visual.change_hud_visual = change_hud_visual
+xray_visual.change_visual = change_visual
+xray_visual.reload_anim = reload_anim
+xray_visual.eat_food = eat_food

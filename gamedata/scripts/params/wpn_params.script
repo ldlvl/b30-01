@@ -1,0 +1,581 @@
+-- by alpet 13.02.2011 ... 
+-- inv_object as CInventoryItem* = wpn_object-D8             
+-- wpn_object as CWeapon* 
+
+local wpn_offsets =  {
+  trade_flag_byte                   = "-$0054",
+  dest_slot_byte                    = "-$003C",
+  cost_ammo1                        = "-$003A",
+  cost_ammo2                        = "-$0036",
+  cost_int                          = "-$0038",
+  cost                              = "-$0038",
+  inv_weight                        = "-$0034",
+  condition                         = "-$0030",
+  destroy_time                      = "$01F8",
+  shot_delay                        = "$0210",
+  hit_power4                        = "$0214",
+  hit_power3                        = "$0218",
+  hit_power2                        = "$021C",
+  hit_power1                        = "$0220",
+  hit_impulse                       = "$0224",
+  bullet_speed                      = "$0228",
+  fire_distance                     = "$022C",
+  fire_dispersion_base              = "$0230",
+  light_color_r                     = "$0240",
+  light_color_g                     = "$0244",
+  light_color_b                     = "$0248",
+  light_color_a                     = "$024C",
+  light_range                       = "$0250",
+  misfire_condition_k               = "$026C",
+  scope_zoom_factor                 = "$0318",
+  ammo_cur_int                      = "$04A4",
+  ammo_mag_size                     = "$04A8",
+  ammo_sect_ptr                     = "$0AF0",
+  cam_max_angle                     = "$0444",
+  cam_relax_speed                   = "$0474",
+  cam_relax_speed2                  = "$044C",
+  cam_dispersion                    = "$0450",
+  cam_dispersion_inc                = "$0454",
+  cam_dispertion_frac               = "$0458",
+  cam_max_angle_horz                = "$045C",
+  cam_step_angle_horz               = "$0460",
+  fire_dispersion_condition_factor  = "$0464",
+  misfire_probability               = "$0468",
+  condition_shot_dec                = "$0470",
+  PDM_disp_base                     = "$0474",
+  PDM_disp_vel_factor               = "$0478",
+  PDM_disp_accel_factor             = "$047C",
+  PDM_crouch                        = "$0480",
+  PDM_crouch_no_acc                 = "$048C",
+  fire_mode_int                     = "$0678",
+  fire_auto_int                     = "$06B0",  -- ? 0 or 1
+  grenade_vel                       = "$06E4"
+}
+
+function wpn_prop( id, key, newval )
+  local obj = engine_object( id ) -- CWeaponMagazinedWGrenade or CWeaponMagazined CWeapon 
+  return update_prop( obj, key, newval ) 	
+end
+
+local zie_offsets = { 
+  float_speed         = "$0C",
+  disp_radius         = "$10",
+  current_point       = "$18",
+  last_point          = "$24",
+  target_point        = "$30",
+  target_vel          = "$3C",
+  time_passed_int     = "$54",
+  camera_move_epsilon	= "$58",
+  disp_min            = "$5C",		
+  speed_min           = "$60",
+  zoom_aim_disp_k     = "$64",
+  zoom_aim_speed_k    = "$68",
+  delta_time_int      = "$6C"
+}
+
+function get_zie_obj()
+  if find_effector_zi then return find_effector_zi() end    
+  if xr_build_id ~= 3312 then return nil end
+  local cmgr = actor_params.get_camera_mgr()
+  if cmgr == nil then return nil end
+  local eff_start = cmgr:read( "$0034", "safe_ptr" )  -- eax = [ebp+34] first effector obj/intf
+  local eff_end   = cmgr:read( "$0038", "safe_ptr" )  -- last effector obj/intf  
+  if eff_start and eff_end then else 
+     wprintf( '[~T].~C0C #FATAL(get_zie_obj): eff_start or eff_end = nil ~C07' )
+     return nil 
+  end
+  eff_cnt = CastToInt( eff_end ) - CastToInt( eff_start )
+  if ( eff_cnt < 0 ) or ( eff_cnt > 1000 ) then
+     wprintf( '[~T].~C0C #ERROR(get_zie_obj): absurd eff_count = %d ~C07', eff_cnt )
+     return nil 
+  end
+  eff_cnt = eff_cnt / 4 + 1        
+  if eff_cnt <= 0 then return nil end
+  local zie_process = CalcPtr( "xrGame.dll", "$19FFA0", '+' )
+  for n = 0, eff_cnt-1 do  
+    local eff_obj = eff_start:read( n * 4, "safe_ptr" )     
+    if eff_obj and ( CastToInt( eff_obj ) > 83886080 ) then               
+      local eff_typ = eff_obj:read( 4, 'safe_ptr' )
+      if eff_typ and ( eff_typ:format() == '$00000005' ) then
+        local vftable = ReadDMA( eff_obj, 0, "safe_ptr" )
+        local method  = ReadDMA( vftable, 12, "safe_ptr" )
+        local ps_addr = FormatPtr( method )
+        local zi_addr = FormatPtr( zie_process )                        
+        if ps_addr == zi_addr then return eff_obj end   
+      end
+    end
+  end
+  return nil  
+end
+
+wpn_params.get_zie_obj = get_zie_obj
+
+function find_zie_obj()
+  local eff_obj = wpn_params.get_zie_obj( nc )  
+  if eff_obj then
+    wprintf( '[~T]. #DBG: zie at %s', eff_obj:format() )   
+  else
+    wprintf( '[~T]. #WARN: not found zie' )
+  end     
+  return eff_obj
+end
+
+wpn_params.find_zie_obj = find_zie_obj
+
+function zdump( k )
+  ztab = find_zie_obj()
+  ofs  = zie_offsets[ k ] 
+  if ( ztab == nil ) or ( ofs == nil ) then return end
+  local i
+  if string.find( k, '_int' ) ~= nil then
+    i = ztab:read( ofs, "int")
+    ODS( string.format( "%s =~C0D %d ~C07", k, i ) )  
+  else
+    f = ztab:read( ofs )
+    ODS( string.format( "%s =~C0D %.7f~C07", k, f ) )  
+  end 
+end
+
+wpn_params.zdump = zdump
+
+function cut_suffix( k, suffix )
+  local slen = suffix:len()    
+  local real = k:sub( -slen )
+  if real == suffix then
+     local kl = k:len()
+     if kl > slen then k = k:sub( 1, kl - slen ) end          
+  end
+  return k
+end
+
+function zupd( k, v, test, eff_obj )
+  if eff_obj == nil then eff_obj = wpn_params.get_zie_obj() end    
+  if eff_obj == nil then return end
+  ofs = zie_offsets[ k ]
+  if ( ofs == nil ) then
+    wprintf( "~C0C#WARN(zupd):~C07 zie unknown offset %s ", k )     
+    return 
+  end
+  if xr_build_id > 5500 then
+    local ck = cut_suffix( k, "_int" )
+    if eff_obj[ck] ~= nil then
+       eff_obj[ck] = v
+    else   
+       wprintf( "~C0C#WARN(zupd):~C07 zie not supported propery %s [%s] ", ck, k )    
+    end
+    return 
+  end 
+  if nil == eff_obj.write then return end    
+  v = tonumber( v )
+  if 1 then
+    wprintf( ' build_%d: trying update value %s to %f', xr_build_id, k, v )
+  end     
+  if type( v ) ~= "number" then
+    WriteVectorDMA( eff_obj, ofs, v )
+    return
+  end
+  if string.find( k, '_int' ) ~= nil then  
+    eff_obj:write( ofs, v, "int" )    
+  else
+    eff_obj:write( ofs, v, "float" )    
+  end
+  if test then 
+    zdump(k) -- проверка 
+  end
+end
+
+wpn_params.zupd       = zupd
+wpn_params.disp_add   = { 17, -17, 5 }
+wpn_params.zoom_time  = 1
+local base_radius     = 0
+local disp_angles     = { 0, 0, 0 }
+local disp_radius     = { 0.01, 0.001, 0.005 }
+
+function inc_angle( idx )
+  local a = wpn_params.disp_add[ idx ]
+  wpn_params.disp_add[ idx ] = a
+  local v = disp_angles[ idx ] + a
+  if     v < 0    then v = v + 360 
+  elseif v >= 360 then v = v - 360 
+  end
+  disp_angles[ idx ] = v
+end
+
+local wobble_wpn = {
+  [ "wpn_knife"               ] = 1.0,
+  [ "wpn_binoc"               ] = 0.9,
+  [ "wpn_pm"                  ] = 1.1,
+  [ "wpn_pb"                  ] = 1.1,
+  [ "wpn_aps"                 ] = 1.1,
+  [ "wpn_fort"                ] = 1.1,
+  [ "wpn_fort_m1"             ] = 1.1,
+  [ "wpn_beretta"             ] = 1.0,
+  [ "wpn_beretta93"           ] = 0.9,
+  [ "wpn_colt1911"            ] = 0.9,
+  [ "wpn_desert_eagle"        ] = 0.9,
+  [ "wpn_eagle_m1"            ] = 0.9,
+  [ "wpn_walther"             ] = 1.1,
+  [ "wpn_glock"               ] = 1.1,
+  [ "wpn_usp"                 ] = 1.1,
+  [ "wpn_sig220"              ] = 1.1,
+
+  [ "wpn_mp5"                 ] = 1.5,
+  [ "wpn_mp5_m1"              ] = 1.5,
+  [ "wpn_bizon"               ] = 1.6,
+  [ "wpn_bizon_cobra"         ] = 1.1,
+  [ "wpn_bizon_1p78"          ] = 1.5,
+  [ "wpn_bizon_1pso"          ] = 1.4,
+  [ "wpn_pp19"                ] = 1.6,
+  [ "wpn_pp19_cobra"          ] = 1.1,
+  [ "wpn_pp19_1p78"           ] = 1.5,
+  [ "wpn_pp19_1pso"           ] = 1.4,
+  [ "wpn_ump45"               ] = 1.6,
+  [ "wpn_ump45_eotech"        ] = 1.1,
+  [ "wpn_ump45_acog"          ] = 1.5,
+  [ "wpn_ump45_mt"            ] = 1.4,
+
+  [ "wpn_bm16"                ] = 1.4,
+  [ "wpn_bm16_full"           ] = 2.5,
+  [ "wpn_mp153_m1"            ] = 2.1,
+  [ "wpn_toz34"               ] = 2.1,
+  [ "wpn_toz34_m1"            ] = 1.7,
+  [ "wpn_hunters_toz_new"     ] = 1.7,
+  [ "wpn_spas12"              ] = 2.0,
+  [ "wpn_wincheaster1300"     ] = 2.1,
+  [ "wpn_winchester_m1"       ] = 2.4,
+  [ "wpn_rem_870"             ] = 2.0,
+  [ "wpn_saiga12c"            ] = 2.0,
+  [ "wpn_saiga12c_cobra"      ] = 1.4,
+  [ "wpn_saiga12c_1p78"       ] = 1.9,
+  [ "wpn_saiga12c_1pso"       ] = 1.8,
+  [ "wpn_saiga12c_m1"         ] = 1.8,
+  [ "wpn_saiga12c_m1_acog"    ] = 1.7,
+  [ "wpn_saiga12c_m1_eotech"  ] = 1.3,
+  [ "wpn_saiga12c_m1_mt"      ] = 1.6,
+  [ "wpn_mp153"               ] = 2.0,
+  [ "wpn_mp153_acog"          ] = 1.8,
+  [ "wpn_mp153_eotech"        ] = 1.5,
+  [ "wpn_mp153_mt"            ] = 1.7,
+
+  [ "wpn_ak74u"               ] = 2.4,
+  [ "wpn_ak74u_old"           ] = 2.4,
+  [ "wpn_ak74"                ] = 2.2,
+  [ "wpn_ak74_old"            ] = 2.3,
+  [ "wpn_ak47"                ] = 2.4,
+  [ "wpn_ak47_old"            ] = 2.4,
+  [ "wpn_aks47"               ] = 2.4,
+  [ "wpn_akm"                 ] = 2.4,
+  [ "wpn_ak74m"               ] = 2.2,
+  [ "wpn_ak74m_cobra"         ] = 1.5,
+  [ "wpn_ak74m_1p78"          ] = 2.0,
+  [ "wpn_ak74m_1pso"          ] = 1.9,
+  [ "wpn_ak74pbn"             ] = 2.2,
+  [ "wpn_ak74pbn_cobra"       ] = 1.5,
+  [ "wpn_ak74pbn_1p78"        ] = 2.0,
+  [ "wpn_ak74pbn_1pso"        ] = 1.9,
+  [ "wpn_ak104"               ] = 2.1,
+  [ "wpn_ak104_cobra"         ] = 1.4,
+  [ "wpn_ak104_1p78"          ] = 1.9,
+  [ "wpn_ak104_1pso"          ] = 1.8,
+  [ "wpn_ak108"               ] = 2.0,
+  [ "wpn_ak108_cobra"         ] = 1.3,
+  [ "wpn_ak108_1p78"          ] = 1.8,
+  [ "wpn_ak108_1pso"          ] = 1.6,
+  [ "wpn_saiga12c_m2"         ] = 2.0,
+  [ "wpn_saiga12c_m2_cobra"   ] = 1.5,
+  [ "wpn_saiga12c_m2_1p78"    ] = 1.9,
+  [ "wpn_saiga12c_m2_1pso"    ] = 1.8,
+  [ "wpn_rpk74"               ] = 3.0,
+  [ "wpn_rpk74_1p78"          ] = 2.5,
+  [ "wpn_rpk74_cobra"         ] = 1.8,
+  [ "wpn_rpk74_1pso"          ] = 2.3,
+  [ "wpn_abakan"              ] = 2.1,
+  [ "wpn_abakan_cobra"        ] = 1.5,
+  [ "wpn_abakan_1pso"         ] = 1.8,
+  [ "wpn_abakan_1p78"         ] = 1.9,
+  [ "wpn_ak74_m1"             ] = 1.8,
+  [ "wpn_ak74_m1_eotech"      ] = 1.3,
+  [ "wpn_ak74_m1_acog"        ] = 1.6,
+  [ "wpn_ak74_m1_mt"          ] = 1.5,
+  [ "wpn_ak74_m2"             ] = 1.8,
+  [ "wpn_ak74_m2_eotech"      ] = 1.3,
+  [ "wpn_ak74_m2_acog"        ] = 1.6,
+  [ "wpn_ak74_m2_mt"          ] = 1.5,
+  [ "wpn_val"                 ] = 2.0,
+  [ "wpn_val_1pso"            ] = 1.8,
+  [ "wpn_val_cobra"           ] = 1.5,
+  [ "wpn_val_1p78"            ] = 1.9,
+  [ "wpn_groza"               ] = 1.8,
+  [ "wpn_groza_po"            ] = 1.7,
+  [ "wpn_vintorez"            ] = 2.0,
+  [ "wpn_vintorez_cobra"      ] = 1.2,
+  [ "wpn_vintorez_1pso"       ] = 1.6,
+  [ "wpn_vintorez_1p78"       ] = 1.7,
+  [ "wpn_vintorez_m1"         ] = 1.7,
+  [ "wpn_vintorez_m1_cobra"   ] = 1.0,
+  [ "wpn_vintorez_m1_1pso"    ] = 1.3,
+  [ "wpn_vintorez_m1_1p78"    ] = 1.4,
+
+  [ "wpn_lr300"               ] = 1.8,
+  [ "wpn_lr300_m1"            ] = 1.7,
+  [ "wpn_sig550"              ] = 1.7,
+  [ "wpn_sig550_eotech"       ] = 1.1,
+  [ "wpn_sig550_acog"         ] = 1.6,
+  [ "wpn_sig550_mt"           ] = 1.5,
+  [ "wpn_g36"                 ] = 1.7,
+  [ "wpn_g36_g36l"            ] = 1.6,
+  [ "wpn_g36c"                ] = 1.7,
+  [ "wpn_g36c_eotech"         ] = 1.2,
+  [ "wpn_g36c_acog"           ] = 1.6,
+  [ "wpn_g36c_mt"             ] = 1.5,
+  [ "wpn_m16a4"               ] = 1.6,
+  [ "wpn_m16a4_acog"          ] = 1.3,
+  [ "wpn_m16a4_eotech"        ] = 1.0,
+  [ "wpn_m16a4_mt"            ] = 1.2,
+  [ "wpn_fn2000"              ] = 1.7,
+  [ "wpn_fn2000_eotech"       ] = 1.2,
+  [ "wpn_fn2000_acog"         ] = 1.6,
+  [ "wpn_fn2000_mt"           ] = 1.5,
+
+  [ "wpn_svd"                 ] = 2.8,
+  [ "wpn_svd_cobra"           ] = 1.7,
+  [ "wpn_svd_1p78"            ] = 2.6,
+  [ "wpn_svd_1pso"            ] = 2.4,
+  [ "wpn_svu"                 ] = 2.3,
+  [ "wpn_svu_cobra"           ] = 1.4,
+  [ "wpn_svu_1p78"            ] = 2.0,
+  [ "wpn_svu_1pso"            ] = 1.8,
+  [ "wpn_awm"                 ] = 2.7,
+  [ "wpn_awm_eotech"          ] = 1.7,
+  [ "wpn_awm_acog"            ] = 2.4,
+  [ "wpn_awm_mt"              ] = 2.2,
+  [ "wpn_sv98"                ] = 2.7,
+  [ "wpn_sv98_eotech"         ] = 1.7,
+  [ "wpn_sv98_acog"           ] = 2.4,
+  [ "wpn_sv98_mt"             ] = 2.0,
+  [ "wpn_m110"                ] = 1.7,
+  [ "wpn_m110_eotech"         ] = 1.3,
+  [ "wpn_m110_acog"           ] = 1.5,
+  [ "wpn_m110_mt"             ] = 1.5,
+  [ "wpn_mosin"               ] = 2.6,
+  [ "wpn_mosin_pe"            ] = 2.3,
+
+  [ "wpn_pkm"                 ] = 3.5,
+  [ "wpn_gm94"                ] = 3.2,
+  [ "wpn_rpg7"                ] = 3.5,
+  [ "wpn_flame"               ] = 2.3,
+  [ "wpn_gungauss"            ] = 1.1,
+  [ "wpn_gauss"               ] = 1.1,
+  [ "wpn_gauss_auto"          ] = 1.1
+}
+
+local wobble_x    = 0
+local wobble_y    = 0
+local last_cond   = 1
+local wpn_id      = 1
+local flag_wpn    = true
+local start_woobl = 0
+zoom_weapon       = false  -- game_object!
+gg_tired          = 1
+
+function scope_wobble()
+  local actor = db.actor
+  local wobble_progress_k = 1       -- начальный коээф. раскачки по времени, умножается потом на базовый
+	local eff_obj = wpn_params.get_zie_obj()
+	if eff_obj == nil then    	   
+       if wpn_params.zoom_time > 1 and zoom_weapon then --
+          wpn_params.zoom_time = 1          
+          params.weapon_mag_size_cond( zoom_weapon, zoom_weapon:condition() ) -- восстановление постоянной девиации         
+       end
+       wpn_params.zoom_time = 1
+	   return
+	end
+  local slot  = actor:active_slot()
+  zoom_weapon = actor:item_in_slot( slot )
+  wpn_params.zoom_weapon = zoom_weapon    
+  local wpn = nil
+  if zoom_weapon then wpn = zoom_weapon:get_weapon() end
+ 	if wpn_params.zoom_time <= 1 then       
+    if wpn ~= nil then
+       wpn.const_deviation.pitch = 0
+       wpn.const_deviation.yaw   = 0
+    end
+		wpn_params.disp_add[ 1 ] = math.random()*30-15
+		wpn_params.disp_add[ 2 ] = 12
+		wpn_params.disp_add[ 3 ] =-math.random()*30+15
+		base_radius = 0
+		last_cond = 1
+		flag_wpn = true
+		start_woobl = timers.Get_Game_Seconds()
+	end
+ 	wobble_x = 0
+	wobble_y = 0
+ 	if flag_wpn then
+		local wpn = actor:active_item()
+		if wpn and wpn:section() then
+  		base_wobble = wobble_wpn[ wpn:section() ] or 2
+      if base_wobble > 1 then                                    -- если раскачка больше 1
+        wobble_progress_k = 1 - ( timers.Get_Game_Days() / 200 )   -- снижение в 2 раза к 100-му дню в Зоне 
+        if wobble_progress_k < 0.5 then                            -- и на этом стоп!!
+          wobble_progress_k = 0.5
+        end
+        base_wobble = base_wobble * wobble_progress_k
+        local arm6 = actor:item_in_slot( 6 )
+        if arm6 ~= nil then                          -- Если инвалид в экзе, то раскачка на 30% слабее
+          if strposx ( arm6:section(), "exo" ) then base_wobble = base_wobble * 0.75 end
+        end
+      end
+      if base_wobble < 1 then base_wobble = 1 end
+      --wprintf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  " .. base_wobble .. "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  		wpn_id = wpn:id()
+  		flag_wpn = false
+		end
+	end
+	local cond = params.obj_condition( wpn_id )
+	if cond < last_cond then
+		last_cond = cond
+		if wpn_params.zoom_time > 1 then
+			local h, p = coord_params.camera_angles()
+			local hofs = 0.001
+			local pofs = 0.03
+			hofs = hofs*math.random()-hofs/2
+			pofs = pofs*math.random()-pofs/2
+			coord_params.camera_angles( h+hofs, p+pofs )
+			base_radius = 0
+			wpn_params.zoom_time = 1
+		end
+	end
+  local div_limit = 10
+  local crouch = actor:get_crouch_factor()
+  if crouch == 1 then
+    wpn_params.zoom_time = wpn_params.zoom_time + 0.07
+    div_limit = 20
+  elseif crouch == 2 then
+    wpn_params.zoom_time = wpn_params.zoom_time + 0.25
+    div_limit = 40
+  else
+    wpn_params.zoom_time = wpn_params.zoom_time + 0.01
+  end
+	local power = 0.2 + ( actor.power * 0.8 )
+	if timers.Get_Game_Seconds() - start_woobl > 60 * power then
+    last_cond = 2
+    start_woobl = timers.Get_Game_Seconds()
+    vergas_lib.s_play( "actor\\breathout", 1 )
+  end
+	base_radius = math.min( 1, base_radius + 0.1 ) * base_wobble * gg_tired / power
+	local dir = vector():set( device().cam_dir )
+	for i, deg in ipairs( disp_angles ) do
+		inc_angle( i )
+		local rdiv = math.min( div_limit, wpn_params.zoom_time )
+		local a    = math.pi * deg / 180
+		local r    = base_radius * disp_radius[ i ] / rdiv
+		wobble_x   = wobble_x + math.cos( a ) * r
+		wobble_y   = wobble_y + math.sin( a ) * r
+	end
+	local m_rot = matrix()
+	m_rot:setHPB( dir:getH(), dir:getP(), 0 )
+	local v = vector():set( wobble_x, wobble_y, 0 )
+	v = transform_tiny( m_rot, v )
+  switch_zoom_osc( true )  
+ 	-- zupd('current_point', 	v,     false, eff_obj)
+  zupd( 'target_point', 	 v,     false, eff_obj )
+	zupd( 'time_passed_int', 0.000, false, eff_obj )
+	zupd( 'speed_min',       0.001, false, eff_obj )
+end
+
+wpn_params.scope_wobble = scope_wobble
+
+function transform_tiny( m, v )
+	local res = vector()
+	res.x = m.i.x * v.x + m.k.x * v.z + m.j.x * v.y + m.c.x
+	res.y = m.k.y * v.z + m.j.y * v.y + m.i.y * v.x + m.c.y
+	res.z = m.k.z * v.z + m.j.z * v.y + m.i.z * v.x + m.c.z
+	return res
+end
+
+function cast_inv_item( cobj )
+  return CalcPtr( cobj, "$D8", "-" )      -- cast to CInventoryItem/CAttachableItem
+end
+
+function get_wpn_hud( cobj )
+  local HIO = CalcPtr( cobj, "$1B0", "+" ) -- CHudItemObject probably need cast
+  local swh = nil
+  local cwh = nil
+  local whv = nil
+  if HIO ~= nil then
+    ODS( "[~T]. #DBG: CHudItemObject = " .. FormatPtr( HIO ) )
+    cwh = ReadDMA( HIO, 16, "safe_ptr" ) -- CWeaponHUD       
+  end
+  if cwh ~= nil then    
+    ODS( "[~T]. #DBG: CWeaponHUD = " .. FormatPtr( cwh ) )
+    whv = ReadDMA( cwh, 72, "safe_ptr" ) -- weapon_hud_value also CWeaponHUD
+    if whv ~= nil then
+       ODS( "[~T]. #DBG: weapon_hud_value = " .. FormatPtr( whv ) )
+       kobj = ReadDMA(whv, 8, "safe_ptr" ) -- CKinematicsAnimated
+       ODS( "[~T]. #DBG: CKinematicsAnimated = " .. FormatPtr( kobj ) )
+    end -- if whv
+  end -- if swh 
+  return kobj, whv, cwh  
+end
+
+wpn_params.get_wpn_hud = get_wpn_hud
+
+local function get_fire_funcs( id )
+  local cobj = get_CObject( id )
+  if cobj == nil then return end
+  wprintf( '[~T]. #DBG: cobj = %s(%s) ', FormatPtr( cobj ), NearestPtr( cobj ) )
+  local sobj = CalcPtr( cobj, 496, '+' ) -- cast to CShootingObject
+  wprintf( '[~T]. #DBG: sobj = %s(%s) ', FormatPtr( sobj ), NearestPtr( sobj ) )
+  local vmt = ReadDMA( sobj, 0, "safe_ptr" )
+  if vmt ~= nil then    
+    local sf = ReadDMA( vmt, 16, "safe_ptr" )
+    local ef = ReadDMA( vmt, 20, "safe_ptr" )
+    wprintf( '[~T]. #DBG: vmt = %s(%s) ', FormatPtr( vmt ), NearestPtr( vmt ) )
+    wprintf( '[~T]. #DBG: StartFire = %s(%s) ', FormatPtr( sf ), NearestPtr( sf ) )
+    wprintf( '[~T]. #DBG: EndFire   = %s(%s) ', FormatPtr( ef ), NearestPtr( ef ) )
+    return sobj, sf, ef    
+  end
+  return nil, nil, nil
+end
+
+function wpn_params.start_fire( id )
+  local wpn = engine_object( id )
+  if wpn and wpn.start_fire then wpn:start_fire() end       
+end 
+
+function wpn_params.end_fire( id )
+  local wpn = engine_object( id )
+  if wpn and wpn.stop_fire then wpn:stop_fire() end     
+end 
+
+function wpn_params.actor_active_wpns() -- возвращает только стреляющее оружие!
+  local result = {}
+  for i = 1, 2 do
+    local wpn = db.actor:item_in_slot( i )
+    if wpn and strposx( wpn:name(), 'wpn_' ) then
+      table.insert( result, wpn:id() )
+    end  
+  end 
+  return result 
+end
+
+function wpn_params.fire_mode( id )
+  local wpn = engine_object( id )
+  return wpn.fire_mode or 1
+end                   
+
+function init_module() end
+
+function wpn_params.late_init()
+  AddRegularTask( "scope_wobble", wpn_params.scope_wobble, nil, 0, 70 )
+end
+
+function show_hud_bone( wpn, bone_name, b_show )   
+   local vis = wpn:get_hud_visual()   
+   if vis then 
+      vis = vis:dcast_PKinematics()
+   end                                        
+   if vis then  
+      vis:LL_SetBoneVisible( bone_name, b_show, true ) -- bone_id, visible, recursive      
+   end
+end

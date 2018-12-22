@@ -1,0 +1,197 @@
+local atack_npc
+local counter_entering = 0
+local n=1
+
+function heli_set_enemy_lua_random(actor,npc)
+	local npc_table = {}
+	local npc_table_ex = {}
+	local npc_table_en = {}
+	local tmp,rand,event
+	event=atack_npc
+	if not check_actor_outfit() then 
+		atack_npc = db.actor:id()
+	else
+		if atack_npc==db.actor:id() then
+			atack_npc=nil
+		end
+	end
+	if atack_npc==nil or(counter_entering > 100) or not(client_obj(atack_npc)~=nil and client_obj(atack_npc):alive()) then
+		for a = 1,BAD_OBJ_ID	do					
+			tmp=client_obj(a)
+			if tmp and IsStalker(tmp) and tmp:alive() and tmp:character_community()~="military" and tmp:character_community()~="dolg" then
+				if not check_npc_sid(a) or string.find(tmp:name(),"hellcar") or string.find(tmp:name(),"seryi") or string.find(tmp:name(),"amk_mini_bar") then
+					npc_table_ex[a]=a
+				else
+					npc_table[a]=a
+				end
+			else 
+				tmp = nil
+			end
+		end
+				
+		for i, v in pairs(npc_table) do
+			if v~=db.actor:id() and v~=atack_npc then
+				for j, w in pairs(npc_table_ex) do
+					if distance_2d(client_obj(v):position(), client_obj(w):position())>10 then
+						npc_table_en[n]=v
+						n=n+1
+					end
+				end
+			end
+		end
+		n=1
+		if table.getn(npc_table_en)>0 then
+			rand=lua_random(1,table.getn(npc_table_en))
+			event=npc_table_en[rand]
+			if atack_npc==event then
+				event=nil
+			end
+			atack_npc=event
+		end
+	end
+	set_enemy(actor,npc,atack_npc)
+end
+
+function set_enemy(actor,npc,atack_npc)
+	local st = db.storage[npc:id()]
+	local heli = client_obj(npc:id())
+	heli.heliObject = heli:get_helicopter()
+	if atack_npc then
+		local enemy = client_obj(atack_npc)
+		if enemy then
+			--get_console():execute("enemy_"..client_obj(atack_npc):name())
+			if atack_npc~=db.actor:id() then
+				heli.heliObject.m_use_rocket_on_attack = true
+				heli.heliObject.m_max_mgun_dist = 250
+			else
+				heli.heliObject.m_max_rocket_dist = 150
+				heli.heliObject.m_max_mgun_dist = 250
+				if check_actor_outfit() then
+					heli.heliObject.m_use_rocket_on_attack = false
+					heli.heliObject.m_use_mgun_on_attack = false
+				else
+					heli.heliObject.m_use_rocket_on_attack = true
+					heli.heliObject.m_use_mgun_on_attack = true
+				end
+			end
+			heli.heliObject:SetEnemy(enemy)
+			if distance_2d( npc:position(), client_obj(enemy):position() ) >85 then
+				heli_fly_to_enemy(actor,npc,enemy)
+			end
+			if lua_random(100)>98 then
+				heli_snd.play_snd(st, heli_snd.snd_see_enemy, 1)
+			end
+		end
+	end
+end
+
+function heli_enemy_actor(actor,npc)
+	local st = db.storage[npc:id()]
+	local heli = client_obj(npc:id())
+	heli.heliObject = npc:get_helicopter()
+	local enemy = client_obj(db.actor:id())
+	heli.heliObject:SetEnemy(enemy)
+	if distance_2d(npc:position(), client_obj(enemy):position())>85 then
+		heli_fly_to_enemy(actor,npc,enemy)
+	end
+	if check_actor_outfit() then
+		heli.heliObject.m_use_rocket_on_attack = false
+		heli.heliObject.m_use_mgun_on_attack = false
+	else
+		heli.heliObject.m_use_rocket_on_attack = true
+		heli.heliObject.m_use_mgun_on_attack = true
+		heli.heliObject.m_max_rocket_dist = 150
+		heli.heliObject.m_max_mgun_dist = 250
+		if lua_random(100)>98 then
+			heli_snd.play_snd(st, heli_snd.snd_see_enemy, 1)
+		end
+	end
+end
+
+function distance_2d(a,b)
+	return math.sqrt((b.x-a.x)^2 +(b.z-a.z)^2)
+end
+
+function check_actor_outfit()
+	local item = db.actor:item_in_slot(6)
+	if item and item:name() and string.find(item:name(),"freedom_scientific_outfit") then 
+		return true
+	end
+	return false
+end
+
+function check_npc_sid(obj_id)
+	local sobj = alife():object(obj_id)
+	if sobj and sobj.m_story_id and sobj.m_story_id < 9510 then
+		return false
+	end
+	return true
+end
+
+function heli_fly_to_enemy(actor,npc,enemy)
+	local pos = enemy:position()
+	local x = pos.x
+	local y = pos.y
+	local z = pos.z
+	local point = vector():set(x, y + 15 + lua_random() * 50, z)
+    if npc.position then
+       local cp = npc:position()
+       -- go near position
+       local dist = distance_2d (point, cp) -- ex: 400 m
+       local rds = 30 / dist -- сколько 30 метров относительно дистанции, коэффицииент (ex: 0.1)
+       local dx = point.x - cp.x -- ex: 50 vs 10 = 40
+       local dz = point.z - cp.z             
+       
+       point.x = ( point.x - dx * rds ) -- добавить недолет
+       point.z = ( point.z + dz * rds )
+    end   
+    
+    
+	local point_look = vector():set(x,y,z)
+	heli_move(point,npc,true,point_look)
+end
+
+function heli_move(position,npc,flag_look,point_look)	
+	local heli = client_obj(npc:id())
+	heli.heliObject = npc:get_helicopter()
+    
+	heli.heliObject:SetSpeedInDestPoint(10)
+    heli.heliObject:SetOnPointRangeDist(1)
+	heli.heliObject:SetMaxVelocity(40)
+	heli.heliObject:SetDestPosition(position)
+    ODS("[~T]. #DBG: heli dest position updated ")
+	if flag_look==true then
+		heli.heliObject:LookAtPoint(point_look,true)
+	end
+end
+
+heli_func.heli_fly_to_enemy = heli_fly_to_enemy
+heli_func.heli_move = heli_move
+
+local num_esc_bridge_spawn=0
+
+function heli_desant_esc_bridge(actor,npc)
+	if num_esc_bridge_spawn<1 then
+		timers.start_timer("heli_desant_esc_bridge_spawn",0.1,"heli_func.heli_desant_esc_bridge_spawn()")
+		num_esc_bridge_spawn=num_esc_bridge_spawn+1
+	end
+end
+
+function heli_desant_esc_bridge_spawn()
+	local sold_spawn= { "esc_soldier_respawn_1", "esc_soldier_respawn_1",	"esc_soldier_respawn_1",	"esc_soldier_respawn_1", "esc_soldier_respawn_1", "agr_soldier_veteran"}
+	for i= 1, table.getn(sold_spawn) do     
+		local obj,sobj
+		obj=alife():create(sold_spawn[i],vector():set(119.3058,12.7133,194.3025),418246,240)
+		repeat
+		  sobj = alife():object(obj.id)
+		until (sobj~=nil)
+		local pk = get_netpk(sobj)
+		local data = pk:get()
+		data.custom_data = "[smart_terrains]/nesc_bridge = true"
+		pk:set(data)
+		alife():create("grenade_rgd5",sobj.position, sobj.m_level_vertex_id, sobj.m_game_vertex_id, sobj.id)
+		alife():create("grenade_rgd5",sobj.position, sobj.m_level_vertex_id, sobj.m_game_vertex_id, sobj.id)
+		alife():create("medkit",sobj.position, sobj.m_level_vertex_id, sobj.m_game_vertex_id, sobj.id)
+	end
+	db.actor:give_info_portion("heli_desant_esc_bridge_spawn")
+end

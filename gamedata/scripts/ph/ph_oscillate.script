@@ -1,0 +1,143 @@
+----------------------------------------------------------------------------------------------------
+-- Oscillate object
+----------------------------------------------------------------------------------------------------
+-- Исходный скрипт: Tunduk Vladimir (Sidorovich)
+-- Идея следующая. Мы прикладываем к объекту линейно нарастающую силу в течении определенного времени
+-- По истечении времени, мы передергиваем направление силы (на противоположное или еще как) и снова 
+-- прикладываем к объекту (не забываем о линейном нарастании). 
+----------------------------------------------------------------------------------------------------
+
+if ph_oscillate == nil then 
+  _G.ph_oscillate = {}
+end
+
+local upd_cnt = 0   
+local dsum = 0 
+
+function ph_oscillate.calc_time(ao, delta)
+ local ct = PreciseTime() * 24 * 3600 * 1000
+ 
+ local elapsed = ct - ao.time
+
+ if upd_cnt == 0 then
+    ao.st.period = 10000
+    -- ao.dir.x = 0    
+    -- ao.dir.z = 0
+    ao.dir.x = math.random()
+    ao.dir.z = math.random()
+    ao.dir.y = -1
+    
+    ao.coefficient = 0
+    -- wprintf("[~T]. #DBG: reseting oscillator for object~C0D %d~C07 (~C0A %s~C07), joint =~C0F %s~C07", ao.object:id(), ao.object:name(), ao.st.joint)
+    --[[
+    local bl = bones.GetObjectBones(ao.object:id())
+    for i, bn in ipairs(bl) do
+      -- wprintf("bone_%d =~C0F %s~C07", i, bn)
+    end -- for ]]    
+ end
+ 
+ upd_cnt = upd_cnt + 1
+ 
+ local phs = ao.object:get_physics_shell()
+ local phe = phs:get_element_by_bone_name(ao.st.joint) -- 
+ 
+ if phe and ( upd_cnt > 10 ) then
+    phe:fix()
+    if upd_cnt % 10 < 5 then
+       phs:apply_force( 100 * ao.dir.x, -500,  100 * ao.dir.z)
+    else
+       phs:apply_force(-100 * ao.dir.x, -500, -100 * ao.dir.z)
+    end       
+                    
+ end
+ 
+ 
+ if elapsed < 200 then
+    upd_cnt = 0
+ end
+ 
+ return ct 
+end
+
+class "action_oscillator"
+---------------------------------------------------------------------------------------------------------------------
+function action_oscillator:__init (obj, storage)
+    self.object = obj
+    self.st = storage
+    self.time = 0
+    self.coefficient = 0
+    self.dir = vector ():set (lua_random(), 0, lua_random()):normalize ()
+    self.joint = nil
+    self.pause = false
+end
+---------------------------------------------------------------------------------------------------------------------
+function action_oscillator:reset_scheme ()
+    self.time = device():time_global()
+    self.dir = vector ():set (lua_random(), 0, lua_random()):normalize ()
+    self.coefficient = self.st.force / self.st.period 
+    self.joint = self.object:get_physics_shell ():get_joint_by_bone_name (self.st.joint)
+    self.time = time_global ()
+    self.pause = false
+end
+---------------------------------------------------------------------------------------------------------------------
+function action_oscillator:update (delta)
+    local c_time = ph_oscillate.calc_time(self, delta)
+    if c_time == 0 then
+       return
+    end
+    -- time in seconds
+     
+    if self.pause == true then
+       if c_time - self.time < self.st.period * 0.5 then
+          return
+       end
+       self.time = c_time
+       self.pause = false
+    end        
+    -- проверим на необходимость изменения направления
+    local elapsed = c_time - self.time 
+    if elapsed >= self.st.period then
+       self.dir.x = -self.dir.x
+       self.dir.z = -self.dir.z
+       self.dir = vector_rotate_y (vector ():set (-self.dir.x, 0, -self.dir.z), self.st.angle)
+       self.time = c_time
+       self.pause = true
+       upd_cnt = 0
+       return
+    end
+    -- рассчитаем силу    
+    local force = (c_time - self.time) * self.coefficient
+    -- wprintf("[~T]. #OSC: force =~C0D %.3f~C07, dir = {~C0F %s~C07}, period =~C0E %.1f~C07, elapsed =~C0B %.1f~C07 ", force, misc.pos2str(self.dir), self.st.period, elapsed)
+    if force ~= 0 then
+       self.object:set_const_force (self.dir, force, 2)       
+    end       
+end
+
+---------------------------------------------------------------------------------------------------------------------
+function add_to_binder(npc, ini, scheme, section, storage)
+	wprintf ("[~T]. #OSC: add_to_binder: scheme='%s', section='%s'", scheme, section)
+
+	local new_action = action_oscillator (npc, storage)
+	xr_logic.subscribe_action_for_events (npc, storage, new_action)
+end
+---------------------------------------------------------------------------------------------------------------------
+function set_scheme(npc, ini, scheme, section, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic = xr_logic.cfg_get_switch_conditions (ini, section, npc)
+	st.joint = utils.cfg_get_string (ini, section, "joint", npc, true, gulag_name)
+	if st.joint == nil then
+	   abort ("Invalid joint definition for object %s", npc:name ())
+	end   
+	st.period = utils.cfg_get_number (ini, section, "period", npc, true, 0)
+	st.force = utils.cfg_get_number (ini, section, "force", npc, true, 0)
+    if st.period == nil or st.force == nil then
+       abort ("[ph_oscillate] Error : Force or period not defined")
+    end   
+    st.angle = utils.cfg_get_number (ini, section, "correct_angle", npc, false, 0)
+    if st.angle == nil then
+       st.angle = 0
+    end    
+end
+
+---------------------------------------------------------------------------------------------------------------------

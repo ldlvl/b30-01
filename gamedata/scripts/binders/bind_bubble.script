@@ -1,0 +1,170 @@
+--*****************************************
+--Vergas аномалия пузырь
+--в качестве примера использован
+--Биндер самодельных телепортов(Imp)
+--*****************************************
+local bubble_binders ={}			-- Список пузырей
+local acter_poz						--позиция ГГ
+local flag_zahvat = false			--флаг попадения в пузырь
+local bubble_act					--Парометры активного пузыря. (ГГ в пузыре)
+local flag_exit = false				--флаг снятия активности пузыря
+local n = 0							--номер временного промежутка
+local time_old = 0
+local time_exit_open = 0			--время открытия прохода
+local ppe_effect = vergas_lib.set_pr_from_config_str("zone_bubble","ppe_effect")
+
+function actor_update()
+	local i,v
+
+	-- Получим позицию актера(что-бы каждый раз не запрашивать)
+	acter_poz = db.actor:position()
+	
+	if not flag_zahvat then
+		--все пузыри в засаде. Перебираем их
+		for i, v in pairs(bubble_binders) do
+			bubble_act = v.parametrs
+			
+			local obj = client_obj(i)
+			if obj~=nil then
+				--А не забрел ли ГГ в пузырь?
+				local dist = obj:position():distance_to(acter_poz)
+				if dist <= bubble_act.radius_zahvat then
+					flag_zahvat = true			--ГГ в пузыре
+					level.add_pp_effector(ppe_effect, 1001, true)
+					--извращаю время
+					local factor = system_ini():r_float("alife","time_factor") * vergas_lib.set_pr_from_config("zone_bubble","time_acceleration")
+					level.set_time_factor(factor)
+					--запускаю временные промежутки
+					n = 1
+					time_old = time_global()/1000
+					return
+				end
+			end
+		end
+	else
+		--ГГ сидит в пузыре.
+		--работаю временные промежутки
+		local current_time = time_global()/1000
+		if not flag_exit then
+		
+			if current_time - time_old >= bubble_act["t_"..tostring(n)] then
+				--запускаю проход
+				time_exit_open = current_time
+				level.remove_pp_effector(1001)
+				level.set_time_factor(system_ini():r_float("alife","time_factor"))
+				flag_exit = true
+			end
+		else
+			--проход открыт
+			if current_time - time_exit_open >= vergas_lib.set_pr_from_config("zone_bubble","time_exit") then
+				--закрываю проход
+				level.add_pp_effector(ppe_effect, 1001, true)
+				if n <= 4 then
+					n = n+1
+				else
+					n = 1
+				end
+				time_old = current_time
+				time_exit_open = 0
+				local factor = system_ini():r_float("alife","time_factor") * vergas_lib.set_pr_from_config("zone_bubble","time_acceleration")
+				level.set_time_factor(factor)
+				flag_exit = false
+			end
+		end
+		--time_old = current_time
+		--А не вступил ли ГГ на нейтральную полосу?
+		local obj = client_obj(bubble_act.id)
+		local dist = obj:position():distance_to(acter_poz)
+		if dist > bubble_act.radius_zahvat and dist <= bubble_act.radius_zahvat + 1 then
+			--ГГ на нейтральной полосе. Разворачиваем
+			local dir = db.actor:direction()
+			local a = vector()
+			a.x	= bubble_act.x - acter_poz.x
+			a.y = bubble_act.y - acter_poz.y
+			a.z = bubble_act.z - acter_poz.z
+			db.actor:set_actor_direction(-a:getH())
+			--А теперь телепортируем с нейтральной полосы
+			if not flag_exit then
+				teleportate(dist)
+			end
+		elseif dist > bubble_act.radius_zahvat + 1 then
+			--ГГ выбрался из пузыря
+			level.remove_pp_effector(1001)
+			level.set_time_factor(system_ini():r_float("alife","time_factor"))
+			flag_zahvat = false
+		end
+	end
+	
+end
+
+function teleportate(dist)
+	local koff = 1/dist
+	local a = vector()
+	-- Задаем координаты
+	a.x = acter_poz.x + koff*(bubble_act.x - acter_poz.x)
+	a.y = acter_poz.y + koff*(bubble_act.y - acter_poz.y)
+	a.z = acter_poz.z + koff*(bubble_act.z - acter_poz.z)
+
+	-- Сама телепортация
+	db.actor:set_actor_position(a)
+
+end
+
+	
+function bind(obj)
+	obj:bind_object(restrictor_bubble(obj)) 
+end
+
+-----------------------------------------------------------------------
+class "restrictor_bubble"(object_binder)
+
+function restrictor_bubble:__init(obj)
+	super(obj)
+end
+
+function restrictor_bubble:net_spawn(data)
+	local char_ini = system_ini()
+	-- Если это пузырь, то занесем её в специальный список пузырей
+	if self.bubble==true then
+		bubble_binders[self.object:id()] = self
+
+		-- Заполним таблицу параметров
+		self["parametrs"] = {}
+		-- расчитываю радиус захвата
+		self.parametrs["radius_zahvat"] = vergas_lib.set_pr_from_config(self.section,"radius_zahvat")
+		--рассчитываю временные промежутки активности (в реальных секундах)
+		self.parametrs["t_1"] = lua_random(6,30)		--от 1 игровой минуты до 10(с нормальным фактором)	
+		self.parametrs["t_2"] = lua_random(6,60)
+		self.parametrs["t_3"] = lua_random(6,60)
+		self.parametrs["t_4"] = lua_random(6,60)
+		self.parametrs["t_5"] = lua_random(6,60)
+		
+		-- Запомним позицию что-бы каждый раз не считать
+		local s_obj = alife():object(self.object:id())
+		self.parametrs["x"] = tonumber(s_obj.position.x);
+		self.parametrs["y"] = tonumber(s_obj.position.y);
+		self.parametrs["z"] = tonumber(s_obj.position.z);
+		self.parametrs["id"] = tonumber(s_obj.id);
+
+	end
+	return true
+end
+
+function restrictor_bubble:net_destroy()
+	-- Удаляем наш телепорт
+	bubble_binders[self.object:id()] = nil
+	self.parametrs = nil
+	object_binder.net_destroy(self)
+end
+
+function restrictor_bubble:reload(section)
+
+	local char_ini = system_ini()
+
+	self.section = section
+	-- Если это пузырь то 
+	if char_ini~=nil and char_ini:line_exist(self.section, "bubble") then
+		self["bubble"] = true
+	end
+end
+

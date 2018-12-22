@@ -1,0 +1,243 @@
+
+local killCountProps = {
+  bloodsucker_weak            = 2.0,
+  m_bloodsucker_e             = 2.0,
+  bloodsucker_normal          = 3.0,
+  bloodsucker_strong          = 8.0,
+  bloodsucker_mil             = 8.0,
+  boar_weak                   = 0.08,
+  boar_normal                 = 0.1,
+  boar_strong                 = 0.2,
+  burer_weak                  = 1.0,
+  burer_normal                = 1.5,
+  burer_strong                = 2.0,
+  burer_yan                   = 3.0,
+  burer_hos                   = 3.0,
+  cat_weak                    = 0.08,
+  cat_normal                  = 0.08,
+  cat_strong                  = 0.08,
+  chimera_weak                = 3.0,
+  chimera_normal              = 4.0,
+  chimera_strong              = 5.0,
+  electro_chimera             = 10.0,
+  controller_weak             = 4.0,
+  m_controller_normal         = 4.0,
+  controller_strong           = 5.0,
+  m_controller_normal_fat     = 4.0,
+  controller_tubeman          = 4.0,
+  m_controller_old            = 4,
+  m_controller_old_fat        = 4.0,
+  dog_weak                    = 0.03,
+  dog_normal                  = 0.04,
+  dog_strong                  = 0.05,
+  dog_sak                     = 0.05,
+  flesh_weak                  = 0.2,
+  flesh_normal                = 0.3,
+  flesh_strong                = 0.5,
+  gigant_normal               = 8.0,
+  m_gigant_normal             = 8.0,
+  gigant_strong               = 8.0,
+  m_poltergeist_strong_flame  = 4.0,
+  m_poltergeist_normal_flame  = 3.0,
+  m_poltergeist_normal_tele   = 2.0,
+  m_poltergeist_normal        = 2.0,
+  m_poltergeist_dark_flame    = 4,
+  m_poltergeist_tele_outdoor  = 2,
+  pseudodog_weak              = 0.08,
+  pseudodog_normal            = 0.12,
+  pseudodog_strong            = 0.3,
+  psy_dog_weak                = 0.0,
+  psy_dog_normal              = 0.0,
+  psy_dog_strong              = 0.0,
+  psy_dog                     = 0.3,
+  psy_dog_radar               = 5.0,
+  rat_weak                    = 0,001,
+  rat_normal                  = 0,001,
+  rat_strong                  = 0,001,
+  rat_mad_wery_strong         = 0.002,
+  snork_weak                  = 0.3,
+  snork_normal                = 0.4,
+  snork_strong                = 0.6,
+  aes_snork                   = 1.0,
+  snork_indoor                = 0.3,
+  snork_outdoor               = 0.3,
+  snork_jumper                = 0.3,
+  tushkano_weak               = 0.0,
+  tushkano_normal             = 0.01,
+  m_tushkano_normal           = 0.01,
+  tushkano_strong             = 0.02,
+  electro_tushkano_normal     = 0.05,
+  zombie_weak                 = 0.04,
+  zombie_normal               = 0.06,
+  zombie_strong               = 0.08,
+  zombie_blow                 = 0.1,
+  zombie_trup2                = 0.03,
+  zombie_trup                 = 0.04,
+  zombie_beee                 = 0.08,
+  zombied_default1            = 0.05,
+  zombied_default2            = 0.05,
+  zombied_default3            = 0.05,
+  zombied_default4            = 0.05,
+  zombied_default5            = 0.05,
+  zombied_default6            = 0.05,
+  zombied_default7            = 0.05,
+  zombied_veteran_default1    = 0.08,
+  zombied_veteran_default2    = 0.08,
+  zombied_veteran_default3    = 0.08,
+  zombied_veteran_default4    = 0.08,
+  zombied_veteran_default5    = 0.08
+}
+
+local sect_alias = {
+  bloodsucker_mil             = "bloodsucker_strong",
+  m_bloodsucker_e             = "bloodsucker_weak",
+  bloodsucker_normal          = "bloodsucker_weak",
+  burer_normal                = "burer_weak",
+  burer_strong                = "burer_weak",
+  burer_hos                   = "burer_weak",
+  burer_yan                   = "burer_weak",
+  cat_normal                  = "cat_weak",
+  cat_strong                  = "cat_weak",
+  controller_weak             = "controller_weak",
+  m_controller_normal         = "controller_weak",
+  m_controller_normal_fat     = "controller_weak",
+  controller_tubeman          = "controller_weak",
+  controller_strong           = "controller_weak",
+  m_controller_old            = "controller_weak",
+  m_controller_old_fat        = "controller_weak",
+  m_gigant_normal             = "gigant_normal",
+  m_poltergeist_strong_flame  = "m_poltergeist_normal_flame",
+  m_poltergeist_normal        = "m_poltergeist_normal_tele",
+  m_poltergeist_tele_outdoor  = "m_poltergeist_normal_tele",
+  m_poltergeist_dark_flame    = "m_poltergeist_normal_flame",
+  poltergeist_weak            = "m_poltergeist_normal_tele",
+  rat_normal                  = "rat_weak",
+  rat_strong                  = "rat_weak",
+  aes_snork                   = "snork_strong",
+  snork_indoor                = "snork_weak",
+  snork_outdoor               = "snork_weak",
+  snork_jumper                = "snork_weak",
+  tushkano_weak               = "tushkano_normal",
+  m_tushkano_normal           = "tushkano_normal",
+  electro_tushkano_normal     = "electro_tushkano_normal",
+  zombie_normal               = "zombie_weak",
+  zombie_strong               = "zombie_weak",
+  zombie_trup2                = "zombie_trup",
+  zombie_beee                 = "zombie_trup",
+  zombied_default2            = "zombied_default1",
+  zombied_default3            = "zombied_default1",
+  zombied_default4            = "zombied_default1",
+  zombied_default5            = "zombied_default1",
+  zombied_default6            = "zombied_default1",
+  zombied_default7            = "zombied_default1",
+  zombied_veteran_default1    = "zombied_default1",
+  zombied_veteran_default2    = "zombied_default1",
+  zombied_veteran_default3    = "zombied_default1",
+  zombied_veteran_default4    = "zombied_default1",
+  zombied_veteran_default5    = "zombied_default1"
+}
+
+monster_classes = {}
+
+function init_module()
+  monster_classes = {
+    [ CLID_TUSHKANO           ] = "tushkano",
+    [ CLID_FLESH              ] = "flesh",
+    [ CLID_BOAR               ] = "boar",
+    [ CLID_CAT                ] = "cat",
+    [ CLID_ZOMBIE             ] = "zombie",
+    [ CLID_BURER              ] = "burer",
+    [ clsid.fracture_s        ] = "fracture",
+    [ CLID_CHIMERA            ] = "chimera",
+    [ CLID_DOG                ] = "dog",
+    [ CLID_PSEUDODOG          ] = "pseudodog",
+    [ CLID_PSY_DOG            ] = "psy_dog",
+    [ clsid.psy_dog_phantom_s ] = "psy_dog_phantom",
+    [ CLID_SNORK              ] = "snork",
+    [ CLID_POLTERGEIST        ] = "poltergeist",
+    [ CLID_GIGANT             ] = "pseudo_gigant",
+    [ CLID_CONTROLLER         ] = "controller",
+    [ CLID_BLOODSUCKER        ] = "bloodsucker"
+  }    
+end    
+
+function add_pts( props, sect_name, count, pts )
+  if pts == nil then return end
+  actor_stats.add_points( props, sect_name, count, pts )
+  pts = pts * count
+  wprintf(
+    " points for~C0F %s ~C0A %s~C07 ~C0B x ~C0D %d~C0B =~C0D %.3f~C07 ",
+    props, sect_name, count, pts
+  )
+  if pts >= 1 then
+     db.actor:set_character_rank( db.actor:character_rank() + pts )
+  end
+end
+
+function quest_success( quest_name, pts )
+  add_pts( "quests", quest_name, 1, pts )
+end
+
+function quest_failed( quest_name, pts )
+  add_pts( "quests", quest_name, 1, -pts )
+end
+
+function addKillCount( npc )
+  if npc then
+    local props, sect = getNpcType( npc )
+    if props == nil or sect == nil then return end
+    local sect_name
+    if sect_alias[ sect ] ~= nil then
+      sect_name = sect_alias[ sect ]
+    else
+      sect_name = sect
+    end
+    local pts = killCountProps[ sect ]
+    if pts == nil then return end
+    if system_ini():line_exist( sect_name, "rank" ) then
+      pts = killCountProps[ sect ]
+    end
+    add_pts( props, sect_name, 1, pts )
+  end    
+end
+
+function getNpcType( npc )
+  if npc == nil then
+    return nil
+  end
+  if IsStalker( npc ) then
+    -- local community = "neutral"
+    --     local list = { "monolith", "military", "killer", "ecolog", "dolg", "freedom", "bandit", "green", "zombied" }                                       
+    --   local p, i = str_in_tab(list)
+    --     if i then community = list[i] end        
+    
+    -- local rank = ranks.get_obj_rank_name(npc)
+    -- return "stalkerkills", community.."_"..rank
+  else
+    local community = npc:section()    
+    if community == nil then
+      return nil, nil
+    end
+    if community == "NIL" then
+      return nil, nil
+    end
+    return "monsterkills", community
+  end  
+end
+
+function addCookingPoints( sect_name )
+  local translatedSection = string.gsub( sect_name, "_", "-" )
+  if strpos( translatedSection, "-capsule" ) then
+    translatedSection = string.gsub( translatedSection, "-capsule", "" )
+  elseif translatedSection == "af-cristal-flower" then
+    translatedSection = "af-cristall-flower"
+  elseif strpos( translatedSection, "-glassbeads" ) then
+    translatedSection = "af_glassbeads"
+  end
+  --local cookingPointsPDA = actor_stats.get_points("artefacts")
+  --local cookingPointsSaved = nlc_vars.artmod_goods or 1
+  --if cookingPointsSaved > (cookingPointsPDA + 1) then
+    --add_pts("artefacts", translatedSection, 1, cookingPointsSaved-1)
+  --end
+  add_pts( "artefacts", translatedSection, 1, 1 )
+end

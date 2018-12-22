@@ -1,0 +1,283 @@
+local items = {}
+
+local spawned = {} 
+local infop = 'esc_trader_received_order'  
+ 
+dlc_vars = false 
+
+local function get_used_dlc()
+ return xray_vars.load_table(dlc_vars, 'used', {} )
+end
+
+function dlc_manager.switch_dialog()
+
+ if dlc_vars.dialog_num < 2 then 
+   dlc_vars.dialog_num = dlc_vars.dialog_num + 1
+   wprintf("[~T]. #DLC_DBG: switched to next dialog~C0D %d~C07", dlc_vars.dialog_num)
+ end  
+ 
+end
+
+function dlc_manager.seq_phrase(index)
+
+ local s = sprintf('escape_trader_parcel_dialog_%d%d', dlc_vars.dialog_num, index)
+ 
+ 
+ -- TODO: здесь можно с помощью замены вставлять любое сообщение загруженное из dlc_items.ltx
+ 
+ return s
+end 
+
+
+function dlc_manager.load_items(dlc_id)
+ local items = {}
+ 
+ if dlc_id == 'DLC_TEST' then
+    local rec = { }    
+    rec = { section = 'vodka', count = 1 }    
+    table.insert(items, rec)
+    rec = { section = 'kolbasa', count = 1 }    
+    table.insert(items, rec)      
+    rec = { section = 'energy_drink', count = 1 }
+    table.insert(items, rec)
+ end
+ 
+ local ini = system_ini()
+ local ini_obj = ini:object()
+ 
+ for i = 0, 255 do
+   local sect = "dlc_item"..tostring(i)
+   local sobj = ini_obj[sect]
+   if nil == sobj  then break end
+   local rec = {}           
+   
+   rec.section = sobj.section   
+   rec.count   = tonumber(sobj.count)
+   
+   if ini:section_exist(rec.section) and rec.count > 0 then
+      
+      table.insert(items, rec)
+   else
+      wprintf("[~T].~C0C #DLC_REJECT:~C07 rejected DLC item %s x %d", rec.section, rec.count or 0) 
+   end
+ end -- for
+
+ if table.getn(items) > 0 then
+    wprintf("[~T].~C0A #DLC_SUCCESS:~C07 load_items added~C0D %d~C07 items", table.getn(items))
+ end
+
+ return items 
+end
+
+function apply(dlc_id)
+ local act = db.actor
+ 
+ if level.get_game_difficulty() > 1 then 
+    wprintf('[~T].~C0C #DLC_REJECT:~C07 game_difficulty so hard (%d) ~C07', level.get_game_difficulty())
+    return -- not easy to use cheats
+ end 
+  
+ local tab = get_used_dlc() 
+ 
+ if tab[dlc_id] then
+   wprintf("[~T]. #DLC_REJECT: already applied ~C0F %s~C07", dlc_id)
+   return 
+ end
+  
+ nlc_vars.dlc.active_id = dlc_id 
+    
+ items = dlc_manager.load_items(dlc_id)    
+ 
+ if table.getn(items) > 0 then
+   act:give_info_portion(infop) -- activate prize dialog 
+   -- wprintf("[~T].~C0A #DLC_SUCCESS:~C07 loaded~C0D %d~C07 items ", table.getn(items))
+   sak.send_tip( game.translate_string('escape_trader_parcel_notify'),"Сообщение от Сидоровича", 11, 20, "trader", "alpet", "red")
+ else
+   wprintf('[~T].~C0C #DLC_REJECT:~C07 nothing added from dlc_items.ltx')  
+ end
+ 
+end
+
+function first_dlc()
+ local tab = get_used_dlc()
+ return misc.size_table(tab) == 0;
+end
+
+function next_dlc()
+ local tab = get_used_dlc()
+ return misc.size_table(tab) > 0;
+end
+
+
+function have_order()
+ return ( table.getn(items) > 0 )
+end
+
+function dlc_manager.spawn_items(first_speaker, second_speaker)
+ local act = db.actor
+  
+ -- try spawn to shadow inventory 
+ local dest = db.shadow_inv:update_storage()
+ if dest == nil then
+    dest = act
+ end
+ local dlc_id = nlc_vars.dlc.active_id
+ if not dlc_id then
+    wprintf("[~T].~C0C #DLC_REJECT:~C07 active_id not set")
+    return
+ end
+ 
+ if table.getn(items) == 0 then    
+    items = dlc_manager.load_items(dlc_id)    
+ end
+ 
+ local cnt = 0
+ 
+ for i, rec in ipairs(items) do
+  wprintf("3. single spawn %s x %d into actor ", rec.section, rec.count);   
+  misc.spawn_multi (rec.section, dest:position(), dest, rec.count)   
+  sak.relocate_item(act, "in", rec.section, rec.count)
+  cnt = cnt + rec.count
+ end 
+ 
+ if cnt > 0 then
+    wprintf("[~T].~C0A #DLC_SUCCESS:~C07 spawned~C0D %d~C07 items ", cnt)
+    act:disable_info_portion(infop)
+    
+    if dlc_id then    
+       local tab = get_used_dlc()
+       tab[dlc_id] = InfoFmt('~D ~T')
+       nlc_vars.dlc.used = tab
+       nlc_vars.dlc.active_id = false
+   end      
+   schedule.add("switch_dialog", "dlc_manager.switch_dialog()", 5000) -- scheme complete cycle   
+ end 
+end
+
+function init_module()
+end
+
+function dlc_manager.debug_test(sc)
+ local ini = system_ini()
+ if not ini:section_exist(sc) then return end -- failsafe 
+
+ db.actor:give_info_portion(infop)
+ sak.send_tip("Меченный, зайди ко мне, для тебя посылка пришла!","Сообщение от Сидоровича", 11, 20, "trader", "alpet", "red")
+ local rec = { section = sc, count = 3 }
+ items = {}
+ 
+ wprintf("1. adding debug record ");
+ table.insert (items, rec);
+ 
+ --[[
+ local obj = g_sim:story_object(story_ids.escape_trader)
+ if obj then
+    local trader = client_obj(obj.id)
+    wprintf("2. spawn items into %s ", trader:name())    
+    dlc_manager.spawn_items(trader, db.actor) 
+ end
+
+ --]]
+ 
+end
+
+
+function dlc_manager.apply_load(force)
+ local fs = getFS()
+ 
+ if not (fs:exist("$game_config$", "dlc_items.ltx")) then
+    return
+ end
+
+ if nlc_vars.dlc == nil then
+    dlc_manager.reset()    
+ end    
+
+
+ dlc_vars = nlc_vars.dlc
+ if xr_build_id < 6171 then
+    wprintf('[~T].~C0C #DLC_REJECT: xr_build_id =~C0D %d~C07, not compatible with DLC manager ', xr_build_id) 
+    return
+ end;  
+
+ 
+ -- STAGE1: load DLC info and check its already added
+ 
+ local ini = system_ini()
+ ini:load('') -- reload for debug test
+ 
+ local ini_obj = ini:object()
+ local cfg = ini_obj.dlc_config
+ 
+ if nil == cfg then
+    wprintf('[~T].~C0C #DLC_REJECT:~C07 no section~C0E dlc_config~C07')
+    return
+ end
+ 
+ 
+ 
+ local act = db.actor
+ 
+ local meet_trader = false
+ 
+ if act:has_info ("time_night") then
+    wprintf('[~T].~C0C #DLC_REJECT:~C07 dark time, trader sleep :)')
+    return
+ end 
+ 
+ local ipl = { "tutorial_wounded_start_new", "tutorial_end", "tutorial_wounded_fail" }
+ 
+ for i, ip in ipairs(ipl) do 
+    meet_trader = meet_trader or act:has_info (ip)
+ end
+ 
+ if not meet_trader then
+    wprintf('[~T].~C0C #DLC_REJECT:~C07 no meet with esc_trader') 
+    return
+ end
+ 
+ 
+ 
+ local nonce = 333
+ local trans = cfg.trans or '' 
+ if string.len(trans) < 8 then wprintf("[~T]. #DBG: DLC trans = %s, rejected ", trans) return  end
+ local pk = cfg.pkey or ''
+ 
+ if nil == ini_obj.dlc_item0 then 
+    wprintf('[~T].~C0C #WARN:~C07 no section~C0E dlc_item0~C07')    
+ end
+
+ local test_date = cfg.debug_test  or 'nil'
+ wprintf("[~T][~D]. #DLC: test_date = %s ", test_date)
+ 
+ pk = base64_decode(pk)
+ 
+ nonce = cfg.nonce or '0'
+ 
+  
+ local fcfg = fs:update_path('$game_config$', 'dlc_items.ltx') 
+
+ local verified = profiles.verify_pk(pk.data.rhash) and profiles.check_trusted(fcfg, nonce)
+ 
+ if verified or force then
+    local dlc_id = "DLC_"..trans
+    wprintf("[~T]. #DBG(DLC): loaded~C0F %s~C07 ", dlc_id)
+    schedule.add('dlc_apply', sprintf("dlc_manager.apply('%s')", dlc_id), 2500)
+ elseif test_date == InfoFmt("~D") then
+    schedule.add('dlc_apply', "dlc_manager.apply('DLC_TEST')", 2500)
+ else
+    wprintf("[~T].~C0C #DLC_REJECT:~C07 profile mistmatch! Trans = %s", trans)       
+ end
+
+end
+
+function dlc_manager.late_init()
+ dlc_manager.apply_load()
+end
+
+
+
+function dlc_manager.reset()
+ nlc_vars.dlc = {}
+ nlc_vars.dlc.dialog_num = 0   
+end

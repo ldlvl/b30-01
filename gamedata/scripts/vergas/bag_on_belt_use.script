@@ -1,0 +1,368 @@
+--[[
+Сумка на поясе v 1.0
+Vergas
+© NLC-6.0
+]]--
+
+local bag_grub = {}            -- таблица еды, которую съдаем из сумки НЗ (быстрая сумка)
+local bag_drop = {}            -- таблица еды (ID), которую вытряхнули из сумки (быстрая сумка)
+
+local forbid_take_on_bag = false    --false - запрета нет, класть можно 
+local matches_on            -- true - спички подсунуты из сумки для розжига
+local matches_id            -- id подсунутых спичек 
+
+---------------------------------------------------
+--Функции установочные
+---------------------------------------------------
+
+function set_items_section()
+  return { "matches", "drag_cat_eyes", "batt_torch", "bread", "conserva", "green_kolbasa", "vodka", "suhpay" }
+end
+
+function list_sect_id()
+   return list_tools.record_list( {"sect", "id" }, {"string", "number" }, {"?", 0} )
+end
+
+function list_sect_count ()
+   return list_tools.record_list( {"sect", "count" }, {"string", "number" }, {"?", 0} )
+end
+
+function check_nz(sect)  
+ local tbl = set_items_section()
+ for i = 1,#tbl do
+   if sect == tbl[i] then return true end
+ end  
+ return false
+end
+
+
+function bag_object()
+ local section = "shadow_inventory2"                     
+ local bag = db.actor:object(section)
+ if bag == nil then
+    misc.spawn_to(section, db.actor)
+    misc.process_spawn()
+    return db.actor:object(section)
+ end
+ bag:set_name("ER_bag") -- emergiency ration 
+ return bag 
+end
+
+function inventory_items()                                  
+    
+  local bypass = function(obj)  -- колбек проверки объекта 
+    local sect = obj:section()
+    return razgruzka.check_obj(obj) and check_nz(sect)
+  end
+  
+  local id_list  = nlc_container.collect_items(db.actor, bypass)
+  local tmp_map  = nlc_container.collect_items_map(id_list, false) -- надо считать патроны?       
+  -- отображение разрешенных предметов из инвентаря в ассоциативные таблицы 
+  -- tmp_map - сколько предметов каждой секции
+  -- id_tmp    - связь между ид и секцией                               
+  wprintf("tmp_map dump:")
+  dump_table(tmp_map.map)    
+  local result = list_sect_count()
+  result:import_map(tmp_map)
+  return result, id_list
+end
+
+function load_bag_content() -- Определяю информацию по содержимому сумки
+  local bag = bag_object()   
+  return nlc_container.collect_items(bag)
+end
+
+function save_bag_content(tbl)
+  -- Сохраняю информацию по содержимому сумки
+  nlc_vars.bag_items = nil
+end
+
+---------------------------------------------------
+--Функции обработки трансфера предметов
+---------------------------------------------------
+
+function item_exists(owner, id)
+ for i = 0, owner:object_count() - 1 do
+   local obj = owner:object(i)
+   if obj and obj:id() == id then
+      return true
+   end -- if
+ end -- for 
+ return false
+end
+
+function transfer_item_in_hran(obj_id)    
+    -- функция для сумки(перемещение итемов в хранилище) 
+    if obj_id <= 0 then
+       wprintf("~C0C #ERROR:~C07 transfer_item_in_hran obj_id must be > 0:\n %s", lua_traceback(" "))
+       return false
+    end
+    wprintf(" transfer_item_in_hran %d ", obj_id)
+    
+    local bag = bag_object()
+    local obj = client_obj(obj_id)
+    
+    if item_exists(db.actor, obj_id) and obj then   
+       db.actor:transfer_item(obj, bag) 
+    end
+end
+
+
+function transfer_item_from_hran(obj_id)
+    -- функция для сумки(перемещение итемов из хранилища)
+    if obj_id <= 0 then
+       wprintf("~C0C #ERROR:~C07 transfer_item_from_hran obj_id must be > 0:\n %s", lua_traceback(" "))
+       return false
+    end
+    wprintf(" transfer_item_from_hran %d ", obj_id)
+    local bag = bag_object()
+    local obj = client_obj(obj_id)
+    
+    if item_exists(bag, obj_id) and obj then   
+       bag:transfer_item(obj, db.actor) 
+    end   
+end
+
+---------------------------------------------------
+--Функции взаимодействия с инвентарем
+---------------------------------------------------
+
+function drop_habar_from_bag(tbl, mode)
+    --mode = 1 только трансферю хабар в рюкзак
+    --mode = 2 только выбрасываю хабар из рюкзака
+  --выгрузка предметов из сумки
+  
+  if mode == 2 then
+    local act = db.actor
+    for i = 1,#bag_drop do
+      local obj = client_obj (bag_drop[i])
+      if obj and act:object(obj:name()) == obj then
+        act:drop_item(obj)
+      end
+    end
+    forbid_take_on_bag = false
+    bag_drop = {}
+    vergas_lib.s_play([[razgruzka\bag_drop]],1)
+    return
+  end
+  
+ 
+  for i, rec in tbl:ipairs() do
+    if rec.sect ~= "?" then
+      --перемещаю предметы в инвентарь
+      transfer_item_from_hran(rec.id)
+      -- table.insert(bag_drop, rec.id)
+    end
+  end
+ 
+ 
+  --запускаю таймер
+  forbid_take_on_bag = true
+  --schedule.add("drop_item_from_bag", "bag_on_belt_use.drop_habar_from_bag("..bag_drop..", 2)", 500)
+end
+
+function take_item_without_rucksack(obj)
+    -- возвращает: поднято, запрет
+  
+  local flag = true
+  local section = obj:section()
+  local obj_id = obj:id()
+  local i
+  local template = 0
+  
+  if section == "matches" and matches_on then
+    --это спички подсунутые для розжига
+    return true, false
+  end
+  
+  if forbid_take_on_bag then
+    return false, true
+  end
+  if not check_nz(section) then
+    return false, false
+  end
+  
+  local tbl_bag = load_bag_content()
+  
+  --определяю, есть ли место в сумке и сколько
+  for i, rec in tbl_bag:ipairs() do
+    if rec.sect ~= "?" then
+      template = template + vergas_lib.set_pr_from_config("bag_"..rec.sect, "size_icon")
+    end
+  end
+  template = 4 - template
+  if  template == 0 or template <  vergas_lib.set_pr_from_config("bag_"..section,"size_icon") then
+    return false, false
+  end
+  
+  --нахожу свободную ячейку и кладу туда закуску, или выпивку, или спички-шмички...
+  for i, rec in tbl_bag:ipairs() do
+    if rec.sect == "?" then    --ячейка доступна
+      rec.sect = section
+      rec.id   = obj_id
+      break
+    end
+  end
+  
+  transfer_item_in_hran(obj_id)
+  save_bag_content(tbl_bag)  
+  return true, false
+end
+
+---------------------------------------------------
+--Функции обработки использования (съедания) предметов
+---------------------------------------------------
+
+function set_eat_grub(item)
+  table.insert(bag_grub,item)
+end
+
+function eat_grub()
+  local i
+  local tbl_tmp = {}
+  
+  if #bag_grub ~= 0 then
+    for i, name in ipairs (bag_grub) do
+      local itm= db.actor:object(name)  
+      if itm ~= nil then
+         db.actor:eat(itm)
+         bag_grub [i] = ""
+      else
+         table.insert(tbl_tmp,name)
+      end
+    end
+  end
+  
+  bag_grub = tbl_tmp
+  if #bag_grub ~= 0 then
+     wprintf(" eat~C0F %s~C07 postponed ", table.concat(bag_grub, ",")) 
+     schedule.add ("transfer_item", "bag_on_belt_use.eat_grub()", 1000)
+  end
+end
+
+---------------------------------------------------
+--Функции обработки веса сумки
+---------------------------------------------------
+function calculate_bag_weight()
+
+  local i
+  local items_weight = 0
+  local bag_items = load_bag_content()
+
+  for i, rec in bag_items:ipairs() do
+    if rec.sect ~= "?" then
+       items_weight = items_weight + vergas_lib.set_pr_from_config(rec.sect, "inv_weight")
+    end
+  end
+    -- alpet: вес теперь учтен в хранилище!    
+  -- change_weight_bag(items_weight)
+end
+
+function change_weight_bag(items_weight)
+ 
+end
+--------------------------------------------------
+--Функции проверки наличия спичек при розжиге
+--------------------------------------------------
+
+function get_matches()
+ return db.actor:object("matches") 
+end
+
+function load_matches()
+ if get_matches_on() then
+    misc.process_spawn()
+    return get_matches()    
+ end 
+ return false
+end
+
+function unload_matches()
+ if get_matches_on() then
+    --спички были подсунуты из сумки
+    schedule.add ("matches_tr", "bag_on_belt_use.retransfer_matches_in_bag()", 400)
+    --bag_on_belt_use.retransfer_matches_in_bag()
+    set_matches_on(false)
+ end
+end
+
+
+function verification_matches()
+  -- сначала попытаться достать из инвентаря или теневого инвентаря
+  local itm = get_matches() or get_shadow_inv():restore_item("matches")      
+  if itm then
+    --спички в инвентаре есть. Трепыхаться не надо...
+    return false      --не вмешиваюсь
+  end
+ 
+  local info_bag = load_bag_content()
+  if not check_matches_in_bag(info_bag) then
+    --спичек нет ни в инвентаре, ни в сумке, т.е. совсем нет
+    return false      --не вмешиваюсь
+  end
+  
+  --Спичек в инвентаре нет, но в сумке есть. Будем трепыхаться
+  matches_id = 0
+    
+  local i = info_bag:find(1, "matches")
+  if i == 0 then return end
+                
+    matches_id = info_bag(i).id       
+  --а есть ли у ГГ рюкзак? А это и не важно. Главное чтобы не вывалились
+  matches_on = true
+  transfer_item_from_hran(matches_id)
+  --обрабатываю переменную
+  info_bag = clean_holes_table(info_bag)
+  save_bag_content(info_bag)   
+  return true
+end
+
+function retransfer_matches_in_bag()
+  
+  local i                       
+  --возвращаю подсунутые спички в сумку
+  if get_matches() then    
+    --обрабатываю переменную
+    local info_bag = load_bag_content()
+    for i, rec in info_bag:ipairs() do
+        if rec.sect == "?" then
+         rec.sect = "matches"
+         rec.id = matches_id                  
+         --остатки спичек есть. Сую обратно в сумку
+         transfer_item_in_hran(matches_id)  
+         break
+      end
+    end        
+  end
+  matches_on = false
+  matches_id = nil
+end
+
+function check_matches_in_bag(info_bag)
+  return info_bag:find(1, "matches") > 0
+end
+
+function get_matches_on()
+  return matches_on
+end
+
+function set_matches_on(param)
+  matches_on = param
+end
+---------------------------------------------------
+--Функции вспомогательные (куда ж без них)
+---------------------------------------------------
+function clean_holes_table(tbl)
+  --убираю дырки в таблице в конец оной
+  local tbl_tmp = list_sect_id()
+  local i
+    for i, rec in tbl:ipairs() do
+    if rec.sect ~= "?" then
+       tbl_tmp:add(rec)       
+    end
+  end
+  tbl_tmp:set_size(4)  
+  return tbl_tmp
+end
+
+save_bag_variable = save_bag_content

@@ -1,0 +1,27 @@
+--  онтроль версий и изменений в файлах
+
+script_list = {}
+
+function reg_changes(filename,author,mod_date,info)
+ -- return -- #DEBUG_ONLY -- раскоментировать выход дл€ релиза
+ local entry = {}
+ entry.filename = filename
+ entry.author= author
+ entry.mod_date = mod_date
+ entry.info = info
+ 
+ table.insert(script_list, entry)
+end
+
+function dump_file_versions()
+ ODS("[~T]. #DBG: Version control dump:")
+ 
+ for k,v in pairs(script_list) do
+  local s
+  s = string.format("~C0F %s / %s / %s :~C0A %s~C07", v.filename, v.author, v.mod_date, v.info)
+  ODS (s)
+ end
+ 
+
+end
+

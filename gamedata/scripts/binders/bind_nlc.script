@@ -1,0 +1,131 @@
+-- модуль защиты от изменени€ мода, прив€зки его к компу
+if bind_nlc == nil then
+   _G.bind_nlc = {}
+end
+
+
+local trans_vec = {}
+
+local chk_list = {}
+
+local function hex2crypt(hex, buff)
+ local l = hex:len()
+ local i = 1
+ for n = 1, l / 8 do
+   local hv = hex:sub(i, i + 7)   
+   local iv = tonumber(hv, 16)   
+   local ofs = trans_vec[n] * 4 -- first index == 1   
+   wprintf("\t hv =~C0F %s~C07, iv =~C0D %08x~C07, ofs =~C0E %02x~C07", hv, iv, ofs)
+   -- local rs = buff:write(ofs, "$"..hv, "addr")
+   local rs = buff:write(ofs, iv, "dword")   
+   local rv = buff:read(ofs, "dword")
+   -- iv = math.floor(iv)
+   -- rv = math.floor(rv)
+   
+   
+   if rv ~= iv then
+      wprintf("\t buff write failed, rv~C0D %.7f ~C0B <>~C0E iv~C0D %.7f~C07, result =~C0A %s~C07", rv, iv, rs)
+   end
+   i = i + 8
+ end 
+  
+end
+
+
+function init_module()
+end
+
+function bind_nlc.late_init()
+
+ if last_singularity == nil then
+   -- made crash by default
+   return abort("No way")
+ end
+
+ if xr_build_id > 5500 then
+    return -- TODO: DMA
+ end
+
+ -- load keys from savegame
+ local keys = vars.sig_list
+ local dtl = vars.dts_list or "nil"
+ local dref = ReadDMA("$10000", 0, "dpcid")
+ 
+ for i = 1, 64 do
+  table.insert(trans_vec, i - 1) -- not mixed vector
+ end 
+ 
+ if not last_singularity.lock then 
+    return
+ end 
+  
+ if keys and dtl then
+    local key_count = table.getn(keys)
+    local pk_nonce = "$"..keys[key_count]:sub(1, 16)
+    wprintf("checking system sign, dtl =~C0F %s~C07 ", dtl)
+    
+    -- 0638A16EEE95905D1
+    local hp = "$"..keys[1]:sub(1, 8)  -- 0638 A16E 
+    local lp = "$"..keys[1]:sub(9, 16) -- EE95 905D
+    
+    wprintf(" nonce =~C0D %s:%s ~C07", lp, hp)
+    
+    local kref = last_singularity:sys_sign(lp, hp)
+    
+    
+    table.insert(kref, last_singularity:get_profile_key(pk_nonce)) -- must be last key in table
+    
+    local isumm = 0
+    
+    for i, k in ipairs(keys) do
+     wprintf(" saved =~C0A %s~C07, calc =~C0F %s~C07", k, kref[i])
+     if k == kref[i] then 
+        isumm = isumm + 99.9
+     end -- if   
+    end -- for
+    
+    if dtl and dtl == dref then
+       isumm = isumm + 99.9
+    end 
+    
+    vars.sig_list = kref
+    vars.dts_list = dtl
+    
+    isumm = isumm / ( 1 + table.getn(keys) )
+    
+    wprintf(" integrity value = %.2f%%", isumm)
+   
+    
+ else
+    wprintf("adding system sign ")
+    keys = last_singularity:sys_sign()
+    
+    table.insert(keys, last_singularity:get_profile_key())    
+    vars.sig_list = keys 
+    vars.dts_list = dtl
+ end
+ 
+ local b = GetTempBuff(13)
+ wprintf("buffer allocated at~C0F %s~C07", b:format()) 
+ 
+ local l = 0   
+ local p = b 
+ 
+ for i, k in ipairs(keys) do
+   hex2crypt(k, p) 
+   l = l + k:len() / 2
+   p = b + l                    
+ end
+ 
+ 
+ FileWrite("$profile_dir$/nlc_keys.dat", b, l, "type=binary")
+ 
+ if not last_singularity.unlock then 
+  return
+ end 
+ 
+   
+end 
+ 
+
+ 

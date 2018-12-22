@@ -1,0 +1,168 @@
+if linker == nil then
+   _G.linker = {}
+   
+end
+
+linked = {}
+local sim = nil
+
+function cast_num(i)
+ if i ~= nil then
+    return tonumber(i)
+ else 
+    return nil
+ end
+end
+
+function link_obj(id, dist, up, tgt)
+ id = cast_num(id)
+ up = cast_num(up)
+ tgt = cast_num(tgt)
+ dist = cast_num(dist)
+ 
+ if (not id) then return end 
+ 
+ -- проверка на повторную линковку
+ for i,slot in pairs(linked) do 
+  if slot.obj_id == id then
+     linked[i].up = up
+     linked[i].dist = dist
+     linked[i].target = tgt
+     linked[i].cback = 0
+     ODS( string.format('[~T]. #DBG: link_obj updated link %d to %s ', id, tostring(tgt)) )  
+     return
+  end  
+ end
+ 
+ local slot = { obj_id = id, dist = dist, up = up, target = tgt, cback = 2 }
+ table.insert (linked, slot)
+ 
+ ODS( string.format('[~T]. #DBG: link_obj added link %d to %s, total links = %d ', id, tostring(tgt), table.getn(linked)) )
+end 
+
+linker.link_obj = link_obj
+
+function linker.unlink_obj(id)
+ id = cast_num(id)
+ 
+ for i,slot in pairs(linked) do
+  
+  if slot.obj_id == id then
+     ODS( string.format('[~T]. #DBG: link_obj removed link %d from position %d ', id, i) )
+     linked [i] = nil
+  end -- if  
+ end -- for
+
+end
+
+
+
+function tele_object(id, dist, target, up)
+ local apos
+ local dir
+ local a = vector()
+
+ id = tonumber(id)
+ if id == 0 then
+   ODS('[~T].~C0C #ERROR: actor teleport disabled as cheat ~C07')
+   return false 
+ end
+ 
+ if client_obj(id) == nil then 
+    return false
+ end    
+ 
+ if dist == nil then dist = 2 end
+  
+ if ( target ~= nil ) then
+   target = tonumber(target)
+   target = client_obj(target)
+ end  
+ 
+ if ( target == nil ) then
+   apos = device().cam_pos
+   dir = device().cam_dir
+ else
+   apos = target:position()
+   dir = target:direction() 
+ end  
+  
+ if up ~= nil then
+    a.y = apos.y + tonumber(up)
+ else
+    a.y = apos.y   
+ end   
+ 
+ -- дистанцирование на ? метра вперед относительно цели
+ a.x = apos.x + dir.x * dist
+ a.z = apos.z + dir.z * dist
+ 
+ -- ODS('[~T]. #DBG: trying tele_object #'..tostring(id))
+ 
+ if KeyPressed ('I') then
+    wprintf('[~T]. #DBG: tele_object %d ', id) 
+ end
+
+ 
+ coord_params.set_obj_pos(id, a.x, a.y, a.z)
+ coord_params.set_obj_dir(id, dir.x, dir.y, dir.z, 1)
+ 
+ return true
+end
+
+linker.tele_object = tele_object
+
+function linker.tele_linked(t, i) 
+ local slot = t[i]
+ 
+ if slot == nil then
+    ODS( string.format('[~T].~C0C #FATAL: slot %d == nil ~C07', i) )
+    return false 
+ end 
+ if ( sim:object(slot.obj_id) == nil ) and ( client_obj(slot.obj_id) == nil ) then
+    ODS( string.format('[~T].~C0C #ERROR: cannot tele not exist object%d id = %d  ~C07', i, slot.obj_id ) ) 
+    return false
+ end 
+ return tele_object(slot.obj_id, slot.dist, slot.target, slot.up) 
+end
+
+ 
+
+function linker_regular()
+ local t = linked
+ linked = {}
+ sim = alife()
+ 
+ -- добавлять прошедшие телепортацию обратно
+ for i,slot in ipairs(t) do
+   if slot.cback > 0 then -- время чтобы объект вышел в онлайн
+      slot.cback = slot.cback - 1
+      table.insert(linked, slot)
+   elseif linker.tele_linked(t, i) then
+      table.insert(linked, slot)
+   else
+      ODS( string.format('[~T].~C0C #WARN: defeat object%d id = %d  ~C07', i, slot.obj_id ) )   
+   end --f     
+ end
+
+end
+
+function linker.init_module()
+ if _G.AddRegularTask then
+    AddRegularTask("linker_regular", linker_regular, nil, 0, 30)
+ end   
+end
+
+function linker.stop_module()
+ for i,slot in pairs(linked) do
+     linker.unlink_obj (slot.obj_id) 
+ end
+end
+
+function linker.on_removed_objs(id_list)
+ for i,id in ipairs(id_list) do
+  linker.unlink_obj(id)
+ end
+end
+
+init_priority = 999

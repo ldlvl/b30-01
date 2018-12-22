@@ -1,0 +1,41 @@
+-- инициализация
+this_text=""
+class "attention_univers_blank"(CUIScriptWnd)
+function attention_univers_blank:__init(owner) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function attention_univers_blank:InitControls()
+	self:Init(0,0,1024,768)
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_attention_blank.xml")
+	xml:InitStatic("background", self)
+	xml:InitStatic(this_text, self)
+	local wnd_att = CUIStatic()
+	wnd_att:SetAutoDelete(true)
+	self:AttachChild(wnd_att)
+	wnd_att:SetWndRect(380,180,320,500)
+	wnd_att:SetFont(GetFontLetterica18Russian())
+	wnd_att:SetTextColor(255, 154, 205, 255)
+	self:Register(xml:Init3tButton("btn_quit", self),"btn_quit")
+end
+
+function attention_univers_blank:InitCallBacks()
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+end
+
+function attention_univers_blank:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
+		if dik==DIK_keys.DIK_ESCAPE then
+			self:on_quit()
+		end
+	end
+	return true
+end
+
+function attention_univers_blank:on_quit()
+	self:GetHolder():start_stop_menu(self,true)
+end

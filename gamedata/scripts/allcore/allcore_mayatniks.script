@@ -1,0 +1,279 @@
+local aiterate_freq = 500	--периодичность проверки "сумки" на наличие новых\старых маятников\контейнеров
+local count_of_phases = 1	 --общий счётчик фаз
+local current_day_phase = 1 	--вспомогательная переменная, текущая фаза дня
+local phases = {6,18,22}	--часы смены фаз
+local containers = {}		--сохранённые контейнеры
+local mayatniks = {}		--сохранённые маятники
+local allcore_inv_items = {}--список маятников\контейнеров в "сумке"		
+local changed_phase = false	--вспомогательная переменная
+local vars_load = false
+
+--@description: Вынес в отдельную функцию для удобства тестирования 
+--@call: flush !allcore_mayatniks.add_phase
+function add_phase()
+	count_of_phases = count_of_phases + 1
+end
+
+--@description: Узнаём след. секцию для маятника
+local function get_next_section(section, count)
+	local new_section = section
+	if not count or type(count) ~= "number" or count < 1 then count = 1 end
+	while count > 0 do
+		if strposx(new_section,"_bad") then
+			new_section = string.gsub(new_section, "_bad", "_none")
+		elseif strposx(new_section,"_none") then
+			new_section = string.sub(new_section,1,-6)
+		else
+			new_section = new_section.."_bad"
+		end
+		count = count - 1
+	end
+	return new_section
+end
+
+--@description: Вынес в отдельную функцию для удобства
+function it_mayatnik(obj_section)
+	return strposx(obj_section,"af_mayatnik_") and  not strposx(obj_section,"_capsule")
+end
+
+--@description: Вынес в отдельную функцию для удобства
+function it_box(obj_section)
+	return strposx(obj_section,"arc_art_box_")
+end
+
+--@description: Вынес в отдельную функцию для удобства
+--@call: sak_inventory.inventory_control()
+function add_inv_items(obj_id, obj_section)
+	if it_box(obj_section) or it_mayatnik(obj_section) then
+		table.insert(allcore_inv_items, {obj_section, obj_id})
+	end
+end
+
+--@description: Вынес в отдельную функцию для удобства
+--@call: sak_inventory.inventory_control()
+function clear_inv_items()
+	allcore_inv_items = nil
+	allcore_inv_items = {}
+end
+
+--@description: Так как мы работаем со списком, а не с iterate_inventory, то для правильной работы при замене нужно удалять запись из списка предметов
+--@depricated
+local function del_inv_item(obj_id, obj_section)
+	if allcore_inv_items == nil or #allcore_inv_items == 0 then return end
+	for i = #allcore_inv_items, 1, -1 do
+		if allcore_inv_items[i][1] == obj_section and allcore_inv_items[i][2] == obj_id then
+			table.remove(allcore_inv_items, i)
+			wprintf("#ACLOG|#MAYATNIKS_INFO: del_inv_item(%d, %s)", obj_id, obj_section)
+			return
+		end
+	end
+end
+
+--@description: Знакомый маятник\контейнер?
+local function exist_in_table(obj_id)
+	for k, v in pairs(containers) do
+		if v and v[1] == obj_id then
+			return true
+		end
+	end
+	for k, v in pairs(mayatniks) do
+		if v and v[1] == obj_id then
+			return true
+		end
+	end
+	return false
+end
+
+--@description: Запоминаем контейнер\маятник
+local function add_to_table(obj_section, obj_id)
+	if it_box(obj_section) then 
+		table.insert(containers, {obj_id, count_of_phases})
+	elseif it_mayatnik(obj_section) then 
+		table.insert(mayatniks, {obj_id, obj_section, count_of_phases})
+	end
+end
+
+--@description: Забываем маятник или контейнер. Вызывать там где 100% теряем арт\контейнер
+--@call: arc_arts.try_delete, arc_arts.remove_item
+function remove_from_table(obj_section, obj_id)
+	if it_box(obj_section) then
+		for i = #containers, 1, -1 do
+			if containers[i][1] == obj_id then
+				wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.remove_from_table()] remove container(%d, %s)",obj_id, obj_section)
+				table.remove(containers, i)
+				return
+			end
+		end
+	elseif it_mayatnik(obj_section) then
+		for i = #mayatniks, 1, -1 do
+			if mayatniks[i][1] == obj_id and mayatniks[i][2] == obj_section then
+				wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.remove_from_table()] remove mayatnik(%d, %s)",obj_id, obj_section)
+				table.remove(mayatniks, i)
+				return
+			end
+		end	
+	end
+end
+
+--@description: Проверки на запуск проверки 8)
+local function ready_to_check()
+	return not (
+				(sleep_manager.is_sleep_active()) or --спим
+				(not get_shadow_inv():update_storage()) or --выкинули рюкзак
+				(level.main_input_receiver()) or --ковыряемся в сумке
+				(bind_stalker.cont_dialog == false) or --ковыряемся в контейнере
+				(db.actor==nil or db.actor:alive()==false) --нет актора или же мертв O_o
+				)
+end
+
+--@description: Проверяем маятник\контейнер и если надо меняем фазы у маятников
+--@upd: если поменять формат x_section, добавив id артефакта, то можно отказаться от замены маятника внутри контейнера
+local function check_for_need_replace(obj_section, obj_id)
+	local section, new_x_section = "", ""
+	local container = nil
+	local art, condition, code = nil, 0.99, ""
+	if it_box(obj_section) then
+		for i=1, #containers do
+			if (containers[i][1]==obj_id) and (containers[i][2]~=count_of_phases) then
+				container = arc_containers.inv_containers:get(obj_id)
+				if container then
+					for j=1, #container.arts do
+						if it_mayatnik(container.arts[j].x_section) then 
+							section = string.sub(container.arts[j].x_section,1,-4)
+							new_x_section = string.gsub(container.arts[j].x_section, section, get_next_section(section, count_of_phases - containers[i][2]))
+							wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.check_for_need_replace()] change mayatnik in container(%d) -> %s - %s", obj_id , container.arts[j].x_section, new_x_section)							
+							container:take_art(j)
+							container:put_art(new_x_section)
+							changed_phase = true
+						end					
+					end
+					containers[i][2] = count_of_phases
+				end
+			end
+		end
+	elseif it_mayatnik(obj_section) then
+		for i=1, #mayatniks do
+			if (mayatniks[i][1] == obj_id) and (mayatniks[i][3]~=count_of_phases) then
+				wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.check_for_need_replace()] change mayatnik in inventory -> %s - %s",mayatniks[i][2], get_next_section(mayatniks[i][2]))
+				mayatniks[i][2] = get_next_section(mayatniks[i][2], count_of_phases - mayatniks[i][3])
+				mayatniks[i][3] = count_of_phases
+				art = amk.spawn_item_in_inv(mayatniks[i][2])
+				mayatniks[i][1] = misc.get_object_id(art)
+				condition = params.get_condition(obj_id, 0.99)
+				params.upd_condition(mayatniks[i][1], condition)
+				code = sprintf("params.upd_condition(%d,%.2f)", mayatniks[i][1], condition)
+				schedule.add("mayanik_cond"..mayatniks[i][1], code, 200)
+				misc.release_obj(obj_id, 'allcore_mayatniks.script:check_for_need_replace')
+				del_inv_item(obj_id, obj_section)
+				changed_phase = true
+			end
+		end
+	end
+end
+
+--@description: Загружаем переменные из хранилища и запускаем задачу проверки
+--@upd: Чистым за первой версией стор
+--@call: bind_stalker.late_init_impl()
+function on_late_init()
+	local old_version = false
+	if xvars["mayatnik_count_of_phases"] ~= nil then
+		count_of_phases = xvars["mayatnik_count_of_phases"]
+		xvars["mayatnik_count_of_phases"] = nil
+		old_version = true
+		wprintf("#ACLOG|#MAYATNIKS_DBG: [allcore_mayatniks.on_late_init()] detected old save format var for [count of phase], load and delete")
+	end
+	if xvars["mayatnik_current"] ~= nil then
+		current_day_phase = xvars["mayatnik_current"]
+		xvars["mayatnik_current"] = nil
+		old_version = true
+		wprintf("#ACLOG|#MAYATNIKS_DBG: [allcore_mayatniks.on_late_init()] detected old save format var for [current_day_phase], load and delete")
+	end
+	if xvars["mayatnik_afs"] ~= nil then
+		mayatniks = amk.unpack_array_from_string(xvars["mayatnik_afs"])
+		xvars["mayatnik_afs"] = nil
+		old_version = true
+		wprintf("#ACLOG|#MAYATNIKS_DBG: [allcore_mayatniks.on_late_init()] detected old save format var for [mayatniks], load and delete")
+	end
+	if xvars["mayatnik_containers"] ~= nil then
+		containers = amk.unpack_array_from_string(xvars["mayatnik_containers"])
+		xvars["mayatnik_containers"] = nil
+		old_version = true
+		wprintf("#ACLOG|#MAYATNIKS_DBG: [allcore_mayatniks.on_late_init()] detected old save format var for [containers], load and delete")
+	end
+	if old_version ~= true then
+		mayatniks = xray_vars.load_table(nlc_vars, "new_mayatnik_afs", {})
+		containers = xray_vars.load_table(nlc_vars, "new_mayatnik_containers", {})
+		current_day_phase = nlc_vars.new_current_day_phase or 1
+		count_of_phases = nlc_vars.new_count_of_phases or 1
+	end
+	wprintf("#ACLOG|#MAYATNIKS_DBG: [allcore_mayatniks.on_late_init()] loading done. Current phase = %d, count of phase = %d, count of saved mayatniks = %d, count of saved containers = %d", current_day_phase, count_of_phases, #mayatniks, #containers)
+	schedule.add("mayanik_itr_upd", "allcore_mayatniks.iterate_inv()", aiterate_freq)
+	vars_load = true
+end
+
+--@description: Сохраняем переменные в хранилище
+--@call: bind_stalker.on_before_save()
+function on_before_actor_save()
+	nlc_vars.new_mayatnik_afs = mayatniks
+	nlc_vars.new_mayatnik_containers = containers
+	nlc_vars.new_current_day_phase = current_day_phase
+	nlc_vars.new_count_of_phases = count_of_phases
+end
+
+--@description: Подобрали маятник или контейнер? Если "новый" - запоминаем, "старый" - проверяем нужно ли менять фазу
+--@call: bind_stalker.handle_taked()
+function on_item_take(obj)
+	if it_box(obj:section()) or it_mayatnik(obj:section()) then
+			if exist_in_table(misc.get_object_id(obj))~=true then
+				add_to_table(obj:section(),misc.get_object_id(obj))
+				wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.on_item_take(section = %s, id = %d)] take new mayatnik or container", obj:section(), misc.get_object_id(obj))
+			else 
+				check_for_need_replace(obj:section(),misc.get_object_id(obj))
+				wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.on_item_take(section = %s, id = %d)] take saved mayatnik or container", obj:section(), misc.get_object_id(obj))
+			end	
+	end
+end
+
+--@description: Тут итак всё ясно. Наращиваем счётчик фаз
+--@upd: Не нравится мне level.get_time_hours()
+--@call: bind_stalker.process_binder_update()
+function on_actor_update()
+	if vars_load ~= true then return end
+	local hour = level.get_time_hours()--*_*
+    local phase
+	if (hour>=phases[3] or hour<phases[1]) then 
+		phase = 1
+	elseif (hour>=phases[1] and hour<phases[2]) then 
+		phase = 2
+	elseif (hour>=phases[2] and hour<phases[3]) then 
+		phase = 3
+	end	
+	if current_day_phase ~= phase then
+		current_day_phase = phase
+		add_phase()
+		wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.on_actor_update()] increase phase: %d", count_of_phases)
+	end
+end
+
+--@description: Перебор таблицы маятников\контейнеров. Если "новый" - запоминаем, "старый" - проверяем нужно ли менять фазу
+function iterate_inv()
+	if ready_to_check() == true and (allcore_inv_items ~= nil and #allcore_inv_items>0) then
+		for k, v in pairs(allcore_inv_items) do
+			if v then
+				if exist_in_table(v[2])~=true then
+					add_to_table(v[1],v[2])
+					--wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.iterate_inv(section = %s, id = %d)] found new mayatnik or container", v[1],v[2])
+				else 
+					check_for_need_replace(v[1],v[2])
+					--wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.iterate_inv(section = %s, id = %d)] found saved mayatnik or container", v[1],v[2])
+				end
+			end
+		end
+	end
+	if changed_phase then
+		changed_phase =  false
+		wprintf("#ACLOG|#MAYATNIKS_INFO: [allcore_mayatniks.iterate_inv()] mayatniks changed the phase")
+		sak_inventory.need_update_inventory()
+	end
+	schedule.add("mayanik_itr_upd", "allcore_mayatniks.iterate_inv()", aiterate_freq)	
+end

@@ -1,0 +1,80 @@
+----------------------------------------------------------------------------------------------------
+-- Code Pad
+----------------------------------------------------------------------------------------------------
+-- Author: Jim
+-- Доработка: 2006 @ Oleg Kreptul (Haron) okreptul@yahoo.com
+----------------------------------------------------------------------------------------------------
+function printf() end
+
+class "codepad"
+
+function codepad:__init(obj, storage)
+    self.object = obj
+    self.st     = storage
+end
+
+function codepad:reset_scheme()
+    self.object:set_nonscript_usable(false)
+end
+
+function codepad:update(delta)
+	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
+		return
+	end
+end
+
+function codepad:use_callback(obj, who)
+    if db.actor:object("self_made_decoder") ~= nil then
+		bind_stalker.hide_weapon()
+		local spwn=vergas_decoder.cheat(self)
+		level.start_stop_menu(spwn,true)
+	else
+		local numpad = ui_numpad.numpad(self)
+		level.start_stop_menu(numpad,true)
+	end
+end
+
+function codepad:OnNumberReceive(text,flag)
+	if text=="3265987401" and not flag then return end
+	if self.st.code then
+        if tonumber(text) == self.st.code then
+            if self.st.on_code ~= nil then
+				local section = xr_logic.pick_section_from_condlist(db.actor, self.object, self.st.on_code.condlist)
+				xr_logic.switch_to_section(self.object, self.st,section)
+				return true
+			end
+        end
+    else 	
+        local condlist = self.st.on_check_code[text]
+        if condlist then
+            xr_logic.pick_section_from_condlist(db.actor, self.object, condlist)
+        end
+    end
+end
+
+function codepad:deactivate() self.object:set_tip_text("") end
+
+function add_to_binder(npc, ini, scheme, section, storage)
+    local new_action = codepad(npc, storage)
+    xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+    local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+    st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.tips  = utils.cfg_get_string(ini, section, "tips", npc, false, "", "st_codelock")
+    npc:set_tip_text(st.tips)  
+    st.code = utils.cfg_get_number(ini, section, "code", npc, false)    
+    if st.code then
+        st.on_code = xr_logic.cfg_get_condlist(ini, section, "on_code", npc)
+    else
+        st.on_check_code = {}
+        local i = 1
+        local cc = xr_logic.cfg_get_string_and_condlist(ini, section, "on_check_code" .. i, npc)
+        while cc do
+            st.on_check_code[cc.v1] = cc.condlist
+            i = i + 1
+            cc = xr_logic.cfg_get_string_and_condlist(ini, section, "on_check_code" .. i, npc)
+        end
+    end
+end
