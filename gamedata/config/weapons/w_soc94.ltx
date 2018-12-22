@@ -1,0 +1,188 @@
+;Карабин СОК-94-03 (420)
+[wpn_saiga12c_m2]:wpn_ak47
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\soc94"
+$npc						= on
+$prefetch					= 8
+scheduled					= off
+cform						= skeleton
+class						= WP_LR300
+min_radius					= 30
+max_radius					= 160
+description					= enc_weapons_wpn_soc94
+
+default_to_ruck				= false
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+
+cost						= 15000	
+
+weapon_class				= assault_rifle	
+ammo_limit					= 210
+ammo_elapsed				= 10
+ammo_mag_size				= 10
+
+fire_modes					= 1
+ammo_class					= ammo_7.62x39_fmj,  ammo_7.62x39_ap
+
+hand_dependence				= 1	
+single_handed				= 0
+
+slot				    	= 2	
+animation_slot				= 2	
+
+inv_name					= wpn_soc94
+inv_name_short				= wpn_soc94
+
+inv_weight					= 3.9
+
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 20
+inv_grid_y         			= 4
+kill_msg_x					= 0
+kill_msg_y					= 28
+kill_msg_width				= 84
+kill_msg_height				= 28
+
+fire_dispersion_base		= 0.27
+
+control_inertion_factor		= 1.2f
+
+cam_relax_speed				= 4
+cam_dispersion				= 0.4
+cam_dispersion_inc			= 0.4
+cam_dispertion_frac			= 0.55
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 3.2
+
+fire_dispersion_condition_factor = 1.5
+misfire_probability			= 0.0015
+misfire_condition_k			= 0.50
+condition_shot_dec			= 0.00015
+
+fire_point					= 0,0.228,0.581
+fire_point2					= 0,0.17,0.465	
+
+PDM_disp_base 				= 2.0
+PDM_disp_vel_factor 		= 3.0
+PDM_disp_accel_factor 		= 5.0
+PDM_crouch					= 1.9
+PDM_crouch_no_acc			= 0.7
+
+hit_power					= 1.15
+hit_impulse					= 1
+hit_type					= fire_wound
+
+fire_distance				= 300
+bullet_speed				= 715
+rpm							= 230
+
+use_aim_bullet				= false
+time_to_aim					= 1.0
+
+hud							= wpn_saiga12c_m2_hud
+
+visual						= weaponsv\soc94\wpn_soc94
+
+scope_name 					= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_x					    = 58
+scope_y		 				= 2
+
+scope_mode 					= 3
+scope_status 				= 2
+	
+ironsight_zoom_factor       = 90
+scope_zoom_factor           = 50
+
+ph_mass						= 5
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+silencer_name				= wpn_addon_sil_762_ar
+silencer_x                  = 268		
+silencer_y                  = 12	
+
+snd_shoot					= weapons\ak_74x\soc_shoot
+snd_shoot1					= weapons\ak_74x\soc_shoot
+snd_reload					= weapons\ak_74x\ak74_reload
+snd_shoot					= weapons\soc94\soc_shoot
+snd_razgruzka				= weapons\razgruzka\ammo_5
+
+silencer_smoke_particles	= weapons\generic_shoot_00
+
+[wpn_saiga12c_m2_hud]:wpn_ak47_hud
+fire_point					= 0.033000,-0.062000,0.285000
+visual                  	= weaponsv\soc94\wpn_soc94_hud.ogf
+
+zoom_offset					= -0.136880,0.064600,-0.179730
+zoom_rotate_x				= 0.030350
+zoom_rotate_y				= 0.029700
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27
+
+[wpn_saiga12c_m2_1pso]:wpn_saiga12c_m2
+grenade_launcher_status		= 2
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+hud  						= wpn_saiga12c_m2_1pso_hud
+visual                   	= weaponsv\soc94\wpn_soc94
+
+[wpn_saiga12c_m2_1pso_hud]:wpn_saiga12c_m2_hud
+fire_point					= 0.400000,-0.500000,2.755000
+visual                   	= weaponsv\soc94\wpn_soc94_hud
+
+zoom_offset					= -0.123480,0.035500,2.472870
+zoom_rotate_x				= 0.032050
+zoom_rotate_y				= 0.028450
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_saiga12c_m2_1p78]:wpn_saiga12c_m2
+grenade_launcher_status		= 2
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+hud  						= wpn_saiga12c_m2_1p78_hud
+visual                   	= weaponsv\soc94\wpn_soc94_1p78
+
+[wpn_saiga12c_m2_1p78_hud]:wpn_saiga12c_m2_hud
+fire_point					= 0.400000,-0.500000,2.755000
+visual                   	= weaponsv\soc94\wpn_soc94_1p78_hud
+
+zoom_offset					= -0.138220,0.027300,1.380870
+zoom_rotate_x				= 0.029460
+zoom_rotate_y				= 0.030240
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_saiga12c_m2_cobra]:wpn_saiga12c_m2
+grenade_launcher_status		= 2
+scope_attached         		= 0
+
+control_inertion_factor		= 1.2f
+
+hud  						= wpn_saiga12c_m2_cobra_hud
+visual                   	= weaponsv\soc94\wpn_soc94_cobra
+
+[wpn_saiga12c_m2_cobra_hud]:wpn_saiga12c_m2_hud
+visual                   	= weaponsv\soc94\wpn_soc94_cobra_hud
+
+zoom_offset					= -0.136180,0.019300,-0.024130
+zoom_rotate_x				= 0.026850
+zoom_rotate_y				= 0.026350
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27

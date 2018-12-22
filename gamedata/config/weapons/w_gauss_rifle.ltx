@@ -1,0 +1,340 @@
+;Гаусс-винтовка
+[wpn_gauss]:weapon_immunities
+GroupControlSection		= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\gauss"
+$npc						= on	
+$prefetch					= 8
+scheduled					= off
+cform						= skeleton
+class						= WP_SVD
+min_radius					= 0
+max_radius					= 50
+description					= enc_weapons1_wpn-gauss
+
+ef_main_weapon_type		 	= 3
+ef_weapon_type			 	= 8
+
+holder_range_modifier		= 2.85
+holder_fov_modifier			= 0.3
+
+cost						= 25000
+weapon_class				= sniper_rifle
+
+ammo_limit					= 60
+ammo_current				= 10
+ammo_elapsed				= 0
+
+ammo_mag_size				= 10
+ammo_class					= ammo_gauss
+
+f_mode						= 1
+
+sprint_allowed				= false
+
+fire_dispersion_base		= 0.009
+control_inertion_factor		= 1.35f
+
+cam_relax_speed				= 3;0.05
+cam_dispersion				= 0.05	
+cam_max_angle				= 4.0	
+cam_max_angle_horz			= 5.0	
+cam_step_angle_horz			= 0.5	
+
+fire_dispersion_condition_factor = 5	
+misfire_probability			= 0.0001
+misfire_condition_k			= 0.05
+condition_shot_dec			= 0.00001
+
+hand_dependence				= 1
+single_handed				= 0
+	
+slot						= 1
+animation_slot				= 2
+
+inv_name					= wpn-gauss
+inv_name_short				= wpn-gauss
+inv_weight					= 6.5
+icon_group          		= 2
+inv_grid_width     			= 7
+inv_grid_height    			= 2
+inv_grid_x         			= 17
+inv_grid_y         			= 18
+		
+weapon_type					= heavy
+heavy_ammo					= ammo
+
+kill_msg_x					= 166
+kill_msg_y					= 59
+kill_msg_width				= 82
+kill_msg_height				= 23
+
+direction					= 0, 0, 1
+
+fire_point					= 0.00,0.12,0.69
+flame_particles				= weapons\generic_weapon_gauss
+shell_point					= 0.00,0.12,0.174
+smoke_particles				= weapons\generic_weapon07
+rpm_empty_click				= 120
+	
+PDM_disp_base				= 5.0
+PDM_disp_vel_factor			= 1.8
+PDM_disp_accel_factor		= 1.0
+PDM_crouch					= 1.8
+PDM_crouch_no_acc			= 1.0
+
+hit_power					= 3
+hit_impulse					= 300
+hit_type					= fire_wound
+
+fire_distance				= 300
+bullet_speed				= 15000
+rpm							= 30
+
+hud							= wpn_gauss_hud
+normal						= 0, 1, 0
+position					= -0.026, -0.070, 0.0
+orientation					= 0, 0, 0
+
+strap_position				= -0.26,-0.11,0.15
+strap_orientation			= -15,-9,110
+	
+;strap_position				= -0.20,-0.13,0.25
+;strap_orientation			= -50,-13,110
+;на спине	
+;strap_position				= -0.16,-0.32,0.15
+;strap_orientation			= -10,-7,10
+
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+		
+startup_ammo				= 10
+visual						= weapons\gauss\wpn_gauss.ogf
+		
+light_color					= 1.3,1.5,2
+light_range					= 4.0
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.5
+		
+ph_mass						= 3
+;cost						= 900
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 20
+
+scope_name					= wpn_addon_scope
+scope_x						= 60
+scope_y						= -2
+		
+snd_draw					= weapons\gauss\gauss_draw
+snd_holster					= weapons\gauss\gauss_holster
+snd_shoot					= weapons\gauss\gauss_shot
+snd_empty					= weapons\gauss\gauss_empty, 0.5
+snd_reload					= weapons\gauss\gauss_reload, 1.0, 1.0
+snd_razgruzka				= weapons\razgruzka\ammo_3
+	
+[wpn_gauss_hud]	
+fire_point					= 0.000000,-0.010000,0.105000
+fire_point2              	= 0.0, -0.04, -0.02
+fire_bone               	= wpn_body
+
+position					= 0.000000,-0.015000,-0.200000
+orientation					= 0.000000,0.000000,0.000000
+
+visual                  	= weapons\gauss\wpn_gauss_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.099510,0.020200,0.900000
+zoom_rotate_x				= 0.001100
+zoom_rotate_y				= -0.000300
+zoom_hide_crosshair			= true					
+
+zoom_rotate_time			= 0.3
+rotate_time					= 0.3
+
+[wpn_gauss_model]:wpn_gauss
+class						= II_ATTCH
+cost 						= 0
+
+
+
+[wpn_gauss_auto]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\gauss_auto"
+$npc						= on	
+$prefetch					= 8
+scheduled					= off
+cform						= skeleton
+class						= WP_SVD
+min_radius					= 0
+max_radius					= 50
+description					= enc_weapons1_wpn-gauss_auto
+
+ef_main_weapon_type		 	= 3
+ef_weapon_type			 	= 8
+
+holder_range_modifier		= 2.85
+holder_fov_modifier			= 0.3
+
+cost						= 25000
+weapon_class				= sniper_rifle
+
+ammo_limit					= 60
+ammo_current				= 10
+ammo_elapsed				= 0
+
+ammo_mag_size				= 50
+ammo_class					= ammo_gauss_oboima
+
+f_mode						= 1
+
+sprint_allowed				= false
+
+fire_dispersion_base		= 0.009
+control_inertion_factor		= 1.35f
+
+cam_relax_speed				= 3;0.05
+cam_dispersion				= 0.05	
+cam_max_angle				= 4.0	
+cam_max_angle_horz			= 5.0	
+cam_step_angle_horz			= 0.5	
+
+fire_dispersion_condition_factor = 5	
+misfire_probability			= 0.0001
+misfire_condition_k			= 0.05
+condition_shot_dec			= 0.00001
+	
+hand_dependence				= 1
+single_handed				= 0
+	
+slot				    	= 2
+animation_slot				= 2
+
+inv_name					= wpn-gauss_auto
+inv_name_short				= wpn-gauss_auto
+inv_weight					= 6.5
+icon_group          		= 2
+inv_grid_width     			= 7
+inv_grid_height    			= 2
+inv_grid_x         			= 17
+inv_grid_y         			= 18
+		
+weapon_type					= heavy
+heavy_ammo					= ammo
+
+kill_msg_x					= 166
+kill_msg_y					= 59
+kill_msg_width				= 82
+kill_msg_height				= 23
+
+direction					= 0, 0, 1
+
+fire_point             		=  0,0.216,0.638
+flame_particles				= weapons\generic_weapon_gauss
+shell_point					= 0.00,0.12,0.174
+smoke_particles				= weapons\generic_weapon07
+rpm_empty_click				= 120
+
+PDM_disp_base				= 5.0
+PDM_disp_vel_factor			= 1.8
+PDM_disp_accel_factor		= 1.0
+PDM_crouch					= 1.8
+PDM_crouch_no_acc			= 1.0
+
+hit_power					= 5.0
+hit_impulse					= 300
+hit_type					= fire_wound
+
+fire_distance				= 1000
+bullet_speed				= 15000
+rpm							= 30
+
+hud							= wpn_gauss_auto_hud
+normal						= 0, 1, 0
+position         	        = -0.026,-0.172,0			
+orientation      	        = 0,0,0	
+
+strap_position				= -0.26,-0.11,0.15
+strap_orientation			= -15,-9,110
+
+;strap_position				= -0.20,-0.13,0.25
+;strap_orientation			= -50,-13,110
+;на спине
+;strap_position				= -0.16,-0.32,0.15
+;strap_orientation			= -10,-7,10
+
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo				= 10
+visual						= weapons\gauss\wpn_gauss.ogf
+
+light_color					= 1.3,1.5,2
+light_range					= 4.0
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.5
+
+ph_mass						= 3
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 20
+
+scope_name					= wpn_addon_scope
+scope_x						= 60
+scope_y						= -2
+		
+snd_draw					= weapons\gauss\gauss_draw
+snd_holster					= weapons\gauss\gauss_holster
+snd_shoot					= weapons\gauss\gauss_shot
+snd_empty					= weapons\gauss\gauss_empty, 0.5
+snd_reload					= weapons\gauss\gauss_reload
+snd_razgruzka				= weapons\razgruzka\ammo_3
+
+[wpn_gauss_auto_hud]
+fire_point					= 0.000000,-0.010000,0.105000
+fire_point2              	= 0.0, -0.04, -0.02
+fire_bone               	= wpn_body
+
+position					= 0.000000,-0.015000,-0.200000
+orientation					= 0.000000,0.000000,0.000000
+
+visual                  	= weapons\gauss\wpn_gauss_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.099510,0.020200,0.900000
+zoom_rotate_x				= 0.001100
+zoom_rotate_y				= -0.000300
+zoom_hide_crosshair			= true					
+
+
+zoom_rotate_time			= 0.3
+rotate_time					= 0.3
+
+[wpn_gauss_auto_model]:wpn_gauss_auto
+class						= II_ATTCH
+cost 						= 0

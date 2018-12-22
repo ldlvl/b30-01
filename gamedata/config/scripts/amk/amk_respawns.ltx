@@ -1,0 +1,522 @@
+;**************************************************
+;**************** AMK RESPAWNS ********************
+;**************************************************
+
+[default_values]
+respawn_radius	 = 30
+;creature_binded_logic = "";logic\free_monster
+max_count		 = 1
+idle_spawn		 = 60*60*12,60*60*24
+
+[amk_respawns]
+
+;******************************
+;********** Monsters **********
+;******************************
+esc_test = l01_escape
+esc_boars1 = l01_escape
+esc_tush1 = l01_escape
+esc_tush2 = l01_escape
+esc_tush3 = l01_escape
+esc_tush4 = l01_escape
+esc_tush5 = l01_escape
+esc_tush6 = l01_escape
+esc_rats1 = l01_escape
+esc_rats2 = l01_escape
+esc_rats3 = l01_escape
+esc_rats4 = l01_escape
+esc_rats5 = l01_escape
+esc_rats6 = l01_escape
+esc_pseudodog1 = l01_escape
+
+dsc_tush1 = k01_darkscape
+dsc_tush2 = k01_darkscape
+dsc_tush3 = k01_darkscape
+dsc_tush4 = k01_darkscape
+dsc_tush5 = k01_darkscape
+dsc_tush6 = k01_darkscape
+dsc_tush7 = k01_darkscape
+dsc_tush8 = k01_darkscape
+dsc_tush9 = k01_darkscape
+dsc_tush10 = k01_darkscape
+dsc_tush11 = k01_darkscape
+;dsc_cats1 = k01_darkscape
+dsc_cats2 = k01_darkscape
+dsc_dogs1 = k01_darkscape
+dsc_dogs2 = k01_darkscape
+dsc_dogs3 = k01_darkscape
+dsc_dogs4 = k01_darkscape
+dsc_dogs5 = k01_darkscape
+dsc_dogs6 = k01_darkscape
+dsc_dogs7 = k01_darkscape
+dsc_dogs8 = k01_darkscape
+dsc_dogs9 = k01_darkscape
+dsc_dogs10 = k01_darkscape
+dsc_pseudodog1 = k01_darkscape
+dsc_pseudodog2 = k01_darkscape
+dsc_pseudodog3 = k01_darkscape
+dsc_pseudodog4 = k01_darkscape
+dsc_boars1 = k01_darkscape
+dsc_boars2 = k01_darkscape
+dsc_boars3 = k01_darkscape
+dsc_boars4 = k01_darkscape
+dsc_boars5 = k01_darkscape
+dsc_boars6 = k01_darkscape
+dsc_boars7 = k01_darkscape
+dsc_boars8 = k01_darkscape
+dsc_rats1 = k01_darkscape
+dsc_rats2 = k01_darkscape
+dsc_rats3 = k01_darkscape
+dsc_rats4 = k01_darkscape
+dsc_rats5 = k01_darkscape
+dsc_rats6 = k01_darkscape
+dsc_flesh1 = k01_darkscape
+dsc_flesh2 = k01_darkscape
+dsc_flesh3 = k01_darkscape
+dsc_zomb1 = k01_darkscape
+dsc_zomb2 = k01_darkscape
+dsc_zomb3 = k01_darkscape
+dsc_zomb4 = k01_darkscape
+dsc_zomb5 = k01_darkscape
+dsc_burers1 = k01_darkscape
+dsc_bloodsuckers1 = k01_darkscape
+
+garb_himera = false
+garb_cars = l02_garbage
+garb_tush1 = l02_garbage
+garb_tush11 = l02_garbage
+garb_tush2 = l02_garbage
+garb_tush3 = l02_garbage
+garb_rats1 = l02_garbage
+garb_rats2 = l02_garbage
+garb_rats3 = l02_garbage
+garb_rats4 = l02_garbage
+garb_rats5 = l02_garbage
+garb_rats6 = l02_garbage
+garb_rats7 = l02_garbage
+garb_rats8 = l02_garbage
+garb_dogs1 = l02_garbage
+
+agr_tush1 = l03_agroprom
+agr_tush2 = l03_agroprom
+agr_tush3 = l03_agroprom
+agr_tush4 = l03_agroprom
+agr_cats = l03_agroprom
+agr_blood = l03_agroprom
+agr_bloodsuckers1 = l03_agroprom
+agr_sak_1monstr = l03_agroprom
+agr_dogs1 = l03_agroprom
+agr_dogs2 = l03_agroprom
+agr_rats1 = l03_agroprom
+agr_rats2 = l03_agroprom
+agr_rats3 = l03_agroprom
+agr_rats4 = l03_agroprom
+agr_rats5 = l03_agroprom
+agr_rats6 = l03_agroprom
+agr_rats7 = l03_agroprom
+
+dark_zomb1 = l04_darkvalley
+dark_zomb2 = l04_darkvalley
+dark_zomb3 = l04_darkvalley
+dark_zomb4 = l04_darkvalley
+dark_random1 = l04_darkvalley
+dark_random3 = l04_darkvalley
+dark_random5 = l04_darkvalley
+dv_sak_1monstr = l04_darkvalley
+dark_rats1 = l04_darkvalley
+dark_rats2 = l04_darkvalley
+dark_rats3 = l04_darkvalley
+dark_rats4 = l04_darkvalley
+dark_rats5 = l04_darkvalley
+dark_polt1 = l04_darkvalley
+dark_polt2 = l04_darkvalley
+dark_tush1 = l04_darkvalley
+dark_bloodsuckers1 = l04_darkvalley
+
+bar_dogs = l05_bar
+bar_kaban = l05_bar
+bar_sak_1monstr = l05_bar
+bar_sak_2monstr = l05_bar
+bar_sak_3monstr = l05_bar
+bar_rats1 = l05_bar
+bar_rats2 = l05_bar
+bar_rats3 = l05_bar
+bar_rats4 = l05_bar
+bar_rats5 = l05_bar
+
+mil_random1 = false
+mil_tush1 = l07_military
+mil_tush2 = l07_military
+mil_tush3 = l07_military
+mil_himer_family = l07_military
+mil_village1 = l07_military
+mil_village2 = l07_military
+mil_village3 = l07_military
+mil_zomb1 = l07_military
+mil_rats1 = l07_military
+mil_rats2 = l07_military
+mil_rats3 = l07_military
+mil_rats4 = l07_military
+mil_rats5 = l07_military
+mil_rats6 = l07_military
+mil_rats7 = l07_military
+mil_rats8 = l07_military
+
+ros_random = l06_rostok
+ros_random2 = l06_rostok
+ros_random3 = l06_rostok
+ros_zomb1 = false
+ros_zomb2 = l06_rostok
+ros_ways = l06_rostok
+ros_house_z1 = l06_rostok
+ros_house_z2 = l06_rostok
+ros_house_z3 = l06_rostok
+ros_hl = l06_rostok
+ros_dogs1 = l06_rostok
+ros_dogs2 = l06_rostok
+ros_snorks = l06_rostok
+
+yan_lager = l08_yantar
+yan_tunel1 = l08_yantar
+yan_garazh = l08_yantar
+yan_angar = l08_yantar
+yan_center = l08_yantar
+yan_house = l08_yantar
+yan_house2 = l08_yantar
+yan_dvor = l08_yantar
+yan_snork1 = l08_yantar
+yan_rats1 = l08_yantar
+yan_rats2 = l08_yantar
+yan_rats3 = l08_yantar
+yan_polt1 = l08_yantar
+
+x18_burer1 = l04u_labx18
+x18_burer2 = l04u_labx18
+x18_burer3 = l04u_labx18
+
+rad_psy_dogs = l10_radar
+rad_zomb1 = l10_radar
+rad_tush1 = l10_radar
+rad_tush2 = l10_radar
+rad_tush3 = l10_radar
+rad_tush4 = l10_radar
+rad_burer1 = l10_radar
+rad_rats1 = l10_radar
+rad_polt2 = l10_radar
+rad_chimera1 = l10_radar
+rad_chimera2 = l10_radar
+rad_chimera3 = l10_radar
+rad_dogs1 = l10_radar
+
+prip_zomb1 = l11_pripyat
+prip_zomb2 = l11_pripyat
+prip_zomb3 = l11_pripyat
+prip_zomb4 = l11_pripyat
+prip_chimera1 = l11_pripyat
+prip_chimera2 = l11_pripyat
+prip_chimera3 = l11_pripyat
+prip_tushkano1 = l11_pripyat
+prip_tushkano2 = l11_pripyat
+prip_tushkano3 = l11_pripyat
+prip_bloodsuckers1 = l11_pripyat
+prip_bloodsuckers2 = l11_pripyat
+prip_cats1 = l11_pripyat
+prip_burers1 = l11_pripyat
+
+marsh_tushkano1 = marsh
+marsh_tushkano2 = marsh
+marsh_tushkano3 = marsh
+marsh_tushkano4 = marsh
+marsh_tushkano5 = marsh
+marsh_tushkano6 = marsh
+marsh_tushkano7 = marsh
+marsh_tushkano8 = marsh
+marsh_tushkano9 = marsh
+marsh_tushkano10 = marsh
+marsh_tushkano11 = marsh
+marsh_tushkano12 = marsh
+
+marsh_dogs1 = marsh
+marsh_dogs2 = marsh
+marsh_dogs3 = marsh
+marsh_dogs4 = marsh
+marsh_dogs5 = marsh
+marsh_dogs6 = marsh
+marsh_dogs7 = marsh
+marsh_dogs8 = marsh
+marsh_dogs9 = marsh
+marsh_dogs10 = marsh
+
+marsh_boars1 = marsh
+marsh_boars2 = marsh
+marsh_boars3 = marsh
+marsh_boars4 = marsh
+marsh_boars5 = marsh
+marsh_boars6 = marsh
+marsh_boars7 = marsh
+marsh_boars8 = marsh
+marsh_boars9 = marsh
+marsh_boars10 = marsh
+
+marsh_flesh1 = marsh
+marsh_flesh2 = marsh
+marsh_flesh3 = marsh
+
+marsh_cats1 = marsh
+marsh_cats2 = marsh
+marsh_cats3 = marsh
+marsh_cats4 = marsh
+marsh_cats5 = marsh
+
+marsh_pseudodog1 = marsh
+marsh_pseudodog2 = marsh
+
+marsh_bloodsuckers1 = marsh
+marsh_bloodsuckers2 = marsh
+
+marsh_giants1 = marsh
+
+marsh_rats1 = marsh
+marsh_rats2 = marsh
+marsh_rats3 = marsh
+marsh_rats4 = marsh
+marsh_rats5 = marsh
+marsh_rats6 = marsh
+marsh_rats7 = marsh
+marsh_rats8 = marsh
+marsh_rats9 = marsh
+marsh_rats10 = marsh
+
+hos_rats1 = hospital
+hos_rats2 = hospital
+hos_rats3 = hospital
+hos_rats4 = hospital
+hos_rats5 = hospital
+hos_dogs1 = hospital
+hos_tushkano1 = hospital
+hos_poltergeists1 = hospital
+
+vil_rats1 = lost_village
+vil_rats2 = lost_village
+vil_rats3 = lost_village
+vil_rats4 = lost_village
+vil_cats1 = lost_village
+vil_cats2 = lost_village
+vil_dogs1 = lost_village
+vil_dogs2 = lost_village
+vil_tushkano1 = lost_village
+
+lim_rats1 = limansk
+lim_rats2 = limansk
+lim_rats3 = limansk
+lim_rats4 = limansk
+lim_rats5 = limansk
+lim_rats6 = limansk
+lim_dogs1 = limansk
+lim_dogs2 = limansk
+lim_cats1 = limansk
+lim_bloodsuckers1 = limansk
+lim_burers1 = limansk
+
+red_rats1 = red_forest
+red_rats2 = red_forest
+red_poltergeists1 = red_forest
+red_tushkano1 = red_forest
+red_tushkano2 = red_forest
+
+;aver_tushkano1 = aver
+;aver_tushkano2 = aver
+;aver_tushkano3 = aver
+;aver_tushkano4 = aver
+;aver_tushkano5 = aver
+;aver_tushkano6 = aver
+;aver_tushkano7 = aver
+;aver_tushkano8 = aver
+;aver_boars1 = aver
+;aver_chimera1 = aver
+
+gen_tushkano1 = generators
+gen_tushkano2 = generators
+gen_tushkano3 = generators
+gen_tushkano4 = generators
+gen_tushkano5 = generators
+gen_tushkano6 = generators
+gen_tushkano7 = generators
+gen_tushkano8 = generators
+gen_zomb1 = generators
+gen_zomb2 = generators
+gen_zomb3 = generators
+gen_zomb4 = generators
+gen_zomb5 = generators
+gen_zomb6 = generators
+gen_zomb7 = generators
+gen_zomb8 = generators
+gen_rats1 = generators
+
+war_burers1 = warlab
+war_rats1 = warlab
+war_rats2 = warlab
+war_rats3 = warlab
+
+x8_burers1 = labx8
+x8_rats1 = labx8
+x8_rats2 = labx8
+x8_rats3 = labx8
+x8_rats4 = labx8
+x8_poltergeists1 = labx8
+
+x10_poltergeists1 = labx10
+x10_poltergeists2 = labx10
+x10_poltergeists3 = labx10
+x10_poltergeists4 = labx10
+x10_poltergeists5 = labx10
+x10_burers1 = labx10
+x10_rats_1 = labx10
+x10_rats_2 = labx10
+x10_rats_3 = labx10
+x10_rats_4 = labx10
+x10_rats_5 = labx10
+x10_rats_6 = labx10
+x10_zomb1 = labx10
+x10_zomb2 = labx10
+x10_zomb3 = labx10
+x10_zomb4 = labx10
+x10_zomb5 = labx10
+
+dead_cats1 = deadcity
+dead_cats2 = deadcity
+dead_boars1 = deadcity
+dead_boars2 = deadcity
+dead_polt1 = deadcity
+dead_polt2 = deadcity
+dead_polt3 = deadcity
+dead_bloodsuckers1 = deadcity
+dead_bloodsuckers2 = deadcity
+dead_controllers1 = deadcity
+dead_pseudodog1 = deadcity
+dead_pseudodog2 = deadcity
+dead_pseudodog3 = deadcity
+dead_dogs1 = deadcity
+dead_chimera1 = deadcity
+dead_tushkano1 = deadcity
+dead_tushkano2 = deadcity
+dead_tushkano3 = deadcity
+dead_tushkano4 = deadcity
+dead_flesh1 = deadcity
+dead_flesh2 = deadcity
+dead_zomb1 = deadcity
+dead_zomb2 = deadcity
+dead_zomb3 = deadcity
+dead_zomb4 = deadcity
+dead_zomb5 = deadcity
+dead_zomb6 = deadcity
+dead_zomb7 = deadcity
+dead_zomb8 = deadcity
+dead_zomb9 = deadcity
+dead_zomb10 = deadcity
+dead_zomb11 = deadcity
+dead_zomb12 = deadcity
+dead_zomb13 = deadcity
+dead_zomb14 = deadcity
+dead_zomb15 = deadcity
+dead_zomb16 = deadcity
+dead_zomb17 = deadcity
+dead_zomb18 = deadcity
+dead_zomb19 = deadcity
+dead_zomb20 = deadcity
+dead_zomb21 = deadcity
+dead_zomb22 = deadcity
+dead_zomb23 = deadcity
+
+bun_rats1 = l10u_bunker
+bun_rats2 = l10u_bunker
+bun_rats3 = l10u_bunker
+bun_rats4 = l10u_bunker
+bun_rats5 = l10u_bunker
+bun_rats6 = l10u_bunker
+bun_poltergeists1 = l10u_bunker
+bun_poltergeists2 = l10u_bunker
+bun_poltergeists3 = l10u_bunker
+bun_poltergeists4 = l10u_bunker
+bun_bloodsuckers1 = l10u_bunker
+
+mon_poltergeists1 = l12u_control_monolith
+mon_poltergeists2 = l12u_control_monolith
+
+;mon_burers1 = l12u_control_monolith
+mon_rats_1 = l12u_control_monolith
+mon_rats_2 = l12u_control_monolith
+mon_rats_3 = l12u_control_monolith
+mon_rats_4 = l12u_control_monolith
+mon_rats_5 = l12u_control_monolith
+
+;mon_zomb1 = l12u_control_monolith
+;mon_zomb2 = l12u_control_monolith
+;mon_zomb3 = l12u_control_monolith
+;mon_zomb4 = l12u_control_monolith
+;mon_zomb5 = l12u_control_monolith
+
+
+pesh_rats1 = av_peshera
+pesh_rats2 = av_peshera
+pesh_rats3 = av_peshera
+pesh_rats4 = av_peshera
+pesh_rats5 = av_peshera
+pesh_rats6 = av_peshera
+pesh_rats7 = av_peshera
+;pesh_burers1 = av_peshera
+;pesh_burers2 = av_peshera
+;pesh_burers3 = av_peshera
+;pesh_burers4 = av_peshera
+
+st2_rats1 = l12_stancia_2_new
+st2_rats2 = l12_stancia_2_new
+st2_rats3 = l12_stancia_2_new
+st2_rats4 = l12_stancia_2_new
+st2_rats5 = l12_stancia_2_new
+st2_rats6 = l12_stancia_2_new
+st2_rats7 = l12_stancia_2_new
+st2_zomb1 = l12_stancia_2_new
+st2_zomb2 = l12_stancia_2_new
+st2_zomb3 = l12_stancia_2_new
+st2_zomb4 = l12_stancia_2_new
+
+sarcofag_rats1 = l12u_sarcofag
+sarcofag_rats2 = l12u_sarcofag
+sarcofag_rats3 = l12u_sarcofag
+sarcofag_rats4 = l12u_sarcofag
+sarcofag_rats5 = l12u_sarcofag
+sarcofag_rats6 = l12u_sarcofag
+sarcofag_rats7 = l12u_sarcofag
+
+;******************************
+;********** Include ***********
+;******************************
+#include "escape.ltx"
+#include "garbage.ltx"
+#include "agroprom.ltx"
+#include "darkvalley.ltx"
+#include "bar.ltx"
+#include "military.ltx"
+#include "rostok.ltx"
+#include "yantar.ltx"
+#include "x18.ltx"
+#include "pripyat.ltx"
+#include "radar.ltx"
+#include "marsh.ltx"
+#include "aver.ltx"
+#include "hospital.ltx"
+#include "village.ltx"
+#include "limansk.ltx"
+#include "red_forest.ltx"
+#include "generators.ltx"
+#include "warlab.ltx"
+#include "labx8.ltx"
+#include "labx10.ltx"
+#include "deadcity.ltx"
+#include "darkscape.ltx"
+#include "bunker.ltx"
+#include "monolit.ltx"
+#include "peshera.ltx"
+#include "st2.ltx"
+#include "sarcofag.ltx"

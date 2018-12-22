@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@idle
+
+[sr_idle@idle]
+on_info = {+esc_give_water} ph_idle@idle
+
+[ph_idle@idle]
+tips = water
+on_use = %=vergas_masks.fill_flask()% ph_idle@water_time
+
+[ph_idle@water_time]
+on_timer = 25000| %-esc_give_water% sr_idle@idle 

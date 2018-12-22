@@ -1,0 +1,47 @@
+[spawner]
+cond = {+escape_stalker_help}
+
+[smart_terrains]
+esc_stalker_camp = {-agr_fox_ill}
+none = {+agr_fox_ill -agr_find_rygyi_done}
+sak_agr_lager = {+agr_fox_ill +agr_find_rygyi_done}
+
+[logic]
+active = walker@start
+on_death = death
+
+[walker@start]
+path_walk = esc_fox_camp_fox_walk
+path_look = esc_fox_camp_fox_look
+on_info = {+agr_find_rygyi_done} walker@agro
+meet = meet@esc_fox
+on_timer = 30000| sleeper@sleep
+
+[sleeper@sleep]
+path_main = esc_fox_camp_sleep2
+on_info = {+agr_find_rygyi_done} walker@agro
+meet = meet@esc_fox
+on_timer = 600000| walker@start
+
+[walker@agro]
+path_walk = rygyi_walk
+path_look = rygyi_look
+meet = meet@esc_fox
+
+
+[meet@esc_fox]
+meet_state 		= 5 | sit_ass
+meet_state_wpn 	= 5 | guard@bar_guard_prohodi
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog	= fox_new_start_dialog
+
+[death]
+on_info = %+esc_fox_umer%
+
+[known_info]
+escape_stalker_give
+escape_stalker_done

@@ -1,0 +1,59 @@
+[logic]
+active = walker@yan
+on_death = death
+
+[walker@yan]
+path_walk = yan_assistant2_walk
+path_look = yan_assistant2_look
+on_info  = {+assistant_go_to_mil} companion@to_mil
+meet = meet@begin
+danger = danger_condition
+show_spot = false 
+
+[companion@to_mil]
+path_walk = yan_assistant2_walk
+path_look = yan_assistant2_look
+on_info = {+assistant_go_to_mil_end} walker@mil_end
+on_actor_dist_ge_nvis = 80 | {-assistant_go_to_mil_end} %=kill%
+meet = meet@begin
+danger = danger_condition
+show_spot = false 
+
+[walker@mil_end]
+path_walk = matveev_mil_end_way
+path_look = matveev_mil_end_look
+meet = no_meet
+on_signal = mil_end | walker@mil_end_end
+danger = danger_condition
+show_spot = false 
+
+[walker@mil_end_end]
+path_walk = matveev_mil_end_way
+path_look = matveev_mil_end_look
+meet = meet@mil_end
+danger = danger_condition
+show_spot = false 
+
+[meet@begin]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= yan_assistant2_start_dialog
+
+[meet@mil_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= mil_end_assistant2_start_dialog
+
+[meet@yan_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= yan_end_assistant2_start_dialog
+
+[danger_condition]
+ignore_distance = 6
+
+[death]
+on_info = %+assistant2_umer%

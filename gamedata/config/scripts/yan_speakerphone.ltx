@@ -1,0 +1,18 @@
+[logic]
+active = ph_idle@day
+
+[ph_idle@day]
+tips = speaker
+on_info = {!is_day}  ph_idle@night
+on_use = ph_idle@2 %=play_snd(device\speakerfon_sound\lamp_switch)%
+
+[ph_idle@night]
+tips = speaker
+on_info2 = {=is_day} ph_idle@day
+on_use = ph_idle@2 %=play_snd(device\speakerfon_sound\speaker_night_2)%
+
+[ph_idle@2]
+on_timer = 3000|{-yan_bunker_door_2_open} %+yan_bunker_door_1_open% ph_idle@3
+
+[ph_idle@3]
+on_timer = 8000|%-yan_bunker_door_1_open% ph_idle@day

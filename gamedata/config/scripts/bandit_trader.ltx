@@ -1,0 +1,43 @@
+[logic]
+active = walker1
+danger = danger_condition
+
+[walker1]
+path_walk = jila_walk_way
+path_look = jila_way_look
+danger = danger_condition
+on_actor_dist_le_nvis = 10 | remark@jila_hello
+meet = no_meet
+
+[remark@jila_hello]
+anim = guard
+target = actor
+snd = jila_hello
+meet = no_meet
+danger = danger_condition
+on_signal = sound_end| walker2
+
+[walker2]
+path_walk = jila_walk_way
+path_look = jila_way_look
+danger = danger_condition
+meet = meet
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_distance = 1
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_state = 10|ward
+meet_state_wpn = 10|ward
+victim 			= 10| actor
+victim_wpn 		= 10| actor

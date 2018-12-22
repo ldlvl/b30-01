@@ -1,0 +1,218 @@
+[wpn_wincheaster1300]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                   	= "weapons\winchester1300"
+$npc			 			= on
+$prefetch 		 			= 8
+scheduled                	= off
+cform                    	= skeleton
+class                    	= WP_SHOTG
+min_radius               	= 0
+max_radius               	= 50
+description					= enc_weapons1_wpn-wincheaster1300_lt
+
+ef_main_weapon_type			= 1
+ef_weapon_type				= 7
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+tri_state_reload			= on
+
+cost					 	= 2500
+weapon_class			 	= shotgun
+
+
+ammo_limit		 			= 60
+ammo_current		 		= 10
+ammo_elapsed		 		= 0
+
+f_mode						= 1
+
+ammo_mag_size		 		= 6
+ammo_class		 			= ammo_12x70_buck,ammo_12x76_zhekan,ammo_12x76_dart,ammo_12x70_new
+
+fire_dispersion_base		= 0.48
+control_inertion_factor		= 1.22f
+disp_rate 					= 1.8
+
+cam_relax_speed         	= 7.0
+cam_dispersion          	= 3.0
+cam_dispersion_inc			= 0.0
+cam_dispertion_frac			= 1.0
+cam_max_angle				= 16
+cam_max_angle_horz			= 25
+cam_step_angle_horz			= 6.5
+
+fire_dispersion_condition_factor = 5
+misfire_probability 		= 0.01
+misfire_condition_k			= 0.05
+condition_shot_dec 			= 0.001
+
+hand_dependence 	 		= 2
+single_handed				= 0
+
+slot 				 		= 2
+animation_slot		 		= 9
+
+inv_name					= wpn-mossberg500
+inv_name_short				= wpn-mossberg500
+inv_weight					= 3.0
+icon_group                  = 5
+inv_grid_width              = 5
+inv_grid_height             = 2
+inv_grid_x                  = 5
+inv_grid_y                  = 10
+
+kill_msg_x					= 171
+kill_msg_y					= 104
+kill_msg_width				= 75
+kill_msg_height				= 20
+
+direction                	= 0, 0, 1
+shell_point					= 0.0, 0.180, 0.647
+fire_point               	= 0.0, 0.158, 0.677
+fire_point2              	= 0.0, 0.158, 0.647
+
+flame_particles		   		= weapons\generic_weapon05
+smoke_particles		   		= _ecp\weapon_shotgun
+rpm_empty_click 	   		= 200
+
+PDM_disp_base 				= 1.0
+PDM_disp_vel_factor 		= 1.7
+PDM_disp_accel_factor 		= 1.7
+PDM_crouch	 				= 1.0
+PDM_crouch_no_acc 			= 1.0
+
+hit_power        			= 1.45
+hit_impulse      			= 120
+hit_type 					= fire_wound
+hit_rate					= 2.0
+
+fire_distance            	= 50
+bullet_speed			 	= 235
+rpm                 		= 44
+
+hud                      	= wpn_wincheaster1300_hud
+normal                   	= 0, 1, 0
+position                 	= -0.024, -0.097, -0.013
+orientation              	= 0, 0, 0
+
+strap_position         		= -0.26,-0.10,0.05
+strap_orientation      		= -15,-9,110
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo             	= 10
+visual                   	= weapons\mossberg500\wpn_mossberg500_short.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 6.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 75
+
+snd_draw					= weapons\generic_draw1
+snd_holster					= weapons\generic_holster1
+snd_shoot					= weapons\new_weapon_sounds\m590_shot
+snd_empty					= weapons\winchester\empty, 0.5
+snd_open_weapon				= weapons\generic_draw1
+snd_add_cartridge			= weapons\new_weapon_sounds\m590_shell_insert_1
+snd_close_weapon			= weapons\winchester\reload_end
+snd_reload					= weapons\toz34\toz34_reload
+snd_shoot_duplet			= weapons\toz34\toz34_shoot_both
+snd_razgruzka				= weapons\razgruzka\ammo_1
+
+[wpn_wincheaster1300_hud]
+shell_point		 			= 0.0, 0.0, 0.0
+fire_point			= -0.002000,-0.006000,0.005500
+
+fire_bone                	= wpn_body
+position			= -0.115000,0.080000,-0.280000
+orientation			= 0.000000,0.000000,0.000000
+
+visual                   	= weapons\mossberg500\wpn_mossberg500_short_hud.ogf
+
+anim_idle					= idle
+anim_reload					= draw
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_shoot_both 			= shoot
+anim_idle_aim				= idle_aim	
+anim_idle_sprint			= idle_sprint
+anim_open_weapon			= reload1
+anim_add_cartridge			= reload2
+anim_close_weapon			= reload3
+
+zoom_offset			= -0.113200,0.054700,0.070000
+zoom_rotate_x		= -0.012400
+zoom_rotate_y		= -0.000500
+
+zoom_rotate_time			= 0.35
+
+
+[wpn_winchester_m1]:wpn_wincheaster1300
+$spawn						= "weapons\uniq\wpn_winchester_m1"
+description					= enc_weapons1_wpn-winchester_m1
+inv_name					= wpn-winchester_m1
+inv_name_short				= wpn-winchester_m1
+ammo_class					= ammo_12x76_dart,ammo_12x76_zhekan,ammo_12x70_new
+cost						= 6000
+ammo_mag_size				= 6
+bullet_speed				= 300
+hit_power					= 2.2
+fire_distance      			= 80
+fire_dispersion_base		= 0.6
+condition_shot_dec			= 0.002
+
+
+[wpn_winchester1300_m2]:wpn_wincheaster1300
+$spawn						= "weapons\uniq\wpn_winchester_m2"
+description					= enc_weapons1_wpn-winchester1300_m2_lt
+inv_name					= wpn-mossberg500_custom
+inv_name_short				= wpn-mossberg500_custom
+inv_grid_x                  = 10
+inv_grid_y                  = 10
+visual                   	= weapons\mossberg500\wpn_mossberg500_long.ogf
+hud                      	= wpn_winchester1300_m2_hud
+condition_shot_dec 			= 0.0008
+ammo_mag_size				= 8
+cost 	= 3000
+
+[wpn_winchester1300_m2_hud]:wpn_wincheaster1300_hud 
+visual                   	= weapons\mossberg500\wpn_mossberg500_long_hud.ogf
+zoom_rotate_time			= 0.4
+
+[wpn_wincheaster1300_old]:wpn_wincheaster1300
+$spawn						= "weapons\uniq\wpn_winchester_old"
+description					= enc_weapons1_wpn-fort500
+inv_name					= wpn-fort500
+inv_name_short				= wpn-fort500
+inv_weight					= 3.8
+icon_group                  = 5
+inv_grid_width     = 5
+inv_grid_height    = 2
+inv_grid_x         = 6
+inv_grid_y         = 12
+visual						= weapons\winchester1300\wpn_winchester1300_old.ogf
+hud							= wpn_wincheaster1300_old_hud
+fire_dispersion_base		= 0.52
+condition_shot_dec			= 0.002
+misfire_probability 		= 0.02
+cost						= 1800
+
+[wpn_wincheaster1300_old_hud]:wpn_wincheaster1300_hud
+visual						= weapons\winchester1300\wpn_winchester1300_old_hud.ogf
+
+zoom_offset			= -0.113400,0.062200,0.135000
+zoom_rotate_x		= -0.006300
+zoom_rotate_y		= -0.000500

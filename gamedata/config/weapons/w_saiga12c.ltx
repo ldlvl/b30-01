@@ -1,0 +1,235 @@
+;Сайга-12К
+[wpn_saiga12c]:weapon_immunities
+GroupControlSection					= spawn_group
+discovery_dependency				= 
+$spawn              				= "weapons\saiga12c"
+$npc								= on				
+$prefetch 							= 8
+scheduled							= off
+cform               				= skeleton
+class               				= WP_SVD
+min_radius          				= 0
+max_radius          				= 50
+	
+ef_main_weapon_type					= 2
+ef_weapon_type						= 6
+
+holder_range_modifier				= 1.0
+holder_fov_modifier					= 0.85 
+
+cost								= 15000
+weapon_class						= shotgun
+	
+ammo_limit							= 50
+ammo_elapsed						= 8
+	
+ammo_mag_size						= 5
+fire_modes							= 1
+
+ammo_class							= ammo_12x70_buck,ammo_12x76_dart,ammo_12x76_zhekan
+
+hand_dependence						= 2
+single_handed						= 0
+
+slot 								= 2
+animation_slot						= 2							
+
+inv_name	        				= wpn-saiga12c
+inv_name_short						= wpn-saiga12c	
+description							= enc_wpn-saiga12c
+dialog_description		    		= desc_dialog_wpn-saiga12c
+
+default_to_ruck						= false
+
+inv_weight							= 3.5
+
+icon_group                  		= 2
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 14
+inv_grid_y         					= 0
+
+kill_msg_x							= 72
+kill_msg_y							= 82
+kill_msg_width						= 56
+kill_msg_height						= 23
+
+fire_dispersion_base				= 0.46
+control_inertion_factor				= 1.2f
+
+cam_relax_speed						= 7.0
+cam_dispersion						= 2.7
+cam_dispersion_inc					= 2.7
+cam_dispertion_frac					= 0.8
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 1.7
+
+fire_dispersion_condition_factor 	= 2.5
+misfire_probability 				= 0.025
+misfire_condition_k					= 0.50
+condition_shot_dec 					= 0.00055
+
+fire_point             				=  0,0.216,0.71
+
+flame_particles						= weapons\generic_weapon05
+smoke_particles		   				= _ecp\weapon_shotgun
+grenade_flame_particles				= weapons\generic_weapon01
+	
+shell_point		 					= 0,0.216,0.174
+
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 3.0
+PDM_disp_accel_factor 				= 5.0
+PDM_crouch							= 1.9
+PDM_crouch_no_acc					= 0.7
+
+hit_power        					= 0.93
+hit_impulse      					= 1
+hit_type 							= fire_wound
+
+fire_distance            			= 54
+bullet_speed						= 280
+rpm                      			= 380
+
+use_aim_bullet						= false
+time_to_aim							= 1.0	
+
+hud                      			= wpn_saiga12c_hud
+
+position         	        		= -0.026,-0.172,-0.015
+orientation      	        		= 0,0,0
+
+strap_position           			= -0.37,-0.09,0.09
+strap_orientation      				= -05,-5,110
+strap_bone0							= bip01_spine2
+strap_bone1							= bip01_spine1
+
+visual         		        		= weaponsv\saiga\wpn_saiga.ogf
+
+light_color							= 0.6,0.5,0.3
+light_range							= 5
+light_var_color						= 0.05						
+light_var_range						= 0.5
+light_time 							= 0.2						
+
+ph_mass								= 5
+
+scope_status						= 2
+silencer_status						= 0
+grenade_launcher_status				= 0
+scope_x					      		= 64
+scope_y								= -4
+zoom_enabled						= true
+
+scope_mode 							= 3
+scope_name 							= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+
+ironsight_zoom_factor       		= 65
+scope_zoom_factor           		= 50
+
+zoom_enabled						= true
+
+snd_draw							= weapons\ak_74x\rifle_draw
+snd_holster							= weapons\ak_74x\rifle_holster
+snd_shoot							= weapons\saiga12\saiga_shoot
+snd_shoot1							= weapons\saiga12\saiga_shoot1
+snd_empty							= weapons\saiga12\saiga_empty, 0.7
+snd_reload                 			= weapons\saiga12\saiga_reload
+snd_razgruzka						= weapons\razgruzka\ammo_1
+
+silencer_smoke_particles 			= weapons\generic_shoot_00
+
+silencer_light_color				= 0.6,0.5,0.3
+silencer_light_range				= 0.01
+silencer_light_var_color			= 0.05
+silencer_light_var_range			= 0.5
+silencer_light_time 				= 0.2
+ 
+[wpn_saiga12c_hud]
+allow_inertion						= true
+
+shell_point			        		= 0.010000,0.020000,-0.445000
+shell_dir							= 0.0, 1.0, 0.0
+
+fire_point               			= 0.033000,-0.042000,0.185000
+fire_point2              			= 0.037,-0.040,0.085000
+fire_bone               			= wpn_body
+
+orientation      	        		= 1.7, 1.5, 0
+position			        		= 0.040000,-0.05,-0.0250
+
+visual                  			= weaponsv\saiga\wpn_saiga_hud.ogf
+
+anim_idle							= normal_idle
+anim_idle_aim						= normal_idle_aim
+anim_reload							= normal_reload
+anim_draw							= normal_draw
+anim_holster						= normal_holster
+anim_shoot							= normal_shoot
+anim_idle_sprint					= normal_idle_sprint
+anim_idle_hidden					= idle_hidden
+
+zoom_offset							= -0.138480,0.078600,-0.127230
+zoom_rotate_x						= 0.025850
+zoom_rotate_y						= 0.029400
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27
+zoom_hide_crosshair					= true
+
+[wpn_saiga12c_1pso]:wpn_saiga12c
+visual                  			= weaponsv\saiga\wpn_saiga
+
+hud  								= wpn_saiga12c_1pso_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.25f
+
+[wpn_saiga12c_1pso_hud]:wpn_saiga12c_hud
+fire_point							= 0.400000,-0.500000,2.255000
+visual              				= weaponsv\saiga\wpn_saiga_hud.ogf
+
+zoom_offset							= -0.123480,0.034500,2.472870
+zoom_rotate_x						= 0.028250
+zoom_rotate_y						= 0.028850
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_saiga12c_1p78]:wpn_saiga12c
+visual                  			= weaponsv\saiga\wpn_saiga_1p78
+
+hud  								= wpn_saiga12c_1p78_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.25f
+
+[wpn_saiga12c_1p78_hud]:wpn_saiga12c_hud
+fire_point							= 0.400000,-0.500000,2.255000
+visual              				= weaponsv\saiga\wpn_saiga_1p78_hud.ogf
+
+zoom_offset							= -0.139720,0.027000,1.380870
+zoom_rotate_x						= 0.026460
+zoom_rotate_y						= 0.030740
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_saiga12c_cobra]:wpn_saiga12c
+visual                  			= weaponsv\saiga\wpn_saiga_cobra
+
+hud  								= wpn_saiga12c_cobra_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.2f
+
+[wpn_saiga12c_cobra_hud]:wpn_saiga12c_hud
+visual              				= weaponsv\saiga\wpn_saiga_cobra_hud.ogf
+
+zoom_offset							= -0.136180,0.019300,-0.024130
+zoom_rotate_x						= 0.022250
+zoom_rotate_y						= 0.025850
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27

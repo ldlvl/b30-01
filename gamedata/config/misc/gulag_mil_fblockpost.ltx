@@ -1,0 +1,250 @@
+;-------------------------------------------------------------------------------------------------
+;-- Блокпост Свободы у выхода на Радар
+;-------------------------------------------------------------------------------------------------
+;------- лагерь ближе к месту боя с монолитовцами.
+[logic@mil_fblockpost_day_kamp]
+active = kamp@mil_fblockpost_day_kamp
+
+[kamp@mil_fblockpost_day_kamp]
+center_point = day_kamp
+path_walk = day_kamp_task
+radius = 3
+;meet = no_meet
+
+;------- командир
+[logic@mil_fblockpost_commander]
+active = walker1@mil_fblockpost_commander
+actor_dialogs = dialogs@mil_fblockpost_commander
+combat_ignore = combat_ignore
+on_death = death@mil_fblockpost_commander
+
+[death@mil_fblockpost_commander]
+on_info = %+mil_fblockpost_commander_dead +sar2_death_39%
+
+[dialogs@mil_fblockpost_commander]
+id = mil_freedom_commander_common1, mil_freedom_commander_common2
+
+[walker1@mil_fblockpost_commander]
+path_walk = commander_walk
+path_look = commander_look
+meet = on_meet@mil_fblockpost_commander
+danger = danger_condition@mil_fblockpost_commander
+;------- Кэп не должен воевать никогда, если нет врага ближе 5 метров
+combat_ignore_cond = {=fighting_dist_ge(5)}
+
+[on_meet@mil_fblockpost_commander]
+meet_state = 10|ward
+meet_state_wpn = 10|ward
+victim = 10|actor
+victim_wpn = 10|actor
+use = true
+use_wpn = true
+meet_dialog = mil_freedom_commander
+
+; отдельная дистанция игнора для Кэпа
+[danger_condition@mil_fblockpost_commander]
+ignore_ distance = 10
+ignore_distance_grenade = 10
+ignore_distance_hit = 10
+
+;-- патруль 1
+[logic@mil_fblockpost_patrol1]
+active = walker1@mil_fblockpost_patrol1
+
+[walker1@mil_fblockpost_patrol1]
+path_walk = patrol_walk1
+path_look = patrol_look1
+;meet = no_meet
+danger = danger@mil_freedom
+
+;-- патруль 2
+[logic@mil_fblockpost_patrol2]
+active = walker1@mil_fblockpost_patrol2
+
+[walker1@mil_fblockpost_patrol2]
+path_walk = patrol_walk2
+path_look = patrol_look2
+;meet = no_meet
+danger = danger@mil_freedom
+
+
+;-- кэмперы
+[logic@mil_fblockpost_camper1]
+active = camper1@mil_fblockpost_camper1
+meet = no_meet
+
+[camper1@mil_fblockpost_camper1]
+path_walk = camp_walk01
+path_look = camp_look01
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper2]
+active = camper1@mil_fblockpost_camper2
+meet = no_meet
+
+[camper1@mil_fblockpost_camper2]
+path_walk = camp_walk02
+path_look = camp_look02
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper3]
+active = camper1@mil_fblockpost_camper3
+meet = no_meet
+
+[camper1@mil_fblockpost_camper3]
+path_walk = camp_walk03
+path_look = camp_look03
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper4]
+active = camper1@mil_fblockpost_camper4
+meet = no_meet
+
+[camper1@mil_fblockpost_camper4]
+path_walk = camp_walk04
+path_look = camp_look04
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper5]
+active = camper1@mil_fblockpost_camper5
+meet = no_meet
+
+[camper1@mil_fblockpost_camper5]
+path_walk = camp_walk05
+path_look = camp_look05
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+;--
+[logic@mil_fblockpost_camper6]
+active = camper1@mil_fblockpost_camper6
+meet = no_meet
+
+[camper1@mil_fblockpost_camper6]
+path_walk = camp_walk06
+path_look = camp_look06
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+;--
+[logic@mil_fblockpost_camper7]
+active = camper1@mil_fblockpost_camper7
+meet = no_meet
+
+[camper1@mil_fblockpost_camper7]
+path_walk = camp_walk07
+path_look = camp_look07
+def_state_moving = run
+radius = 2
+threshold@mil_fbarier
+danger = danger@mil_freedom
+meet = no_meet
+
+
+;--Охранник территории, входа со стороны радара (замена оригинальных дневных работ кемперов).
+[logic@mil_fblockpost_guard1]
+active = walker@mil_fblockpost_guard1
+
+[walker@mil_fblockpost_guard1]
+path_walk = guard1_walk
+path_look = guard1_look
+;meet = no_meet
+
+
+;--Охранник территории, входа со стороны радара (замена оригинальных дневных работ кемперов).
+[logic@mil_fblockpost_guard2]
+active = walker@mil_fblockpost_guard2
+
+[walker@mil_fblockpost_guard2]
+path_walk = guard2_walk
+path_look = guard2_look
+;meet = no_meet
+
+
+;--Ночное состояние лагеря.
+;--Всё неписи собираются в кучку, трое спят, двое сидят у костра, один ходит рядышком, Кэп тоже меняет позицию и стоит возле сидящих у костра.
+
+;--Кэп ночью
+[logic@mil_fblockpost_commander_night]
+active = walker1@mil_fblockpost_commander_night
+actor_dialogs = dialogs@mil_fblockpost_commander
+on_death = death@mil_fblockpost_commander
+
+[walker1@mil_fblockpost_commander_night]
+path_walk = commander_night_walk
+path_look = commander_night_look
+meet = on_meet@mil_fblockpost_commander
+danger = danger@mil_freedom
+
+
+;-- патруль 3 (ночной)
+[logic@mil_fblockpost_patrol3]
+active = walker@mil_fblockpost_patrol3
+
+[walker@mil_fblockpost_patrol3]
+path_walk = patrol_walk3
+path_look = patrol_look3
+;meet = no_meet
+danger = danger@mil_freedom
+
+
+;--У костра (ночью). Пути с оригинала.
+[logic@mil_fblockpost_night_kamp]
+active = kamp@mil_fblockpost_night_kamp
+
+[kamp@mil_fblockpost_night_kamp]
+center_point = kamp
+path_walk = kamp_task
+;meet = no_meet
+
+
+;--Спящий1
+[logic@mil_fblockpost_sleep1]
+active = sleeper@mil_fblockpost_sleep1
+
+[sleeper@mil_fblockpost_sleep1]
+path_main = sleep1
+;meet = no_meet
+
+
+;--Спящий2
+[logic@mil_fblockpost_sleep2]
+active = sleeper@mil_fblockpost_sleep2
+
+[sleeper@mil_fblockpost_sleep2]
+path_main = sleep2
+;meet = no_meet
+
+
+;--Спящий3
+[logic@mil_fblockpost_sleep3]
+active = sleeper@mil_fblockpost_sleep3
+
+[sleeper@mil_fblockpost_sleep3]
+path_main = sleep3
+;meet = no_meet

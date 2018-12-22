@@ -1,0 +1,100 @@
+[logic]
+active = heli_move@idle0
+
+[heli_move@idle0]
+path_move = gar_heli_patrol_idle_road_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_info = {=gar_heli_time_hours_1} heli_move@idle1
+on_info = {=gar_heli_time_hours_2} heli_move@idle2
+
+[heli_move@idle1]
+path_move = gar_heli_patrol_idle_road_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_timer = 14400000 | heli_move@fly1
+
+[heli_move@idle2]
+path_move = gar_heli_patrol_idle_road_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_timer = 14400000 | heli_move@fly11
+
+[heli_move@fly1]
+path_move = gar_heli_patrol_road_esc-bar
+engine_sound = true
+combat_use_rocket = false
+combat_use_mgun = false
+combat_ignore = false
+combat_safe_altitude = -65
+on_signal = end | heli_move@fly2
+
+[heli_move@fly2]
+path_move = gar_heli_patrol_around_angar
+engine_sound = true
+combat_use_rocket = false
+combat_use_mgun = false
+combat_ignore = false
+combat_safe_altitude = -65
+on_signal = end | heli_move@fly3
+
+[heli_move@fly3]
+path_move = gar_heli_patrol_road_angar-esc
+engine_sound = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 15000
+combat_ignore = false
+combat_safe_altitude = -65
+stop_fire = true
+on_signal = enemy | %=heli_func.heli_set_enemy_random%
+on_timer = 60000 | heli_move@fly4
+
+[heli_move@fly4]
+path_move = gar_heli_patrol_road_angar-esc
+engine_sound = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 15000
+combat_ignore = false
+combat_safe_altitude = -65
+stop_fire = true
+on_signal = end | heli_move@idle0
+
+;===========
+
+[heli_move@fly11]
+path_move = gar_heli_patrol_around_esc-bar
+engine_sound = true
+combat_use_rocket = false
+combat_use_mgun = false
+combat_ignore = false
+combat_safe_altitude = -65
+on_signal = end | heli_move@fly22
+
+[heli_move@fly22]
+path_move = gar_heli_patrol_around_bar-esc
+engine_sound = true
+combat_use_rocket = false
+combat_use_mgun = false
+combat_ignore = false
+combat_safe_altitude = -65
+on_signal = enemy | %=heli_func.heli_set_enemy_random%
+on_timer = 60000 | heli_move@fly33
+
+[heli_move@fly33]
+path_move = gar_heli_patrol_road_angar-esc
+engine_sound = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 15000
+combat_ignore = false
+combat_safe_altitude = -65
+stop_fire = true
+on_signal = end | heli_move@idle0

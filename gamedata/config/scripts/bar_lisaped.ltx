@@ -1,0 +1,22 @@
+[logic]
+active = remark@demand
+on_death = death
+
+[remark@demand]
+no_move = true
+no_rotate = true
+anim = sit_stul
+reactions = ignore
+meet = meet
+danger = danger_condition
+
+
+[danger_condition]
+ignore_distance = 0
+
+[meet]
+meet_state = sit_stul
+meet_state_wpn = sit_stul
+use			= true
+use_wpn		= false
+meet_dialog	= bar_lisaped_start_dialog

@@ -1,0 +1,23 @@
+[logic]
+active = walker@day
+on_death = death
+
+[walker@day]
+path_walk = pesh_botan_way
+path_look = pesh_botan_look
+meet = meet@pesh_botan
+danger = danger_condition
+
+[meet@pesh_botan]
+meet_state = 2|wait
+meet_state_wpn = 5|wait
+victim 			= 2 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= true
+abuse       = false
+meet_dialog	= pesh_botan_start_dialog
+
+
+[death]
+on_info = %+pesh_botan_umer%

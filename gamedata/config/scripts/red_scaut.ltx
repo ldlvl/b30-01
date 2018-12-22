@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {-red_scaut_pass_on} nil %+red_scaut_pass_fire%
+on_info = {+red_scaut_pass_on} nil
+
+[sr_idle@pass]
+on_game_timer = 6000|  sr_idle %+red_scaut_pass_off% 

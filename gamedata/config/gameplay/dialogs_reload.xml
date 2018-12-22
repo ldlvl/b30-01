@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+	<dialog id="flame_reload">
+		<precondition>sak_dialog.have_info_flamethrower</precondition>
+		<dont_has_info>flamethrower_start</dont_has_info>
+		<precondition>sak_dialog.have_flamethrower</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>flame_reload_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>flame_reload_1</text>
+				<next>21</next>
+				<next>22</next>
+				<next>23</next>
+			</phrase>
+			<phrase id="21">
+				<text>flame_reload_21</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="22">
+				<precondition>sak_dialog.have_flamethrower</precondition>
+				<precondition>sak_dialog.have_reload_fuel</precondition>
+				<precondition>sak_dialog.have_any_aart</precondition>
+				<text>flame_reload_22</text>
+				<action>sak_dialog.transfer_any_aart</action>
+				<action>sak_dialog.give_reload_fuel</action>
+				<action>sak_dialog.give_flamethrower</action>
+				<next>32</next>
+			</phrase>
+			<phrase id="32">
+				<text>flame_reload_32</text>
+				<give_info>flamethrower_start</give_info>
+				<action>sak_dialog.screw_flame_load_time</action>
+				<next>42</next>
+			</phrase>
+			<phrase id="42">
+				<text>flame_reload_42</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="23">
+				<text>flame_reload_23</text>
+				<next>33</next>
+			</phrase>
+			<phrase id="33">
+				<text>flame_reload_33</text>
+				<next>431</next>
+				<next>432</next>
+				<next>433</next>
+			</phrase>
+			<phrase id="432">
+				<precondition>sak_dialog.have_flamethrower</precondition>
+				<precondition>sak_dialog.have_any_cart</precondition>
+				<text>flame_reload_432</text>
+				<action>sak_dialog.transfer_any_cart</action>
+				<action>sak_dialog.give_flamethrower</action>
+				<next>5</next>
+			</phrase>
+			<phrase id="433">
+				<precondition>sak_dialog.have_flamethrower</precondition>
+				<precondition>sak_dialog.gg_2_bart_have</precondition>
+				<text>flame_reload_433</text>
+				<action>sak_dialog.give_2_bart</action>
+				<action>sak_dialog.give_flamethrower</action>
+				<next>5</next>
+			</phrase>
+			<phrase id="5">
+				<text>flame_reload_5</text>
+				<give_info>flamethrower_start</give_info>
+				<action>sak_dialog.screw_flame_load_time</action>
+				<next>6</next>
+			</phrase>
+			<phrase id="6">
+				<text>flame_reload_6</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="431">
+				<text>flame_reload_431</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="flame_reload_status">
+		<has_info>flamethrower_start</has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>flame_reload_status_0</text>
+				<next>11</next>
+				<next>12</next>
+			</phrase>
+			<phrase id="11">
+				<precondition>sak_dialog.is_ready_time_screw_flame_load</precondition>
+				<text>flame_reload_status_11</text>
+				<action>sak_dialog.take3_gar_flame</action>
+			 	<action>sak_dialog.clear_ready_time_screw_flame_load</action>
+				<disable_info>flamethrower_start</disable_info>
+				<next>21</next>
+			</phrase>
+			<phrase id="21">
+				<text>flame_reload_status_21</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="12">
+				<precondition>sak_dialog.not_ready_time_screw_flame_load</precondition>
+				<text>flame_reload_status_12</text>
+				<next>22</next>
+			</phrase>
+			<phrase id="22">
+				<text>flame_reload_status_22</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+</game_dialogs>

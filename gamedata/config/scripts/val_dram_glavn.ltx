@@ -1,0 +1,38 @@
+[smart_terrains]
+val_dram = true
+[logic]
+active = walker@val_dram_bandit_glavn
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+[walker@val_dram_bandit_glavn]
+path_walk = val_dram_bandit_glavn_walk
+path_look = val_dram_bandit_glavn_look
+meet = no_meet
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor%
+show_spot = false 
+
+
+[meet@val_dram_bandit_glavn]
+meet_state 		= 10| wait
+meet_state_wpn 	= 10| guard
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+use				= true
+use_wpn			= false
+abuse       	= false
+meet_dialog		= val_mongol_dialog_start
+
+[combat_ignore@val_dram]
+combat_ignore_cond = {-val_dram_fire =fighting_actor}
+
+[hit@val_dram_bandit]
+on_info = {=hit_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+
+[death@val_dram_bandit_glavn]
+on_info = {=killed_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+
+[death@val_dram_bandit]
+on_info = {=killed_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+on_death = %+val_dram_bandit_umer%
+

@@ -1,0 +1,62 @@
+[arc_art_box_8basic]:arc_usable
+visual 			= new_item\art_box_red.ogf
+description 	= enc_arc_art_box_8basic
+inv_name 		= art_box_8special
+inv_name_short  = art_box_8special
+inv_weight 		= 3.5
+icon_group      = 1
+inv_grid_width	= 3
+inv_grid_height	= 2
+inv_grid_x		= 0
+inv_grid_y		= 2
+container_slots = 8
+cost 			= 8000
+
+[arc_art_box_3basic]:arc_usable
+visual 			= new_item\art_box3.ogf
+description 	= enc_arc_art_box_basic
+inv_name 		= art_box_special
+inv_name_short  = art_box_special
+inv_weight 		= 6
+icon_group      = 1
+inv_grid_width	= 3
+inv_grid_height	= 2
+inv_grid_x		= 0
+inv_grid_y		= 6
+container_slots = 3
+cost 			= 16000
+
+[arc_art_box_1basic]:arc_usable
+visual 			= physics\box\box_lab_022.ogf
+description 	= enc_arc_art_1box_basic
+inv_name 		= art_box_1special
+inv_name_short  = art_box_1special
+inv_weight 		= 6
+icon_group      = 1
+inv_grid_width	= 3
+inv_grid_height	= 2
+inv_grid_x		= 0
+inv_grid_y		= 0
+container_slots = 1
+cost 			= 24000
+
+[arc_art_box_basic]:arc_art_box_3basic
+
+[arc_art_box_11basic]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 				= "devices\quest_items\inventory_sakbox_01"
+$prefetch   		= 32
+class   			= II_ATTCH
+radius				= 1
+cform				= skeleton
+visual 			= new_item\bidonchik.ogf
+description 	= enc_arc_art_11box_basic
+inv_name 		= art_box_11special
+inv_name_short  = art_box_11special
+inv_weight 		= 3
+inv_grid_width	= 2
+inv_grid_height	= 2
+inv_grid_x		= 15
+inv_grid_y		= 18
+cost 			= 15000

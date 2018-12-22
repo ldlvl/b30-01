@@ -1,0 +1,239 @@
+;АК
+;Старый АК 
+
+
+
+;АК
+[wpn_ak47]:weapon_immunities
+GroupControlSection					= spawn_group
+discovery_dependency				= 
+$spawn								= "weapons\ak47_sk1"
+$npc								= on
+$prefetch 							= 8
+scheduled							= off
+cform								= skeleton
+class								= WP_AK74
+min_radius							= 0
+max_radius							= 150
+
+ef_main_weapon_type					= 2
+ef_weapon_type						= 6
+
+holder_range_modifier				= 1.0
+holder_fov_modifier					= 0.7
+
+cost								= 4000
+weapon_class						= assault_rifle
+	
+ammo_limit							= 210
+ammo_elapsed						= 30
+	
+ammo_mag_size						= 30
+fire_modes							= 1, -1
+
+ammo_class							= ammo_7.62x39_fmj, ammo_7.62x39_ap
+grenade_class						= ammo_vog-25, ammo_vog-25p
+launch_speed						= 0
+
+hand_dependence						= 1
+single_handed						= 0
+	
+slot 								= 2
+animation_slot						= 2
+
+inv_name							= wpn-ak47
+inv_name_short						= wpn-ak47
+description							= enc_weapons1_wpn-ak47
+
+default_to_ruck						= false
+
+inv_weight							= 4.3
+
+icon_group                          = 2
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 26
+inv_grid_y         					= 4
+
+kill_msg_x							= 0
+kill_msg_y							= 28
+kill_msg_width						= 84
+kill_msg_height						= 28
+
+fire_dispersion_base				= 0.33
+control_inertion_factor				= 1.25f
+
+cam_relax_speed         			= 5
+cam_relax_speed_ai        	 	    = 360
+cam_dispersion          			= 0.5
+cam_dispersion_inc					= 0.6
+cam_dispertion_frac					= 0.65
+cam_max_angle						= 15
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 3.8
+
+fire_dispersion_condition_factor	= 1.5
+misfire_probability 				= 0.003
+misfire_condition_k					= 0.50
+condition_shot_dec 					= 0.0001
+
+fire_point             				= 0,0.218,0.64
+fire_point2            				= 0,0.1650,0.730
+
+flame_particles						= weapons\generic_weapon05
+smoke_particles						= weapons\generic_shoot_00
+grenade_flame_particles				= weapons\rpg_shoot_02
+	
+;shell_point						= 0,0.230,0.154
+;shell_particles					= amik\weapons\ak_shells_r
+
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 3.0
+PDM_disp_accel_factor 				= 5.0
+PDM_crouch							= 1.9
+PDM_crouch_no_acc					= 0.7
+
+hit_power							= 1
+hit_impulse							= 1
+hit_type							= fire_wound
+fire_distance						= 300
+bullet_speed						= 715
+rpm									= 600
+
+use_aim_bullet						= false
+time_to_aim							= 1.0
+
+hud									= wpn_ak47_hud
+
+position         	        		= -0.026,-0.166,-0.015
+orientation							= 0,0,0
+
+strap_position         				= 0.02,-0.24,0.40
+strap_orientation      				= -05,-183, -109
+strap_bone0							= bip01_spine2
+strap_bone1							= bip01_spine1
+
+visual								= weapons\ak47\wpn_ak47.ogf
+
+light_color							= 0.6,0.5,0.3
+light_range							= 5
+light_var_color						= 0.05
+light_var_range						= 0.5
+light_time							= 0.2
+
+ph_mass								= 5
+
+scope_status						= 0
+silencer_status						= 2
+grenade_launcher_status				= 2
+
+zoom_enabled						= true
+scope_zoom_factor					= 90
+
+scope_name							= wpn_addon_scope
+scope_x								= 48
+scope_y								= 0
+silencer_name						= wpn_addon_sil_762_ar
+silencer_x                          = 262		
+silencer_y                          = 3	
+grenade_launcher_name				= wpn_addon_grenade_launcher
+grenade_launcher_x 					= 160
+grenade_launcher_y 					= 13
+
+snd_silncer_shot					= weapons\ak_74x\ak74_shot_suppressed
+snd_shoot							= weapons\ak_74x\ak47_shot
+snd_reload							= weapons\ak_74x\ak_metal_reload
+snd_draw							= weapons\ak_74x\rifle_draw
+snd_holster							= weapons\ak_74x\rifle_holster
+snd_empty							= weapons\ak_74x\rifle_empty, 0.7
+snd_shoot_grenade					= weapons\gp25\gp25_grenshoot
+snd_reload_grenade					= weapons\gp25\gp25_grenload, 1.0, 0.8
+snd_switch							= weapons\gp25\gp25_switch, 1.0, 0.5
+snd_razgruzka						= weapons\razgruzka\ammo_5
+
+silencer_smoke_particles 			= weapons\generic_shoot_00
+
+silencer_light_color				= 0.6,0.5,0.3
+silencer_light_range				= 0.01
+silencer_light_var_color			= 0.05
+silencer_light_var_range			= 0.5
+silencer_light_time					= 0.2
+ 
+[wpn_ak47_hud]
+allow_inertion						= true
+
+shell_point			        		= 0.010000,0.020000,-0.445000
+shell_dir							= 0.0, 1.0, 0.0
+
+fire_point							= 0.033000,-0.047000,0.080000
+fire_point2              			= 0.037,-0.040,0.085000
+
+fire_bone               			= wpn_body
+
+visual								= weapons\ak47\wpn_ak47_hud.ogf
+
+orientation      	        		= 1.7, 1.5, 0
+position			        		= 0.040000,-0.05,-0.0250
+
+grenade_bone						= wpn_grenade
+
+anim_idle							= normal_idle
+anim_idle_aim						= normal_idle_aim
+anim_reload							= normal_reload
+anim_draw							= normal_draw
+anim_holster						= normal_holster
+anim_shoot							= normal_shoot_762
+anim_idle_sprint					= normal_idle_sprint
+anim_idle_hidden					= idle_hidden
+
+anim_idle_gl						= w_gl_idle
+anim_idle_gl_aim					= w_gl_idle_aim
+anim_reload_gl						= w_gl_reload
+anim_draw_gl						= w_gl_draw
+anim_holster_gl						= w_gl_holster
+anim_shoot_gl						= w_gl_shoot_762
+anim_idle_sprint_gl					= w_gl_idle_sprint
+
+anim_idle_g							= g_idle
+anim_idle_g_aim						= g_idle_aim
+anim_reload_g						= g_reload
+anim_shoot_g						= g_shoot
+anim_switch_grenade_on				= w_gl_switch_on
+anim_switch_grenade_off				= w_gl_switch_off
+anim_draw_g							= g_draw
+anim_holster_g						= g_holster
+
+zoom_hide_crosshair					= true
+zoom_offset							= -0.138480,0.066600,-0.179730
+zoom_rotate_x						= 0.030550
+zoom_rotate_y						= 0.029400
+
+grenade_normal_zoom_offset			= -0.138480,0.066600,-0.179730
+grenade_normal_zoom_rotate_x		= 0.030550
+grenade_normal_zoom_rotate_y		= 0.029400
+
+grenade_zoom_offset					= -0.066940,-0.407000,0.069120
+grenade_zoom_rotate_x				= -0.435500
+grenade_zoom_rotate_y				= 0.027500
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27
+
+
+
+;Старый АК
+[wpn_ak47_old]:wpn_ak47
+visual								= weapons\ak47\wpn_ak47_old.ogf
+fire_dispersion_condition_factor	= 3
+fire_dispersion_base				= 0.38
+condition_shot_dec 					= 0.0003
+hud									= wpn_ak47_old_hud
+cost								= 1500
+icon_group                          = 2
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 32
+inv_grid_y         					= 4
+
+[wpn_ak47_old_hud]:wpn_ak47_hud
+visual								= weapons\ak47\wpn_ak47_old_hud.ogf

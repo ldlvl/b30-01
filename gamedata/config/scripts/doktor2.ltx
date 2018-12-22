@@ -1,0 +1,22 @@
+[logic]
+active = walker@one
+trade = misc\trade_doktor1.ltx
+inv_max_weight = 10000
+
+[walker@one]
+;on_info = {+helping_fox} walker@two1
+path_walk = doctor_les_walk_way
+path_look = doctor_les_way_look
+meet = meet4
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0
+
+[meet4]
+use = true
+use_wpn = true
+abuse = false
+meet_state = 3|wait
+meet_state_wpn = 3|wait
+meet_dialog	= doktor2_start_dialog

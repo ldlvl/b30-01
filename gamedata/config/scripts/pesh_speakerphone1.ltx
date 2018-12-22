@@ -1,0 +1,9 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = speaker
+on_use = ph_idle@2 %=play_snd(device\speakerfon_sound\lamp_switch)%
+
+[ph_idle@2]
+on_timer = 20000|ph_idle@1

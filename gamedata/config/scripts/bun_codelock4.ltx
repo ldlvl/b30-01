@@ -1,0 +1,18 @@
+[logic] ; дверь на низшем уровне
+active = ph_idle@lock
+
+[ph_idle@lock]
+tips = has_water
+on_info = {+pump_x12_on} ph_code@lock
+
+[ph_code@lock]
+on_check_code1 = 56984 | {+x18_iq_check_info1} %=sak.add_new_x16_131()%
+on_check_code2 = 73562 | {+x18_iq_check_info2} %=sak.add_new_x16_131()%
+on_check_code3 = 21683 | {+x18_iq_check_info3} %=sak.add_new_x16_131()%
+on_check_code4 = 76325 | {+x18_iq_check_info4} %=sak.add_new_x16_131()%
+on_check_code5 = 89612 | {+x18_iq_check_info5} %=sak.add_new_x16_131()%
+on_check_code6 = 43981 | {+x18_iq_check_info6} %=sak.add_new_x16_131()%
+on_check_code7 = 86021 | {+x18_iq_check_info7} %=sak.add_new_x16_131()%
+on_check_code8 = 63069 | {+x18_iq_check_info8} %=sak.add_new_x16_131()%
+on_check_code9 = 34620 | {+x18_iq_check_info9} %=sak.add_new_x16_131()%
+on_check_code10 = 3265987401 | %=sak.add_new_x16_131()%

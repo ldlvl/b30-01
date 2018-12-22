@@ -1,0 +1,55 @@
+[logic]
+active = heli_move@idle0
+
+[heli_move@idle0]
+path_move = gar_heli_patrol_idle_around_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_info = {=time_hours} heli_move@idle
+
+[heli_move@idle]
+path_move = gar_heli_patrol_idle_around_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_info = {=gulag_casualities_ge(gar_dolg_blokpost:5)} heli_move@fly_dolg1
+
+[heli_move@fly_dolg1]
+path_move = gar_heli_patrol_road_esc-bar
+combat_enemy = actor
+engine_sound = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 15000
+combat_ignore = false
+combat_safe_altitude = -65
+stop_fire = true
+on_timer = 100 | %=heli_func.heli_enemy_actor%
+on_timer2 = 90000 | heli_move@fly_dolg2
+
+[heli_move@fly_dolg2]
+path_move = gar_heli_patrol_road_angar-esc
+combat_enemy = actor
+engine_sound = true
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 15000
+combat_ignore = false
+combat_safe_altitude = -65
+stop_fire = true
+on_signal = end | heli_move@idle2
+
+[heli_move@idle2]
+path_move = gar_heli_patrol_idle_around_escgar
+combat_enemy = nil
+engine_sound = false
+mute = true
+combat_safe_altitude = -65
+on_signal = end | heli_move@stop
+
+[heli_move@stop]
+path_move = gar_heli_patrol_idle_around_escgar
+engine_sound = false

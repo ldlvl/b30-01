@@ -1,0 +1,1082 @@
+;"Булыжник"
+[af_dummy_buliz]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\electra moonlight"
+art_mama 						= pustishka
+hit_type						= radiation, telepatic
+unit_hit						= 0.1
+visual							= physics\anomaly\artefact_electra1.ogf  
+description						= artifact_buliz
+inv_name						= af_dummy_buliz
+inv_name_short					=  
+inv_weight						= 0.5
+inv_grid_x						= 1
+inv_grid_y						= 9
+cost							= 40000
+jump_height						= 0.2
+particles						= anomaly2\artefact\artefact_zharka
+additional_inventory_weight2	= 11
+lights_enabled					= false
+artefact_activation_seq			= af_activation_bold
+hit_absorbation_sect 			= af_dummy_buliz_absorbation
+[af_dummy_buliz_absorbation]:absorbation_fake
+[af_dummy_buliz_fake]:af_dummy_buliz
+additional_inventory_weight2	= 0.0
+hit_absorbation_sect 			= af_dummy_buliz_fake_absorbation	
+[af_dummy_buliz_fake_absorbation]:absorbation_fake
+
+;"Симбион"
+[af_dummy_simbion]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\moscito star"
+art_mama 						= holodec
+hit_type						= radiation, telepatic
+unit_hit						= 0.1
+visual							= physics\anomaly\artefact_blackdrip_1.ogf  
+description						= artifact_simbion
+inv_name						= af_dummy_simbion
+inv_name_short					=  
+inv_weight						= 2.22
+inv_grid_x						= 1
+inv_grid_y						= 10
+cost							= 80000
+jump_height						= 1
+psy_health_restore_speed		= 0.00035
+bleeding_restore_speed			= -0.003
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 0.137, 0.156, 0.403
+trail_light_range				= 3.0
+artefact_activation_seq 		= af_activation_mincer
+hit_absorbation_sect 			= af_dummy_simbion_absorbation
+[af_dummy_simbion_absorbation]:absorbation_fake
+telepatic_immunity				= 0.65
+wound_immunity					= 1.30
+good_effects 					= telepatic_immunity, psy_health_restore_speed
+[af_dummy_simbion_fake]:af_dummy_simbion
+psy_health_restore_speed		= 0.0
+hit_absorbation_sect 			= af_dummy_simbion_fake_absorbation	
+[af_dummy_simbion_fake_absorbation]:absorbation_fake
+
+;"Чешуя"
+[af_armor_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy pellicle"
+art_mama 						= pustishka
+hit_type 						= burn
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_plenka.ogf
+description						= artifact_armor_1
+inv_name						= af_armor_1
+inv_name_short					=  
+inv_weight						= 0.97
+inv_grid_x						= 1
+inv_grid_y						= 11
+jump_height						= 0.2
+cost							= 60000
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 0.1, 0.08, 0.04
+trail_light_range				= 1
+radiation_restore_speed 		= 0.0006
+bleeding_restore_speed			= -0.006
+psy_health_restore_speed		= 0.0008
+add_dog_psy				    	= 0.5
+hit_absorbation_sect 			= af_armor_1_absorbation
+artefact_activation_seq 		= af_activation_bold
+[af_armor_1_absorbation]:absorbation_fake
+chemical_burn_immunity     		= 0.70
+telepatic_immunity         		= 0.70
+good_effects 					= chemical_burn_immunity, telepatic_immunity, psy_health_restore_speed 
+
+;"Шкура"
+[af_armor_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy pellicle"
+art_mama 						= tramplin
+hit_type 						= burn, shock
+unit_hit						= 0.09
+visual							= physics\anomaly\artefact_plenka.ogf
+description						= artifact_armor_2
+inv_name						= af_armor_2
+inv_name_short					=  
+inv_weight						= 1.49
+inv_grid_x						= 1
+inv_grid_y						= 12
+jump_height						= 0.4
+cost							= 80000
+particles						= anomaly2\artefact\artefact_ameba;anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.06, 0.04, 0.1
+trail_light_range				= 2
+radiation_restore_speed 		= 0.0004
+bleeding_restore_speed			= -0.004
+psy_health_restore_speed		= 0.0007
+add_dog_psy				    	= 0.4
+hit_absorbation_sect 			= af_armor_2_absorbation
+artefact_activation_seq 		= af_activation_bold
+[af_armor_2_absorbation]:absorbation_fake
+chemical_burn_immunity     		= 0.65
+telepatic_immunity         		= 0.65
+good_effects 					= chemical_burn_immunity, telepatic_immunity, psy_health_restore_speed 
+
+;"Панцирь"
+[af_armor_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy pellicle"
+art_mama 						= karusel
+hit_type 						= burn, shock, chemical_burn
+unit_hit						= 0.08	
+visual							= physics\anomaly\artefact_plenka.ogf
+description						= artifact_armor_3
+inv_name						= af_armor_3
+inv_name_short					=  
+inv_weight						= 1.99
+inv_grid_x						= 1
+inv_grid_y						= 13
+jump_height						= 0.7
+cost							= 100000
+particles						= anomaly2\artefact\artefact_zharka;anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.1, 0.05, 0.04
+trail_light_range				= 3
+radiation_restore_speed 		= 0.0002
+bleeding_restore_speed			= -0.002
+psy_health_restore_speed		= 0.0006
+add_dog_psy				    	= 0.3
+hit_absorbation_sect 			= af_armor_3_absorbation
+artefact_activation_seq 		= af_activation_bold
+[af_armor_3_absorbation]:absorbation_fake
+chemical_burn_immunity     		= 0.60
+telepatic_immunity         		= 0.60
+good_effects 					= chemical_burn_immunity, telepatic_immunity, psy_health_restore_speed
+
+;"Скальп контролёра"
+[af_armor_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy pellicle"
+art_mama 						= garka
+hit_type 						= burn, shock, chemical_burn, telepatic
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_plenka.ogf
+description						= artifact_armor_4
+inv_name						= af_armor_4
+inv_name_short					=  
+inv_weight						= 2.15
+inv_grid_x						= 1
+inv_grid_y						= 14
+jump_height						= 1
+cost							= 120000
+particles 						= anomaly2\artefact\artefact_ameba;anomaly2\artefact\artefact_gravi
+lights_enabled					= true
+trail_light_color				= 0.06, 0.09, 0.04
+trail_light_range				= 6
+psy_health_restore_speed		= 0.0005
+add_dog_psy				    	= 0.2
+hit_absorbation_sect 			= af_armor_4_absorbation
+artefact_activation_seq 		= af_activation_bold
+[af_armor_4_absorbation]:absorbation_fake
+chemical_burn_immunity     		= 0.55
+telepatic_immunity         		= 0.55
+good_effects 					= chemical_burn_immunity, telepatic_immunity, psy_health_restore_speed
+
+;"Бабкины бусы"
+[af_babka_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy glassbeads"
+art_mama 						= elektra
+hit_type 						= shock
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_spiral.ogf
+description						= artifact_babka_1
+inv_name						= af_babka_1
+inv_name_short					=  
+inv_weight						= 0.95
+inv_grid_x						= 1
+inv_grid_y						= 15
+cost							= 60000
+jump_height						= 0.4
+particles						= anomaly2\artefact\artefact_ameba; anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.09, 0.1, 0.0690
+trail_light_range				= 1
+artefact_activation_seq 		= af_activation_mincer
+additional_inventory_weight2	= 8
+psy_health_restore_speed		= 0.0008
+radiation_restore_speed			= 0.0007
+hit_absorbation_sect 			= af_babka_1_absorbation
+[af_babka_1_absorbation]:absorbation_fake
+fire_wound_immunity				= 0.70
+chemical_burn_immunity			= 1.40
+good_effects 					= fire_wound_immunity, psy_health_restore_speed
+
+;"Бусы прабабки"
+[af_babka_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy glassbeads"
+art_mama 						= pustishka
+hit_type 						= shock, burn
+unit_hit						= 0.09  
+visual							= physics\anomaly\artefact_spiral.ogf
+description						= artifact_babka_2
+inv_name						= af_babka_2
+inv_name_short					=  
+inv_weight						= 1.35
+inv_grid_x						= 1
+inv_grid_y						= 16
+cost							= 80000
+jump_height						= 0.6
+particles						= anomaly2\artefact\artefact_ameba; anomaly2\artefact\artefact_gravi
+lights_enabled					= true
+trail_light_color				= 0.2, 0.18, 0.0572
+trail_light_range				= 2
+artefact_activation_seq 		= af_activation_mincer
+additional_inventory_weight2 	= 10
+psy_health_restore_speed 		= 0.0007
+radiation_restore_speed 		= 0.0005
+hit_absorbation_sect 			= af_babka_2_absorbation
+[af_babka_2_absorbation]:absorbation_fake
+fire_wound_immunity         	= 0.65
+chemical_burn_immunity      	= 1.30
+good_effects 					= fire_wound_immunity, psy_health_restore_speed
+
+;"Буы бабки бюрера"
+[af_babka_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy glassbeads"
+art_mama 						= karusel
+hit_type 						= shock, burn, chemical_burn
+unit_hit						= 0.08 
+visual							= physics\anomaly\artefact_spiral.ogf
+description						= artifact_babka_3
+inv_name						= af_babka_3
+inv_name_short					=  
+inv_weight						= 1.71
+inv_grid_x						= 1
+inv_grid_y						= 17
+cost							= 100000
+jump_height						= 0.8
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 0.3, 0.086, 0.1
+trail_light_range				= 3
+artefact_activation_seq 		= af_activation_mincer
+additional_inventory_weight2 	= 12
+psy_health_restore_speed 		= 0.0006
+radiation_restore_speed 		= 0.0003
+hit_absorbation_sect 			= af_babka_3_absorbation
+[af_babka_3_absorbation]:absorbation_fake
+fire_wound_immunity         	= 0.60
+chemical_burn_immunity      	= 1.30
+good_effects 					= fire_wound_immunity, psy_health_restore_speed
+
+;"Буы прабабки бюрера"
+[af_babka_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy glassbeads"
+art_mama 						= karusel
+hit_type 						= shock, burn, chemical_burn, telepatic
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_spiral.ogf
+description						= artifact_babka_4
+inv_name						= af_babka_4
+inv_name_short					=  
+inv_weight						= 2.01
+inv_grid_x						= 19
+inv_grid_y						= 17
+cost							= 120000
+jump_height						= 1.0
+particles						= anomaly2\artefact\artefact_pux00
+lights_enabled					= true
+trail_light_color				= 0.3, 0.086, 0.1
+trail_light_range				= 3
+artefact_activation_seq 		= af_activation_mincer
+additional_inventory_weight2 	= 14
+psy_health_restore_speed 		= 0.0005
+hit_absorbation_sect 			= af_babka_4_absorbation
+[af_babka_4_absorbation]:absorbation_fake
+fire_wound_immunity         	= 0.55
+good_effects 					= fire_wound_immunity, psy_health_restore_speed
+
+;"Слёзы электры"
+[af_cry_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\electra flash"
+art_mama 						= elektra
+hit_type 						= shock
+unit_hit						= 0.11	  	
+visual							= physics\anomaly\artefact_electra3.ogf
+description						= artifact_cry_1
+inv_name						= af_cry_1
+inv_name_short					=  
+inv_weight						= 0.87
+inv_grid_x						= 1
+inv_grid_y						= 18
+cost							= 60000
+jump_height						= 0.5
+particles						= anomaly2\burer_attack_prepare
+lights_enabled					= true
+trail_light_color				= 0.149, 0.168, 1
+trail_light_range				= 1
+artefact_activation_seq 		= af_activation_mincer
+radiation_restore_speed 		= -0.0003
+hit_absorbation_sect 			= af_cry_1_absorbation
+[af_cry_1_absorbation]:absorbation_fake
+strike_immunity 				= 1.40
+wound_immunity					= 1.40
+shock_immunity 					= 0.70
+telepatic_immunity 				= 0.70
+good_effects 					= radiation_restore_speed, telepatic_immunity, shock_immunity
+
+;"Слёзы огня"
+[af_cry_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\electra flash"
+art_mama 						= voronka
+hit_type 						= burn, shock
+unit_hit						= 0.09	  
+visual							= physics\anomaly\artefact_electra3.ogf
+description						= artifact_cry_2
+inv_name						= af_cry_2
+inv_name_short					=  
+inv_weight						= 1.33
+inv_grid_x						= 1
+inv_grid_y						= 19
+cost							= 80000
+jump_height						= 0.8
+particles						= anomaly2\artefact\artefact_zharka
+lights_enabled					= true
+trail_light_color				= 2, 1.780, 0.298
+trail_light_range				= 1
+artefact_activation_seq 		= af_activation_mincer
+radiation_restore_speed 		= -0.0005
+hit_absorbation_sect 			= af_cry_2_absorbation
+[af_cry_2_absorbation]:absorbation_fake
+strike_immunity 				= 1.30
+wound_immunity					= 1.30
+telepatic_immunity          	= 0.65
+burn_immunity               	= 0.65
+good_effects 					= radiation_restore_speed, telepatic_immunity, burn_immunity 
+
+;"Слёзы химеры"
+[af_cry_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\electra sparkler"
+art_mama 						= garka
+hit_type 						= burn, shock, chemical_burn 
+unit_hit						= 0.08    
+visual							= physics\anomaly\artefact_electra4.ogf
+description						= artifact_cry_3
+inv_name						= af_cry_3
+inv_name_short					=  
+inv_weight						= 1.65
+inv_grid_x						= 2
+inv_grid_y						= 0
+cost							= 100000
+jump_height						= 1.0
+particles						= anomaly2\artefact\artefact_electra
+lights_enabled					= true
+trail_light_color				= 1.145, 0.607, 0.384
+trail_light_range				= 3
+artefact_activation_seq 		= af_activation_mincer
+radiation_restore_speed 		= -0.0007
+power_restore_speed 			= 0.004
+hit_absorbation_sect 			= af_cry_3_absorbation
+[af_cry_3_absorbation]:absorbation_fake
+strike_immunity 				= 1.20
+wound_immunity					= 1.20
+telepatic_immunity          	= 0.60
+good_effects 					= radiation_restore_speed, telepatic_immunity,  power_restore_speed
+
+;"Слеза гиганта"
+[af_cry_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\electra sparkler"
+art_mama 						= garka
+hit_type 						= burn, shock, chemical_burn, telepatic     
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_electra4.ogf
+description						= artifact_cry_4
+inv_name						= af_cry_4
+inv_name_short					=  
+inv_weight						= 2.05
+inv_grid_x						= 19
+inv_grid_y						= 16
+cost							= 120000
+jump_height						= 1.2
+particles						= anomaly2\artefact\artefact_electra_idle_01
+lights_enabled					= true
+trail_light_color				= 1.145, 0.607, 0.384
+trail_light_range				= 3
+artefact_activation_seq 		= af_activation_mincer
+radiation_restore_speed 		= -0.0009
+hit_absorbation_sect 			= af_cry_4_absorbation
+[af_cry_4_absorbation]:absorbation_fake
+telepatic_immunity          	= 0.55
+strike_immunity 				= 0.55
+good_effects 					= radiation_restore_speed, telepatic_immunity, strike_immunity 
+
+;"Дикобраз"
+[af_dik_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\rusty sea-urchin"
+art_mama 						= g_puh
+hit_type 						= chemical_burn
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_rusty_hairs.ogf
+description						= artifact_dik_1
+inv_name						= af_dik_1
+inv_name_short					=  
+inv_weight						= 0.96
+inv_grid_x						= 2
+inv_grid_y						= 1
+cost							= 60000
+jump_height						= 0.4
+particles						= anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.552, 0.513, 0.356
+trail_light_range				= 1
+radiation_restore_speed 		= -0.0008
+power_restore_speed         	= -0.004
+bleeding_restore_speed			= -0.006
+add_jump_speed			    =  0.7
+hit_absorbation_sect 			= af_dik_1_absorbation
+[af_dik_1_absorbation]:absorbation_fake
+explosion_immunity 		    	= 0.70
+good_effects 					= radiation_restore_speed, explosion_immunity
+
+;"Электрический дикобраз"
+[af_dik_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\rusty sea-urchin"
+art_mama 						= elektra
+hit_type 						= chemical_burn, shock   
+unit_hit						= 0.09 
+visual							= physics\anomaly\artefact_rusty_hairs.ogf
+description						= artifact_dik_2
+inv_name						= af_dik_2
+inv_name_short					=  
+inv_weight						= 1.34
+inv_grid_x						= 2
+inv_grid_y						= 2
+cost							= 80000
+jump_height						= 0.6
+particles						= anomaly2\artefact\artefact_electra
+lights_enabled					= true
+trail_light_color				= 0.207, 0.411, 0.933
+trail_light_range				= 1
+radiation_restore_speed 		= -0.0007
+power_restore_speed         	= -0.003
+bleeding_restore_speed			= -0.003
+add_jump_speed			    =  0.8
+hit_absorbation_sect 			= af_dik_2_absorbation
+[af_dik_2_absorbation]:absorbation_fake
+shock_immunity              	= 0.65
+good_effects 					= radiation_restore_speed, shock_immunity 
+
+;"Сопливый дикобраз"
+[af_dik_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\rusty sea-urchin"
+art_mama 						= holodec
+hit_type 						= burn, chemical_burn, shock    
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_rusty_hairs.ogf
+description						= artifact_dik_3
+inv_name						= af_dik_3
+inv_name_short					=  
+inv_weight						= 1.76
+inv_grid_x						= 2
+inv_grid_y						= 3
+cost							= 100000
+jump_height						= 1
+particles						= anomaly2\artefact\artefact_zharka
+lights_enabled					= true
+trail_light_color				= 0.329, 0.980, 0.098
+trail_light_range				= 2
+radiation_restore_speed 		= -0.0006
+power_restore_speed         	= -0.002
+bleeding_restore_speed      	= 0.004
+add_jump_speed			    =  0.9
+hit_absorbation_sect 			= af_dik_3_absorbation
+[af_dik_3_absorbation]:absorbation_fake
+chemical_burn_immunity      	= 0.60
+good_effects 					= radiation_restore_speed, bleeding_restore_speed, chemical_burn_immunity 
+
+;"Каменный дикобраз"
+[af_dik_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\rusty sea-urchin"
+art_mama 						= tramplin
+hit_type 						= burn, chemical_burn, shock, telepatic
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_rusty_hairs.ogf
+description						= artifact_dik_4
+inv_name						= af_dik_4
+inv_name_short					=  
+inv_weight						= 2.01
+inv_grid_x						= 2
+inv_grid_y						= 4
+cost							= 120000
+jump_height						= 2
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 0.980, 0.098, 0.098
+trail_light_range				= 3
+radiation_restore_speed 		= -0.0005
+bleeding_restore_speed			= 0.01
+add_jump_speed			    =  1
+hit_absorbation_sect 			= af_dik_4_absorbation
+[af_dik_4_absorbation]:absorbation_fake
+explosion_immunity 		    	= 0.55
+good_effects 					= radiation_restore_speed, bleeding_restore_speed, explosion_immunity
+
+;"Стальной колобок"
+[af_kol_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\fuzz kolobok"
+art_mama 						= pustishka
+hit_type 						= telepatic    
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_electra1.ogf  
+description						= artifact_kol_1
+inv_name						= af_kol_1
+inv_name_short					=  
+inv_weight						= 0.89
+inv_grid_x						= 2
+inv_grid_y						= 5
+cost							= 60000
+jump_height						= 0.4
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 1, 1, 1
+trail_light_range				= 1
+radiation_restore_speed 		= 0.0008
+hit_absorbation_sect 			= af_kol_1_absorbation
+[af_kol_1_absorbation]:absorbation_fake
+wound_immunity             		= 0.70
+radiation_immunity 		   		= 0.70
+strike_immunity	           		= 0.70
+telepatic_immunity 		   		= 1.40
+good_effects 					= wound_immunity, radiation_immunity, strike_immunity	
+
+;"Титановый колобок"
+[af_kol_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\fuzz kolobok"
+art_mama 						= karusel
+hit_type 						= telepatic, chemical_burn  
+unit_hit						= 0.09  
+visual							= physics\anomaly\artefact_electra1.ogf  
+description						= artifact_kol_2
+inv_name						= af_kol_2
+inv_name_short					=  
+inv_weight						= 1.25
+inv_grid_x						= 2
+inv_grid_y						= 6
+cost							= 80000
+jump_height						= 0.7
+particles						= anomaly2\artefact\artefact_gravi
+lights_enabled					= true
+trail_light_color				= 0.556, 1, 0.941
+trail_light_range				= 1
+radiation_restore_speed 		= 0.0006
+hit_absorbation_sect 			= af_kol_2_absorbation
+[af_kol_2_absorbation]:absorbation_fake
+wound_immunity             		= 0.65
+radiation_immunity 		   		= 0.65
+strike_immunity	           		= 0.65
+telepatic_immunity 		   		= 1.30
+good_effects 					= wound_immunity, radiation_immunity, strike_immunity
+
+;"Алмазный колобок"
+[af_kol_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\fuzz kolobok"
+art_mama 						= holodec
+hit_type 						= telepatic, chemical_burn, shock 
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_electra1.ogf  
+description						= artifact_kol_3
+inv_name						= af_kol_3
+inv_name_short					=  
+inv_weight						= 1.65
+inv_grid_x						= 2
+inv_grid_y						= 7
+cost							= 100000
+jump_height						= 1
+particles						= anomaly2\artefact\artefact_gravi
+lights_enabled					= true
+trail_light_color				= 0.556, 0.662, 1
+trail_light_range				= 2
+radiation_restore_speed 		= 0.0004
+hit_absorbation_sect 			= af_kol_3_absorbation
+[af_kol_3_absorbation]:absorbation_fake
+wound_immunity             		= 0.60
+radiation_immunity 		   		= 0.60
+strike_immunity	           		= 0.60
+telepatic_immunity 		   		= 1.20
+good_effects 					= wound_immunity, radiation_immunity, strike_immunity
+
+;"Младший брат гиганта"
+[af_kol_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\fuzz kolobok"
+art_mama 						= tramplin
+hit_type 						= telepatic, chemical_burn, shock, burn
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_electra1.ogf  
+description						= artifact_kol_4
+inv_name						= af_kol_4
+inv_name_short					=  
+inv_weight						= 2.02
+inv_grid_x						= 2
+inv_grid_y						= 8
+cost							= 120000
+jump_height						= 2
+particles						= anomaly2\artefact\artefact_puxx
+lights_enabled					= true
+trail_light_color				= 0, 0.517, 0.109
+trail_light_range				= 3
+hit_absorbation_sect 			= af_kol_4_absorbation
+[af_kol_4_absorbation]:absorbation_fake
+wound_immunity             		= 0.55
+radiation_immunity 		   		= 0.55
+strike_immunity	           		= 0.55
+good_effects 					= wound_immunity, radiation_immunity, strike_immunity
+
+;"Огненная пустышка"
+[af_pudd_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy dummy"
+art_mama 						= elektra
+hit_type 						= burn  	  
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_pustishka1.ogf
+description						= artifact_pudd_1
+inv_name						= af_pudd_1
+inv_name_short					=  
+inv_weight						= 0.95
+inv_grid_x						= 2
+inv_grid_y						= 9
+cost							= 60000
+jump_height						= 0.4
+particles						= anomaly2\artefact\artefact_zharka
+lights_enabled					= true
+trail_light_color				= 1, 1, 0
+trail_light_range				= 1
+hit_absorbation_sect 			= af_pudd_1_absorbation
+[af_pudd_1_absorbation]:absorbation_fake
+burn_immunity              		= 0.70
+shock_immunity             		= 0.70
+radiation_immunity		   		= 0.70
+explosion_immunity 		   		= 1.40
+fire_wound_immunity  	   		= 1.40
+good_effects 					= burn_immunity, shock_immunity, radiation_immunity
+
+;"Яркая пустышка"
+[af_pudd_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy dummy"
+art_mama 						= pustishka
+hit_type 						= shock, burn
+unit_hit						= 0.09
+visual							= physics\anomaly\artefact_pustishka1.ogf
+description						= artifact_pudd_2
+inv_name						= af_pudd_2
+inv_name_short					=  
+inv_weight						= 1.35
+inv_grid_x						= 2
+inv_grid_y						= 10
+cost							= 80000
+jump_height						= 0.7
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 1, 1, 0.870
+trail_light_range				= 1
+psy_health_restore_speed 		= 0.0003
+hit_absorbation_sect 			= af_pudd_2_absorbation
+[af_pudd_2_absorbation]:absorbation_fake
+shock_immunity             		= 0.65
+radiation_immunity		   		= 0.65
+explosion_immunity 		   		= 1.30
+fire_wound_immunity  	   		= 1.30
+good_effects 					= shock_immunity, radiation_immunity, psy_health_restore_speed
+
+;"Лунная пустышка"
+[af_pudd_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy dummy"
+art_mama 						= elektra
+hit_type 						= shock, burn, telepatic
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_pustishka1.ogf
+description						= artifact_pudd_3
+inv_name						= af_pudd_3
+inv_name_short					=  
+inv_weight						= 1.65
+inv_grid_x						= 2
+inv_grid_y						= 11
+cost							= 100000
+jump_height						= 1
+particles						= anomaly2\artefact\artefact_ameba
+lights_enabled					= true
+trail_light_color				= 0.682, 1, 0.921
+trail_light_range				= 2
+power_restore_speed         	= 0.004
+hit_absorbation_sect 			= af_pudd_3_absorbation
+[af_pudd_3_absorbation]:absorbation_fake
+shock_immunity             		= 0.60
+radiation_immunity		   		= 0.60
+explosion_immunity 		   		= 1.20
+fire_wound_immunity  	   		= 1.20
+good_effects 					= power_restore_speed, shock_immunity, radiation_immunity
+
+;"Пудинг"
+[af_pudd_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\dummy dummy"
+art_mama 						= holodec
+hit_type 						= shock, burn, telepatic, chemical_burn
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_pustishka1.ogf
+description						= artifact_pudd_4
+inv_name						= af_pudd_4
+inv_name_short					=  
+inv_weight						= 2.05
+inv_grid_x						= 2
+inv_grid_y						= 12
+cost							= 120000
+jump_height						= 2
+particles						= anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.831, 0.682, 1
+trail_light_range				= 3
+hit_absorbation_sect 			= af_pudd_4_absorbation
+[af_pudd_4_absorbation]:absorbation_fake
+burn_immunity              		= 0.55
+shock_immunity             		= 0.55
+radiation_immunity		   		= 0.55
+good_effects 					= burn_immunity, shock_immunity, radiation_immunity
+
+;"Капля души"
+[af_spirit_1]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\mincer soul"
+art_mama 						= garka
+hit_type 						= telepatic    
+unit_hit						= 0.11
+visual							= physics\anomaly\artefact_myasorubka3.ogf 
+description						= artifact_spirit_1
+inv_name						= af_spirit_1
+inv_name_short					=  
+inv_weight						= 0.95
+inv_grid_x						= 2
+inv_grid_y						= 13
+cost							= 60000
+jump_height						= 0.4
+;particles						= anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 0.678, 1, 0.913
+trail_light_range				= 1
+artefact_activation_seq 		= af_activation_mincer
+health_restore_speed        	= 0.00015
+radiation_restore_speed 		= -0.0004
+power_restore_speed         	= -0.004
+hit_absorbation_sect 			= af_spirit_1_absorbation
+[af_spirit_1_absorbation]:absorbation_fake
+burn_immunity              		= 0.70
+shock_immunity             		= 1.40
+good_effects 					= health_restore_speed, radiation_restore_speed, burn_immunity 
+
+;"Огненная душа"
+[af_spirit_2]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\mincer soul"
+art_mama 						= karusel
+hit_type 						= telepatic, burn
+unit_hit						= 0.09
+visual							= physics\anomaly\artefact_myasorubka3.ogf 
+description						= artifact_spirit_2
+inv_name						= af_spirit_2
+inv_name_short					= 
+inv_weight						= 1.235
+inv_grid_x						= 2
+inv_grid_y						= 14
+cost							= 80000
+jump_height						= 0.6
+particles						= anomaly2\artefact\artefact_zharka
+lights_enabled					= true
+trail_light_color				= 2.870, 1.317, 0.070
+trail_light_range				= 2
+artefact_activation_seq 		= af_activation_mincer
+health_restore_speed       		= 0.0002
+radiation_restore_speed    		= -0.0006
+power_restore_speed        		= -0.004
+hit_absorbation_sect 			= af_spirit_2_absorbation
+[af_spirit_2_absorbation]:absorbation_fake
+telepatic_immunity 		   		= 0.65
+shock_immunity             		= 1.30
+good_effects 					= health_restore_speed, radiation_restore_speed, telepatic_immunity
+
+;"Кристальная душа"
+[af_spirit_3]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\mincer soul"
+art_mama 						= voronka
+hit_type 						= telepatic, burn, shock
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_myasorubka3.ogf 
+description						= artifact_spirit_3
+inv_name						= af_spirit_3
+inv_name_short					=  
+inv_weight						= 1.65
+inv_grid_x						= 2
+inv_grid_y						= 15
+cost							= 100000
+jump_height						= 1
+particles						= anomaly2\artefact\artefact_mincer
+lights_enabled					= true
+trail_light_color				= 1.160, 1.811, 2
+trail_light_range				= 3
+artefact_activation_seq 		= af_activation_mincer
+health_restore_speed        	= 0.0003
+radiation_restore_speed 		= -0.0008
+power_restore_speed         	= -0.004
+psy_health_restore_speed		= 0.0003
+hit_absorbation_sect 			= af_spirit_3_absorbation
+[af_spirit_3_absorbation]:absorbation_fake
+shock_immunity             		= 1.20
+good_effects 					= health_restore_speed, radiation_restore_speed, psy_health_restore_speed
+
+"Душа бенгала"
+[af_spirit_4]:af_base
+GroupControlSection				= spawn_group
+$spawn							= "artifacts\mincer soul"
+art_mama 						= elektra
+hit_type 						= telepatic, burn, shock, chemical_burn
+unit_hit						= 0.08
+visual							= physics\anomaly\artefact_myasorubka3.ogf 
+description						= artifact_spirit_4
+inv_name						= af_spirit_4
+inv_name_short					=  
+inv_weight						= 2.05
+inv_grid_x						= 2
+inv_grid_y						= 16
+cost							= 120000
+jump_height						= 2
+particles						= anomaly2\artefact\artefact_gravi
+lights_enabled					= true
+trail_light_color				= 1.945, 3.482, 2.917
+trail_light_range				= 4
+artefact_activation_seq 		= af_activation_mincer
+health_restore_speed       		= 0.0004
+radiation_restore_speed    		= -0.001
+power_restore_speed        		= 0.004
+hit_absorbation_sect 			= af_spirit_4_absorbation
+[af_spirit_4_absorbation]:absorbation_fake
+good_effects 					= health_restore_speed, radiation_restore_speed, power_restore_speed
+
+[af_armor_5]:af_armor_1
+radiation_restore_speed 		= 0.0
+bleeding_restore_speed			= 0.0
+psy_health_restore_speed		= 0.0
+add_dog_psy				    	= 1
+cost							= 4000
+hit_absorbation_sect 			= af_armor_5_absorbation
+[af_armor_5_absorbation]:absorbation_fake
+
+[af_armor_8]:af_armor_4
+psy_health_restore_speed		= 0.0
+add_dog_psy				    	= 1
+cost							= 4000
+hit_absorbation_sect 			= af_armor_8_absorbation
+[af_armor_8_absorbation]:absorbation_fake
+
+[af_armor_7]:af_armor_3
+radiation_restore_speed 		= 0.0
+bleeding_restore_speed			= 0.0
+psy_health_restore_speed		= 0.0
+add_dog_psy				    	= 1
+cost							= 4000
+hit_absorbation_sect 			= af_armor_7_absorbation
+[af_armor_7_absorbation]:absorbation_fake
+
+[af_armor_6]:af_armor_2
+radiation_restore_speed 		= 0.0
+bleeding_restore_speed			= 0.0
+psy_health_restore_speed		= 0.0
+add_dog_psy				    	= 1
+cost							= 4000
+hit_absorbation_sect 			= af_armor_6_absorbation
+[af_armor_6_absorbation]:absorbation_fake
+
+[af_babka_8]:af_babka_4
+additional_inventory_weight2 	= 0.0
+psy_health_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_babka_8_absorbation
+[af_babka_8_absorbation]:absorbation_fake
+
+[af_babka_7]:af_babka_3
+additional_inventory_weight2 	= 0.0
+psy_health_restore_speed 		= 0.0
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_babka_7_absorbation
+[af_babka_7_absorbation]:absorbation_fake
+
+[af_babka_6]:af_babka_2
+additional_inventory_weight2 	= 0.0
+psy_health_restore_speed 		= 0.0
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_babka_6_absorbation
+[af_babka_6_absorbation]:absorbation_fake
+
+[af_babka_5]:af_babka_1
+additional_inventory_weight2 	= 0.0
+psy_health_restore_speed 		= 0.0
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_babka_5_absorbation
+[af_babka_5_absorbation]:absorbation_fake
+
+[af_cry_8]:af_cry_4
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_cry_8_absorbation
+[af_cry_8_absorbation]:absorbation_fake
+
+[af_cry_7]:af_cry_3
+radiation_restore_speed 		= 0.0
+power_restore_speed 			= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_cry_7_absorbation
+[af_cry_7_absorbation]:absorbation_fake
+
+[af_cry_6]:af_cry_2
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_cry_6_absorbation
+[af_cry_6_absorbation]:absorbation_fake
+
+[af_cry_5]:af_cry_1
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_cry_5_absorbation
+[af_cry_5_absorbation]:absorbation_fake
+
+[af_kol_6]:af_kol_2
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_kol_6_absorbation
+[af_kol_6_absorbation]:absorbation_fake
+
+[af_kol_5]:af_kol_1
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_kol_5_absorbation
+[af_kol_5_absorbation]:absorbation_fake
+
+[af_kol_8]:af_kol_4
+cost							= 4000
+hit_absorbation_sect 			= af_kol_8_absorbation
+[af_kol_8_absorbation]:absorbation_fake
+
+[af_kol_7]:af_kol_3
+radiation_restore_speed 		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_kol_7_absorbation
+[af_kol_7_absorbation]:absorbation_fake
+
+[af_dik_8]:af_dik_4
+radiation_restore_speed 		= 0.0
+bleeding_restore_speed      	= 0.0
+add_jump_speed			    	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_dik_8_absorbation
+[af_dik_8_absorbation]:absorbation_fake
+
+[af_dik_7]:af_dik_3
+radiation_restore_speed 		= 0.0
+power_restore_speed         	= 0.0
+bleeding_restore_speed      	= 0.0
+add_jump_speed			    	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_dik_7_absorbation
+[af_dik_7_absorbation]:absorbation_fake
+
+[af_dik_6]:af_dik_2
+radiation_restore_speed 		= 0.0
+power_restore_speed         	= 0.0
+bleeding_restore_speed      	= 0.0
+add_jump_speed			    	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_dik_6_absorbation
+[af_dik_6_absorbation]:absorbation_fake
+
+[af_dik_5]:af_dik_1
+radiation_restore_speed 		= 0.0
+power_restore_speed         	= 0.0
+bleeding_restore_speed      	= 0.0
+add_jump_speed			    	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_dik_5_absorbation
+[af_dik_5_absorbation]:absorbation_fake
+
+[af_pudd_6]:af_pudd_2
+psy_health_restore_speed		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_pudd_6_absorbation
+[af_pudd_6_absorbation]:absorbation_fake
+
+[af_pudd_5]:af_pudd_1
+power_restore_speed         	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_pudd_5_absorbation
+[af_pudd_5_absorbation]:absorbation_fake
+
+[af_pudd_8]:af_pudd_4
+cost							= 4000
+hit_absorbation_sect 			= af_pudd_8_absorbation
+[af_pudd_8_absorbation]:absorbation_fake
+
+[af_pudd_7]:af_pudd_3
+power_restore_speed         	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_pudd_7_absorbation
+[af_pudd_7_absorbation]:absorbation_fake
+
+[af_spirit_7]:af_spirit_3
+health_restore_speed        	= 0.0
+radiation_restore_speed 		= 0.0
+power_restore_speed         	= 0.0
+psy_health_restore_speed		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_spirit_7_absorbation
+[af_spirit_7_absorbation]:absorbation_fake
+
+[af_spirit_6]:af_spirit_2
+health_restore_speed       		= 0.0
+radiation_restore_speed    		= 0.0
+power_restore_speed        		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_spirit_6_absorbation
+[af_spirit_6_absorbation]:absorbation_fake
+
+[af_spirit_5]:af_spirit_1
+health_restore_speed        	= 0.0
+radiation_restore_speed 		= 0.0
+power_restore_speed         	= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_spirit_5_absorbation
+[af_spirit_5_absorbation]:absorbation_fake
+
+[af_spirit_8]:af_spirit_4
+health_restore_speed       		= 0.0
+radiation_restore_speed    		= 0.0
+power_restore_speed        		= 0.0
+cost							= 4000
+hit_absorbation_sect 			= af_spirit_8_absorbation
+[af_spirit_8_absorbation]:absorbation_fake

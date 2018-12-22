@@ -1,0 +1,12 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = koster
+on_use = {=actor_has_matches()} %=sak.koster_on()%  ph_idle@idle2, ph_idle@idle3 %=sak.info_no_matches()%
+
+[ph_idle@idle2]
+on_timer = 6000| %=sak.koster_yes()% ph_idle@idle
+
+[ph_idle@idle3]
+on_timer = 10000|ph_idle@idle

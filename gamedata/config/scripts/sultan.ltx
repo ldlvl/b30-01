@@ -1,0 +1,28 @@
+[logic]
+active = remark@demand2
+on_death = death
+
+[remark@demand]
+no_move = true
+no_rotate = true
+anim = wait
+reactions = ignore
+meet = no_meet
+on_info ={+kvest_art_done} remark@demand2
+danger = danger_condition
+
+[remark@demand2]
+no_move = true
+no_rotate = true
+anim = guard
+reactions = ignore
+meet = meet
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0
+
+[meet]
+use			= true
+use_wpn		= false
+meet_dialog	= sultan_start_dialog

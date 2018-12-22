@@ -1,0 +1,71 @@
+[logic]
+active = walker@start
+combat_ignore = combat_ignore
+on_hit = hit
+on_death = death
+
+[walker@start]
+path_walk = volkodav_rad_start_way
+path_look = volkodav_rad_start_look
+meet = meet@volkodav_rad
+on_info = {+rad_start_volkodav} patrol@go
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+danger = danger_condition
+
+[patrol@go]
+path_walk = volkodav_rad_1_way
+path_look = volkodav_rad_1_look
+meet = no_meet
+formation = back
+commander = true
+on_signal = volkodav_rad_1_end | walker@stopping
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+danger = danger_condition
+
+[walker@stopping]
+path_walk = volkodav_rad_stop_way
+path_look = volkodav_rad_stop_way
+meet = meet@volkodav_rad
+on_info = {+rad_start_volkodav_2} walker@go_mon
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+danger = danger_condition
+
+[walker@go_mon]
+path_walk = volkodav_rad_go_mon_way
+path_look = volkodav_rad_go_mon_way
+meet = no_meet
+on_info = {+rad_start_volkodav_3} walker@wait_1
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+danger = danger_condition
+
+[walker@wait_1]
+path_walk = volkodav_rad_wait_way
+path_look = volkodav_rad_wait_way
+meet = meet@volkodav_rad
+on_info = {+rad_start_volkodav_4} ;walker@wait_1
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+danger = danger_condition
+
+[meet@volkodav_rad]
+meet_state     = 2|guard
+meet_state_wpn = 2|guard
+victim         = 2|actor
+victim_wpn     = 2|actor
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= volkodav_rad_start_dialog
+
+[combat_ignore]
+combat_ignore_cond = {-rad_killers_fire =fighting_actor}
+
+[danger_condition]
+ignore_distance = 30
+ignore_types = corpse
+
+[hit]
+on_info = {-rad_killers_fire =hit_by_actor} %+rad_killers_fire%
+
+[death]
+on_info = %+volkodav_rad_umer%
+on_info2 = {-rad_killers_fire =killed_by_actor} %+rad_killers_fire%

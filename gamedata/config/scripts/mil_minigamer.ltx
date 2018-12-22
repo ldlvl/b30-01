@@ -1,0 +1,40 @@
+[logic]
+active = walker@stop
+on_death = death
+
+[walker@stop]
+path_walk = mil_minigamer_stop_way
+path_look = mil_minigamer_stop_look
+meet = meet@mil_minigamer_meet
+danger = danger_condition
+on_info = {+mil_minigame_start} walker@go_on
+
+[walker@go_on]
+path_walk = mil_minigamer_on_way
+path_look = mil_minigamer_on_look
+meet = no_meet
+danger = danger_condition
+on_info = {+mil_minigame_finish} walker@stop2
+
+[walker@stop2]
+path_walk = mil_minigamer_stop_way
+path_look = mil_minigamer_stop_look
+meet = no_meet
+danger = danger_condition
+on_signal = minigamer_stop | walker@stop
+
+[meet@mil_minigamer_meet]
+meet_state 		= 30|hello@wait|25|wait@wait|3|wait
+meet_state_wpn 	= 30|hello@wait|25|wait@wait|3|wait
+victim 			= 10 | actor
+victim_wpn 		= 10 | actor
+use			= true
+use_wpn		= false
+abuse       = false
+
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+mil_minigamer_umer%

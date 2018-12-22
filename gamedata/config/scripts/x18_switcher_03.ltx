@@ -1,0 +1,17 @@
+[logic]
+active = ph_button@deactive
+
+[ph_button@deactive]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_02
+on_press = ph_button@activate2  %=play_snd_from_obj(5108:device\power_switch)%
+
+[ph_button@activate2]
+anim = lab_primary_switcher_idle 
+tooltip = tips_x8_switcher_press_02
+on_press = ph_button@deactivate2  %=play_snd_from_obj(5108:device\power_switch)%
+
+[ph_button@deactivate2]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_02
+on_press = ph_button@activate  %=play_snd_from_obj(5108:device\power_switch)%

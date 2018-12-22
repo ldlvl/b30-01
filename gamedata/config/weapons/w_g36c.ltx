@@ -1,0 +1,122 @@
+;HK G36C
+[wpn_g36c]:wpn_g36
+inv_name							= wpn-g36c
+description							= enc_weapons1_wpn-g36c
+
+default_to_ruck						= false
+
+inv_name_short						= g36c
+fire_dispersion_base				= 0.16
+min_radius							= 0
+max_radius							= 120
+fire_modes							= 1, -1
+
+slot								= 1,2
+
+hit_power							= 0.9
+fire_distance						= 220
+bullet_speed						= 850
+
+control_inertion_factor				= 1.1f
+
+cost								= 7000
+
+cam_relax_speed						= 4
+cam_dispersion						= 0.2	
+cam_dispersion_inc					= 0.2
+cam_dispertion_frac					= 0.6
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 0.2
+
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 2.5
+PDM_disp_accel_factor 				= 3.5
+PDM_crouch							= 1.6
+PDM_crouch_no_acc					= 0.64
+
+inv_weight							= 3
+icon_group          				= 2
+inv_grid_width     					= 4
+inv_grid_height    					= 2
+inv_grid_x         					= 19
+inv_grid_y         					= 14
+visual         		        		= weapons\g36\wpn_g36c.ogf
+hud                      			= wpn_g36c_hud
+
+scope_status						= 2
+silencer_status						= 0
+grenade_launcher_status				= 0
+scope_mode 							= 3
+scope_name 							= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+scope_x                     		= 73	
+scope_y                     		= -10
+ironsight_zoom_factor       		= 80
+scope_zoom_factor           		= 50
+
+[wpn_g36c_hud]:wpn_g36_hud
+fire_point							= 0.0, -0.03, -0.2
+visual                  			= weapons\g36\wpn_g36c_hud.ogf
+
+zoom_offset							= -0.110440,0.005770,-0.270000
+zoom_rotate_x						= 0.000100
+zoom_rotate_y						= -0.000100
+
+zoom_rotate_time					= 0.25
+rotate_time							= 0.25
+
+[wpn_g36c_eotech]:wpn_g36c
+visual                  			= weapons\g36\wpn_g36c_eotech.ogf
+
+hud                     			= wpn_g36c_eotech_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.1f
+
+[wpn_g36c_eotech_hud]: wpn_g36c_hud
+visual                  			= weapons\g36\wpn_g36c_eotech_hud.ogf
+
+zoom_offset							= -0.110640,-0.037730,-0.150000
+zoom_rotate_x						= -0.000400
+zoom_rotate_y						= -0.000500
+
+zoom_rotate_time					= 0.25
+rotate_time							= 0.25
+
+[wpn_g36c_acog]:wpn_g36c
+visual                  			= weapons\g36\wpn_g36c.ogf
+
+hud                     			= wpn_g36c_acog_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.15f
+
+[wpn_g36c_acog_hud]: wpn_g36c_hud
+fire_point							= 0.100000,-0.130000,0.500000
+visual                  			= weapons\g36\wpn_g36c_hud.ogf
+
+zoom_offset							= -0.110740,-0.034330,0.973100
+zoom_rotate_x						= 0.002300
+zoom_rotate_y						= -0.000000
+
+zoom_rotate_time					= 0.26
+rotate_time							= 0.26
+
+[wpn_g36c_mt]:wpn_g36c
+visual                  			= weapons\g36\wpn_g36c_mt.ogf
+
+hud                     			= wpn_g36c_mt_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.15f
+
+[wpn_g36c_mt_hud]: wpn_g36c_hud
+fire_point							= 0.100000,-0.130000,0.500000
+visual                  			= weapons\g36\wpn_g36c_mt_hud.ogf
+
+zoom_offset							= -0.110740,-0.034230,2.573100
+zoom_rotate_x						= -0.002800
+zoom_rotate_y						= 0.000900
+
+zoom_rotate_time					= 0.26
+rotate_time							= 0.26

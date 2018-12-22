@@ -1,0 +1,12 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = candle
+on_use = {=actor_has_matches()} %=sak.candle_on()% ph_button@unlocked, ph_button@unlocked2 %=sak.info_no_matches()%
+
+[ph_button@unlocked]
+on_timer = 4500| %=sak.candle_yes()% ph_idle@idle
+
+[ph_button@unlocked2]
+on_timer = 30000|ph_idle@idle

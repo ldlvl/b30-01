@@ -1,0 +1,14 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = tiski_rep
+on_use = {=actor_has_rep_box()} %=sak.repair_on()% ph_idle@idle2, ph_idle@idle3 %=sak.info_rep_box()%
+
+[ph_idle@idle2]
+on_timer = 10000| %=sak.repair_tiski_use()% ph_idle@idle
+
+[ph_idle@idle3]
+on_timer = 10000|ph_idle@idle
+[collide]
+ignore_static

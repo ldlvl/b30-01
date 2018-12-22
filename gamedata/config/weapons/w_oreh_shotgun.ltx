@@ -1,0 +1,56 @@
+;Ружьё Ореха
+[wpn_hunters_toz_new]:wpn_toz34
+$spawn						= "devices\uniq\hunters_toz"	
+inv_name					= wpn_orex
+inv_name_short				= wpn_orex
+description					= enc_weapons_wpn_orex
+
+default_to_ruck				= false
+
+visual				     	= weaponsv\toz34\wpn_toz34_m1.ogf
+inv_grid_x         			= 13
+inv_grid_y         			= 10
+cost 						= 10000
+hud                 		= wpn_toz34_orex_hud
+snd_reload					= weapons\toz34\oreh_reload
+snd_reload_1				= weapons\toz34\oreh_reload
+snd_shoot_1					= weapons\toz34\oreh_shoot
+snd_shoot_2					= weapons\toz34\oreh_shoot1
+
+fire_dispersion_base		= 0.4
+
+fire_dispersion_condition_factor = 1.3
+condition_shot_dec 			= 0.0003
+
+inv_weight					= 3.9
+
+[wpn_toz34_orex_hud]:wpn_shotgun_hud
+shell_point					= 0.0, 0.0, 0.0
+fire_point					= 0.000000,0.035000,0.265000
+fire_point2					= 0.000000,0.035000,0.265000
+fire_bone                	= wpn_body
+
+position					= 0.010000,-0.010000,-0.055000
+orientation					= 0.000000,0.000000,0.000000
+visual				    	= weaponsv\toz34\wpn_toz34_m1_hud
+anim_idle					= idle
+anim_reload					= reload_lr ;reload both
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot ;shot left
+anim_shoot_both 			= shoot
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+anim_reload_1				= reload_l ;reload left
+anim_shoot_1				= shoot ;shot right
+
+anim_idle_1					= idle
+anim_idle_2					= idle
+
+anim_zoomed_idle_1			= idle_aim
+anim_zoomedidle_2			= idle_aim
+
+zoom_offset					= -0.107960,0.064920,0.097800
+zoom_rotate_x				= 0.009200
+zoom_rotate_y				= -0.000600

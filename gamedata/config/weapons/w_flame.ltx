@@ -1,0 +1,173 @@
+;Огнемёт
+[wpn_flame]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn              		= "weapons\flame"
+$npc						= on				
+$prefetch 					= 8
+scheduled					= off
+cform               		= skeleton
+class               		= WP_LR300
+min_radius          		= 30
+max_radius          		= 100
+description					= wpn-flame_readme
+
+default_to_ruck				= false
+		
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+	
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7 
+	
+cost						= 30000
+weapon_class				= assault_rifle	
+		
+ammo_limit					= 210
+ammo_elapsed				= 30
+		
+ammo_mag_size				= 200
+fire_modes					= -1
+f_mode						= 2
+	
+ammo_class					= ammo_flame
+	
+hand_dependence				= 2
+single_handed				= 0
+		
+slot 						= 2
+animation_slot				= 2
+	
+inv_name	        		= wpn-flame_name
+inv_name_short				= wpn-flame_name
+inv_weight					= 5
+icon_group              	= 2
+inv_grid_width     			= 5
+inv_grid_height    			= 2
+inv_grid_x         			= 26
+inv_grid_y         			= 18
+
+kill_msg_x					= 0
+kill_msg_y					= 123
+kill_msg_width				= 69
+kill_msg_height				= 30
+
+weapon_type					= heavy
+heavy_ammo					= ammo
+
+fire_dispersion_base		= 30.0
+control_inertion_factor		= 1.1f
+
+cam_relax_speed         	= 5	
+cam_dispersion          	= 0.001	
+cam_dispersion_inc			= 0.00001	
+cam_dispertion_frac			= 0.00001
+cam_max_angle				= 0.00001	    
+cam_max_angle_horz			= 0.01	
+cam_step_angle_horz			= 1.1	
+
+fire_dispersion_condition_factor = 5	    
+misfire_probability 		= 0.003
+misfire_condition_k			= 0.50
+condition_shot_dec 			= 0.00000005
+
+fire_point             		=  0,0.0,0.610	
+
+flame_particles				= amk\firebat
+smoke_particles				= 
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0.00, 0.262, 0.189
+shell_particles	 			= 
+
+PDM_disp_base 				= 1.7
+PDM_disp_vel_factor 		= 2.0
+PDM_disp_accel_factor 		= 3.0
+PDM_crouch					= 1.1
+PDM_crouch_no_acc			= 0.5
+
+hit_power                	= 1
+hit_impulse		 			= 0
+hit_type 					= burn 
+
+fire_distance            	= 0.1
+bullet_speed				= 0.1
+rpm                      	= 300
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud                      	= wpn_flame_hud
+
+position         	        = -0.015,0.15,0.3
+orientation      	        = 0,0,0		
+
+strap_position         		= -0.16,-0.20,0.15
+strap_orientation      		= -10,-5,10	
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual         		        = amk\wpn_flame.ogf	
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+ph_mass						= 5
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= false
+scope_zoom_factor	    	= 80
+
+scope_name 					= wpn_addon_scope
+scope_x 					= 42
+scope_y 					= 3
+silencer_name  				= wpn_addon_silencer
+silencer_x 					= 218
+silencer_y 					= 13					
+grenade_launcher_name 		= wpn_addon_grenade_launcher
+grenade_launcher_x 			= 116
+grenade_launcher_y 			= 23
+
+snd_draw					= $no_sound ;weapons\ak74_draw
+snd_holster					= $no_sound ;weapons\generic_holster
+snd_shoot					= weapons\flame\F-0
+snd_shoot1					= weapons\flame\F-1
+snd_shoot2					= weapons\flame\F-2
+snd_shoot3					= weapons\flame\F-3
+snd_empty					= $no_sound
+snd_reload					= $no_sound
+snd_shoot_grenade			= $no_sound
+snd_reload_grenade			= $no_sound
+snd_switch					= $no_sound
+ 
+[wpn_flame_hud]
+shell_point     	   	 	= 10.15, 0.0, -0.05
+shell_dir			     	= -0.01, 1.0, 0.0
+
+fire_point					= 0.0,0.0,0.0
+fire_point2              	= 0.0, 0.00, 0.0
+fire_bone               	= wpn_root
+
+orientation             	= 0.0, 0.0, 0.0		
+position                 	= 0.0, -0.07, 0.08
+visual                  	= amk\wpn_flame_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle
+anim_reload					= empty
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= sprint
+
+zoom_offset					= -0.137700,0.033800,-0.115100
+zoom_rotate_x				= -0.005000
+zoom_rotate_y				= 0.017900
+
+zoom_hide_crosshair			= true

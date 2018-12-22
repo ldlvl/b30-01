@@ -1,0 +1,11 @@
+[logic] ; Дверь 3 -проход по коридору
+active = ph_code@lock
+
+;[ph_code@lock]
+;code = 16252
+;on_code1 = {+bar_codelock1_info} %+bar_codelock1_unlock% 
+
+[ph_code@lock]
+on_check_code1 = 3 | %+bun_codelock3_open%
+
+

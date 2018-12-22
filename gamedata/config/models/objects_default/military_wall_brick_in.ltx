@@ -1,0 +1,59 @@
+
+
+[disable]
+
+linear_factor            = 1.0
+angular_factor           = 1.0
+
+
+[collide]
+
+not_collide_parts        = 1
+
+
+[destroyed]
+
+physics\large_trash\prt\prt_none
+
+[autoremove_parts]
+time					 = 1
+
+
+[collision_damage]
+link                     = 0.004
+
+
+[particles]
+destroy_particles        = explosions\expl_wall
+
+
+[particle_bones]
+link                     =  3.0, 0.0, 0.0
+
+
+[sound]
+break_sound              =  weapons\rgd5_explode
+
+
+default                  = 0.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0.0
+strike_immunity          = 0.0
+shock_immunity           = 0.0
+wound_immunity           = 0.0
+wound_2_immunity		= 0.0
+radiation_immunity       = 0.0
+telepatic_immunity       = 0.0
+chemical_burn_immunity   = 10.0
+explosion_immunity       = 0.0
+fire_wound_immunity      = 0.0
+
+
+[impulse_transition_to_parts]
+random_min               = 2  
+random_hit_imp           = 0.1
+
+imp_transition_factor    = 2  
+lv_transition_factor     = 0.1
+av_transition_factor     = 0.1

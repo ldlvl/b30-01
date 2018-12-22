@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = %+marsh_trader_meet_zone =sak.info_teleport% sr_idle@2
+
+[sr_idle@2]
+on_actor_outside = %-marsh_trader_meet_zone% sr_idle

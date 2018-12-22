@@ -1,0 +1,41 @@
+[logic]
+active = walker
+combat_ignore = combat_ignore@kirpich
+on_hit = hit@kirpich
+
+[walker]
+path_walk = arg_kirpich_walk_way
+path_look = arg_kirpich_way_look
+meet = meet
+wounded = wounded@kirpich
+danger = danger_condition
+combat_ignore_cond = {-kirpich_fire =fighting_actor}
+
+[danger_condition]
+ignore_distance = 0
+
+[wounded@kirpich]
+hp_state = 30|help_me@help|29|wounded_heavy@help_heavy
+hp_state_see = 30|wounded@help_see|29|wounded_heavy@help_heavy
+;psy_state = 50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20| {=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy
+hp_victim = 30|nil|10|nil
+hp_cover = 30|true|29|false
+hp_fight = 30|true|29|false
+syndata = wounded@help
+help_dialog = kirpich_start_dialog
+
+[meet]
+use = true
+use_wpn = false
+abuse = true
+meet_talk_enabled = true
+meet_dialog = agr_kirpich_start_dialog
+meet_state = 4|{-kirpich_fire} sit_knee
+meet_state_wpn = 4|{-kirpich_fire} assault
+target = actor
+
+[combat_ignore@kirpich]
+combat_ignore_cond = {-kirpich_fire =fighting_actor}
+
+[hit@kirpich]
+on_info = {=hit_by_actor} %+kirpich_fire%

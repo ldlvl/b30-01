@@ -1,0 +1,46 @@
+[disable]
+linear_factor            = 0.5
+angular_factor           = 0.5
+
+[collide]
+not_collide_parts        = 0
+
+[destroyed]
+new_item\ammobox_wood_prt1
+new_item\ammobox_wood_prt2
+
+[autoremove_parts]
+time					  = 60
+
+[collision_damage]
+link                     = 0.5
+
+[particles]
+destroy_particles        = destroy_fx\destroy_wood_00
+
+[particle_bones]
+link                     =  0.0, 0.15, 0.0
+
+[sound]
+break_sound              =  material\wood\wood_ammobox_crash
+
+default                  = 1.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0.0
+strike_immunity          = 0.001
+shock_immunity           = 0.0
+wound_immunity           = 0.1
+radiation_immunity       = 0.0
+telepatic_immunity       = 0.0
+chemical_burn_immunity   = 0.0
+explosion_immunity       = 0.1
+fire_wound_immunity      = 0.01
+
+[impulse_transition_to_parts]
+random_min               = 0.2
+random_hit_imp           = 0.2
+
+imp_transition_factor    = 1.0
+lv_transition_factor     = 0.2
+av_transition_factor     = 0.2

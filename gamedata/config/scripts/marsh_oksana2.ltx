@@ -1,0 +1,42 @@
+[logic]
+active = walker@day
+
+[walker@day]
+no_move = true
+reactions = ignore
+anim = sit_knee
+combat_ignore_cond = always
+path_walk = oksana_kordon_day_way
+path_look = oksana_kordon_day_look
+on_info = {!is_day}  walker@night
+show_spot = false 
+meet = meet
+danger = danger_condition
+
+[walker@night]
+no_move = true
+reactions = ignore
+anim = sleep_sit
+combat_ignore_cond = always
+path_walk = oksana_kordon_night_way
+path_look = oksana_kordon_night_look
+show_spot = false 
+on_info = {=is_day}  walker@day
+meet = meet
+danger = danger_condition
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= esc_oksana_start_dialog
+
+[danger_condition]
+ignore_distance_corpse = 1
+ignore_distance_sound = 1
+ignore_distance = 1
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0

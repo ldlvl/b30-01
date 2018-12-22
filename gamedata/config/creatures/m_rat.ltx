@@ -1,0 +1,346 @@
+[rat_group]
+;obsolete
+GroupControlSection	= spawn_group
+$spawn               = "monsters\rat-group"		; option for Level Editor
+$npc			     = on
+Human		     	 = off
+class                = AI_RAT_G			; AI class
+monster_section      = m_rat_e
+
+[m_rat_e]:monster_base
+GroupControlSection	 = spawn_group
+$spawn               = "monsters\rat"	; option for Level Editor
+$npc			     = on
+$prefetch 			 = 128
+visual				 = monsters\rat\rat_1
+corpse_visual		 = monsters\rat\rat_1
+icon				 = ui_npc_monster_rat_normal
+
+Scheduled		     = on
+Human		     	 = off
+Health			     = 20
+MinSpeed		     = 1.0
+MaxSpeed		     = 1.5
+going_speed          = 1.0
+retreat_threshold	 = 0.2
+eye_fov				 = 170
+eye_range			 = 10
+max_hear_dist		 = 50
+MaxHealthValue		 = 15
+transparency_threshold	 = 1.0
+DynamicObjectsCount	 = 32
+DynamicSoundsCount	 = 32
+
+smart_terrain_choose_interval	= 00:15:00
+
+killer_clsids			= Z_MBALD,Z_AMEBA,ZS_ICE,Z_MINCER,Z_GALANT,ZS_BFUZZ,ZS_MBALD,ZS_GALAN,ZS_MINCE
+
+ef_creature_type	 = 1
+ef_weapon_type		 = 2
+ef_detector_type	 = 1
+panic_threshold		= 0.9
+
+idle_sound_delay		= 80000
+eat_sound_delay			= 4000
+attack_sound_delay		= 8000
+
+cform                        = skeleton
+class                        = SM_TUSHK
+
+ph_box0_center 		     =   0.0,   0.11, -0.22
+ph_box0_size 		     =   0.085, 0.11, 0.525
+ph_box1_center 		     =   0.0,   0.11, -0.22
+ph_box1_size 		     =   0.085, 0.11, 0.525
+ph_crash_speed_min			= 10
+ph_crash_speed_max			= 30
+ph_collision_damage_factor	= 0.1
+ph_mass 				= 2
+
+destroyed_vis_name	 = physics\dead_body\skelet_crash_monster
+
+script_binding  	 = bind_monster.bind
+
+Spawn_Inventory_Item_Section = mutant_spleen_rat
+Spawn_Inventory_Item_Probability = 0.0
+
+ph_skeleton_airr_lin_factor   = -0.40
+ph_skeleton_airr_ang_factor   = -0.20
+ph_skeleton_hinger_factor1    = 1.0
+ph_skeleton_ddelay	     	  = 15.0
+ph_skel_fatal_impulse_factor  = 3.0
+ph_after_death_velocity_factor= 0.75
+ph_skel_shot_up_factor        = 0.25
+
+step_params				= m_rat_step_params
+
+ImpulseMin			 	= 20.0
+ImpulseMax			 	= 35.0 
+
+; speed factors			linear | angular_real | angular_path | min |  max
+Velocity_Stand			= 0,		3.5,			3.5,		1,		1
+Velocity_WalkFwdNormal	= 1.0,		7.5,			7.5,		0.02,	1.8	
+Velocity_RunFwdNormal	= 5.0,		3.5,			3.5,		0.3,	1	
+Velocity_WalkFwdDamaged	= 1.0,		4.5,			4.5,		0.2,	1.8	
+Velocity_RunFwdDamaged	= 3.0,  	3.0,			3.0,		0.5,	1
+Velocity_Drag			= 1.0,		3.0,			3.0,		1,		1
+Velocity_Steal			= 1.5,		3.0,			3.0,		1,		1
+
+Accel_Generic			= 1.4
+Accel_Calm				= 2.4
+Accel_Aggressive		= 7.5
+
+MinAttackDist			= 0.5
+MaxAttackDist			= 3.8
+as_min_dist				= 0.25
+as_step					= 0.25
+hit_power				= 0.05
+hit_type				= chemical_burn
+
+attack_params			= m_rat_attack_params
+
+
+DayTime_Begin			= 0
+DayTime_End				= 24
+Min_Satiety				= 0.4
+Max_Satiety				= 1.0
+
+distance_to_corpse		= 1.2
+
+
+min_view_distance   		= 0.8
+max_view_distance	 		= 1.0
+visibility_threshold	 	= 100.0
+always_visible_distance 	= 0.3
+time_quant					= 0.001
+decrease_value				= 0.01
+velocity_factor		     	= 0.5
+luminocity_factor			= 0.5
+
+bleeding_v					= 0.04
+wound_incarnation_v			= 0.05
+min_wound_size				= 0.01
+
+
+bone_torso			 = bip01_spine1
+bone_head			 = bip01_head
+bone_fire			 = bip01_head
+weapon_usage		 = 0
+
+LegsCount				= 2
+
+EyeYShift		     = 0.15
+
+MinVoiceInterval	     =  30000
+MaxVoiceInterval	     = 120000
+VoiceRefreshRate	     =   2500
+
+sound_die			 = monsters\rat\death_
+sound_hit			 = monsters\rat\hit_
+sound_attack		 = monsters\rat\attack_
+sound_idle			 = monsters\rat\idle_
+sound_eat			 = monsters\rat\eat_
+sound_aggressive		= monsters\rat\rat_aggressive_
+sound_attack_hit		= monsters\rat\attack_
+sound_take_damage		= monsters\rat\rat_pain_
+sound_threaten			= monsters\rat\rat_threaten_
+sound_landing			= monsters\rat\hit_
+sound_steal				= monsters\rat\idle_
+sound_panic				= monsters\rat\voice_
+sound_growling			= monsters\rat\idle_
+sound_die_in_anomaly	= monsters\rat\death_
+
+ChangeActiveStateProbability = 1.0
+ActiveCountPercent	     =   16
+StandingCountPercent	 =   16
+PassiveScheduleMin	     =  100
+PassiveScheduleMax       = 1000
+
+LostMemoryTime		     = 20000
+LostRecoilTime		     =  2000
+UnderFireDistance	     =   100
+RetreatTime				 = 10000
+RetreatDistance		     =   100
+AttackStraightDistance	 =    10
+StableDistance		     =     5
+WallMinTurnValue	     =    90 			; degrees
+WallMaxTurnValue	     =   270			; degrees
+
+AngleSpeed				 = 0.2	            ; degrees per second
+GoalChangeDelta	 	     = 10.0				; seconds
+GoalVariation	  	     = 10.0, 0.0, 20.0	; each coordinate in meters
+AngularStandSpeed		 = 360				; degrees
+AngularMinSpeed			 = 360				; degrees
+AngularMaxSpeed			 = 30				; degrees
+AngularAttackSpeed		 = 10				; degrees
+
+MoraleDeathDistance	     = 50	
+SoundThreshold		     = 0.06             ; range [0..1]
+
+ActionRefreshRate	     = 500
+MaxHealthValue		     = 15			; range [0..200]
+
+EatMemberCorpses	     = 1			; range {0,1}
+Cannibalism				 = 1			; range {0,1}
+EatCorpseInterval	     = 600000		; milliseconds
+
+corp_mass				 = 500			;
+
+terrain				 = rats_terrain
+
+immunities_sect				= rat_immunities
+
+satiety_v               = 0.0001
+radiation_v             = 0.00001
+satiety_power_v         = 0.001
+satiety_health_v        = 0.001
+satiety_critical        = -1.0
+radiation_health_v      = 0.01
+bleeding_v              = 0.05
+wound_incarnation_v     = 0.05
+morale_v			    = 0.01
+health_hit_part         = 1.0
+power_hit_part          = 1.0
+psy_health_v            = 0.1
+
+
+sleep_health = 1.0
+sleep_power = 1.0
+sleep_satiety = 1.0
+sleep_radiation = 1.0
+sleep_psy_health = 1.0
+
+eat_freq			=	5.0
+eat_slice			=	0.01
+eat_slice_weight	=	10.0
+
+satiety_threshold	= 0.5
+
+Morale_Hit_Quant				= 0.1
+Morale_Attack_Success_Quant		= 0.1
+Morale_Take_Heart_Speed			= 0.1
+Morale_Despondent_Speed			= 0.1
+Morale_Stable_Speed				= 0.05
+Morale_Despondent_Threashold	= 0.5
+
+idle_sound_delay		= 80000
+eat_sound_delay			= 4000
+attack_sound_delay		= 8000
+
+sound_distant_idle			= monsters\rat\idle_
+distant_idle_sound_delay	= 80000
+distant_idle_sound_range	= 100.0	
+
+DamagedThreshold		= 0.4
+critical_wound_threshold		= -1
+critical_wound_decrease_quant	= 0.
+
+material				= creatures\medium
+DynamicObjectsCount		= 32
+
+;species of monster
+rank            = 500
+danger_coef     = 0.5
+species					= rat
+spec_rank				= weak
+community               = rat	
+
+[rats_terrain]
+	255,000,255,255
+
+[rat_weak]:m_rat_e	
+$spawn 							= "monsters\rat"	
+monster_type					= indoor
+rank 							= 0	
+visual				 			= monsters\rat\rat_weak
+corpse_visual		 			= monsters\rat\rat_1
+spec_rank 						= weak
+community 						= rat
+panic_threshold					= 1
+immunities_sect					= rat_immunities
+icon				 			= ui_npc_monster_rat_weak
+
+smart_terrain_choose_interval	= 00:15:00
+damage					        = m_rat_damage
+
+[rat_immunities]
+burn_immunity					= 0.5
+strike_immunity					= 0.1
+shock_immunity					= 1
+wound_immunity					= 0.5
+radiation_immunity				= 0.0
+telepatic_immunity				= 1.0
+chemical_burn_immunity			= 1
+explosion_immunity				= 1
+fire_wound_immunity				= 1
+
+[m_rat_attack_params]
+;	anim			|time[0..1]|hit_power|impulse|impulse_dir(x,y,z)|Field of hit_test(left,right,bottom,top)|Test Dist
+stand_attack_0 =	  0.25,		0.035,		20,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0
+stand_attack_1 =	  0.25,		0.075,		30,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0
+stand_attack_2 =	  0.25,		0.06,		35,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0
+
+
+[m_rat_step_params]
+;	anim			| Cycles | time1 | power1 | time2 | power2 |
+stand_walk_fwd_0 	=	1,	   0.2,     0.5,     0.7,    1,   
+stand_run_0	 		=	1,	   0.25,     1,	    0.25,    1,    
+
+
+[m_rat_damage]
+default				= 1, -1, 0.10
+bip01_pelvis 		= 1.0, -1, 0.5
+bip01_spine 		= 1.0, -1, 0.5
+bip01_spine1 		= 1.0, -1, 0.5
+bip01_neck 			= 1.0, -1, 1.5
+bip01_head 			= 2.0, -1, 0.5, 10
+
+
+
+[rat_normal]:m_rat_e	
+$spawn = "monsters\rat\rat_1"	
+monster_type		= indoor
+rank = 0	
+visual				 = monsters\rat\rat_normal.ogf
+corpse_visual		 = monsters\rat\rat_1
+spec_rank = normal	
+community = rat
+immunities_sect		= rat_strong_immunities
+
+
+[rat_strong]:m_rat_e	
+$spawn = "monsters\rat\rat_1"	
+monster_type		= indoor
+rank = 0	
+visual				 = monsters\rat\rat_1
+corpse_visual		 = monsters\rat\rat_1
+spec_rank = strong	
+community = rat
+icon				 = ui_npc_monster_rat_strong
+immunities_sect		= rat_strong_immunities
+
+[rat_strong_immunities]
+burn_immunity			= 0.5
+strike_immunity			= 0.01
+shock_immunity			= 0.5
+wound_immunity			= 0.4
+radiation_immunity		= 0.0
+telepatic_immunity		= 0.5
+chemical_burn_immunity	= 1
+explosion_immunity		= 0.6
+fire_wound_immunity		= 0.7
+[rat_mad_weak]:rat_weak
+panic_threshold			= 0.3
+[rat_mad_normal]:rat_normal
+panic_threshold			= 0.15
+[rat_mad_strong]:rat_strong	
+panic_threshold			= 0.05
+
+[rat_mad_wery_strong]:rat_weak
+panic_threshold			= 0
+attack_params			= m_rat_attack_strong_params
+immunities_sect			= rat_strong_immunities
+[m_rat_attack_strong_params]:m_rat_attack_params
+;	anim			|time[0..1]|hit_power|impulse|impulse_dir(x,y,z)|Field of hit_test(left,right,bottom,top)|Test Dist
+stand_attack_0 =	  0.25,		0.08,		20,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0
+stand_attack_1 =	  0.25,		0.15,		30,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0
+stand_attack_2 =	  0.25,		0.06,		35,    0.0, 1.0, 0.0,	-1.2, 1.2, -1.6, 1.6,					1.0

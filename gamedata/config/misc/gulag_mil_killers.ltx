@@ -1,0 +1,626 @@
+;----------------
+;--АРА И ПАВЛИК--
+;----------------
+
+;--Немного дополнил логику. Дело в том, что по непонятной мне причине, один из наёмников (рандомно) отказывался заходить на территорию хутора.
+;--Сейчас же, сама сценка меньше похожа на фейк. Но все выдаваемые инфопоршены сохранены в первоначальном виде.
+;--Единственное, убрал %-mil_courier_call% - убирался инфопоршен, который уводил в офлайн Ару и ко. Сейчас же этого не нужно.
+;--Спавнятся и наёмники и Павел по одному и тому же условию, а не как в оригинале, где наёмы спавнились только тогда, когда Павел по рации заканчивал говорить.
+;--То есть, по идее, ГГ может даже с Арой поболтать перед тем как тот пойдёт на встречу к Павлу. Благо, прописан combat_ignore для ГГ, пока они стоят.
+;--Но если это потребуется, то нужно будет всё равно доработать.
+;--В начале, наёмники стоят у блокпоста, у самого выхода на другую локу, в кругу, Ара держит рацию, после того, как Павел заканчивает говорить, они выдвигаются на хутор.
+;--Идут с использованием логики follower - все следуют за Арой (я бы мог расписать условия, что если вдруг он умрёт, чтоб следовали за другим, конечно. Но думаю, это лишнее).
+;--Доходят до хутора и занимают свои позиции. А Ара идёт к Павлуше. После беседы, наёмники всей толпой идут обратно.
+;--Якобы сопровождают Ару с ценной информацией от Павла. Потом трое возвращаются в хутор. Занимают спальные места и у место костра.
+;--Павел покидает хутор одновременно с наёмниками - уходит в mil_lager.
+;--Сам смарт появляется в начале игры. Пробовал ставить условия появления одновременно с появлением неписей - не работает.
+;--Да и всё равно, в работе прописаны исключительно Ара и ко + Павлик. Всё они со story_id, их то и прописал. Левые не займут.
+
+
+;--Павлик
+;--До тех пор, пока наёмники с Павликом не разойдутся, подходить к нему нельзя (как в оригинале).
+;--Немного изменил условия. В оригинале было on_actor_dist_le_nvis, то сейчас стало on_actor_dist_le.
+;--Сразу после беседы, уже можно и показаться на глаза Павлику. Но наёмы могут и убить, если увидят.
+;--У наёмов прописано только игнорирование боя с Павлом (а у Павла с ними). Но когда тот уйдёт, будут игнорировать бой с ГГ.
+;--То есть, пока сценка не завершена, ГГ очень не желательно показываться на глаза ни тем, ни другим.
+
+[logic@mil_killers_stukach]
+active = walker0@mil_killers_stukach
+on_death = death@stukach
+combat_ignore = combat_ignore@mil_killers
+
+[death@stukach]
+on_info = %+mil_courier_dead =mil_paul_frost_dead +sar2_death_33%
+
+;--Как только гг оказывается в зоне хутора, Павлик идёт в сарай (оригинал).
+[walker0@mil_killers_stukach]
+path_walk = stukach_wait_walk
+path_look = stukach_wait_look
+danger = danger_condition@mil_killers
+on_info = {+mil_actor_in_khutor_zone} walker1@mil_killers_stukach
+on_actor_dist_le = 10 | %=killactor%
+
+;--Заходит в сарай, разворачивается и по сигналу переходит в ремарк (оригинал).
+[walker1@mil_killers_stukach]
+path_walk = stukach_walk
+path_look = stukach_look
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+on_signal = arrive | remark1@mil_killers_stukach
+on_actor_dist_le = 10 | %=killactor%
+
+;--Достаёт рацию, договаривается с Арой (оригинал).
+[remark1@mil_killers_stukach]
+no_rotate = true
+no_move = true
+anim = wait_rac
+snd = mil_pavlik_to_ara
+target = mil_courier_look_point, 0
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = sound_end | %+mil_courier_call% remark2@mil_killers_stukach
+on_actor_dist_le = 10 | %=killactor%
+
+;--Стоит, ждёт, когда Ара дойдёт (оригинал с другими условиями).
+[remark2@mil_killers_stukach]
+anim = guard
+target = mil_courier_look_point, 0
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_info = {+mil_ara_arrive} remark3@mil_killers_stukach
+on_actor_dist_le = 10 | %=killactor%
+
+;--Ара подошёл, приветствуем его.
+[remark3@mil_killers_stukach]
+anim = hello
+target = 719
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = anim_end | remark4@mil_killers_stukach
+
+;--Слушаем Ару.
+[remark4@mil_killers_stukach]
+anim = guard
+target = 719
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_info = {+mil_ara_end} walker@mil_killers_stukach_goto_lager
+
+;--Сюда Павлик идёт сразу после диалога с Арой. Отходит подальше от домиков, в сторону mil_lager.
+;--И там уже ожидает, когда Ара дойдёт до своей точки и даст сигнал на переход в другой смарт.
+;--Здесь то и можно ему нормальные условия по смене ориентации и переходу в другой гулаг прописать.
+;--Сейчас же всё происходит автоматически.
+;--Как только Ара дойдёт до блокпоста, по сигналу из walk выдастся инфопоршен.
+;--По нему-то Павлик и меняет комьюнити и уходит в mil_lager.
+;--В принципе, работает нормально. Но вполне вероятно (хоть ещё и не было такого) может произойти сбой.
+;--Вдруг скрипты переведут павла в смарт mil_lager быстрее, чем сработает функция по смене комьюнити.
+;--Тогда его и смарт не примет и никакой логики не будет. Будет бродить, тупить...
+;--Так что, лучше наверное будет задать свои условия смены комьюнити и смены гулага, чтоб уж наверняка.
+[walker@mil_killers_stukach_goto_lager]
+path_walk = stukach_goto_lager_walk
+path_walk = stukach_goto_lager_look
+def_state_moving1 = walk
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(712:713:714:719)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_leave} %=set_npc_community_stalker%
+
+
+;--Ара
+[logic@mil_killers_ara]
+active = walker@mil_killers_ara_start
+on_hit = hit@mil_killers
+on_death = death@ara
+combat_ignore = combat_ignore@mil_killers
+
+[death@ara]
+on_info = %+mil_ara_dead +sar2_death_20%
+
+;--Стоит с рацией в руках, ждёт сигнала от Павлика.
+[walker@mil_killers_ara_start]
+path_walk = ara_start_walk
+path_look = ara_start_look
+def_state_standing = wait_rac
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+on_info = {+mil_courier_call} walker0@mil_killers_ara
+on_info2 = {+mil_ara_leave} walker@mil_killers_ara_in_mercs
+
+;--Движется к хутору, при этом крича фразы из fight_detour.
+[walker0@mil_killers_ara]
+path_walk = ara_walk0
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = inhutor | remark0@mil_killers_ara %+mil_ara_arrive%
+
+;--Добежал до хутора, кричит своим фразу "за работу".
+;--Для того, чтобы сценка сработала, ему необходимо поправить в профиле звуковую схему. Иначе будет стоять махать руками до посинения.
+[remark0@mil_killers_ara]
+no_move = true
+no_rotate = true
+anim = backoff
+snd = ara_zarabotu
+target = nil
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_timer = 5000 | walker1@mil_killers_ara
+on_signal = sound_end | walker1@mil_killers_ara
+
+;--Подходит к Павлу.
+[walker1@mil_killers_ara]
+path_walk = ara_walk1
+path_look = ara_look1
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = arrive | remark1@mil_killers_ara
+
+;--Приветствует Павла (нужно для того, чтоб время потянуть немножно, а то разговаривают слишком быстро).
+[remark1@mil_killers_ara]
+no_move = true
+no_rotate = true
+anim = hello
+target = 710
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = anim_end | {-mil_killers_fire} remark2@mil_killers_ara
+on_info = {+mil_killers_fire} walker4@mil_killers_ara
+on_info2 = {+mil_courier_dead} remark4@mil_killers_ara
+
+;--Беседует с Павлом (оригинал).
+[remark2@mil_killers_ara]
+no_move = true
+no_rotate = true
+snd = mil_ara_to_pavlik
+target = 710
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = action_end | {-mil_killers_fire} remark3@mil_killers_ara
+on_info = {+mil_killers_fire} walker4@mil_killers_ara
+
+;--По окончании беседы, кричит своим фразу из fight_backup ("уходим, возвращаемся" и т.п.).
+[remark3@mil_killers_ara]
+no_move = true
+no_rotate = true
+anim = backoff
+snd = fight_backup
+target = nil
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = action_end | {-mil_killers_fire} walker2@mil_killers_ara %+mil_ara_end%
+on_info = {+mil_killers_fire} walker4@mil_killers_ara
+
+;--Сюда переходит в случае гибели Павлика (оригинал).
+[remark4@mil_killers_ara]
+no_move = true
+no_rotate = true
+anim = threat
+snd = mil_ara_ambush
+target = 710
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+meet = no_meet
+on_signal = action_end | walker3@mil_killers_ara %+mil_ara_end%
+
+;--Возвращается на блокпост (оригинал).
+[walker2@mil_killers_ara]
+path_walk = ara_walk2
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = final | walker@mil_killers_ara_in_mercs %+mil_ara_leave%
+
+;--Возвращается на блокпост в случае гибели Павлика (оригинал).
+[walker3@mil_killers_ara]
+path_walk = ara_walk2
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+on_signal = final | walker@mil_killers_ara_in_mercs %+mil_ara_leave%
+
+;--Ара на блокпосту.
+[walker@mil_killers_ara_in_mercs]
+path_walk = ara_in_mercs_walk
+path_look = ara_in_mercs_look
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+
+;--Здесь убиваем ГГ.
+[walker4@mil_killers_ara]
+path_walk = ara_walk1
+path_look = ara_look1
+danger = danger_condition@mil_killers
+meet = no_meet
+
+
+;--Наёмник1
+[logic@mil_killers_man1]
+active = walker@mil_killers_man1_start
+combat_ignore = combat_ignore@mil_killers
+on_hit = hit@mil_killers
+on_death = death@mil_killers
+
+;--Описание актуально для всех наёмников из банды Ары.
+;--Стоит, смотрит на Ару, ждёт.
+;--Если Ара помер, то сразу идёт спать.
+;--Если уже всё сделано (актуально при заходе на локу, чтоб заново всё не отыгрывать), тоже идёт спать.
+[walker@mil_killers_man1_start]
+path_walk = ara_start_look
+path_look = ara_start_walk
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+on_info = {+mil_courier_call} follower@mil_killers_man1
+on_info2 = {+mil_ara_dead} sleeper@mil_killers_sleep1
+on_info3 = {+mil_ara_leave} sleeper@mil_killers_sleep1
+
+;--Следует за Арой к хутору.
+;--Если вдруг ара скопытился по пути к хутору, идём спать.
+[follower@mil_killers_man1]
+leader = 719
+distance = 0.5
+anim_sprint = rush
+anim_run = rush
+anim_walk = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_arrive} walker2@mil_killers_man1
+on_info2 = {+mil_ara_dead} sleeper@mil_killers_sleep1
+
+;--Занимает позицию на хуторе, после того, как Ара откричится.
+;--Если заметит ГГ рядом, откроет огонь.
+[walker2@mil_killers_man1]
+path_walk = bodyguard_walk1
+path_look = bodyguard_look1
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_end} walker3@mil_killers_man1
+on_actor_dist_le = 10 | {-mil_killers_fire} walker5@mil_killers_man1 %+mil_killers_fire%, walker5@mil_killers_man1
+
+;--ГГ не обнаружен, всё прошло успешно. Сопровождает Ару до блокпоста (оригинал с другими условиями).
+[walker3@mil_killers_man1]
+path_walk = bodyguard_return
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = final | sleeper@mil_killers_sleep1
+
+;--Здесь мы убиваем ГГ.
+[walker5@mil_killers_man1]
+path_walk = bodyguard_walk1
+path_look = bodyguard_look1
+danger = danger_condition@mil_killers
+meet = no_meet
+
+;--Возвращается на хутор отдыхать.
+[sleeper@mil_killers_sleep1]
+path_main = sleep1
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+meet = no_meet
+
+
+;--Наёмник2
+[logic@mil_killers_man2]
+active = walker@mil_killers_man2_start
+combat_ignore = combat_ignore@mil_killers
+on_hit = hit@mil_killers
+on_death = death@mil_killers
+
+[walker@mil_killers_man2_start]
+path_walk = start1_walk
+path_look = ara_start_walk
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+on_info = {+mil_courier_call} follower@mil_killers_man2
+on_info2 = {+mil_ara_dead} sleeper@mil_killers_sleep2
+on_info3 = {+mil_ara_leave} sleeper@mil_killers_sleep2
+
+[follower@mil_killers_man2]
+leader = 719
+distance = 1.0
+anim_sprint = rush
+anim_run = rush
+anim_walk = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_arrive} walker2@mil_killers_man2
+on_info2 = {+mil_ara_dead} sleeper@mil_killers_sleep2
+
+[walker2@mil_killers_man2]
+path_walk = bodyguard_walk2
+path_look = bodyguard_look2
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_end} walker3@mil_killers_man2
+on_actor_dist_le = 10 | {-mil_killers_fire} walker5@mil_killers_man2 %+mil_killers_fire%, walker5@mil_killers_man2
+
+[walker3@mil_killers_man2]
+path_walk = bodyguard_return
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = final | sleeper@mil_killers_sleep2
+
+[walker5@mil_killers_man2]
+path_walk = bodyguard_walk2
+path_look = bodyguard_look2
+meet = no_meet
+danger = danger_condition@mil_killers
+
+[sleeper@mil_killers_sleep2]
+path_main = sleep2
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+meet = no_meet
+
+
+;--Наёмник3
+[logic@mil_killers_man3]
+active = walker@mil_killers_man3_start
+combat_ignore = combat_ignore@mil_killers
+on_hit = hit@mil_killers
+on_death = death@mil_killers
+
+[walker@mil_killers_man3_start]
+path_walk = start2_walk
+path_look = ara_start_walk
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+on_info = {+mil_courier_call} follower@mil_killers_man3
+on_info2 = {+mil_ara_dead} kamp@mil_killers
+on_info3 = {+mil_ara_leave} kamp@mil_killers
+
+[follower@mil_killers_man3]
+leader = 719
+distance = 1.5
+anim_sprint = rush
+anim_run = rush
+anim_walk = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_arrive} walker2@mil_killers_man3
+on_info2 = {+mil_ara_dead} kamp@mil_killers
+
+[walker2@mil_killers_man3]
+path_walk = bodyguard_walk3
+path_look = bodyguard_look3
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_info = {+mil_ara_end} walker3@mil_killers_man3
+on_actor_dist_le = 10 | {-mil_killers_fire} walker5@mil_killers_man3 %+mil_killers_fire%, walker5@mil_killers_man3
+
+[walker3@mil_killers_man3]
+path_walk = bodyguard_return
+def_state_moving1 = rush
+def_state_moving2 = rush
+def_state_moving3 = rush
+combat_ignore_cond = {=check_fighting(710)} false
+danger = danger_condition@mil_killers
+on_signal = final | kamp@mil_killers
+
+[walker5@mil_killers_man3]
+path_walk = bodyguard_walk3
+path_look = bodyguard_look3
+meet = no_meet
+danger = danger_condition@mil_killers
+
+[kamp@mil_killers]
+center_point = kamp
+path_walk = kamp_task
+combat_ignore_cond = {-mil_killers_fire =fighting_actor}
+danger = danger_condition@mil_killers
+
+
+[combat_ignore@mil_killers]
+
+
+[danger_condition@mil_killers]
+ignore_distance = 0
+ignore_types = corpse
+
+
+[hit@mil_killers]
+on_info = {-mil_killers_fire =hit_by_actor} %+mil_killers_fire%
+
+
+[death@mil_killers]
+on_info = {-mil_killers_fire =killed_by_actor} %+mil_killers_fire%
+
+
+;----------------------
+;--БЛОКПОСТ НАЁМНИКОВ--
+;----------------------
+;--Убрал оригинальный kamp. Непись в нём сидел посреди дороги. У костра пробовал ставить, но и там почему-то сидит спиной к костру. Рестриктор видимо мешает.
+;--Пробовал ставить sleep, но не удаётся прямо на матрас уложить почему-то. Что-то тоже неписю мешает.
+;--Ни одна точка путей из оригинала не используется - но в некоторых местах используются оригинальные координаты.
+;--Не использовал оригинальные исключительно потому что некорректные они и не подходят к нынешней ситуации (т.к. изначально стрельбы не планируется, да и точка перехода имеется).
+
+;--Использует оригинальные координаты. Поменял анимацию с ward на guard.
+[logic@mil_mercs_ara]
+active = walker@mil_mercs_ara
+combat_ignore = combat_ignore
+threshold = threshold@mil_mercs_ara
+;combat_ignore = combat_ignore@mil_mercs
+danger = danger_condition@mil_mercs_ara
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+;[combat_ignore]
+
+[walker@mil_mercs_ara]
+path_walk = ara_walk
+path_look = ara_look
+;combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+combat_ignore_cond = always
+no_loot = true
+meet = meet@mil_mercs_ara
+danger = danger_condition@mil_mercs_ara
+
+[meet@mil_mercs_ara]
+meet_dialog		= mil_mercs_ara_dialog_start
+precond = visibility
+
+[threshold@mil_mercs_ara]
+max_ignore_distance = 1
+
+
+[logic@mil_volkodav]
+active = walker@mil_volkodav
+combat_ignore = combat_ignore@mil_mercs
+danger = danger_condition@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_volkodav]
+path_walk = volkodav_walk
+path_look = volkodav_look
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+meet = meet@mil_volkodav
+danger = danger_condition@mil_mercs
+
+[meet@mil_volkodav]
+meet_dialog	= volkodav_dt_dialog_start
+precond = visibility
+
+[logic@mil_mercs_walker1]
+active = walker@mil_mercs_walker1
+combat_ignore = combat_ignore@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_mercs_walker1]
+path_walk = walker1_walk
+path_look = walker1_look
+meet = meet@mil_mercs
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+danger = danger_condition@mil_mercs
+
+
+;--Использует оригинальные координаты. Поменял фнимацию с ward на guard.
+[logic@mil_mercs_walker2]
+active = walker@mil_mercs_walker2
+combat_ignore = combat_ignore@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_mercs_walker2]
+path_walk = walker2_walk
+path_look = walker2_look
+meet = meet@mil_mercs
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+danger = danger_condition@mil_mercs
+
+
+;--Стоит смотрит в торону перехода на другую локацию.
+;--Оригинальные пути walker_3_* не работают. Непись по ним должен патрулировать, но он стоял на месте у камаза и тупил.
+[logic@mil_mercs_walker3]
+active = walker@mil_mercs_walker3
+combat_ignore = combat_ignore@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_mercs_walker3]
+path_walk = walker3_walk
+path_look = walker3_look
+meet = meet@mil_mercs
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+danger = danger_condition@mil_mercs
+
+
+;--Тоже стоит смотрит на ворота, в сторону перехода на др. локацию.
+[logic@mil_mercs_walker4]
+active = walker@mil_mercs_walker4
+combat_ignore = combat_ignore@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_mercs_walker4]
+path_walk = walker4_walk
+path_look = walker4_look
+meet = meet@mil_mercs
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+danger = danger_condition@mil_mercs
+
+
+;--Патрулирует внутри блокпоста.
+[logic@mil_mercs_walker5]
+active = walker@mil_mercs_walker5
+combat_ignore = combat_ignore@mil_mercs
+on_hit = hit@mil_mercs
+on_death = death@mil_mercs
+
+[walker@mil_mercs_walker5]
+path_walk = walker5_walk
+path_look = walker5_look
+meet = meet@mil_mercs
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+danger = danger_condition@mil_mercs
+
+
+[combat_ignore@mil_mercs]
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+
+[meet@mil_mercs]
+meet_state     = 2|guard
+meet_state_wpn = 2|backoff
+victim         = 2|actor
+victim_wpn     = 2|actor
+use = true
+use_wpn = false
+abuse = true
+meet_talk_enabled = true
+meet_dialog	= mil_mercs_start_dialog
+
+
+;--Поставил игнорирование трупов, т.к. это с одной стороны не пугливые новички, но с другой стороны, можно и убрать, если не нужно.
+;--Очень некрасиво смотрится, когда казалось бы опытный чувак шарахается трупа и по нескольку минут сидит где-нибудь в кустах с отдышкой.
+;--В mil_killers не надо убирать. Иначе Ара будет шугаться мёртвого Павла (если ГГ его прихлопнет до прихода Ары и ко).
+[danger_condition@mil_mercs_ara]
+ignore_types = corpse
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_distance = 0
+ignore_distance_grenade =0
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0
+
+[danger_condition@mil_mercs]
+ignore_distance = 8
+ignore_types = corpse
+
+[hit@mil_mercs]
+on_info = {-mil_mercs_fire =hit_by_actor} %+mil_mercs_fire =sak.mil_abuse()%
+
+
+[death@mil_mercs]
+on_info = {-mil_mercs_fire =killed_by_actor} %+mil_mercs_fire =sak.mil_abuse()%
+
+

@@ -1,0 +1,62 @@
+[smart_terrains]
+umnik_bar = {+smart_umnik_bar -smart_umnik_dvl -smart_umnik_esc -smart_umnik_mil -smart_umnik_les}
+umnik_dvl = {+smart_umnik_dvl -smart_umnik_bar -smart_umnik_esc -smart_umnik_mil -smart_umnik_les}
+umnik_esc = {+smart_umnik_esc -smart_umnik_dvl -smart_umnik_bar -smart_umnik_mil -smart_umnik_les}
+umnik_mil = {+smart_umnik_mil -smart_umnik_dvl -smart_umnik_esc -smart_umnik_bar -smart_umnik_les}
+umnik_les = {+smart_umnik_les -smart_umnik_dvl -smart_umnik_esc -smart_umnik_mil -smart_umnik_bar}
+
+[logic]
+;active = walker@day_1
+on_death = death
+
+[sr_idle]
+;on_info = {=is_umnik_dvl} %+smart_umnik_dvl% walker@day_2
+on_info = {+smart_umnik_esc} walker@day_3
+;on_info3 = {=is_umnik_mil} %+smart_umnik_mil% walker@day_4
+;on_info4 = {=is_umnik_les} %+smart_umnik_les% walker@day_5
+;on_info5 = {=is_umnik_bar} %+smart_umnik_bar% walker@day_1
+
+[walker@day_1]
+path_walk = umnik_bar_1walk_way
+path_look = umnik_bar_1way_look
+;on_info = {=is_umnik_dvl} %+smart_umnik_dvl% walker@day_2
+;on_info2 = {=is_umnik_esc} %+smart_umnik_esc% walker@day_3
+;on_info3 = {=is_umnik_mil} %+smart_umnik_mil% walker@day_4
+;on_info4 = {=is_umnik_les} %+smart_umnik_les% walker@day_5
+
+[walker@day_2]
+path_walk = umnik_dvl_1walk_way
+path_look = umnik_dvl_1way_look
+on_info = {=is_umnik_bar} %+smart_umnik_bar%  walker@day_1
+on_info2 = {=is_umnik_esc} %+smart_umnik_esc% walker@day_3
+on_info3 = {=is_umnik_mil} %+smart_umnik_mil% walker@day_4
+on_info4 = {=is_umnik_les} %+smart_umnik_les% walker@day_5
+
+[walker@day_3]
+path_walk = umnik_esc_1walk_way
+path_look = umnik_esc_1way_look
+on_info = {=is_umnik_bar} %+smart_umnik_bar%  walker@day_1
+on_info2 = {=is_umnik_dvl} %+smart_umnik_dvl% walker@day_2
+on_info3 = {=is_umnik_mil} %+smart_umnik_mil% walker@day_4
+on_info4 = {=is_umnik_les} %+smart_umnik_les% walker@day_5
+
+[walker@day_4]
+path_walk = umnik_mil_1walk_way
+path_look = umnik_mil_1way_look
+on_info = {=is_umnik_bar} %+smart_umnik_bar%  walker@day_1
+on_info2 = {=is_umnik_dvl} %+smart_umnik_dvl% walker@day_2
+on_info3 = {=is_umnik_esc} %+smart_umnik_esc% walker@day_3
+on_info4 = {=is_umnik_les} %+smart_umnik_les% walker@day_5
+
+[walker@day_5]
+path_walk = umnik_les_1walk_way
+path_look = umnik_les_1way_look
+on_info = {=is_umnik_bar} %+smart_umnik_bar%  walker@day_1
+on_info2 = {=is_umnik_dvl} %+smart_umnik_dvl% walker@day_2
+on_info3 = {=is_umnik_esc} %+smart_umnik_esc% walker@day_3
+on_info4 = {=is_umnik_mil} %+smart_umnik_mil% walker@day_4
+
+
+
+[death]
+on_death = %+umnik_umer%

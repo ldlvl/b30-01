@@ -1,0 +1,48 @@
+[logic]
+active = walker@day
+on_death = death
+
+[walker@day]
+path_walk = lim_vovan_walk_way
+path_look = lim_vovan_way_look
+meet = meet@lim_guard
+danger = danger_condition
+;on_info = {!is_day}  walker@night
+;on_info2 = {=is_holiday_sidor}  %=sak.sidor_out% walker@night
+
+[walker@night]
+path_walk = lim_vovan_walk_night_way
+path_look = lim_vovan_way_night_look
+meet = meet@esc_guard2
+on_info = {=is_day !is_holiday_sidor} %=sak.sidor_in% walker@day
+on_info2 = {=is_day =is_holiday_sidor} %=sak.sidor_out% walker@day_no_sidor
+
+[walker@day_no_sidor]
+path_walk = lim_vovan_walk_day_way
+path_look = lim_vovan_way_day_look
+meet = meet@esc_guard2
+on_info = {!is_day}  walker@night
+on_info2 = {=is_day !is_holiday_sidor} %=sak.sidor_in% walker@day
+
+[meet@lim_guard]
+meet_state 		= 5 | guard@bar_guard_prohodi
+meet_state_wpn 	= 5 | guard@bar_guard_prohodi
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= false
+abuse       = true
+[meet@esc_guard2]
+meet_state = 2|sit_ass
+meet_state_wpn = 5|claim
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= false
+abuse       = false
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+lim_vovan_umer%

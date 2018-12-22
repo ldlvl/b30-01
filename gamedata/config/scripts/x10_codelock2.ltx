@@ -1,0 +1,12 @@
+[logic] ;это переход в х16
+active = ph_code@lock
+
+;[ph_code@lock] 
+;code = 16252
+;on_code1 = {+bar_codelock1_info} %+bar_codelock1_unlock% 
+
+[ph_code@lock]
+on_check_code1 = 00000 | {+bun_codelock2_info} %+bun_codelock2_open =sak.add_new_x16_131%
+;on_check_code2 = 11111 | %+bar_codelock1_lock%
+
+

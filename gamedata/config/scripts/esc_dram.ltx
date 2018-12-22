@@ -1,0 +1,9 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = {-esc_dram_pass_on} nil %+esc_dram_pass_fire%
+on_info = {+esc_dram_pass_on} sr_idle@pass
+
+[sr_idle@pass]
+on_game_timer = 600|  sr_idle %+esc_dram_pass_off% 

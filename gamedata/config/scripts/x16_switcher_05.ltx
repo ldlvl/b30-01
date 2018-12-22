@@ -1,0 +1,27 @@
+[logic]
+active = ph_button@deactive
+
+[ph_button@deactive]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_05
+;on_info={+labx16_lamp_5_off} ph_button@deactivate
+;on_info2={+labx16_lamp_5_on} ph_button@activate
+on_press = ph_button@activate  %=play_snd_from_obj(5305:ambient\switch_1)%
+
+[ph_button@activate]
+anim = lab_primary_switcher_idle 
+on_timer = 500 | %=turn_on(5338) =turn_on(5339) =turn_on(5329)% ph_button@activate2
+
+[ph_button@activate2]
+anim = lab_primary_switcher_idle 
+tooltip = tips_x8_switcher_press_05
+on_press = ph_button@deactivate  %=play_snd_from_obj(5305:ambient\switch_1) +labx16_lamp_5_off%
+
+[ph_button@deactivate]
+anim = lab_primary_switcher_off
+on_timer = 500 | %=turn_off(5338) =turn_off(5339) =turn_off(5329)% ph_button@deactivate2
+
+[ph_button@deactivate2]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_05
+on_press = ph_button@activate  %=play_snd_from_obj(5305:ambient\switch_1) +labx16_lamp_5_on%

@@ -1,0 +1,28 @@
+[logic]
+active = ph_button@idle_off
+
+[ph_button@idle_off] 
+tooltip = lim_button1
+anim = pult_off_static
+on_info = {+lim_electro_power_on} ph_button@idle_on
+on_press = ph_button@idle_on
+
+[ph_button@idle_on]
+anim = lite_periodic_on
+on_press = ph_button@idle_static_on
+
+[ph_button@idle_static_on]
+anim = pult_on
+on_timer = 1000 | ph_button@pult_on 
+
+[ph_button@pult_on]
+anim = pult_on_static
+on_press = ph_button@pult_off
+
+[ph_button@pult_off]
+anim = pult_off
+on_timer = 1000 | ph_button@idle_static_off
+
+[ph_button@idle_static_off]
+anim = pult_off_static
+on_timer = 1000 | ph_button@idle_on

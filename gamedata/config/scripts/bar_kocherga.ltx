@@ -1,0 +1,21 @@
+[logic]
+active = camper@bar_kocherga_prisoner
+combat_ignore = combat_ignore
+on_death = death
+
+[camper@bar_kocherga_prisoner]
+path_walk = bar_kocherga_walk_way
+path_look = bar_kocherga_way_look
+combat_ignore_cond = always
+def_state_campering = prisoner
+meet = no_meet
+danger = danger_condition
+show_spot = false 
+
+[combat_ignore]
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+bar_kocherga_umer%

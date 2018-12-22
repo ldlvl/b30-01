@@ -1,0 +1,174 @@
+;1911
+[wpn_colt1911]:weapon_immunities
+GroupControlSection				= spawn_group
+discovery_dependency			= 
+$spawn							= "weapons\colt1911"
+$npc							= on
+$prefetch						= 8
+scheduled						= off
+cform							= skeleton
+class							= WP_PM
+min_radius						= 0
+max_radius						= 50
+description						= enc_weapons1_wpn-colt1911
+
+default_to_ruck					= false
+
+ef_weapon_type					= 5
+
+holder_range_modifier			= 1.0
+holder_fov_modifier				= 1.0
+
+cost							= 13000
+
+ammo_limit						= 120
+ammo_current					= 90
+ammo_elapsed					= 12
+
+f_mode							= 1
+
+ammo_mag_size					= 7
+ammo_class						= ammo_11.43x23_fmj
+
+hand_dependence					= 1
+single_handed					= 1
+
+slot 							= 1,2,4
+animation_slot					= 1
+
+control_inertion_factor			= 1.1f
+
+inv_name						= wpn-colt1911
+inv_name_short					= wpn-colt1911
+
+inv_weight						= 1.1
+
+icon_group         				= 2
+inv_grid_width     				= 2
+inv_grid_height    				= 2
+inv_grid_x         				= 4
+inv_grid_y         				= 11
+
+kill_msg_x						= 161
+kill_msg_y						= 153
+kill_msg_width					= 37
+kill_msg_height					= 24
+
+fire_dispersion_base			= 0.23
+
+cam_relax_speed         		= 5
+cam_dispersion          		= 0.4
+cam_dispersion_inc				= 0.0
+cam_dispertion_frac				= 1.0
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.3
+
+fire_dispersion_condition_factor = 3.5
+misfire_probability				= 0.003
+misfire_condition_k				= 0.50
+condition_shot_dec				= 0.0003 
+
+direction                		= 0, 0, 1
+fire_point						= 0.000000,0.130000,0.185000
+
+flame_particles					= weapons\generic_weapon03
+smoke_particles					= weapons\generic_shoot_00
+rpm_empty_click 				= 200
+
+shell_point		 				= 0.0, 0.127, 0.05
+shell_dir		 				= 0.0, 0.0, 0.4
+;shell_particles				= weapons\generic_shells
+
+PDM_disp_base 					= 1.5
+PDM_disp_vel_factor 			= 2.0
+PDM_disp_accel_factor 			= 3.0
+PDM_crouch						= 1.5
+PDM_crouch_no_acc				= 0.7
+
+hit_power						= 1
+hit_impulse						= 1
+hit_type						= fire_wound
+	
+fire_distance					= 50
+bullet_speed					= 260
+rpm 							= 250
+
+use_aim_bullet					= false
+time_to_aim						= 1.0
+
+hud								= wpn_colt1911_hud
+normal                   		= 0, 1, 0
+position                 		= -0.021, -0.085, 0.0
+orientation              		= 0, 0, 0
+
+startup_ammo					= 90
+visual							= weapons\colt1911\wpn_colt1911.ogf
+
+light_color						= 0.6,0.5,0.3
+light_range						= 3.0
+light_var_color					= 0.05
+light_var_range					= 0.5
+light_time 						= 0.2
+
+ph_mass							= 1
+
+scope_status					= 0
+silencer_status					= 0
+grenade_launcher_status			= 0
+
+zoom_enabled					= true
+scope_zoom_factor				= 75
+
+snd_draw						= weapons\pistol_draw
+snd_holster						= weapons\pistol_holster
+snd_shoot						= weapons\colt1911\m1911_shot
+snd_empty						= weapons\colt1911\colt1911_empty
+snd_reload						= weapons\colt1911\colt1911_reload
+snd_close						= weapons\colt1911\close
+snd_silncer_shot				= weapons\colt1911\colt1911_shoot_sil
+snd_razgruzka			    	= weapons\razgruzka\ammo_6
+
+silencer_name					= wpn_addon_silencer
+silencer_x 						= 77
+silencer_y 						= 17
+
+;silencer_flame_particles 		= weapons\generic_weapon01
+silencer_smoke_particles 		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time				= 0.2
+
+[wpn_colt1911_hud]
+shell_point						= 0.0,0.0,0.0
+fire_point						= 0.005000,-0.005000,-0.320000
+
+fire_bone                		= wpn_body
+position						= 0.010000,0.015000,-0.070000
+orientation						= 0.000000,0.000000,0.000000
+visual                   		= weapons\colt1911\wpn_colt1911_hud.ogf
+
+anim_holster					= holster
+anim_idle						= idle
+anim_empty						= idle_empty
+anim_reload						= reload
+anim_reload_empty				= reload_empty
+anim_draw						= draw
+anim_draw_empty					= draw_empty
+anim_shoot						= shoot
+anim_shot_last					= shoot_last
+anim_close						= holster_empty
+anim_idle_aim					= idle_aim
+anim_idle_sprint				= idle_sprint
+
+zoom_offset						= -0.154700,0.030900,0.136000
+zoom_rotate_x					= -0.007500
+zoom_rotate_y					= -0.000600
+
+zoom_hide_crosshair				= true
+
+zoom_rotate_time				= 0.22
+rotate_time						= 0.22

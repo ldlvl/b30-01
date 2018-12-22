@@ -1,0 +1,65 @@
+[logic]
+active = walker
+danger = danger_condition
+
+[walker]
+path_walk = marsh_botan_to_gigant_way
+path_look = marsh_botan_to_gigant_look
+on_info  = {+marsh_botan_ok} walker@to_gigant %=sak_spawn.marsh_monster_botans()%
+meet = meet
+danger = danger_condition
+
+[walker@to_gigant]
+path_walk = marsh_botan_to_gigant_way
+path_look = marsh_botan_to_gigant_look
+on_signal = marsh_botan_to_gigant_end | %+marsh_botan_to_gigant_end =sak.provodnik_body_out()% walker@look_gigant
+on_actor_dist_ge_nvis = 80 | %=kill =sak.botan_help()%
+meet = no_meet
+danger = danger_condition
+
+[walker@look_gigant]
+path_walk = marsh_botan_look_gigant_way
+path_look = marsh_botan_look_gigant_look
+on_timer = 15000 | %+marsh_botan_to_gigant_end =sak.provodnik_body_out()% walker@marsh_end
+meet = no_meet
+danger = danger_condition@marsh_end
+
+[walker@marsh_end]
+path_walk = marsh_base_botan_lager_botan1_way
+path_look = marsh_base_botan_lager_botan1_look
+on_signal = base_botan1_end| %+marsh_botan_to_gigant_end =sak.provodnik_body_out()% walker@botan1_end
+meet = meet@marsh_end
+danger = danger_condition
+
+[walker@botan1_end]
+path_walk = marsh_base_botan_lager_botan1_way
+path_look = marsh_base_botan_lager_botan1_look
+on_signal = base_botan1_end| %+marsh_botan_to_gigant_end =sak.provodnik_body_out()% walker@botan1_end
+meet = meet@botan1_end
+danger = danger_condition
+
+[meet@marsh_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_botan1_start_dialog
+
+[meet@botan1_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_botan1_base_start_dialog
+
+[danger_condition]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_distance = 0
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0
+[danger_condition@marsh_end]
+ignore_distance_corpse = 0
+ignore_distance_sound = 0
+ignore_distance = 1

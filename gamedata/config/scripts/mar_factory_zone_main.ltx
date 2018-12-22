@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = {-mar_leader_pass_on} nil %+mar_factory_pass_fire%, {+mar_leader_pass_on} sr_idle@work2
+
+[sr_idle@work1]
+on_timer = 120000 | sr_idle@work2
+
+[sr_idle@work2]
+on_actor_inside = {-mar_leader_pass_on} nil %+mar_factory_pass_fire%
+on_actor_outside = {+mar_leader_pass_on} sr_idle@work
+
+[sr_idle@work3]
+on_timer = 120000 | %-mar_leader_pass_on% sr_idle@work 
+

@@ -1,0 +1,122 @@
+;Модифицированная Сайга-12
+[wpn_saiga12c_m1]:wpn_saiga12c
+$spawn								= "weapons\uniq\wpn_saiga12c_m1"
+visual                  			= weaponsv\saiga\wpn_saiga_m1
+hud  								= wpn_saiga12c_m1_hud
+inv_name	        				= wpn-saiga12c_m1
+inv_name_short						= wpn-saiga12c_m1	
+description							= enc_wpn-saiga12c_m1
+
+inv_weight							= 3.85
+
+slot 								= 2
+animation_slot						= 2
+
+cam_relax_speed						= 5.5
+cam_dispersion						= 1.9
+cam_dispersion_inc					= 1.9
+cam_dispertion_frac					= 0.8
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 1.7
+
+scope_status						= 2
+scope_mode 							= 3
+scope_name 							= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+scope_x					      		= 88
+scope_y								= -15
+
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 8
+inv_grid_y         					= 2
+
+ammo_mag_size						= 8
+
+cost								= 4500
+
+fire_dispersion_base				= 0.44
+control_inertion_factor				= 1.25f
+
+fire_distance            			= 60
+bullet_speed						= 295
+
+hit_power        					= 0.88
+
+condition_shot_dec 					= 0.00035
+
+[wpn_saiga12c_m1_hud]:wpn_saiga12c_hud
+visual                  			= weaponsv\saiga\wpn_saiga_m1_hud.ogf
+
+anim_idle							= vgrip1_idle
+anim_idle_aim						= vgrip1_idle_aim
+anim_reload							= vgrip1_reload
+anim_draw							= vgrip1_draw
+anim_holster						= vgrip1_holster
+anim_shoot							= vgrip1_shoot
+anim_idle_sprint					= vgrip1_idle_sprint
+anim_idle_hidden					= vgrip1_idle_hidden
+
+zoom_offset							= -0.138980,0.066600,-0.157230
+zoom_rotate_x						= 0.024850
+zoom_rotate_y						= 0.029400
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_saiga12c_m1_acog]:wpn_saiga12c_m1
+inv_name	        				= wpn-saiga12c_m1_elcan
+inv_name_short						= wpn-saiga12c_m1_elcan
+description							= enc_wpn-saiga12c_m1
+visual                  			= weaponsv\saiga\wpn_saiga_m1
+hud  								= wpn_saiga12c_m1_acog_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+[wpn_saiga12c_m1_acog_hud]:wpn_saiga12c_m1_hud
+visual              				= weaponsv\saiga\wpn_saiga_m1_hud.ogf
+zoom_offset			= -0.138480,0.018100,0.732770
+zoom_rotate_x		= 0.027250
+zoom_rotate_y		= 0.029000
+
+zoom_rotate_time					= 0.29
+rotate_time							= 0.29
+
+[wpn_saiga12c_m1_mt]:wpn_saiga12c_m1
+inv_name	        				= wpn-saiga12c_m1_mt
+inv_name_short						= wpn-saiga12c_m1_mt
+description							= enc_wpn-saiga12c_m1
+visual                  			= weaponsv\saiga\wpn_saiga_m1_mt
+hud  								= wpn_saiga12c_m1_mt_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+[wpn_saiga12c_m1_mt_hud]:wpn_saiga12c_m1_hud
+visual              				= weaponsv\saiga\wpn_saiga_m1_mt_hud.ogf
+zoom_offset			= -0.138480,0.021100,1.922770
+zoom_rotate_x		= 0.025550
+zoom_rotate_y		= 0.029600
+
+zoom_rotate_time					= 0.29
+rotate_time							= 0.29
+
+[wpn_saiga12c_m1_eotech]:wpn_saiga12c_m1
+inv_name	        				= wpn-saiga12c_m1_eotech
+inv_name_short						= wpn-saiga12c_m1_eotech
+description							= enc_wpn-saiga12c_m1
+visual                  			= weaponsv\saiga\wpn_saiga_m1_eotech
+hud  								= wpn_saiga12c_m1_eotech_hud
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+[wpn_saiga12c_m1_eotech_hud]:wpn_saiga12c_m1_hud
+visual              				= weaponsv\saiga\wpn_saiga_m1_eotech_hud.ogf
+zoom_offset			= -0.138480,0.021100,-0.107230
+zoom_rotate_x		= 0.033650
+zoom_rotate_y		= 0.027600
+
+zoom_rotate_time					= 0.29
+rotate_time							= 0.29

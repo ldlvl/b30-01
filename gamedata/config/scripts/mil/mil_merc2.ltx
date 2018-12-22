@@ -1,0 +1,35 @@
+[logic]
+active = walker
+combat_ignore = combat_ignore
+danger = danger_condition
+on_hit = hit
+on_death = death
+
+[walker]
+path_walk = mil_mercs_walker2_walk
+path_look = mil_mercs_walker2_look
+
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+meet = meet
+danger = danger_condition
+
+[meet]
+use	= true
+use_wpn = true
+meet_state = wait
+;meet_state_wpn = true
+meet_dialog	= mil_mercs_start_dialog
+precond = visibility
+
+[combat_ignore]
+combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+
+[danger_conditions]
+ignore_distance = 8
+
+[hit]
+on_info = {-mil_mercs_fire =hit_by_actor} %+mil_mercs_fire =sak.mil_abuse()%
+
+[death]
+on_info = {-mil_mercs_fire =killed_by_actor} %+mil_mercs_fire =sak.mil_abuse()%
+

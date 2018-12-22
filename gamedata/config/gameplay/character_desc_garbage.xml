@@ -1,0 +1,1138 @@
+<?xml version='1.0' encoding="windows-1251" ?>
+
+<xml>
+
+<specific_character id="gar_seriy" team_default = "1">
+		<name>gar_seryi_name</name>
+		<icon>ui_npc_u_stalker_neytral_hood_4</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>gar_seryi_bio</bio>
+
+		<class>gar_seriy</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>511</rank>
+		<reputation>-18</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\act_Grey</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74pbn \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+			medkit = 1 \n
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+		
+		<start_dialog>gar_seriy_new_start</start_dialog>
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>rygyi_black_tip</actor_dialog>
+		<actor_dialog>meelofon_room_1_dialog</actor_dialog>
+		<!--<actor_dialog>artmod_23_make_dialog</actor_dialog>
+		<actor_dialog>artmod_23_made_dialog</actor_dialog>-->
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<!--<actor_dialog>dm_cool_info_dialog</actor_dialog>
+		<actor_dialog>gar_seriy_story</actor_dialog>
+		<actor_dialog>gar_seriy_story2</actor_dialog>-->
+</specific_character>
+	
+<specific_character id="gar_dram_novice" team_default = "1">
+		<name>gar_dram_novice_name</name>
+		<icon>ui_npc_u_green_stalker_11</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>gar_dram_novice_bio</bio>
+
+		<class>gar_dram_novice</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>212</rank>
+		<reputation>19</reputation>
+		<money min="0" max="0" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_02\newbie\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\novice\green_stalker_11</visual>
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			ammo_9x18_pmm = 2 \n
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+	
+		<start_dialog>gar_dramm_novice_start</start_dialog>
+		<actor_dialog>artmod_211_dialog</actor_dialog>
+		<actor_dialog>artmod_212_dialog</actor_dialog>
+		<actor_dialog>artmod_811_dialog</actor_dialog>
+		<actor_dialog>artmod_812_dialog</actor_dialog>
+		<!--<actor_dialog>artmod_21_make_dialog</actor_dialog>
+		<actor_dialog>artmod_21_made_dialog</actor_dialog>-->
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+	
+	
+<specific_character id="gar_hellcar" team_default = "1">
+		<name>gar_hellcar_name</name>
+		<icon>ui_npc_u_stalker_neytral_balon_5</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>gar_hellcar_bio</bio>
+
+		<class>gar_hellcar</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>494</rank>
+		<reputation>20</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<panic_treshold>0</panic_treshold>
+
+		<visual>actors\act_Devil</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74pbn \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+			hand_radio \n
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+		<start_dialog>gar_hellcar_new_start</start_dialog>
+		<actor_dialog>rygyi_black_tip</actor_dialog>
+		<actor_dialog>gar_hellcar_1_dialog</actor_dialog>
+		<actor_dialog>artmod_422_dialog</actor_dialog>
+		<actor_dialog>gar_hellcar_3_dialog</actor_dialog>
+		<actor_dialog>gar_hellcar_2_dialog</actor_dialog>
+		<!--<actor_dialog>artmod_22_make_dialog</actor_dialog>
+		<actor_dialog>artmod_22_made_dialog</actor_dialog>-->
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<!--<actor_dialog>dm_cool_info_dialog</actor_dialog>
+		<actor_dialog>gar_hellcar_story</actor_dialog>-->
+</specific_character>
+	
+<specific_character id="gar_bandit_novice_wounded" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_3</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+
+		
+		<class>gar_bandit_novice_wounded</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>195</rank>
+		<reputation>-120</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_3.xml"
+</specific_character>
+	
+<specific_character id="gar_bandit_leader" team_default = "1">
+		<name>gar_bandit_leader_name</name>
+		<icon>ui_npc_u_kaban</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>gar_bandit_leader_bio</bio>
+		
+		<class>gar_bandit_leader</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>199</rank>
+		<reputation>-145</reputation>
+		<money min="1500" max="25000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\2018\master</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_drugs.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_4.xml"	
+</specific_character>
+	
+	<!----------------------BANDIT NOVICE----------------------->
+<specific_character id="gar_bandit_novice_default1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_3</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+	
+		<class>gar_bandit_novice</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>167</rank>
+		<reputation>-65</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs.xml"						
+</specific_character>
+
+<specific_character id="gar_bandit_novice_default2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_4</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+		
+		<class>gar_bandit_novice</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>268</rank>
+		<reputation>-95</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_04\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_4</visual>
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_bm16 \n
+			ammo_12x70_buck = 2\n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_food.xml"							
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_2.xml"						
+</specific_character>
+
+<specific_character id="gar_bandit_novice_default3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_5</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+		
+		<class>gar_bandit_novice</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>119</rank>
+		<reputation>-89</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_5</visual>
+		<supplies>
+			[spawn] \n
+			wpn_toz34 \n
+			ammo_12x70_buck = 2\n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_3.xml"						
+</specific_character>
+	
+	
+	<!---------------------------BANDIT general----------------------->
+	
+<specific_character id="gar_bandit_general_default1" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_3</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+	
+		<class>gar_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>125</rank>
+		<reputation>-126</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_3</visual>
+		<supplies>
+			[spawn] \n
+			wpn_toz34 \n
+			ammo_12x70_buck = 2\n
+			device_torch \n
+#include "gameplay\character_items.xml"	\n	
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_4.xml"						
+</specific_character>
+
+<specific_character id="gar_bandit_general_default2" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_4</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+		
+		<class>gar_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>124</rank>
+		<reputation>-73</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_05\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_4</visual>
+		<supplies>
+			[spawn] \n
+			wpn_fort = 1 \n
+			ammo_9x18_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml"	\n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"		
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs.xml"						
+</specific_character>
+
+<specific_character id="gar_bandit_general_default3" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_5</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+				
+		<class>gar_bandit_general</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>133</rank>
+		<reputation>-100</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_5</visual>
+		<supplies>
+			[spawn] \n
+			wpn_bm16 \n
+			ammo_12x70_buck = 2\n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_2.xml"						
+</specific_character>
+	
+	<!---------------------------Stalker general----------------------->
+	
+<specific_character id="gar_stalker_general_default1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_hood_uzor</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>423</rank>
+		<reputation>20</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\neytral\stalker_neytral_hood_uzor</visual>
+		<supplies>
+			[spawn] \n
+			wpn_bm16 \n
+			ammo_12x70_buck = 1 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_3.xml"
+<actor_dialog>stalk_garb_treasure_4_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_stalker_general_default2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>354</rank>
+		<reputation>-11</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+			
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_4.xml"
+<actor_dialog>stalk_garb_treasure_3_dialog</actor_dialog>
+<actor_dialog>escape_tutorial_wounded_story</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_stalker_general_default3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_hood_2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>515</rank>
+		<reputation>14</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_04\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		<visual>actors\neytral\stalker_neytral_hood_2</visual>
+
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+<actor_dialog>stalk_garb_treasure_2_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_stalker_general_default4" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_hood_2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>546</rank>
+		<reputation>1</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\neytral\stalker_neytral_hood_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_toz34 \n
+			ammo_12x70_buck = 2\n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_2.xml"
+<actor_dialog>stalk_garb_treasure_1_dialog</actor_dialog>
+<actor_dialog>fake_rem_gg_10</actor_dialog>
+</specific_character>
+	
+<specific_character id="gar_stalker_general_default5" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>447</rank>
+		<reputation>-15</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_05\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_3.xml"
+<actor_dialog>stalk_garb_treasure_4_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_stalker_general_default6" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_hood_2</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>546</rank>
+		<reputation>1</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_04\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\neytral\stalker_neytral_hood_2</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_fmj = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_4.xml"
+<actor_dialog>stalk_garb_treasure_3_dialog</actor_dialog>
+</specific_character>
+	
+<specific_character id="gar_stalker_general_default7" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>gar_stalker_general</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>447</rank>
+		<reputation>-15</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_05\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_3.xml"
+<actor_dialog>stalk_garb_treasure_4_dialog</actor_dialog>
+</specific_character>
+	
+	
+<specific_character id="gar_wounded_bandit" team_default = "1">
+		<name>Филька Лапоть</name>
+		<icon>ui_npc_u_lapot</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_lapot_bio</bio>
+
+		<class>gar_wounded_bandit</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>408</rank>
+		<reputation>-90</reputation>
+		<money min="1500" max="25000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\garik</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+		<start_dialog>kozel_dialog</start_dialog>
+#include "gameplay\character_dialogs_4.xml"
+</specific_character>
+	
+	<!---------------------------DOLG BLOKPOST----------------------->
+<specific_character id="gar_dolg_blokpost_default1" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_mask_1</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>499</rank>
+		<reputation>120</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_mask_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n			
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+		<actor_dialog>dolg_garb_treasure_2_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_dolg_blokpost_default2" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_balon_8</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>520</rank>
+		<reputation>86</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_balon_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			wpn_pm \n
+			ammo_5.45x39_ap = 2 \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs_2.xml"
+<actor_dialog>dolg_garb_treasure_3_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_dolg_blokpost_default3" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_balon_8</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+		
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>471</rank>
+		<reputation>124</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_balon_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs_3.xml"
+<actor_dialog>dolg_garb_treasure_4_dialog</actor_dialog>
+</specific_character>
+	
+<specific_character id="gar_dolg_blokpost_default4" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_mask</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>499</rank>
+		<reputation>120</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs_4.xml"
+<actor_dialog>dolg_garb_treasure_1_dialog</actor_dialog>
+</specific_character>
+	
+<specific_character id="gar_dolg_blokpost_default5" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_mask_1</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+		
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>471</rank>
+		<reputation>124</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_mask_1</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs.xml"
+<actor_dialog>dolg_garb_treasure_2_dialog</actor_dialog>
+</specific_character>
+	
+<specific_character id="gar_dolg_blokpost_default6" team_default = "1">
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_stalker_do_mask</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_bio</bio>
+		
+		<class>gar_dolg_blokpost</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>471</rank>
+		<reputation>124</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\dolg\stalker_do_mask</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_6.xml"
+#include "gameplay\character_dialogs_2.xml"
+<actor_dialog>dolg_garb_treasure_3_dialog</actor_dialog>
+</specific_character>
+
+<specific_character id="gar_dolg_blokpost_commander" team_default = "1">
+		<name>gar_dolg_blokpost_leader_name</name>
+		<icon>ui_npc_u_stalker_do_balon_4</icon>
+		<map_icon x="4" y="0"></map_icon>
+		<bio>gar_dolg_blokpost_leader_bio</bio>
+		
+		<class>gar_dolg_blokpost_commander</class>
+		<community>dolg</community> <terrain_sect>stalker_dolg_terrain</terrain_sect>
+		
+		<rank>592</rank>
+		<reputation>140</reputation>
+		<money min="4000" max="25000" infinitive="0"/>
+
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+		<crouch_type>0</crouch_type>
+		
+		<visual>actors\2018\brom</visual>
+		<supplies>
+			[spawn] \n
+			wpn_akm \n
+			ammo_7.62x39_ap = 2 \n
+			wpn_pm \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+
+#include "gameplay\character_criticals_6.xml"
+
+		<start_dialog>gar_dolg_blokpost_new</start_dialog>
+		<actor_dialog>gar_aver_changer_dialog</actor_dialog>
+		<actor_dialog>gar_dolgers_dialog</actor_dialog>
+		<actor_dialog>hellcar_help_blokpost_dialog</actor_dialog>
+		<actor_dialog>gar_flame_0_dialog</actor_dialog>
+		<actor_dialog>gar_flame_1_dialog</actor_dialog>
+		<actor_dialog>gar_flame_2_dialog</actor_dialog>
+		<actor_dialog>artmod_311_dialog</actor_dialog>
+		<actor_dialog>artmod_312_dialog</actor_dialog>
+		<actor_dialog>artmod_321_dialog</actor_dialog>
+		<actor_dialog>artmod_322_dialog</actor_dialog>
+		<actor_dialog>artmod_711_dialog</actor_dialog>
+		<actor_dialog>artmod_712_dialog</actor_dialog>
+		<actor_dialog>artmod_31_make_dialog</actor_dialog>
+		<actor_dialog>artmod_31_made_dialog</actor_dialog>
+		<!--<actor_dialog>artmod_32_make_dialog</actor_dialog>
+		<actor_dialog>artmod_32_made_dialog</actor_dialog>-->
+		<actor_dialog>gar_flame_4_dialog</actor_dialog>
+		<!--actor_dialog>tm_prapor_dialog</actor_dialog>-->
+		<actor_dialog>tm_prapor_reward</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<!--<actor_dialog>gar_dolg_blokpost_story</actor_dialog> -->
+</specific_character>
+	
+<specific_character id="gar_sniper" team_default = "1">
+		<name>GENERATE_NAME_bandit</name>
+		<icon>ui_npc_u_stalker_bandit_5</icon>
+		<map_icon x="3" y="2"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+				
+		<class>gar_sniper</class>
+		<community>bandit</community> <terrain_sect>stalker_bandit_terrain</terrain_sect>
+		
+		<rank>443</rank>
+		<reputation>-100</reputation>
+		<money min="300" max="12000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_02\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_5</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u_old \n
+			ammo_5.45x39_fmj = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"			
+		</supplies>
+		
+#include "gameplay\character_criticals_3.xml"
+#include "gameplay\character_dialogs_3.xml"					
+
+</specific_character>
+	
+<specific_character id="gar_bandit_dm" team_default = "1">
+		<name>Гришка Костыль</name>
+		<icon>ui_npc_u_stalker_neytral_balon_8</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+		
+		<class>gar_bandit_dm</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>250</rank>
+		<reputation>-145</reputation>
+		<money min="1500" max="25000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>0</crouch_type>
+
+		<visual>actors\neytral\stalker_neytral_balon_8</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap = 2 \n
+			wpn_fort \n
+			ammo_9x18_pmm = 2 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_4.xml"
+
+</specific_character>
+	
+<specific_character id="gar_bandit_dm_2" team_default = "1">
+		<name>Диман Орех</name>
+		<icon>ui_npc_u_stalker_bandit_master</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>gar_oreh_bio</bio>
+		
+		<class>gar_bandit_dm_2</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>250</rank>
+		<reputation>-145</reputation>
+		<money min="1500" max="25000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\bandit\stalker_bandit_master</visual>
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_ap \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+		<start_dialog>bandit2_start_dialog</start_dialog>
+		<start_dialog>dm_hello_dialog</start_dialog>
+		
+		<actor_dialog>gar_dm_bandits_dialog_1</actor_dialog>
+		<actor_dialog>hellcar_help_oreh_dialog</actor_dialog>
+		<!--<actor_dialog>gar_dm_bandits_dialog_4</actor_dialog>-->
+		<actor_dialog>gar_dm_bandits_dialog_3</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_5</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_6</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_7</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_8</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_91</actor_dialog>
+		<actor_dialog>gar_dm_bandits_dialog_93</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+</specific_character>
+	
+<specific_character id="gar_bandit_dm_3" team_default = "1">
+		<name>Кривой</name>
+		<icon>ui_npc_u_krivoy</icon>
+		<map_icon x="0" y="0"></map_icon>
+		<bio>esc_bandit_novice_bio</bio>
+		
+		<class>gar_bandit_dm_3</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>250</rank>
+		<reputation>-145</reputation>
+		<money min="4000" max="25000" infinitive="0"></money>
+
+		<snd_config>characters_voice\human_01\bandit\</snd_config>
+		<crouch_type>1</crouch_type>
+
+		<visual>actors\2018\veteran</visual>
+		<supplies>
+			[spawn] \n
+	        wpn_aks47 \n
+	        ammo_7.62x39_ap = 2 \n
+			wpn_fort \n
+			ammo_9x18_pmm = 2 \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"	
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_2.xml"	
+</specific_character>
+	
+<specific_character id="gar_stalker_flame_quest" team_default = "1">
+		<name>Лёха Тамбовский</name>
+		<icon>ui_npc_u_holod</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_tambovskiy_bio</bio>
+
+		<class>gar_stalker_flame_quest</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>423</rank>
+		<reputation>20</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\2018\holod</visual>
+		<supplies>
+			[spawn] \n
+			wpn_akm = 1 \n
+			ammo_7.62x39_ap = 2 \n
+			wpn_fort \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+			trubka \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+				
+#include "gameplay\character_criticals_4.xml"
+
+		<start_dialog>gar_flamethrower_dialog</start_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+
+</specific_character>
+
+<specific_character id="gar_stalker_binoc" team_default = "1">
+		<name>Женька Апостол</name>
+		<icon>ui_npc_u_tambov</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_apostol_bio</bio>
+
+		<class>gar_stalker_binoc</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>300</rank>
+		<reputation>1</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_04\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\2018\tambov</visual>
+		<supplies>
+			[spawn] \n
+			ammo_5.45x39_fmj = 2 \n
+			ammo_9x18_pmm = 2 \n
+			device_torch \n
+#include "gameplay\character_items.xml" \n
+#include "gameplay\character_drugs.xml" \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+    <actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>	
+</specific_character>
+
+<specific_character id="gar_stalker_trupik" team_default = "1">
+		<name>Неизвестный</name>
+		<icon>ui_npc_u_trups</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_trup_bio</bio>
+
+		<class>gar_stalker_trupik</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		
+		<rank>300</rank>
+		<reputation>1</reputation>
+		<money min="1500" max="25000" infinitive="0"/>
+		
+		<snd_config>characters_voice\human_04\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+
+		<visual>actors\corpses\dead_neytral_st2</visual>
+		<supplies>
+			[spawn] \n
+#include "gameplay\character_food.xml"
+		</supplies>
+		
+#include "gameplay\character_criticals_4.xml"
+</specific_character>
+	
+</xml>

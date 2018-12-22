@@ -1,0 +1,241 @@
+;HK G36
+[wpn_g36]:weapon_immunities
+GroupControlSection					= spawn_group
+discovery_dependency				= 
+$spawn								= "weapons\g36"
+$npc								= on	
+$prefetch							= 8
+scheduled							= off
+cform								= skeleton
+class								= WP_AK74
+min_radius							= 0
+max_radius							= 150
+description							= enc_weapons1_wpn-g36
+
+default_to_ruck						= false
+
+launch_speed						= 0
+ef_main_weapon_type					= 2
+ef_weapon_type						= 6
+
+holder_range_modifier				= 1.85
+holder_fov_modifier					= 0.3
+
+cost								= 8000
+weapon_class						= assault_rifle
+
+ammo_limit							= 210
+ammo_current						= 180
+ammo_elapsed						= 30
+	
+ammo_mag_size						= 30
+ammo_class							= ammo_5.56x45_ss190,ammo_5.56x45_ap,ammo_ak,ammo_5.56x45_merc
+grenade_class						= ammo_m209
+fire_modes							= 1, -1
+f_mode								= 2
+
+hand_dependence						= 1
+single_handed						= 0	
+
+slot				    			= 2
+animation_slot						= 2
+
+inv_name							= wpn-g36
+inv_name_short						= wpn-g36
+inv_weight							= 3.63
+icon_group          				= 2
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 13
+inv_grid_y         					= 14
+
+kill_msg_x							= 157
+kill_msg_y							= 29
+kill_msg_width						= 78
+kill_msg_height						= 31
+
+fire_dispersion_base				= 0.14
+control_inertion_factor				= 1.2f
+
+cam_relax_speed						= 4	
+cam_dispersion						= 0.2	
+cam_dispersion_inc					= 0.3
+cam_dispertion_frac					= 0.6
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 0.2
+
+fire_dispersion_condition_factor 	= 1.5	
+misfire_probability					= 0.003	
+misfire_condition_k					= 0.50
+condition_shot_dec					= 0.00025
+
+direction							= 0, 0, 1
+fire_point							= 0.0, 0.21, 0.58
+fire_point2							= 0.0, 0.21, 0.71
+
+flame_particles						= weapons\generic_weapon05
+smoke_particles						= weapons\generic_shoot_00
+grenade_flame_particles				= weapons\generic_weapon01
+	
+shell_point							= 0.0, 0.21, 0.13
+shell_dir							= 0.0, 0.0, 0.4
+shell_particles						= ;
+
+rpm_empty_click						= 200
+
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 3.0
+PDM_disp_accel_factor 				= 4.0
+PDM_crouch							= 1.7
+PDM_crouch_no_acc					= 0.63
+
+hit_power							= 0.96
+hit_impulse							= 1
+hit_type							= fire_wound
+
+fire_distance						= 250
+bullet_speed						= 920
+rpm									= 750
+
+use_aim_bullet						= false
+time_to_aim							= 1.0	
+
+hud									= wpn_g36_hud
+normal								= 0, 1, 0
+
+position                			= -0.026,-0.172,0
+orientation             			= 0, 0, 0
+
+strap_position         				= -0.26,-0.11,0.25
+strap_orientation      				= -15,-9,110
+strap_bone0							= bip01_spine2
+strap_bone1							= bip01_spine1
+
+startup_ammo						= 90
+visual								= weapons\g36\wpn_g36.ogf
+
+light_color							= 0.6,0.5,0.3
+light_range							= 5
+light_var_color						= 0.05
+light_var_range						= 0.5
+light_time							= 0.2
+
+ph_mass								= 4
+
+scope_status						= 2
+silencer_status						= 2
+grenade_launcher_status				= 2
+
+scope_mode 							= 3
+scope_name 							= wpn_addon_g36l
+scope_x 							= 76
+scope_y		 				    	= -15
+silencer_name  						= wpn_addon_sil_556_ar
+silencer_x 							= 223	
+silencer_y 							= 13
+grenade_launcher_name 				= wpn_addon_grenade_launcher_m203
+grenade_launcher_x 					= 139
+grenade_launcher_y 					= 26
+
+zoom_enabled						= true
+scope_zoom_factor	    			= 30
+
+
+snd_draw							= weapons\ak_74x\rifle_draw
+snd_holster							= weapons\ak_74x\rifle_holster
+snd_shoot							= weapons\g36\g36_shoot
+snd_empty							= weapons\g36\g36_empty, 0.8
+snd_reload							= weapons\g36\g36_reload
+snd_shoot_grenade					= weapons\m203\M203_grenshoot
+snd_reload_grenade					= weapons\g36\g36_m320_reload
+snd_switch							= weapons\m203\M203_switch, 1.0, 0.5
+snd_silncer_shot					= weapons\g36\g36_shot_sil
+snd_razgruzka						= weapons\razgruzka\ammo_4
+
+;silencer_flame_particles			= weapons\generic_weapon01
+silencer_smoke_particles			= weapons\generic_shoot_00
+
+silencer_light_color				= 0.6,0.5,0.3
+silencer_light_range				= 0.01
+silencer_light_var_color			= 0.05
+silencer_light_var_range			= 0.5
+silencer_light_time					= 0.2
+
+[wpn_g36_hud]
+shell_point							= 0.005000,-0.010000,-0.296501
+shell_dir							= 0.0, 0.0, 0.0
+
+fire_point							= 0.000000,-0.011000,0.049500
+fire_point2							= 0.015000,-0.146000,0.134600
+fire_bone               			= wpn_body
+
+position							= -0.015000,0.000000,0.000000
+orientation							= 0.000000,0.000000,0.000000
+visual								= weapons\g36\wpn_g36_hud.ogf
+
+grenade_bone            			= wpn_grenade
+
+anim_draw							= normal_draw
+anim_holster						= normal_holster
+anim_idle							= normal_idle
+anim_idle_aim						= normal_idle_aim
+anim_idle_sprint					= normal_idle_sprint
+anim_reload							= normal_reload
+anim_shoot							= normal_shoot
+
+anim_draw_gl						= w_gl_draw
+anim_holster_gl						= w_gl_holster
+anim_idle_gl						= w_gl_idle
+anim_idle_gl_aim					= w_gl_idle_aim
+anim_reload_gl						= w_gl_reload
+anim_shoot_gl						= w_gl_shoot
+anim_switch_grenade_off				= w_gl_switch_off
+anim_switch_grenade_on				= w_gl_switch_on
+anim_idle_sprint_gl					= w_gl_idle_sprint
+
+anim_draw_g							= g_draw
+anim_holster_g						= g_holster
+anim_idle_g							= g_idle
+anim_idle_g_aim						= g_idle_aim
+anim_reload_g						= g_reload
+anim_shoot_g						= g_shoot
+
+zoom_offset							= -0.110240,0.016870,0.185200
+zoom_rotate_x						= -0.003710
+zoom_rotate_y						= -0.001600
+
+grenade_normal_zoom_offset			= -0.110240,0.016870,0.185200
+grenade_normal_zoom_rotate_x		= -0.003710
+grenade_normal_zoom_rotate_y		= -0.001600
+
+grenade_zoom_offset					= -0.053820,-0.181430,1.876000
+grenade_zoom_rotate_x				= -0.169400
+grenade_zoom_rotate_y				= 0.000300
+
+zoom_hide_crosshair					= true
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27
+
+[wpn_g36_g36l]:wpn_g36
+visual								= weapons\g36\wpn_g36.ogf
+
+grenade_launcher_status				= 2
+scope_attached         				= 0
+hud									= wpn_g36_g36l_hud
+
+control_inertion_factor				= 1.2f
+
+[wpn_g36_g36l_hud]:wpn_g36_hud
+visual								= weapons\g36\wpn_g36_hud.ogf
+zoom_offset							= -0.111240,-0.021130,-0.114800
+zoom_rotate_x						= 0.002640
+zoom_rotate_y						= -0.000440
+
+grenade_normal_zoom_offset			= -0.111240,-0.021130,-0.114800
+grenade_normal_zoom_rotate_x		= 0.002640
+grenade_normal_zoom_rotate_y		= -0.000440
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27

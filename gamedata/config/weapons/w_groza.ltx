@@ -1,0 +1,242 @@
+;ОЦ-14 "Гроза-4"
+[wpn_groza]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\groza"
+$npc						= on
+$prefetch					= 16
+scheduled					= off
+cform						= skeleton
+class						= WP_GROZA
+min_radius					= 0
+max_radius					= 100
+description					= enc_weapons1_wpn-groza
+
+default_to_ruck				= false
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+
+cost						= 10000
+weapon_class				= assault_rifle
+
+ammo_limit					= 210
+ammo_current				= 180
+ammo_elapsed				= 20
+
+ammo_mag_size				= 20
+ammo_class					= ammo_9x39_sp5, ammo_9x39_ap, ammo_9x39_pab9
+fire_modes					= 1, -1
+f_mode						= 2
+
+launch_speed				= 0
+
+grenade_class				= ammo_vog-25, ammo_vog-25p
+
+hand_dependence				= 1
+single_handed				= 0
+
+slot 						= 2
+animation_slot				= 8
+
+inv_name					= wpn-groza
+inv_name_short				= wpn-groza
+
+inv_weight					= 4
+
+icon_group                  = 2
+inv_grid_width     			= 4
+inv_grid_height    			= 2
+inv_grid_x         			= 25
+inv_grid_y         			= 14
+
+kill_msg_x					= 67
+kill_msg_y					= 123
+kill_msg_width				= 64
+kill_msg_height				= 30
+
+fire_dispersion_base		= 0.23
+control_inertion_factor		= 1.2f
+
+cam_relax_speed         	= 4
+cam_dispersion          	= 0.22
+cam_dispersion_inc			= 0.22
+cam_dispertion_frac			= 0.9
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 0.8	
+
+fire_dispersion_condition_factor = 2 
+misfire_probability 		= 0.005
+misfire_condition_k 		= 0.50
+condition_shot_dec 			= 0.0004
+
+direction					= 0, 0, 1
+
+fire_point					= 0.0, 0.194, 0.32
+
+flame_particles		    	= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\rpg_shoot_02
+
+shell_point					= 0.0, 0.210, -0.15
+shell_dir					= 0.0, 0.0, 0.4
+shell_particles				= weapons\arsenal_shells1
+
+rpm_empty_click 			= 200
+
+PDM_disp_base 				= 2.0
+PDM_disp_vel_factor 		= 3.0
+PDM_disp_accel_factor 		= 5.0
+PDM_crouch					= 1.9
+PDM_crouch_no_acc			= 0.7
+
+hit_power					= 1
+hit_impulse					= 1
+hit_type					= fire_wound
+
+fire_distance				= 150
+bullet_speed				= 300
+rpm							= 700
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+grenade_vel					= 76
+
+hud							= wpn_groza_hud
+normal						= 0, 1, 0
+
+position					= -0.026, -0.144, 0.0
+orientation					= 0, 0, 0
+
+strap_position         		= -0.34,-0.12,0.32
+strap_orientation      		= -05,-7,110
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo				= 90
+visual						= weapons\groza\wpn_groza.ogf
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass						= 5
+
+silencer_status				= 0
+grenade_launcher_status		= 1
+
+scope_status 				= 2
+scope_name 					= wpn_addon_po
+scope_x                     = 85
+scope_y                     = -15
+scope_mode 					= 3
+
+zoom_enabled				= true
+scope_zoom_factor			= 90
+
+silencer_name				= wpn_addon_silencer
+silencer_x					= 188
+silencer_y					= 18
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+snd_draw					= weapons\groza\groza_draw
+snd_holster					= weapons\groza\groza_holster
+snd_shoot					= weapons\groza\groza_shoot
+snd_shoot1					= weapons\groza\groza_shoot1
+snd_shoot2					= weapons\groza\groza_shoot2
+snd_shoot3					= weapons\groza\groza_shoot3
+snd_empty					= weapons\rifle_empty, 0.7
+snd_reload					= weapons\groza\groza_reload
+snd_shoot_grenade			= weapons\gp25\gp25_grenshoot
+snd_reload_grenade			= weapons\gp25\gp25_grenload
+snd_switch					= weapons\groza\groza_switch, 1.0, 0.45
+snd_silncer_shot			= weapons\groza\groza_shot_sil 
+snd_razgruzka				= weapons\razgruzka\ammo_5
+
+[wpn_groza_hud]
+allow_inertion				= true
+shell_point					= -0.030000,0.420000,0.060000
+shell_dir					= 0.0, 1.0, 0.0
+
+fire_point					= 0.001000,0.135030,0.029999
+fire_point2					= 0.001000,0.035000,0.090000
+fire_bone					= wpn_body
+position					= 0.130100,0.010000,-0.015500
+orientation					= 0.000000,0.000000,0.000000
+visual						= weapons\groza\wpn_groza_hud.ogf
+
+grenade_bone				= wpn_grenade
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+anim_idle_g					= idle_grenade
+anim_reload_g				= reload_grenade
+anim_shoot_g				= shoot_grenade
+anim_switch_grenade_on		= switch_on
+anim_switch_grenade_off		= switch_off
+anim_draw_g					= draw
+anim_holster_g				= holster
+anim_idle_sprint_gl			= idle_sprint;w_gl_idle_sprint
+
+anim_idle_gl				= idle
+anim_reload_gl				= reload
+anim_draw_gl				= draw
+anim_holster_gl				= holster
+anim_shoot_gl				= shoot
+anim_idle_aim				= idle_aim
+anim_idle_g_aim         	= idle_grenade_aim
+anim_idle_gl_aim        	= idle_aim
+
+zoom_offset					= -0.129800,-0.020200,-0.141500
+zoom_rotate_x				= -0.012600
+zoom_rotate_y				= -0.000600
+
+grenade_zoom_offset			= -0.127520,-0.093730,-0.152510
+grenade_zoom_rotate_x		= -0.113501
+grenade_zoom_rotate_y		= -0.003100
+
+zoom_hide_crosshair			= true
+
+zoom_rotate_time			= 0.26
+rotate_time					= 0.26
+
+[wpn_groza_po]:wpn_groza
+grenade_launcher_status		= 1
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+hud  						= wpn_groza_po_hud
+visual                   	= weapons\groza\wpn_groza
+
+[wpn_groza_po_hud]:wpn_groza_hud
+visual						= weapons\groza\wpn_groza_hud.ogf
+zoom_offset					= -0.129800,-0.049400,0.963100
+zoom_rotate_x				= -0.000300
+zoom_rotate_y				= -0.000300
+
+grenade_zoom_offset			= -0.127520,-0.093730,-0.152510
+grenade_zoom_rotate_x		= -0.113501
+grenade_zoom_rotate_y		= -0.003100
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27

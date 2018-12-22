@@ -1,0 +1,128 @@
+;АК-74М
+[wpn_ak74m]:wpn_ak74
+cost								= 4000
+inv_name	        				= wpn-ak74m
+inv_name_short						= wpn-ak74m
+description							= enc_weapons1_wpn-ak74m
+
+default_to_ruck						= false
+
+inv_weight							= 3.6
+
+control_inertion_factor				= 1.25f
+fire_dispersion_base				= 0.20
+
+cam_relax_speed        	 			= 4.5
+cam_relax_speed_ai        	 	    = 360
+cam_dispersion          			= 0.22
+cam_dispersion_inc					= 0.42
+cam_step_angle_horz					= 2.5
+
+condition_shot_dec					= 0.00009
+
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 3.0
+PDM_disp_accel_factor 				= 5.0
+PDM_crouch							= 1.8
+PDM_crouch_no_acc					= 0.67
+
+icon_group                  		= 2
+inv_grid_width     					= 6
+inv_grid_height    					= 2
+inv_grid_x         					= 20
+inv_grid_y         					= 2
+hud  								= wpn_ak74m_hud
+
+scope_name 							= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_mode 							= 3
+scope_status 						= 2
+ironsight_zoom_factor       		= 90
+zoom_enabled						= true
+visual                  			= weaponsv\ak74m\wpn_ak74m
+
+[wpn_ak74m_hud]:wpn_ak74_hud
+visual                   			= weaponsv\ak74m\wpn_ak74m_hud
+
+zoom_offset							= -0.138480,0.064000,-0.179730
+zoom_rotate_x						= 0.028950
+zoom_rotate_y						= 0.029900
+
+grenade_normal_zoom_offset			= -0.138480,0.064000,-0.179730
+grenade_normal_zoom_rotate_x		= 0.028950
+grenade_normal_zoom_rotate_y		= 0.029900
+
+grenade_zoom_offset					= -0.066940,-0.407000,0.069120
+grenade_zoom_rotate_x				= -0.435500
+grenade_zoom_rotate_y				= 0.027500
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27
+
+[wpn_ak74m_1pso]:wpn_ak74m
+scope_zoom_factor	    			= 90
+grenade_launcher_status				= 2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+hud  								= wpn_ak74m_1pso_hud
+visual                   			= weaponsv\ak74m\wpn_ak74m
+
+[wpn_ak74m_1pso_hud]:wpn_ak74m_hud
+fire_point							= 0.400000,-0.500000,2.255000
+visual                  			= weaponsv\ak74m\wpn_ak74m_hud
+zoom_offset							= -0.123480,0.033500,2.472870
+zoom_rotate_x						= 0.030550
+zoom_rotate_y						= 0.028550
+
+grenade_normal_zoom_offset			= -0.123480,0.033500,2.472870
+grenade_normal_zoom_rotate_x		= 0.030550
+grenade_normal_zoom_rotate_y		= 0.028550
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_ak74m_1p78]:wpn_ak74m
+grenade_launcher_status				= 2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+hud  								= wpn_ak74m_1p78_hud
+visual                   			= weaponsv\ak74m\wpn_ak74m_1p78
+
+[wpn_ak74m_1p78_hud]:wpn_ak74m_hud
+fire_point							= 0.400000,-0.500000,2.255000
+visual                   			= weaponsv\ak74m\wpn_ak74m_1p78_hud
+zoom_offset							= -0.138220,0.028000,1.380870
+zoom_rotate_x						= 0.027360
+zoom_rotate_y						= 0.030240
+
+grenade_normal_zoom_offset			= -0.138220,0.028000,1.380870
+grenade_normal_zoom_rotate_x		= 0.027360
+grenade_normal_zoom_rotate_y		= 0.030240
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+	
+[wpn_ak74m_cobra]:wpn_ak74m	
+grenade_launcher_status				= 2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.25f
+
+hud  								= wpn_ak74m_cobra_hud
+visual                   			= weaponsv\ak74m\wpn_ak74m_cobra
+
+[wpn_ak74m_cobra_hud]:wpn_ak74m_hud
+visual                   			= weaponsv\ak74m\wpn_ak74m_cobra_hud
+zoom_offset							= -0.136180,0.019300,-0.024130
+zoom_rotate_x						= 0.026350
+zoom_rotate_y						= 0.028650
+
+grenade_normal_zoom_offset			= -0.136180,0.019300,-0.024130
+grenade_normal_zoom_rotate_x		= 0.026350
+grenade_normal_zoom_rotate_y		= 0.028650
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27

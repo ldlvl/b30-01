@@ -1,0 +1,27 @@
+[logic]
+active = ph_car@idle
+on_hit = hit
+on_death = death
+
+[hit]
+on_info = {=hit_by_actor} %+mil_korovan_alarm%
+
+[death]
+on_info = {=killed_by_actor} %+mil_korovan_alarm%
+
+[ph_car@idle]
+target=actor
+fire_range=80
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {+mil_korovan_alarm} ph_car@eliminate
+
+[ph_car@eliminate]
+target=actor
+fire_range=120
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {+mil_korovan_normal} ph_car@idle
+

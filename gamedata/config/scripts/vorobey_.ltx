@@ -1,0 +1,60 @@
+;[smart_terrains]
+;vorobey_bar = {-smart_vorobey_dvl -smart_vorobey_esc -smart_vorobey_mil -smart_vorobey_les}
+;vorobey_dvl = {-smart_vorobey_bar -smart_vorobey_esc -smart_vorobey_mil -smart_vorobey_les}
+;vorobey_esc = {-smart_vorobey_dvl -smart_vorobey_bar -smart_vorobey_mil -smart_vorobey_les}
+;vorobey_mil = {-smart_vorobey_dvl -smart_vorobey_esc -smart_vorobey_bar -smart_vorobey_les}
+;vorobey_les = {-smart_vorobey_dvl -smart_vorobey_esc -smart_vorobey_mil -smart_vorobey_bar}
+
+[logic]
+active = walker@day_esc
+on_death = death
+
+[sr_idle]
+;on_info  = {+smart_vorobey_esc} walker@day_dvl
+;on_info2 = {+smart_vorobey_mil} walker@day_esc
+;on_info3 = {+smart_vorobey_les} walker@day_mil
+;on_info4 = {+smart_vorobey_bar} walker@day_les
+;on_info5 = {+smart_vorobey_dvl} walker@day_bar
+
+[walker@day_bar]
+path_walk = vorobey_bar_1walk_way
+path_look = vorobey_bar_1way_look
+;on_info  = {!is_vorobey_bar} %+smart_vorobey_dvl% sleeper@bar
+
+[sleeper@bar]
+path_main = vorobey_bar_sleep
+
+[walker@day_dvl]
+path_walk = vorobey_dvl_1walk_way
+path_look = vorobey_dvl_1way_look
+;on_info = {!is_vorobey_dvl} %+smart_vorobey_esc% sleeper@dvl
+
+[sleeper@dvl]
+path_main = vorobey_dvl_sleep
+
+[walker@day_esc]
+path_walk = vorobey_esc_1walk_way
+path_look = vorobey_esc_1way_look
+;on_info = {+smart_vorobey_mil} sleeper@esc
+
+[sleeper@esc]
+path_main = vorobey_esc_sleep
+
+[walker@day_mil]
+path_walk = vorobey_mil_1walk_way
+path_look = vorobey_mil_1way_look
+;on_info = {!is_vorobey_mil} %+smart_vorobey_les% sleeper@mil
+
+[sleeper@mil]
+path_main = vorobey_mil_sleep
+
+[walker@day_les]
+path_walk = vorobey_les_1walk_way
+path_look = vorobey_les_1way_look
+;on_info  = {!is_vorobey_les} %+smart_vorobey_bar% sleeper@les
+
+[sleeper@les]
+path_main = vorobey_les_sleep
+
+[death]
+on_death = %+vorobey_umer%

@@ -1,0 +1,212 @@
+;СВ-98
+[wpn_sv98]:wpn_svd
+min_radius						= 20
+max_radius						= 200
+description						= enc_weapons_wpn_sv98
+dialog_description				= desc_dialog_wpn_sv98
+
+default_to_ruck					= false
+
+ef_main_weapon_type				= 3
+ef_weapon_type					= 8
+
+holder_range_modifier			= 2.15
+holder_fov_modifier				= 0.3
+
+cost							= 65000
+
+weapon_class					= sniper_rifle
+
+f_mode							= 1
+
+ammo_limit						= 60
+ammo_current					= 10
+ammo_elapsed					= 0
+ammo_mag_size					= 10
+ammo_class						= ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_7h14
+sprint_allowed					= true
+
+fire_dispersion_base			= 0.06
+
+control_inertion_factor			= 1.35f
+
+cam_relax_speed         		= 4.5
+cam_dispersion          		= 0.95
+cam_dispersion_inc				= 0.95
+cam_dispertion_frac				= 1.0
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.1
+
+fire_dispersion_condition_factor = 1.25
+misfire_probability				= 0.009
+misfire_condition_k				= 0.50
+
+condition_shot_dec 				= 0.0005
+
+hand_dependence					= 1
+single_handed					= 0
+
+slot							= 2
+animation_slot					= 2	
+
+inv_name						= wpn_sv98
+inv_name_short					= wpn_sv98
+
+inv_weight						= 5.5
+
+icon_group                      = 2
+inv_grid_width     				= 7
+inv_grid_height    				= 2
+inv_grid_x         				= 18
+inv_grid_y         				= 16
+
+kill_msg_x						= 0
+kill_msg_y						= 0
+kill_msg_width					= 98
+kill_msg_height					= 23
+
+direction						= 0, 0, 1
+fire_point						= 0.0, 0.129, 0.942
+flame_particles					= weapons\generic_weapon06
+smoke_particles					= weapons\generic_shoot_00
+rpm_empty_click					= 200
+shell_point						= 0.0, 0.129, 0.192
+shell_dir						= 0.0, 0.0, 0.4
+
+PDM_disp_base 					= 4.0
+PDM_disp_vel_factor 			= 5.0
+PDM_disp_accel_factor 			= 7.0
+PDM_crouch						= 3.9
+PDM_crouch_no_acc				= 2.7
+
+hit_power						= 1
+hit_impulse		 				= 1
+
+fire_distance					= 500
+bullet_speed					= 900
+rpm								= 35
+
+use_aim_bullet					= false
+time_to_aim						= 1.0
+	
+hud								= wpn_sv98_hud
+normal							= 0, 1, 0
+position						= -0.026,-0.172,0
+orientation						= 0, 0, 0
+strap_position					= -0.15,-0.15,0.45
+strap_orientation				= -25,-189,65
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+startup_ammo					= 10
+visual							= weaponsv\sv98\sv98
+
+light_color						= 0.6,0.5,0.3
+light_range						= 4.0
+light_var_color					= 0.05
+light_var_range					= 0.5
+light_time						= 0.2
+
+ph_mass							= 3
+
+scope_status					= 2
+silencer_status					= 0
+grenade_launcher_status			= 0
+
+scope_mode 						= 3
+scope_name 						= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+scope_x							= 74
+scope_y							= -6
+
+zoom_enabled					= true
+scope_zoom_factor				= 75
+
+snd_shoot						= weapons\sv98\shoot
+snd_empty						= weapons\gen_empty 
+snd_reload						= weapons\sv98\reload
+snd_razgruzka					= weapons\razgruzka\ammo_5
+
+[wpn_sv98_hud]
+shell_point						= 0.0,0.0,0.0
+shell_dir						= 0.0, 1.0, 0.0
+fire_point						= 0.0,-0.03,0.01
+fire_bone						= wpn_body
+
+position						= 0.000000,-0.015000,-0.105000
+orientation						= 0.000000,0.000000,0.000000
+
+visual							= weaponsv\sv98\sv98_hud.ogf
+
+anim_idle						= idle
+anim_idle_aim					= idle_aim
+anim_reload						= reload
+anim_draw						= draw
+anim_holster					= holster
+anim_shoot						= shoot
+anim_idle_sprint				= idle_sprint
+
+zoom_offset						= -0.108800,0.058990,-0.109300
+zoom_rotate_x					= -0.000700
+zoom_rotate_y					= 0.000150
+
+zoom_rotate_time				= 0.3
+rotate_time						= 0.3
+
+[wpn_sv98_acog]:wpn_sv98
+visual 							= weaponsv\sv98\sv98
+
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+hud 							= wpn_sv98_acog_hud
+
+[wpn_sv98_acog_hud]:wpn_sv98_hud
+fire_point						= 0.300000,-0.351000,2.330000
+visual							= weaponsv\sv98\sv98_hud
+
+zoom_offset						= -0.108800,0.013990,0.910800
+zoom_rotate_x					= 0.002100
+zoom_rotate_y					= 0.000950
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31
+
+[wpn_sv98_eotech]:wpn_sv98
+visual 							= weaponsv\sv98\sv98_eotech
+
+scope_attached         			= 0
+
+control_inertion_factor			= 1.35f
+
+hud 							= wpn_sv98_eotech_hud
+
+[wpn_sv98_eotech_hud]:wpn_sv98_hud
+visual							= weaponsv\sv98\sv98_eotech_hud
+
+zoom_offset						= -0.108800,0.006690,-0.109200
+zoom_rotate_x					= -0.006800
+zoom_rotate_y					= 0.000550
+
+zoom_rotate_time				= 0.3
+rotate_time						= 0.3
+
+[wpn_sv98_mt]:wpn_sv98
+visual 							= weaponsv\sv98\sv98_mt
+
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+hud 							= wpn_sv98_mt_hud
+
+[wpn_sv98_mt_hud]:wpn_sv98_hud
+fire_point						= 0.300000,-0.351000,2.330000
+visual							= weaponsv\sv98\sv98_mt_hud
+
+zoom_offset						= -0.108800,0.016990,2.310800
+zoom_rotate_x					= 0.000700
+zoom_rotate_y					= 0.000250
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<game_dialogs>
+
+<dialog id="amk_recipt_osvedomitel">
+	<phrase_list>
+		<phrase id="0">
+			<text>amk_recipt_osvedomitel_0</text>
+			<action>ui_barter_new.barter_screen("zub")</action>
+			<action>dialogs.break_dialog</action>
+<!-- 			<next>1</next>
+			<next>11</next> -->
+		</phrase>
+		<phrase id="11">
+		<precondition>sak_dialog.osvedomitel_artmods_not</precondition>
+			<text>amk_recipt_osvedomitel_11</text>
+		</phrase>
+		<phrase id="1">
+		<precondition>sak_dialog.osvedomitel_artmods_yes</precondition>
+			<text>amk_recipt_osvedomitel_1</text>
+			<next>21</next>
+			<next>22</next>
+			<next>23</next>
+		</phrase>
+		<phrase id="21">
+			<text>amk_recipt_osvedomitel_21</text>
+			<next>31</next>
+		</phrase>
+		<phrase id="31">
+			<text>amk_recipt_osvedomitel_31</text>
+			<action>sak_dialog.osvedomitel_artmods_have</action>
+			<next>41</next>
+			<next>42</next>
+			<next>47</next>
+		</phrase>
+		<phrase id="41">
+		<precondition>sak_dialog.osvedomitel_artmods_have_1</precondition>
+			<text>amk_recipt_osvedomitel_41</text>
+			<action>sak_dialog.give_osvedomitel_artmods_1</action>
+			<next>51</next>
+		</phrase>
+		<phrase id="51">
+			<text>amk_recipt_osvedomitel_51</text>
+			<action>sak_dialog.add_osvedomitel_artmods_1</action>
+			<next>6</next>
+		</phrase>
+		<phrase id="42">
+		<precondition>sak_dialog.osvedomitel_artmods_have_2</precondition>
+			<text>amk_recipt_osvedomitel_42</text>
+			<action>sak_dialog.give_osvedomitel_artmods_2</action>
+			<next>52</next>
+		</phrase>
+		<phrase id="52">
+			<text>amk_recipt_osvedomitel_52</text>
+			<action>sak_dialog.add_osvedomitel_artmods_2</action>
+			<next>6</next>
+		</phrase>
+		<phrase id="47">
+			<text>amk_recipt_osvedomitel_47</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="6">
+			<text>amk_recipt_osvedomitel_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="22">
+			<text>amk_recipt_osvedomitel_22</text>
+			<next>32</next>
+		</phrase>
+		<phrase id="32">
+			<text>amk_recipt_osvedomitel_32</text>
+			<action>sak_dialog.osvedomitel_amkres_have</action>
+			<next>421</next>
+			<next>47</next>
+		</phrase>
+		<phrase id="421">
+		<precondition>sak_dialog.osvedomitel_amkres_have_1</precondition>
+			<text>amk_recipt_osvedomitel_421</text>
+			<action>sak_dialog.give_osvedomitel_amkres_1</action>
+			<next>521</next>
+		</phrase>
+		<phrase id="521">
+			<text>amk_recipt_osvedomitel_521</text>
+			<action>sak_dialog.add_osvedomitel_amkres_1</action>
+			<next>6</next>
+		</phrase>
+		<phrase id="23">
+			<text>amk_recipt_osvedomitel_23</text>
+			<next>33</next>
+		</phrase>
+		<phrase id="33">
+			<text>amk_recipt_osvedomitel_33</text>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="amk_recipts_ratcatcher">
+	<phrase_list>
+		<phrase id="0">
+			<text>amk_rkd0</text>
+			<next>1</next>
+			<action>amk_dialogs.act_rnd_init</action>
+		</phrase>
+
+		<phrase id="1">
+			<text>amk_rkd1</text>
+			<next>2</next>
+			<next>4</next>
+		</phrase>
+			 
+		<phrase id="2">
+		  <precondition>amk_dialogs.pre_rnd_30_100</precondition>
+		  <text>amk_rkd2</text>
+		  <next>3</next>
+		</phrase>
+
+		<phrase id="3">
+		<text>amk_rkd3</text>
+			<next>5</next>
+		</phrase>
+
+		<phrase id="4">
+			<precondition>amk_dialogs.pre_rnd_0_30</precondition>
+			<text>amk_rkd4</text>
+			<action>amk_dialogs.frenzy_humanoid</action>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+		<phrase id="5">
+			<text>amk_rkd5</text>
+			<next>6</next>
+		</phrase>
+
+		 <phrase id="6">
+			<text>amk_rkd6</text>
+			<next>7</next>
+		</phrase>
+
+		<phrase id="7">
+			<text>alenka_info</text>
+			<give_info>info_amk_recipt_burer_grandmother_glassbeards</give_info>
+			<give_info>info_amk_ratcatcher_story</give_info>
+			<action>amk_dialogs.make_kill_task_failed</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="8">
+			<text>amk_rkd8</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+	</phrase_list>
+</dialog>
+
+</game_dialogs>

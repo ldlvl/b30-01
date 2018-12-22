@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_actor_inside = %+agr_find_gunslinger_cache_found +agr_krot_secret_info% sr_idle@2
+[sr_idle@2]
+on_actor_inside = {+agr_krot_secret_info +agr_gunslinger_flash_have} %+agr_find_gunslinger_cache_final% nil
+

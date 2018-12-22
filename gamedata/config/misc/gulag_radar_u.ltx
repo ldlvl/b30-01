@@ -1,0 +1,119 @@
+[logic@bun_krovosos_nest_home1]
+active = mob_home@bun_krovosos_nest_home1
+
+[logic@bun_krovosos_nest_home11]
+active = mob_home@bun_krovosos_nest_home1
+
+[mob_home@bun_krovosos_nest_home1]
+path_home = h1
+home_min_radius = 5
+home_max_radius = 10
+;on_info = {+bar_deactivate_radar_done} %=kill%
+on_actor_dist_le_nvis = 25 | mob_home@bun_krovosos_nest_home1_1 %=bar_arena_hit%
+
+[mob_home@bun_krovosos_nest_home1_1]
+path_home = h1
+home_min_radius = 30
+home_max_radius = 45
+;on_info = {+bar_deactivate_radar_done} %=kill%
+
+[logic@bun_krovosos_nest_home2]
+active = mob_home@bun_krovosos_nest_home2
+
+[logic@bun_krovosos_nest_home21]
+active = mob_home@bun_krovosos_nest_home2
+
+[mob_home@bun_krovosos_nest_home2]
+path_home = h2
+home_min_radius = 5
+home_max_radius = 10
+;on_info = {+bar_deactivate_radar_done} %=kill%
+on_actor_dist_le_nvis = 25 | mob_home@bun_krovosos_nest_home2_1 %=bar_arena_hit%
+
+[mob_home@bun_krovosos_nest_home2_1]
+path_home = h2
+home_min_radius = 30
+home_max_radius = 45
+;on_info = {+bar_deactivate_radar_done} %=kill%
+
+[logic@bun_krovosos_nest_home3]
+active = mob_home@bun_krovosos_nest_home3
+
+[logic@bun_krovosos_nest_home31]
+active = mob_home@bun_krovosos_nest_home3
+
+[mob_home@bun_krovosos_nest_home3]
+path_home = h3
+home_min_radius = 5
+home_max_radius = 10
+;on_info = {+bar_deactivate_radar_done} %=kill%
+on_actor_dist_le_nvis = 25 | mob_home@bun_krovosos_nest_home3_1 %=bar_arena_hit%
+
+[mob_home@bun_krovosos_nest_home3_1]
+path_home = h3
+home_min_radius = 30
+home_max_radius = 45
+;on_info = {+bar_deactivate_radar_done} %=kill%
+
+
+[logic@bun_krovosos_nest_krovosos2]
+active = mob_home@bun_krovosos_nest_krovosos2
+
+[logic@bun_krovosos_nest_krovosos21]
+active = mob_home@bun_krovosos_nest_krovosos21
+
+[mob_home@bun_krovosos_nest_krovosos2]
+path_home = h3
+home_min_radius = 5
+home_max_radius = 10
+
+[mob_home@bun_krovosos_nest_krovosos21]
+path_home = h3
+home_min_radius = 5
+home_max_radius = 10
+
+
+[logic@bun_krovosos_run_home1]
+active = mob_home@bun_krovosos_run_home1
+
+
+[mob_home@bun_krovosos_run_home1]
+path_home = h1
+home_min_radius = 5
+home_max_radius = 10
+
+[logic@bun_krovosos_run_run]
+active = mob_walker@bun_krovosos_run_run
+
+
+[mob_walker@bun_krovosos_run_run]
+path_walk = run
+on_info = %=alien_control(true)%
+braindead = true
+
+
+[logic@bun_krovosos_run_home2]
+active = mob_home@bun_krovosos_run_home2
+
+
+[mob_home@bun_krovosos_run_home2]
+on_info = %=alien_control(false)%
+path_home = h2
+home_min_radius = 5
+home_max_radius = 10
+
+[logic@bun_krovosos_run_home3]
+active = mob_home@bun_krovosos_run_home3
+
+[mob_home@bun_krovosos_run_home3]
+path_home = h2
+home_min_radius = 5
+home_max_radius = 10
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+[smart_terrains]
+none = true
+
+[logic]
+active=walker
+
+[walker]
+path_walk = garb_tambovski_path
+path_look = garb_tambovski_look
+danger = danger_condition@tambovsky
+meet = meet
+
+[meet]
+use	= true
+meet_dialog	= gar_flamethrower_dialog
+precond = visibility
+
+[danger_condition@tambovsky]
+ignore_distance = 10
+ignore_distance_grenade = 10
+ignore_distance_corpse  = 10
+ignore_distance_danger_hit     = 20
+ignore_distance_sound   = 20

@@ -1,0 +1,593 @@
+[self_made_decoder]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn 					= "food and drugs\antirad"
+cform                   = skeleton
+class					= II_ATTCH
+visual 					= physics\technica\pribor_1c.ogf
+
+cost					= 1000
+
+inv_name				= self-made_decoder
+inv_name_short			= self-made_decoder
+description				= self-made_decoder_descr
+
+inv_weight				= 0.3
+
+quest_item				= false	
+icon_group              = 1
+inv_grid_width			= 2
+inv_grid_height			= 1
+inv_grid_x				= 7
+inv_grid_y				= 19
+
+radius					= 1
+
+
+[flask_army]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn 			= "food and drugs\sleeping_bag"
+cform                   = skeleton
+class		= II_ATTCH
+visual 	= new_item\fljaga.ogf
+
+cost			= 1000
+
+inv_name        = flask_army
+inv_name_short	= flask_army
+description	= flask_army_descr
+
+inv_weight	= 0.24
+portions_of_water = 4	
+icon_group      = 1
+inv_grid_width	= 1
+inv_grid_height	= 2
+inv_grid_x	= 19
+inv_grid_y	= 6
+
+radius			= 1
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot  = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+auto_attach	= false
+[flask_army_on_belt]:flask_army
+inv_grid_width	= 0
+inv_grid_height	= 0
+
+[flask_army_trade]:flask_army
+
+[sleeping_bag]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn 			= "food and drugs\sleeping_bag"
+cform           = skeleton
+class			= II_ATTCH
+visual	= new_item\sleeping_bag.ogf
+
+cost			= 10000
+
+inv_name        = st_sleeping_bag
+inv_name_short  = st_sleeping_bag
+description		= st_sleeping_bag_descr
+
+inv_weight      = 2.0
+icon_group      = 1
+inv_grid_width  = 2
+inv_grid_height = 2
+inv_grid_x      = 2
+inv_grid_y      = 8
+
+radius			= 1
+
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+hud = wpn_vodka_hud
+
+auto_attach	= false
+radius_zone_dream		= 10
+radius_start_dream		= 0.7
+
+[notebook_of_artist]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn		= "food and drugs\antirad"
+$prefetch 	= 32
+class		 	= II_ANTIR
+cform		= skeleton
+visual		= new_item\notes_writing_book_2.ogf
+radius			= 1
+quest_item		= false
+description	= st_notebook_of_artist_descr
+inv_name 		= st_notebook_of_artist
+inv_name_short	= st_notebook_of_artist
+inv_weight 		= 0.4
+icon_group      = 1
+inv_grid_width	= 2
+inv_grid_height	= 1
+inv_grid_x		= 13
+inv_grid_y		= 18	
+cost			= 3000
+belt 			= 0
+
+sum_page = 36
+
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+hud = wpn_vodka_hud
+
+
+[klava]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn		= "food and drugs\antirad"
+$prefetch 	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = equipments\item_klava.ogf
+radius			= 1
+quest_item		= false
+description	= klava
+inv_name 		= klava_name
+inv_name_short  = klava_name
+inv_weight 	= 0.08
+icon_group      = 1
+inv_grid_width	= 2
+inv_grid_height	= 1
+inv_grid_x		= 0
+inv_grid_y		= 11	
+cost		= 5000
+belt 			= 0
+
+eat_health 		= 0
+eat_satiety 	= 0
+eat_power 		= 0
+eat_radiation 	= 0
+eat_alcohol 	= 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+hud = wpn_vodka_hud
+
+[razgruzka]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn		= "food and drugs\antirad"
+$prefetch 	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = equipments\specnaz_soldier_suit.ogf
+radius			= 1
+quest_item			= true
+description	= razgruzka
+inv_name 		= Разгрузка
+inv_name_short  = Разгрузка
+inv_weight 	= 1
+inv_grid_width	= 0;2
+inv_grid_height	= 0;2
+inv_grid_x		= 37
+inv_grid_y		= 35	
+cost		= 0
+max_capacity = 10|30|2|1|1|4|6|2|2|2|1|2|1
+gun_reload = 1
+heavy_weapon_ammo = ammo_og-7b|ammo_gauss|ammo_7.62x54r
+spec_hran = 5013
+info_delay = 6
+;Звуки разгрузки
+snd_deselect = razgruzka\razgruzka_deselect
+snd_ammo_load 			= razgruzka\ammo_load
+snd_ammo_reload			= razgruzka\ammo_reload
+snd_medkit_load 		= razgruzka\medkit_load
+snd_medkit_reload 		= razgruzka\medkit_reload
+snd_grenade_load 		= razgruzka\grenade_load
+snd_grenade_reload 		= razgruzka\grenade_reload
+snd_ammo-grenade_load	= razgruzka\ammo-grenade_load
+snd_ammo-grenade_reload	= razgruzka\ammo-grenade_reload
+snd_ammo_scroll			= razgruzka\ammo_scroll
+snd_grenade_scroll		= razgruzka\grenade_scroll
+snd_medkit_scroll		= razgruzka\medkit_scroll
+snd_ammo-grenade_scroll	= razgruzka\ammo-grenade_scroll
+
+belt = 0
+
+eat_health 		= 0
+eat_satiety 	= 0
+eat_power 		= 0
+eat_radiation 	= 0
+eat_alcohol 	= 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+hud = wpn_vodka_hud
+
+[podsumok]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn		= "food and drugs\antirad"
+$prefetch 	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = new_item\item_podsumok.ogf
+radius			= 1
+quest_item			= true
+description	= podsumok
+inv_name 		= Подсумок
+inv_name_short  = Подсумок
+inv_weight 	= 0.1
+inv_grid_width	= 0;1
+inv_grid_height	= 0;1
+inv_grid_x		= 38
+inv_grid_y		= 13	
+cost    = 0
+belt = 0
+
+max_capacity = 30|1|2|10|1|2|1|100|10|2|1
+; Звуки подсумка
+snd_deselect 			= razgruzka\podsumok_deselect
+snd_ammo_load 			= razgruzka\ammo_load
+snd_ammo_reload			= razgruzka\ammo_reload
+snd_medkit_load 		= razgruzka\medkit_load
+snd_medkit_reload 	= razgruzka\medkit_reload
+snd_grenade_load 		= razgruzka\grenade_load
+snd_grenade_reload 		= razgruzka\grenade_reload
+snd_ammo-grenade_load	= razgruzka\ammo-grenade_load
+snd_ammo-grenade_reload	= razgruzka\ammo-grenade_reload
+snd_scroll				= razgruzka\all_scroll
+snd_scroll_heavy		= razgruzka\ammo_scroll
+
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+[podsumok_feik]:podsumok
+script_binding      = bind_physic_object.init
+inv_weight 	= 0
+inv_grid_width		= 0
+inv_grid_height		= 0
+inv_grid_x					= 27
+inv_grid_y					= 24
+[podsumok_mem]:podsumok_feik
+[rykzack_feik]:podsumok_feik
+[myaso_mem]:podsumok_feik
+[amk_metka_feik]:podsumok_feik
+inv_grid_width		= 1
+inv_grid_height		= 1
+inv_grid_x					= 26
+inv_grid_y					= 26
+
+
+[timer]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn		= "food and drugs\antirad"
+$prefetch 	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = equipments\clocki.ogf
+radius			= 1
+description	= timer
+inv_name 		= Наручные часы
+inv_name_short  = Наручные часы
+inv_weight 	= 0.1
+icon_group      = 1
+inv_grid_width	= 1
+inv_grid_height	= 1
+inv_grid_x		= 3
+inv_grid_y		= 11	
+cost		= 4000
+belt 			= 0
+
+eat_health 		= 0
+eat_satiety 	= 0
+eat_power 		= 0
+eat_radiation 	= 0
+eat_alcohol 	= 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+animation_slot  = 4
+
+hud = wpn_vodka_hud
+
+[watch]:timer
+inv_grid_width	= 0
+inv_grid_height	= 0
+
+
+[dimedrol]:identity_immunities
+GroupControlSection	= spawn_group
+discovery_dependency =
+$spawn 			= "food and drugs\antirad"
+
+class			= II_BOTTL
+cform			= skeleton
+visual			= equipments\item_dimedrol.ogf
+description		= dimedrol
+
+ef_weapon_type	= 0
+
+inv_name		= Таблетки "Димедрола"
+inv_name_short	= Димедрол
+inv_weight		= 0.01
+
+inv_grid_width	= 2
+inv_grid_height	= 1
+inv_grid_x		= 39
+inv_grid_y		= 36
+cost			= 100
+
+slot			= 4
+
+eat_health		= -0.15
+eat_satiety		= 0.01
+eat_power		= 0
+eat_radiation	= 0
+eat_alcohol		= 0
+wounds_heal_perc = 0
+eat_portions_num = -1
+
+slot			= 4
+animation_slot	= 4
+
+hud = wpn_vodka_hud
+
+[rykzack]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn    		= "food and drugs\antirad"
+$prefetch   	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = new_item\item_rykzack.ogf
+radius			= 1
+quest_item			= false
+description  	= st_backpack_descr
+inv_name   		= st_backpack
+inv_name_short  = st_backpack
+inv_weight   	= 1.5
+inv_grid_width		= 2
+inv_grid_height		= 3
+inv_grid_x					= 8
+inv_grid_y					= 17	
+cost    = 0
+belt = 0
+
+snd_select_long 			= rykzack\rykzack_open_long
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot  = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[bag_on_belt]:identity_immunities
+GroupControlSection = spawn_group
+discovery_dependency =
+$spawn    		= "food and drugs\antirad"
+$prefetch   	= 32
+class		 	= II_ANTIR
+cform           = skeleton
+visual          = new_item\item_rykzack.ogf
+radius			= 1
+quest_item			= true
+description  	= bag_on_belt_descr
+inv_name   		= bag_on_belt
+inv_name_short  = bag_on_belt
+inv_weight   	= 0.2
+inv_grid_width		= 0;1
+inv_grid_height		= 0;1
+inv_grid_x		= 38
+inv_grid_y		= 13	
+cost    = 0
+belt = 0
+
+snd_scroll				= razgruzka\bag_scroll
+snd_deselect 			= razgruzka\podsumok_deselect
+snd_load 				= razgruzka\medkit_load
+snd_reload 	 			= razgruzka\medkit_reload
+
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot  = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+[krujka_1]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn 			= "food and drugs\sleeping_bag"
+cform                   = skeleton
+class		= II_ATTCH
+visual 	= new_item\krujka.ogf
+
+cost			= 0
+
+inv_name        = krujka_1
+inv_name_short	= krujka_1
+description	= krujka_1_descr
+
+inv_weight	= 0.3
+icon_group      = 3
+inv_grid_width	= 1
+inv_grid_height	= 1
+inv_grid_x	= 19
+inv_grid_y	= 4
+
+radius			= 1
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot  = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+
+auto_attach	= false
+
+[krujka_2]:krujka_1
+visual 	= new_item\chashka1.ogf
+
+inv_name        = krujka
+inv_name_short	= krujka
+description	= krujka_descr
+
+inv_weight	= 0.2
+
+inv_grid_width	= 1
+inv_grid_height	= 1
+inv_grid_x	= 19
+inv_grid_y	= 5
+
+[krujka_3]:krujka_1
+visual 	= new_item\chashka2.ogf
+
+inv_name        = chashka
+inv_name_short	= chashka
+description	= chashka_descr
+
+inv_weight	= 0.1
+
+inv_grid_x	= 19
+inv_grid_y	= 6
+
+[krujka_4]:krujka_3
+visual 	= new_item\chashka3.ogf
+
+inv_name        = graal
+inv_name_short	= graal
+description	= graal_descr
+
+inv_weight	= 0.4
+
+inv_grid_x	= 19
+inv_grid_y	= 7
+
+[krujka_5]:krujka_1
+visual 	= new_item\anomaly_krujka.ogf
+
+inv_name        = anomaly_krujka
+inv_name_short	= anomaly_krujka
+description	= anomaly_krujka_descr
+
+inv_weight	= 16.2
+
+inv_grid_width	= 2
+inv_grid_height	= 2
+inv_grid_x	= 18
+inv_grid_y	= 8
+
+[krujka_6]:krujka_1
+visual 	= new_item\pivnaya_krujka.ogf
+
+inv_name        = pivnaya_krujka
+inv_name_short	= pivnaya_krujka
+description	= pivnaya_krujka_descr
+
+inv_weight	= 0.5
+icon_group  = 1
+inv_grid_x	= 19 
+inv_grid_y	= 19
+
+[skiing]:identity_immunities
+GroupControlSection		= spawn_group
+discovery_dependency	=
+$spawn 			= "food and drugs\sleeping_bag"
+cform                   = skeleton
+class		= II_ATTCH
+visual 	= new_item\skiing.ogf
+
+cost			= 0
+
+inv_name        = skiing
+inv_name_short	= skiing
+description	= skiing_descr
+
+inv_weight	= 3.5
+icon_group      = 3
+inv_grid_width     = 4
+inv_grid_height    = 1
+inv_grid_x         = 16
+inv_grid_y         = 0
+
+radius			= 1
+; eatable item
+eat_health = 0
+eat_satiety = 0
+eat_power = 0
+eat_radiation = 0
+eat_alcohol = 0
+wounds_heal_perc = 0
+eat_portions_num = 1
+
+; food item
+animation_slot  = 4
+
+;hud item
+hud = wpn_vodka_hud
+
+

@@ -1,0 +1,124 @@
+[zone_no_gravity]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\nogravity"
+class			= Z_NOGRAV
+script_binding          = amk_anoms.bind
+
+ef_anomaly_type			= 7
+ef_weapon_type			= 19
+
+hit_impulse_scale	= 0.5
+effective_radius	= 0.75
+sound			= zone_mosquito_bald
+postprocess		= postprocess_new
+
+artefacts		=
+BirthProbability = 0.0
+
+
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+hit_type		= shock
+
+disable_time		= -1
+disable_time_small	= 500	
+disable_idle_time	= -1
+
+ignore_nonalive		= false;
+ignore_small		= false;
+ignore_artefacts	= false;
+
+awaking_time				= 500
+blowout_time				= 1000	
+accamulate_time				= 5000
+
+blowout_light		= off
+idle_light			= off
+
+visible_by_detector = off
+
+blowout_wind		= off
+
+
+
+spawn_blowout_artefacts = off
+
+
+
+[zone_no_gravity_weak]:zone_no_gravity
+$spawn 						= "zones\no gravity weak"
+artefacts					= 
+BirthProbability 			= 0.0
+
+
+min_start_power		= 0.50
+max_start_power		= 0.60
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+[zone_no_gravity_average]:zone_no_gravity
+$spawn 						= "zones\no gravity average"
+artefacts					= 
+BirthProbability 			= 0.0
+
+
+min_start_power		= 0.70
+max_start_power		= 0.85
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+[zone_no_gravity_strong]:zone_no_gravity
+$spawn 						= "zones\no gravity strong"
+artefacts					= 
+BirthProbability 			= 0.0
+
+
+min_start_power		= 0.99
+max_start_power		= 1.20
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+--------------------------------------------------------------------------------------------------------
+
+[amk_zone_no_gravity]:zone_no_gravity
+$spawn 						= "zones\no gravity"
+spawn_blowout_artefacts = off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+
+
+[amk_zone_no_gravity_weak]:zone_no_gravity_weak
+$spawn 						= "zones\no gravity weak"
+spawn_blowout_artefacts = off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+
+
+[amk_zone_no_gravity_average]:zone_no_gravity_average
+$spawn 						= "zones\no gravity average"
+spawn_blowout_artefacts = off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+
+
+[amk_zone_no_gravity_strong]:zone_no_gravity_strong
+$spawn 			= "zones\no gravity strong"
+hit_impulse_scale	= 1
+spawn_blowout_artefacts = off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+
+
+
+

@@ -1,0 +1,34 @@
+[logic]
+active = walker
+on_death = death
+
+[walker]
+path_walk = agr_klyk_walk_way
+path_look = agr_klyk_way_look
+meet = meet@esc_guard
+danger = danger_ignore
+on_info = {+agr_klyk_done} walker2
+show_spot = false
+
+[walker2]
+path_walk = agr_klyk2_walk_way
+path_look = agr_klyk2_way_look
+;meet = no_meet
+danger = danger_ignore
+on_signal = klyk_out| %=sak.agr_klyk_out% 
+
+[meet@esc_guard]
+meet_state = 10|claim|2|sit
+meet_state_wpn = 10|backoff
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+meet_dialog = agr_klyk
+use			= true
+use_wpn		= false
+abuse       = true
+
+[danger_ignore]
+ignore_distance = 0
+
+[death]
+on_info = %+klyk_umer%

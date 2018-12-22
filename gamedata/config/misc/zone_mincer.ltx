@@ -1,0 +1,249 @@
+[zone_mincer]
+GroupControlSection	= spawn_group_zone
+$spawn 				= "zones\mincer zone"
+$prefetch 			= 16
+class				= ZS_MINCE	
+script_binding 		= amk_anoms.bind
+
+ef_anomaly_type		= 2
+ef_weapon_type		= 14
+
+sound				= zone_mosquito_bald
+;postprocess          		= postprocess_gravi
+hit_effect			= explosions\expl_02_sparks
+
+artefacts			= af_blood,0.7, af_mincer_meat, 0.25,af_soul, 0.05
+BirthProbability = 0
+
+
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+tearing_particles	=anomaly2\body_tear_00
+torn_particles		=anomaly2\gravi_anomaly_shield_00
+idle_particles		= anomaly2\group_items\gravi_zaxvat_yadro
+accum_particles		= anomaly2\gravi_zaxvat_myasorubka
+awake_particles		= anomaly2\gravi_zaxvat_myasorubka
+blowout_particles	= anomaly2\gravi_zaxvat_myasorubka
+
+hit_small_particles			= hit_fx\hit_metal_02
+hit_big_particles			= anomaly2\gravity_damage_02_blood2
+idle_small_particles		= anomaly2\gravity_damage_01_smoke
+idle_big_particles			= anomaly2\gravity_damage_02_blood2
+entrance_small_particles	= amk_anoms\mincer_blast
+entrance_big_particles		= anomaly2\gravi_anomaly_00
+
+tele_particles_small		= anomaly2\gravity_damage_01_smoke
+tele_particles_big			= anomaly2\gravity_damage_02_smoke	
+
+idle_sound					= anomaly\gravi_idle01				
+awake_sound					= anomaly\gravi_idle01
+accum_sound					= anomaly\gravi_idle01
+blowout_sound				= anomaly\anomaly_mincer_blowout
+hit_sound					= anomaly\anomaly_gravy_hit1						
+entrance_sound				= anomaly\gravi_idle01								
+body_tearing_sound			= anomaly\anomaly_body_tear_1
+hit_type					= strike
+hit_impulse_scale			= 0.1				
+effective_radius      		= 0.8             
+
+disable_time				= -1						
+disable_time_small			= -1						
+disable_idle_time			= 100						
+
+ignore_nonalive				= true
+ignore_small				= true
+ignore_artefacts			= true
+
+blowout_light				= off
+light_color					= 1.4,1.6,1.3
+light_range					= 20.0
+light_time 					= 0.38
+light_height				= 1.5					
+
+idle_light					= off
+
+awaking_time				= 50
+blowout_time				= 10000	
+accamulate_time				= 4000
+
+blowout_particles_time		= 50
+blowout_sound_time  		= 100
+blowout_light_time			= 5988
+blowout_explosion_time		= 5999
+
+;параметры телекинеза для зоны
+throw_in_impulse				= 1000				
+throw_out_impulse				= 1500		
+throw_in_impulse_alive			= 1000	
+throw_in_atten					= 1.5	
+blowout_radius_percent			= 0.3			
+actor_blowout_radius_percent	= 0.3
+tele_height						= 10					
+time_to_tele					= 7000					
+tele_pause						= 4000					
+
+visible_by_detector			= on
+
+
+blowout_wind				= on
+
+blowout_wind_time_start     = 0
+blowout_wind_time_peak      = 5900
+blowout_wind_time_end		= 10000
+blowout_wind_power			= 0.5					
+
+
+
+spawn_blowout_artefacts		= off
+
+artefact_spawn_probability	= 0
+artefact_spawn_particles	= anomaly2\gravi_anomaly_shield_00
+artefact_born_sound			= anomaly\pux_blast			
+throw_out_power				= 15					
+artefact_spawn_height		= 10						
+
+[zone_mincer_weak]:zone_mincer
+$spawn 						= "zones\mincer_zone_weak"
+
+hit_impulse_scale			= 0.05	
+effective_radius			= 0.75
+
+throw_in_impulse				= 1000
+throw_out_impulse				= 1500
+throw_in_impulse_alive			= 300
+throw_in_atten					= 1.0   
+blowout_radius_percent			= 0.6				
+actor_blowout_radius_percent	= 0.6
+
+
+blowout_wind_power			= 0.2	
+idle_particles		= ;anomaly2\gravity_idle
+visible_by_detector = off
+
+
+min_start_power		= 0.2
+max_start_power		= 0.4
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+artefact_spawn_rnd	= 50
+
+artefacts					= af_blood,0.8, af_mincer_meat, 0.2,af_soul, 0.0
+BirthProbability = 0
+
+awaking_time				= 50
+blowout_time				= 10000	
+accamulate_time				= 4000
+
+[zone_mincer_weak_noart]:zone_mincer_weak
+$spawn 						= "zones\mincer_zone_weak_noart"
+spawn_blowout_artefacts		= off
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+
+
+
+[zone_mincer_average]:zone_mincer
+$spawn 						= "zones\mincer zone_average"
+hit_impulse_scale			= 0.1	
+effective_radius			= 1.0
+throw_in_impulse				= 1000
+throw_out_impulse				= 1500
+throw_in_impulse_alive			= 450
+throw_in_atten					= 1.2
+blowout_radius_percent			= 0.6					
+actor_blowout_radius_percent	= 0.6
+
+
+blowout_wind_power			= 0.5	
+artefacts					= af_blood,0.6, af_mincer_meat, 0.4,af_soul, 0.0
+BirthProbability = 0
+
+awaking_time				= 50
+blowout_time				= 10000	
+accamulate_time				= 4000
+
+
+
+min_start_power		= 1.19
+max_start_power		= 1.20
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+artefact_spawn_rnd	= 70
+
+[zone_mincer_strong]:zone_mincer
+$spawn 						= "zones\mincer zone_strong"
+hit_impulse_scale			= 0.5	
+effective_radius      = 1.3
+
+throw_in_impulse      = 1000
+throw_out_impulse				= 1500
+throw_in_impulse_alive			= 600
+throw_in_atten					= 1.2
+blowout_radius_percent			= 0.6					
+actor_blowout_radius_percent	= 0.6
+
+
+blowout_wind_power			= 1	
+artefacts					= af_blood,0.2, af_mincer_meat, 0.6,af_soul, 0.2
+BirthProbability = 0
+
+awaking_time				= 25
+blowout_time				= 10000	
+accamulate_time				= 1000
+
+
+min_start_power		= 2.49
+max_start_power		= 2.50
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+artefact_spawn_idle	= 24
+artefact_spawn_rnd	= 90
+
+[amk_zone_mincer]:zone_mincer
+$spawn            = "zones\amk_mincer_zone"
+spawn_blowout_artefacts   = off
+min_artefact_count  = 0
+max_artefact_count  = 0
+artefact_spawn_idle = 24
+
+[amk_zone_mincer_weak]:zone_mincer_weak
+$spawn            = "zones\amk_mincer_zone_weak"
+spawn_blowout_artefacts   = off
+min_artefact_count  = 0
+max_artefact_count  = 0
+artefact_spawn_idle = 24
+
+[amk_zone_mincer_weak_noart]:zone_mincer_weak_noart
+$spawn            = "zones\amk_mincer_zone_weak_noart"
+spawn_blowout_artefacts   = off
+min_artefact_count  = 0
+max_artefact_count  = 0
+artefact_spawn_idle = 24
+
+[amk_zone_mincer_average]:zone_mincer_average
+$spawn            = "amk_zones\mincer zone_average"
+spawn_blowout_artefacts   = off
+min_artefact_count  = 0
+max_artefact_count  = 0
+artefact_spawn_idle = 24
+
+[amk_zone_mincer_strong]:zone_mincer_strong
+$spawn            = "amk_zones\mincer zone_strong"
+spawn_blowout_artefacts   = off
+min_artefact_count  = 0
+max_artefact_count  = 0
+artefact_spawn_idle = 24

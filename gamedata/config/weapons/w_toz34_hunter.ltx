@@ -1,0 +1,22 @@
+;ТОЗ-34 охотника в Баре
+[wpn_toz34_m1]:wpn_toz34
+$spawn						= "weapons\uniq\wpn_toz34_m1"
+inv_name					= wpn_hunters
+inv_name_short				= wpn_hunters
+description					= enc_weapons_wpn_hunters
+
+default_to_ruck				= false
+
+visual				     	= weaponsv\toz34\wpn_tozhunter.ogf
+cost						= 10000
+inv_grid_x         	        = 6
+inv_grid_y         	        = 10
+fire_dispersion_base		= 0.46
+
+misfire_probability 		= 0.06
+misfire_condition_k			= 0.50
+condition_shot_dec 			= 0.0006
+hud                 		= wpn_toz34_m1_hud
+
+[wpn_toz34_m1_hud]:wpn_shotgun_hud
+visual				     	= weaponsv\toz34\wpn_tozhunter_hud.ogf

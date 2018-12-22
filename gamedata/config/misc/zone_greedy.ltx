@@ -1,0 +1,99 @@
+[greedy_zone]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\greedy_zone"
+$prefetch 		= 16
+class			= ZS_MBALD ;Z_GRED
+script_binding = bind_greedy.bind
+
+hit_impulse_scale			= 0.0
+effective_radius			= 0.0
+
+ef_anomaly_type				= 1
+ef_weapon_type				= 13
+
+sound			= 
+postprocess		= postprocess_flame
+
+artefacts			=
+BirthProbability	= 0.0
+greedy			= standart
+
+
+
+min_start_power		= 0.1
+max_start_power		= 0.1
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+radius = 6
+z_radius = 3
+
+
+idle_particles				= anomaly2\greedy_idle
+blowout_particles					= anomaly2\greedy_blowout
+
+hit_small_particles					= anomaly2\group_items\anomaly_greedy_dust
+hit_big_particles					= anomaly2\group_items\anomaly_greedy_dust
+idle_small_particles		= anomaly2\group_items\anomaly_greedy_dust
+idle_big_particles					= anomaly2\group_items\anomaly_greedy_dust
+;entrance_small_particles	= anomaly2\gravi_anomaly_shield_00
+;entrance_big_particles		= anomaly2\gravi_anomaly_00
+
+idle_sound			= anomaly\greedy_idle 
+;blowout_sound		= anomaly\greedy_idle_1
+;hit_sound			= anomaly\greedy_idle_1 
+body_tearing_sound	= anomaly\greedy_idle_1 
+entrance_sound		= anomaly\greedy_idle_1 
+
+hit_type					= chemical_burn
+							  
+disable_time				= 5000
+disable_time_small			= -1
+disable_idle_time			= 50000
+
+ignore_nonalive				= false
+ignore_small				= true
+ignore_artefacts			= true
+
+blowout_light				= off
+light_color		    		= 1.1,0.7,1.4
+light_animation             = light_green_01
+light_range		    		= 4
+light_time 		    		= 0.35
+light_height				= 0.75
+
+
+idle_light					= off
+idle_light_range			= 2.0
+idle_light_range_delta 		= 0.25
+idle_light_anim				= light_green_02
+idle_light_height			= 0.70
+
+awaking_time				= 50
+blowout_time				= 100	
+accamulate_time				= 500
+
+visible_by_detector 		= off
+
+blowout_wind				= off
+
+blowout_wind_time_start 	= 0
+blowout_wind_time_peak  	= 600
+blowout_wind_time_end		= 899
+blowout_wind_power			= 0.5
+
+
+
+spawn_blowout_artefacts = off
+
+[amk_zone_greedy_weak]:greedy_zone
+radius = 3
+z_radius = 2
+[amk_zone_greedy_average]:greedy_zone
+radius = 5
+z_radius = 3
+[amk_zone_greedy_strong]:greedy_zone
+radius = 7
+z_radius = 3

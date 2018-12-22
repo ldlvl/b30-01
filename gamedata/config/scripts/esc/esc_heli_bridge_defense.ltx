@@ -1,0 +1,52 @@
+[logic]
+active = heli_move@idle
+
+[heli_move@idle]
+path_move = heli_blockpost_idle_move
+engine_sound = false
+on_info = {=gulag_casualities_ge(esc_bridge:4)} heli_move@fly_bridge1
+combat_safe_altitude = -50
+
+[heli_move@fly_bridge1]
+path_move = heli_blockpost_fly
+engine_sound = true
+combat_enemy = actor
+combat_use_rocket = true
+combat_use_mgun = true
+rocket_delay = 7000
+combat_safe_altitude = -70
+stop_fire = true
+on_timer = 1 | %=heli_func.heli_enemy_actor%
+on_timer2 = 50000 | heli_move@fly_bridge2
+
+[heli_move@fly_bridge2]
+path_move = esc_heli_bridge_defense_1
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = -70
+on_signal = end | %=heli_func.heli_desant_esc_bridge%
+on_info = {+heli_desant_esc_bridge_spawn} heli_move@fly_bridge3
+
+[heli_move@fly_bridge3]
+path_move = esc_heli_bridge_defense_2
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = -70
+on_signal = end | heli_move@fly_bridge4
+
+[heli_move@fly_bridge4]
+path_move = heli_blockpost_idle_move
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = -70
+on_timer = 20000 | heli_move@stop
+
+[heli_move@stop]
+path_move = heli_blockpost_idle_move
+engine_sound = false

@@ -1,0 +1,96 @@
+[logic]
+active = walker
+on_death = death
+danger = danger_condition
+
+[walker]
+path_walk = marsh_oksana_walk
+path_look = marsh_oksana_look
+on_info  = {+oksana_go_to_kordon} companion@to_kordon %=sak_spawn.marsh_monster_oksana()%
+on_info2 = {+oksana_go_to_marsh} companion@to_marsh %=sak_spawn.marsh_monster_oksana()%
+on_info3 = {+oksana_dont_new_gg} walker@dont_new_gg
+meet = meet@marsh
+danger = danger_condition
+show_spot = false 
+
+[walker@dont_new_gg]
+path_walk = marsh_oksana_walk
+path_look = marsh_oksana_look
+meet = meet@marsh
+danger = danger_condition
+on_timer = 130000| walker@to_kordon_self
+show_spot = false 
+
+[companion@to_kordon]
+path_walk = marsh_oksana_go_to_kordon_way
+path_look = marsh_oksana_go_to_kordon_look
+;on_signal = oksana_go_to_kordon_end | %+oksana_go_to_kordon_end% walker@kordon_end
+on_info = {+oksana_go_to_kordon_end} walker@kordon_end
+on_actor_dist_ge_nvis = 80 | {-oksana_go_to_kordon_end} %=kill%
+meet = no_meet
+danger = danger_condition
+show_spot = false 
+
+[walker@to_kordon_self]
+path_walk = marsh_oksana_go_to_kordon_way
+path_look = marsh_oksana_go_to_kordon_look
+on_signal = oksana_go_to_kordon_end | %+oksana_go_to_kordon_end% walker@kordon_end
+on_info = {+oksana_go_to_kordon_end} walker@kordon_end
+meet = no_meet
+danger = danger_condition
+show_spot = false 
+
+[companion@to_marsh]
+path_walk = marsh_oksana_go_to_marsh_way
+path_look = marsh_oksana_go_to_marsh_look
+;on_signal = oksana_go_to_marsh_end | %+oksana_go_to_marsh_end% walker@marsh_end
+on_info = {+oksana_go_to_marsh_end} walker@marsh_end
+on_actor_dist_ge_nvis = 80 | {-oksana_go_to_marsh_end} %=kill%
+meet = no_meet
+danger = danger_condition
+show_spot = false 
+
+[walker@marsh_end]
+path_walk = oksana_base_way
+path_look = oksana_base_look
+meet = meet@marsh_end
+danger = danger_condition
+show_spot = false 
+
+[walker@kordon_end]
+path_walk = oksana_kordon_end_way
+path_look = oksana_kordon_end_look
+meet = meet@kordon_end
+danger = danger_condition
+show_spot = false 
+
+[meet@marsh]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_oksana_start_dialog
+
+[meet@marsh_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_end_oksana_start_dialog
+
+[meet@kordon_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= kordon_end_oksana_start_dialog
+
+[danger_condition]
+ignore_distance_corpse = 1
+ignore_distance_sound = 1
+ignore_distance = 1
+danger_inertion_time_grenade = 0
+danger_inertion_time_hit = 4000
+danger_inertion_time_ricochet = 0
+danger_inertion_time_corpse = 0
+danger_inertion_time_sound = 0
+
+[death]
+on_info = %+oksana_umer%

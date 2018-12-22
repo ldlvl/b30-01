@@ -1,0 +1,122 @@
+;Модифицированный ВСС "Винторез" 
+[wpn_vintorez_m1]:wpn_vintorez
+$spawn						= "weapons\uniq\wpn_vintorez_m1"
+visual						= weaponsv\9x39\vss_c\wpn_vss_c
+inv_name					= wpn-vintorez_m1
+inv_name_short				= wpn-vintorez_m1
+description					= enc_weapons1_wpn-vintorez_m1
+
+default_to_ruck				= false
+
+cost						= 48000
+
+ammo_class					= ammo_9x39_sp5,ammo_9x39_ap,ammo_9x39_pab9
+
+inv_weight		         	= 2.4
+
+scope_status				= 2
+silencer_status				= 1
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_name 					= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_x						= 59
+scope_y						= -2
+scope_mode 					= 3
+
+ironsight_zoom_factor       = 90
+scope_zoom_factor           = 50
+
+ammo_mag_size				= 20
+
+inv_grid_width     			= 5
+inv_grid_height    			= 2
+inv_grid_x         			= 16
+inv_grid_y         			= 12
+
+condition_shot_dec			= 0.00025
+misfire_probability 		= 0.004
+misfire_condition_k 		= 0.50
+
+cam_relax_speed         	= 4
+cam_dispersion          	= 0.16
+cam_dispersion_inc			= 0.17
+
+shell_point		 			= 0,0.190,0.120
+shell_dir		 			= 0.0, 1.0, 0.0
+direction               	= 0, 0, 1
+fire_point           		= 0.0, 0.175, 0.580
+normal                  	= 0, 1, 0
+position        			= -0.026, -0.131, -0.016
+orientation     			= 0, 0, 0
+strap_position         		= -0.02,-0.21,0.32
+strap_orientation      		= 05,-182, -103
+
+hud  						= wpn_vintorez_m1_hud
+
+snd_draw					= weapons\val_vss\val_draw
+snd_holster					= weapons\val_vss\val_holster
+snd_reload					= weapons\val_vss\val_reload_swmt
+
+[wpn_vintorez_m1_hud]:wpn_vintorez_hud
+position					= 0.1000,-0.035000,-0.170000
+orientation					= 0.000000,0.000000,0.000000
+visual						= weaponsv\9x39\vss_c\wpn_vss_c_hud
+
+zoom_offset					= -0.099800,0.038400,-0.079000
+zoom_rotate_x				= -0.002000
+zoom_rotate_y				= 0.000700
+
+[wpn_vintorez_m1_1pso]:wpn_vintorez_m1
+hud  						= wpn_vintorez_m1_1pso_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+[wpn_vintorez_m1_1pso_hud]:wpn_vintorez_m1_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c_hud
+
+zoom_offset					= -0.090900,-0.004100,1.873500
+zoom_rotate_x				= 0.001500
+zoom_rotate_y				= -0.001260
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_vintorez_m1_1p78]:wpn_vintorez_m1
+hud  						= wpn_vintorez_m1_1p78_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c_1p78
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+[wpn_vintorez_m1_1p78_hud]:wpn_vintorez_m1_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c_1p78_hud
+
+zoom_offset					= -0.101800,-0.008900,1.122000
+zoom_rotate_x				= -0.000200
+zoom_rotate_y				= -0.000100
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_vintorez_m1_cobra]:wpn_vintorez_m1
+hud  						= wpn_vintorez_m1_cobra_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c_cobra
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.2f
+
+[wpn_vintorez_m1_cobra_hud]:wpn_vintorez_m1_hud
+visual              		= weaponsv\9x39\vss_c\wpn_vss_c_cobra_hud
+
+zoom_offset					= -0.100300,-0.024100,-0.078900
+zoom_rotate_x				= -0.011900
+zoom_rotate_y				= -0.002400
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27

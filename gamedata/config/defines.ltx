@@ -1,0 +1,42 @@
+[sect_identity_immunities]
+burn_immunity			= 1.0
+strike_immunity			= 1.0
+shock_immunity			= 1.0
+wound_immunity			= 1.0		
+wound_2_immunity		= 1.0
+radiation_immunity		= 1.0
+telepatic_immunity		= 1.0
+chemical_burn_immunity	= 1.0
+explosion_immunity		= 1.0
+fire_wound_immunity		= 1.0
+
+[identity_immunities]
+immunities_sect				= sect_identity_immunities
+use_aim_bullet				= false
+hit_probability_gd_novice	= 0.40
+hit_probability_gd_stalker	= 0.50
+hit_probability_gd_veteran	= 0.60
+hit_probability_gd_master	= 0.70
+
+[weapon_immunities]:identity_immunities
+default_to_ruck				= false
+zoom_offset_fix             = 0
+
+[common_ph_friction_params_on_npc_death]
+ph_skeleton_airr_lin_factor   = 2.0
+ph_skeleton_airr_ang_factor   = 0.0
+ph_skeleton_hinger_factor1    = 1.0
+ph_skeleton_ddelay	     	  = 15.0
+ph_skel_fatal_impulse_factor  = 6.0
+ph_after_death_velocity_factor= 0.75
+ph_skel_shot_up_factor        = 0.25
+
+ph_skeleton_skin_friction_start	= 0.0
+ph_skeleton_skin_friction_end	= 2.0
+ph_skeleton_skin_ddelay			= 6.0
+ph_skeleton_skin_ddelay_after_wound = 2.0
+ph_pelvis_factor_low_pose_detect =0.3
+ph_character_have_wounded_state = false
+
+[monster_base]:common_ph_friction_params_on_npc_death
+actor_hit_effect = effector_monster_hit

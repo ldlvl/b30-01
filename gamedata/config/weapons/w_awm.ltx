@@ -1,0 +1,204 @@
+;Accuracy International L96A1 (AWM)
+[wpn_awm]:wpn_svd
+min_radius						= 20
+max_radius						= 200
+description						= enc_weapons_wpn_awm
+dialog_description				= desc_dialog_wpn_awm
+
+default_to_ruck					= false
+
+ef_main_weapon_type				= 3
+ef_weapon_type					= 8
+
+holder_range_modifier			= 2.15
+holder_fov_modifier				= 0.3
+
+cost							= 75000
+
+weapon_class					= sniper_rifle
+
+f_mode							= 1
+
+ammo_limit						= 60
+ammo_current					= 10
+ammo_elapsed					= 0
+ammo_mag_size					= 5
+ammo_class						= ammo_8.6x70, ammo_8.6x70_ap
+sprint_allowed					= true
+
+fire_dispersion_base			= 0.03
+
+control_inertion_factor			= 1.35f
+
+cam_relax_speed         		= 4
+cam_dispersion          		= 0.9
+cam_dispersion_inc				= 0.9
+cam_dispertion_frac				= 1.0
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.1
+
+fire_dispersion_condition_factor = 1.25
+misfire_probability				= 0.009
+misfire_condition_k				= 0.50
+condition_shot_dec 				= 0.0005
+
+hand_dependence					= 1
+single_handed					= 0
+
+slot							= 2
+animation_slot					= 2	
+
+inv_name						= wpn_awm
+inv_name_short					= wpn_awm
+
+inv_weight						= 6.9
+
+icon_group                      = 2
+inv_grid_width     				= 7
+inv_grid_height    				= 2
+inv_grid_x         				= 6
+inv_grid_y         				= 18
+
+kill_msg_x						= 0
+kill_msg_y						= 0
+kill_msg_width					= 98
+kill_msg_height					= 23
+
+direction						= 0, 0, 1
+fire_point						= 0.0, 0.129, 0.942
+flame_particles					= weapons\generic_weapon06
+smoke_particles					= weapons\generic_shoot_00
+rpm_empty_click					= 200
+shell_point						= 0.0, 0.129, 0.192
+shell_dir						= 0.0, 0.0, 0.4
+
+PDM_disp_base 					= 4.0
+PDM_disp_vel_factor 			= 5.0
+PDM_disp_accel_factor 			= 7.0
+PDM_crouch						= 3.9
+PDM_crouch_no_acc				= 2.7
+
+hit_power						= 1
+hit_impulse		 				= 1
+
+fire_distance					= 800
+bullet_speed					= 900
+rpm								= 35
+
+use_aim_bullet					= false
+time_to_aim						= 1.0
+	
+hud								= wpn_awm_hud
+normal							= 0, 1, 0
+position						= -0.026,-0.172,0
+orientation						= 0, 0, 0
+strap_position					= -0.15,-0.15,0.45
+strap_orientation				= -25,-189,65
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+startup_ammo					= 10
+visual							= weapons\awm\wpn_awp.ogf
+
+light_color						= 0.6,0.5,0.3
+light_range						= 4.0
+light_var_color					= 0.05
+light_var_range					= 0.5
+light_time						= 0.2
+ph_mass							= 3
+
+scope_status					= 2
+silencer_status					= 0
+grenade_launcher_status			= 0
+zoom_enabled					= true
+scope_zoom_factor				= 75
+
+scope_mode 						= 3
+scope_name 						= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+scope_x							= 74
+scope_y							= -6
+
+snd_shoot						= weapons\AWP\awp_shoot , 0.5
+snd_empty						= weapons\gen_empty 
+snd_reload						= weapons\AWP\awp_reload, 0.7
+snd_razgruzka					= weapons\razgruzka\ammo_5
+
+[wpn_awm_hud]
+shell_point						= 0.0,0.0,0.0
+shell_dir						= 0.0, 1.0, 0.0
+fire_point						= 0.380000,-0.401000,2.829999
+fire_bone						= wpn_body
+
+position						= 0.000000,-0.015000,-0.105000
+orientation						= 0.000000,0.000000,0.000000
+
+visual							= weapons\awm\wpn_awp_hud.ogf
+
+anim_idle						= idle
+anim_idle_aim					= idle_aim
+anim_reload						= reload
+anim_draw						= draw
+anim_holster					= holster
+anim_shoot						= shoot
+anim_idle_sprint				= idle_sprint
+
+zoom_offset						= -0.107800,0.072490,-0.109300
+zoom_rotate_x					= 0.015300
+zoom_rotate_y					= 0.000150
+
+zoom_rotate_time				= 0.3
+rotate_time						= 0.3
+
+[wpn_awm_acog]:wpn_awm
+visual 							= weapons\awm\wpn_awp.ogf
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+hud 							= wpn_awm_acog_hud
+
+[wpn_awm_acog_hud]:wpn_awm_hud
+visual							= weapons\awm\wpn_awp_hud.ogf
+
+zoom_offset						= -0.108800,0.016990,0.910800
+zoom_rotate_x					= 0.000600
+zoom_rotate_y					= 0.000750
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31
+
+[wpn_awm_eotech]:wpn_awm
+visual 							= weapons\awm\wpn_awp_eotech
+scope_attached         			= 0
+
+control_inertion_factor			= 1.35f
+
+hud 							= wpn_awm_eotech_hud
+
+[wpn_awm_eotech_hud]:wpn_awm_hud
+visual							= weapons\awm\wpn_awp_eotech_hud
+
+zoom_offset						= -0.108800,0.006690,-0.109200
+zoom_rotate_x					= -0.006800
+zoom_rotate_y					= 0.000550
+
+zoom_rotate_time				= 0.3
+rotate_time						= 0.3
+
+[wpn_awm_mt]:wpn_awm
+visual 							= weapons\awm\wpn_awp_mt
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+hud 							= wpn_awm_mt_hud
+
+[wpn_awm_mt_hud]:wpn_awm_hud
+visual							= weapons\awm\wpn_awp_mt_hud
+
+zoom_offset						= -0.108800,0.021190,2.110800
+zoom_rotate_x					= 0.001200
+zoom_rotate_y					= 0.001450
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31

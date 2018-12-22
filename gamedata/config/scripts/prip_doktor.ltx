@@ -1,0 +1,19 @@
+[logic]
+active = walker
+trade = misc\trade_doktor.ltx
+
+[walker]
+path_walk = doktor_walk_way
+path_look = doktor_way_look
+meet = meet
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_state = 10|ward@doktor_hello|2|ward
+meet_state_wpn = 10|ward@doktor_hello|2|ward

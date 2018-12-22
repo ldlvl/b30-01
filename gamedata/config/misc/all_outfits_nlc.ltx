@@ -1,0 +1,2477 @@
+[outfit_base]
+additional_inventory_weight		= 0
+additional_inventory_weight2	= 0
+slot							= 6
+GroupControlSection				= spawn_group
+full_icon_name					= npc_icon_without_outfit
+class							= E_STLK
+cform           				= skeleton
+discovery_dependency            =
+power_loss 						= 1.0
+backpack_type 					= ui_icon_rykzack_1_brown
+default_to_ruck					= true
+
+[without_outfit]:outfit_base
+full_scale_icon					= 0,0
+
+
+;---------------------------------------------------------------------------------------------
+;		—¬≈“À¿ﬂ  ”–“ ¿
+;---------------------------------------------------------------------------------------------
+[novice_outfit]:outfit_base
+additional_inventory_weight		= 8
+additional_inventory_weight2	= 8
+inv_weight						= 2.0
+cost							= 3000
+$spawn 							= "outfit\novice_outfit"
+visual							= equipments\novice_suit
+actor_visual					= actors\hero\stalker_novice.ogf
+ef_equipment_type				= 3
+inv_name						= outfit_soldier_name
+inv_name_short					= outfit_soldier_name
+description						= outfit_soldier_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 2
+inv_grid_y						= 12
+full_icon_name					= npc_icon_novice_outfit
+full_scale_icon					= 0,11
+immunities_sect					= sect_novice_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.15
+shock_protection 				= 0.00
+wound_protection				= 0.15
+radiation_protection 			= 0.0
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.00
+fire_wound_protection  			= 0.00
+bones_koeff_protection 			= actor_damage ;kurtka_mask_damage
+power_loss 						= 0.72
+backpack_type 					= ui_icon_rykzack_1_brown
+
+[sect_novice_outfit_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0200
+shock_immunity					= 0.0100
+wound_immunity					= 0.0400
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.0520
+
+
+[outfit_novice_m1]:novice_outfit
+[neytral_novice_outfit_m1]:novice_outfit
+
+
+;---------------------------------------------------------------------------------------------
+;		—¬≈“À¿ﬂ  ”–“ ¿ — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[neytral_novice_gaz_outfit_m1]:outfit_base
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 3.2
+cost							= 9700
+$spawn 							= "outfit\novice_outfit"
+visual							= equipments\novice_sui2
+actor_visual					= actors\novice\green_stalker_antigas.ogf
+ef_equipment_type				= 3
+inv_name						= novice_gaz_outfit_m1_name
+inv_name_short					= novice_gaz_outfit_m1_name
+description						= novice_gaz_outfit_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 2
+inv_grid_y						= 18
+full_icon_name					= npc_icon_neytral_novice_gaz_outfit_m1
+full_scale_icon					= 0,11
+immunities_sect					= sect_neytral_novice_gaz_outfit_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.15
+shock_protection 				= 0.00
+wound_protection				= 0.15
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.15
+chemical_burn_protection 		= 0.11
+explosion_protection 			= 0.00
+fire_wound_protection  			= 0.00
+bones_koeff_protection 			= actor_damage ;kurtka_mask_damage
+power_loss 						= 0.88
+backpack_type 					= ui_icon_rykzack_2_light_gray
+
+[sect_neytral_novice_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0200
+shock_immunity					= 0.0100
+wound_immunity					= 0.0400
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.0520
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ —“¿À ≈–¿
+;---------------------------------------------------------------------------------------------
+[stalker_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 4.2
+cost							= 26600
+$spawn 							= "outfit\stalker_outfit"
+visual							= equipments\stalker_suit
+actor_visual					= actors\hero\stalker_hood.ogf
+ef_equipment_type				= 3
+inv_name						= stalker_outfit_name
+inv_name_short					= stalker_outfit_name
+description						= stalker_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 3
+inv_grid_y						= 0
+full_icon_name					= npc_icon_stalker_outfit
+full_scale_icon					= 14,11
+immunities_sect					= sect_stalker_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.94
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+backpack_type 					= ui_icon_rykzack_4_green
+
+[sect_stalker_outfit_immunities]
+burn_immunity					= 0.0400
+strike_immunity					= 0.0100
+shock_immunity					= 0.0060
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0400
+
+
+;---------------------------------------------------------------------------------------------
+;		 Œ—“ﬁÃ Œ’–¿ÕÕ» ¿
+;---------------------------------------------------------------------------------------------
+[stalker_guard_outfit]:outfit_base
+additional_inventory_weight		= 20
+additional_inventory_weight2	= 20
+inv_weight						= 4.9
+cost							= 24000
+$spawn 							= "outfit\stalker_outfit"
+visual							= equipments\stalker_guard_suit
+actor_visual					= actors\neytral\stalker_bar_security.ogf
+ef_equipment_type				= 3
+inv_name						= stalker_guard_outfit_name
+inv_name_short					= stalker_guard_outfit_name
+description						= stalker_guard_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 3
+inv_grid_y						= 3
+full_icon_name					= stalker_guard_outfit
+full_scale_icon					= 24,11
+immunities_sect					= sect_stalker_guard_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss 						= 0.95
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+backpack_type 					= ui_icon_rykzack_9_gray
+
+[sect_stalker_guard_outfit_immunities]
+burn_immunity					= 0.0200
+strike_immunity					= 0.0060
+shock_immunity					= 0.0020
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0040
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0200
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ  —Û-1
+;---------------------------------------------------------------------------------------------
+[neytral_gaz_outfit_m1]:stalker_outfit
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 5.4
+cost							= 33200
+actor_visual					= actors\neytral\stalker_neytral_hood_9.ogf
+inv_name						= neytral_gaz_outfit_m1_name
+inv_name_short					= neytral_gaz_outfit_m1_name
+description						= neytral_gaz_outfit_m1_description
+inv_grid_x						= 5
+inv_grid_y						= 0
+full_icon_name					= npc_icon_neytral_gaz_outfit_m1
+slot							= 6
+full_scale_icon					= 14,11
+immunities_sect					= sect_neytral_gaz_outfit_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.15
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.10
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+backpack_type 					= ui_icon_rykzack_4_light_brown
+
+[sect_neytral_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0400
+strike_immunity					= 0.0100
+shock_immunity					= 0.0040
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0070
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0400
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ  —Û-2
+;---------------------------------------------------------------------------------------------
+[neytral_gaz_outfit_m2]:stalker_outfit
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 6.1
+cost							= 41000
+actor_visual					= actors\neytral\stalker_neytral_hood_9.ogf
+ef_equipment_type				= 3
+inv_name						= neytral_gaz_outfit_m2_name
+inv_name_short					= neytral_gaz_outfit_m2_name
+description						= neytral_gaz_outfit_m2_description
+inv_grid_x						= 5
+inv_grid_y						= 0
+full_icon_name					= npc_icon_neytral_gaz_outfit_m1
+full_scale_icon					= 14,11
+immunities_sect					= sect_neytral_gaz_outfit_m2_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.30
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.11
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+backpack_type 					= ui_icon_rykzack_4_light_brown
+
+[sect_neytral_gaz_outfit_m2_immunities]
+burn_immunity					= 0.0400
+strike_immunity					= 0.0160
+shock_immunity					= 0.0080
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0400
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ œ–»«–¿ ¿
+;--------------------------------------------------------------------------------------------
+[outfit_stalker_m1]:stalker_outfit
+additional_inventory_weight		= 30
+additional_inventory_weight2	= 30
+inv_weight						= 6.3
+cost							= 67000
+$spawn							= "outfit\uniq\outfit_stalker_m1"
+actor_visual					= actors\hero\stalker_prizrak.ogf
+inv_name						= stalker_outfit_name_m1
+inv_name_short					= stalker_outfit_name_m1
+description						= stalker_outfit_description_m1
+icon_group                      = 3
+inv_grid_width     				= 2
+inv_grid_height    				= 3
+inv_grid_x         				= 0
+inv_grid_y        				= 0
+full_icon_name					= npc_icon_outfit_stalker_m1
+immunities_sect					= sect_stalker_outfit_m1_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.30
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+bones_koeff_protection 			= actor_damage ;kombez_antigas_damage
+night_vision_device				= elite_nvd
+power_loss 						= 1.00
+backpack_type 					= ui_icon_rykzack_4_light_brown
+
+[sect_stalker_outfit_m1_immunities]
+burn_immunity					= 0.0250
+strike_immunity					= 0.0100
+shock_immunity					= 0.0050
+wound_immunity					= 0.0120
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0040
+explosion_immunity				= 0.0250
+fire_wound_immunity				= 0.0250
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ —“¿À ≈–¿-“”–»—“¿    -- œŒƒ —ÕŒ—
+;--------------------------------------------------------------------------------------------
+[outfit_stalker_m2]:stalker_outfit
+additional_inventory_weight		= 30
+additional_inventory_weight2	= 30
+inv_weight						= 5.5
+cost							= 50000
+actor_visual					= actors\neytral\stalker_neytral_hood_9.ogf
+$spawn							= "outfit\uniq\outfit_stalker_m2"
+inv_name						= stalker_outfit_name_m2
+inv_name_short					= stalker_outfit_name_m2
+description						= stalker_outfit_description_m2
+full_icon_name					= npc_icon_neytral_gaz_outfit_m1
+full_scale_icon					= 14,11
+icon_group                      = 3
+inv_grid_width     = 2
+inv_grid_height    = 3
+inv_grid_x         = 2
+inv_grid_y         = 0
+backpack_type 					= ui_icon_rykzack_4_light_brown
+power_loss 						= 0.6
+immunities_sect					= sect_outfit_stalker_m2_immunities
+burn_protection 				= 0.25
+strike_protection 				= 0.25
+shock_protection 				= 0.25
+wound_protection				= 0.20
+radiation_protection 			= 0.20
+telepatic_protection 			= 0.10
+chemical_burn_protection 		= 0.25
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+
+[sect_outfit_stalker_m2_immunities]
+burn_immunity					= 0.0400
+strike_immunity					= 0.0100
+shock_immunity					= 0.0080
+wound_immunity					= 0.0300
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0380
+fire_wound_immunity				= 0.0250
+
+
+;---------------------------------------------------------------------------------------------
+;		” –≈œÀ®ÕÕ€…  ŒÃ¡»Õ≈«ŒÕ
+;--------------------------------------------------------------------------------------------
+[stalker_outfit_m3]:stalker_outfit
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 4.2
+cost							= 28000
+$spawn							= "outfit\uniq\outfit_stalker_m3"
+inv_name						= stalker_outfit_name_m3
+inv_name_short					= stalker_outfit_name_m3
+description						= stalker_outfit_description_m3
+inv_grid_x						= 3
+inv_grid_y						= 5
+immunities_sect					= sect_stalker_outfit_m3_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.94
+backpack_type 					= ui_icon_rykzack_4_light_brown
+
+[sect_stalker_outfit_m3_immunities]
+burn_immunity					= 0.0200
+strike_immunity					= 0.0060
+shock_immunity					= 0.0040
+wound_immunity					= 0.0080
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0030
+explosion_immunity				= 0.0200
+fire_wound_immunity				= 0.0200
+
+
+;---------------------------------------------------------------------------------------------
+;		Õ¿”◊Õ€…  Œ—“ﬁÃ "—≈¬¿"
+;---------------------------------------------------------------------------------------------
+[scientific_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 7.8
+cost							= 75000
+$spawn 							= "outfit\scientific_outfit"
+visual							= equipments\stalker_scient_suit
+actor_visual					= actors\hero\stalker_scien.ogf
+ef_equipment_type				= 2
+inv_name						= scientific_outfit_name
+inv_name_short					= scientific_outfit_name
+description						= scientific_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 5
+inv_grid_y						= 3
+full_icon_name					= npc_icon_scientific_outfit
+night_vision_device				= elite_nvd
+full_scale_icon					= 12,11
+immunities_sect					= sect_scientific_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.30
+shock_protection 				= 0.45
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+power_loss 						= 1.15
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+
+[sect_scientific_outfit_immunities]
+burn_immunity					= 0.0060
+strike_immunity					= 0.0350
+shock_immunity					= 0.0050
+wound_immunity					= 0.0500
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0020
+explosion_immunity				= 0.0800
+fire_wound_immunity				= 0.0450
+
+
+;---------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“
+;---------------------------------------------------------------------------------------------
+[exo_outfit]:outfit_base
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 20
+cost							= 150000
+$spawn 							= "outfit\exo_outfit"
+visual							= equipments\exoskelet_ne_skunk
+actor_visual					= actors\neytral\stalker_ne_exoskeleton.ogf
+ef_equipment_type				= 5
+inv_name						= exo_outfit_name
+inv_name_short					= exo_outfit_name
+description						= exo_outfit_description
+icon_group                      = 1
+inv_grid_width                  = 3
+inv_grid_height                 = 3
+inv_grid_x                      = 4
+inv_grid_y                      = 8
+full_icon_name					= npc_icon_exo_outfit
+full_scale_icon					= 2,11
+immunities_sect					= sect_exo_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.45
+shock_protection 				= 0.00
+wound_protection				= 0.45
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+sprint_allowed					= true
+night_vision_device				= bad_nvd
+bones_koeff_protection 			= exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_6_gray
+power_loss    					= 0.6
+
+[sect_exo_outfit_immunities]
+burn_immunity					= 0.0150
+strike_immunity					= 0.0100
+shock_immunity					= 0.0350
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0150
+explosion_immunity				= 0.0150
+fire_wound_immunity				= 0.0150
+
+
+[exo_outfit_m1]:exo_outfit
+[outfit_exo_m1]:exo_outfit
+[neytral_exo_antigas_outfit]:exo_outfit
+
+
+;---------------------------------------------------------------------------------------------
+;		œŒ¬–≈∆ƒ®ÕÕ€… › «Œ— ≈À≈“
+;---------------------------------------------------------------------------------------------
+[broken_exoskeleton]:exo_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 10.0
+cost							= 20000
+$spawn							= "outfit\uniq\outfit_exo_m1"
+inv_name						= broken_exoskeleton_name
+inv_name_short					= broken_exoskeleton_name
+description						= broken_exoskeleton_description
+inv_grid_x                      = 4
+inv_grid_y                      = 11
+visual							= equipments\exoskelet
+actor_visual					= actors\neytral\stalker_neytral_exoskeleton.ogf
+full_icon_name					= npc_icon_exo_outfit
+immunities_sect					= sect_broken_exoskeleton_immunities
+burn_protection 				= 0.1
+strike_protection 				= 0.1
+shock_protection 				= 0.1
+wound_protection				= 0.15
+radiation_protection 			= 0.1
+telepatic_protection 			= 0.10
+chemical_burn_protection 		= 0.05
+explosion_protection 			= 0.1
+fire_wound_protection  			= 0.13
+power_loss 						= 1.65
+sprint_allowed					= false
+backpack_type 					= ui_icon_rykzack_6_gray
+
+[sect_broken_exoskeleton_immunities]
+burn_immunity					= 0.0060
+strike_immunity					= 0.0100
+shock_immunity					= 0.1000
+wound_immunity					= 0.0010
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0520
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		¡¿Õƒ»“— ¿ﬂ  ”–“ ¿
+;---------------------------------------------------------------------------------------------
+[bandit_outfit]:outfit_base
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 2.7
+cost							= 5700
+$spawn 							= "outfit\bandit_outfit"
+visual							= equipments\bandit_suit
+actor_visual					= actors\hero\stalker_bandit.ogf
+ef_equipment_type				= 3
+inv_name						= bandit_outfit_name
+inv_name_short					= bandit_outfit_name
+description						= bandit_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 5
+inv_grid_y						= 6
+full_icon_name					= npc_icon_bandit_outfit
+full_scale_icon					= 0,6
+immunities_sect					= sect_bandit_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.15
+shock_protection 				= 0.00
+wound_protection				= 0.15
+radiation_protection 			= 0.0
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss   					= 0.73
+bones_koeff_protection 			= actor_damage ;kurtka_antigas_damage
+backpack_type 					= ui_icon_rykzack_2_light_gray
+
+[sect_bandit_outfit_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0200
+shock_immunity					= 0.0100
+wound_immunity					= 0.0400
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.0520
+
+;---------------------------------------------------------------------------------------------
+;		◊®–Õ¿ﬂ  ”–“ ¿ — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[bandit_gaz_outfit_m1]:bandit_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 3.9
+cost							= 10000
+$spawn 							= "outfit\bandit_outfit"
+visual							= equipments\bandit_suit
+actor_visual					= actors\bandit\stalker_bandit_8.ogf
+ef_equipment_type				= 3
+inv_name						= bandit_gaz_outfit_m1_name
+inv_name_short					= bandit_gaz_outfit_m1_name
+description						= bandit_gaz_outfit_m1_description
+inv_grid_x						= 7
+inv_grid_y						= 0
+full_icon_name					= npc_icon_bandit_gaz_outfit_m1
+full_scale_icon					= 0,6
+immunities_sect					= sect_bandit_gaz_outfit_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.15
+shock_protection 				= 0.00
+wound_protection				= 0.15
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.15
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss						= 0.88
+bones_koeff_protection 			= actor_damage ;kurtka_antigas_damage
+backpack_type 					= ui_icon_rykzack_2_light_gray
+
+[sect_bandit_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0200
+shock_immunity					= 0.0100
+wound_immunity					= 0.0400
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.0520
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÀ‹◊”∆Õ¿ﬂ ◊®–Õ¿ﬂ  ”–“ ¿
+;---------------------------------------------------------------------------------------------
+[outfit_bandit_m1]:bandit_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 3.5
+cost							= 7800
+$spawn              			= "outfit\uniq\outfit_bandit_m1"
+inv_name						= bandit_outfit_name_m
+inv_name_short					= bandit_outfit_name_m
+description						= bandit_outfit_description_m
+bones_koeff_protection 			= actor_damage ;plasch_antigas_damage
+
+wound_protection				= 0.30
+fire_wound_protection  			= 0.30
+
+inv_grid_x						= 7
+inv_grid_y						= 2
+backpack_type 					= ui_icon_rykzack_2_light_gray
+immunities_sect					= sect_bandit_outfit_m1_immunities
+power_loss   					= 0.73
+
+[sect_bandit_outfit_m1_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0200
+shock_immunity					= 0.0120
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0400
+
+
+;---------------------------------------------------------------------------------------------
+;		 Œ–»◊Õ≈¬€… œÀ¿Ÿ
+;---------------------------------------------------------------------------------------------
+[bandit_veteran_outfit]:outfit_base
+additional_inventory_weight		= 35
+additional_inventory_weight2	= 35
+inv_weight						= 4.8
+cost							= 23000
+$spawn 							= "outfit\bandit_outfit"
+visual							= equipments\bandit_brown_suit
+actor_visual					= actors\bandit\stalker_bandit_veteran.ogf
+ef_equipment_type				= 3
+inv_name						= bandit_veteran_outfit_name
+inv_name_short					= bandit_veteran_outfit_name
+description						= bandit_veteran_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 7
+inv_grid_y						= 4
+full_icon_name					= npc_icon_bandit_veteran_outfit
+full_scale_icon					= 0,6
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.00
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss						= 0.75
+immunities_sect					= sect_bandit_veteran_outfit_immunities
+backpack_type 					= ui_icon_rykzack_10_brown
+
+[sect_bandit_veteran_outfit_immunities]
+burn_immunity					= 0.0500
+strike_immunity					= 0.0060
+shock_immunity					= 0.0010
+wound_immunity					= 0.0060
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.0200
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		 Œ–»◊Õ≈¬€… œÀ¿Ÿ — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[bandit_veteran_outfit_gas]:bandit_veteran_outfit
+inv_weight						= 6.0
+cost							= 28000
+inv_name						= bandit_veteran_outfit_gas_name
+inv_name_short					= bandit_veteran_outfit_gas_name
+description						= bandit_veteran_outfit_gas_description
+inv_grid_x						= 7
+inv_grid_y						= 10
+
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.15
+power_loss						= 0.90
+immunities_sect					= sect_bandit_veteran_outfit_gas_immunities
+
+[sect_bandit_veteran_outfit_gas_immunities]
+burn_immunity					= 0.0500
+strike_immunity					= 0.0060
+shock_immunity					= 0.0010
+wound_immunity					= 0.0060
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0200
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		œ–Œ◊Õ€…  Œ–»◊Õ≈¬€… œÀ¿Ÿ     - ¬ »√–≈ ”∆≈ Õ≈“, » ’Œ–ŒÿŒ
+;---------------------------------------------------------------------------------------------
+[bandit_veteran_outfit_m1]:outfit_base
+additional_inventory_weight		= 32
+additional_inventory_weight2	= 32
+inv_weight						= 5
+cost							= 23000
+$spawn 							= "outfit\bandit_outfit"
+visual							= equipments\bandit_suit
+actor_visual					= actors\bandit\stalker_bandit_veteran.ogf
+ef_equipment_type				= 3
+inv_name						= bandit_veteran_outfit_m1_name
+inv_name_short					= bandit_veteran_outfit_m1_name
+description						= bandit_veteran_outfit_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 7
+inv_grid_y						= 7
+full_icon_name					= npc_icon_bandit_veteran_outfit_m1
+full_scale_icon					= 0,6
+immunities_sect					= sect_bandit_veteran_outfit_m1_immunities
+burn_protection 				= 0.10
+strike_protection 				= 0.15
+shock_protection 				= 0.15
+wound_protection				= 0.35
+radiation_protection 			= 0.20
+telepatic_protection 			= 0.10
+chemical_burn_protection 		= 0.10
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss						= 0.8
+bones_koeff_protection 			= actor_damage ;kurtka_antigas_damage
+backpack_type 					= ui_icon_rykzack_10_brown
+
+[sect_bandit_veteran_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0040
+shock_immunity					= 0.0010
+wound_immunity					= 0.0020
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0100
+fire_wound_immunity				= 0.0020
+
+
+;---------------------------------------------------------------------------------------------
+;		◊®–Õ€… œÀ¿Ÿ
+;---------------------------------------------------------------------------------------------
+[bandit_master_outfit]:bandit_outfit
+additional_inventory_weight		= 40
+additional_inventory_weight2	= 40
+inv_weight						= 5.5
+cost							= 26600
+$spawn 							= "outfit\bandit_outfit"
+visual							= equipments\bandit_black_suit
+actor_visual					= actors\bandit\stalker_bandit_master.ogf
+ef_equipment_type				= 3
+inv_name						= bandit_master_outfit_name
+inv_name_short					= bandit_master_outfit_name
+description						= bandit_master_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 7
+inv_grid_y						= 13
+full_icon_name					= npc_icon_bandit_master_outfit
+full_scale_icon					= 0,6
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.0
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+power_loss						= 0.76
+immunities_sect					= sect_bandit_master_outfit_immunities
+backpack_type 					= ui_icon_rykzack_10_black
+
+[sect_bandit_master_outfit_immunities]
+burn_immunity					= 0.0800
+strike_immunity					= 0.0060
+shock_immunity					= 0.0010
+wound_immunity					= 0.0060
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0200
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		◊®–Õ€… œÀ¿Ÿ — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[bandit_master_outfit_gas]:bandit_master_outfit
+inv_name						= bandit_master_outfit_gas_name
+inv_name_short					= bandit_master_outfit_gas_name
+description						= bandit_master_outfit_gas_description
+full_icon_name					= npc_icon_bandit_master_gas_outfit_m1
+inv_grid_x						= 7
+inv_grid_y						= 16
+inv_weight						= 6
+cost							= 31000
+
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.15
+
+power_loss						= 0.92
+
+
+;---------------------------------------------------------------------------------------------
+;		”Õ» ¿À‹Õ€… ◊®–Õ€… œÀ¿Ÿ
+;---------------------------------------------------------------------------------------------
+[bandit_master_outfit_m1]:bandit_master_outfit
+additional_inventory_weight		= 40
+additional_inventory_weight2	= 40
+inv_weight						= 5.5
+cost							= 47000
+$spawn              			= "outfit\uniq\bandit_master_outfit_m1"
+inv_name						= bandit_master_outfit_m
+inv_name_short					= bandit_master_outfit_m
+description						= bandit_master_outfit_description_m
+inv_grid_x                      = 9
+inv_grid_y                      = 0
+
+power_loss						= 0.5
+backpack_type 					= ui_icon_rykzack_10_black
+
+
+;---------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“ "Ã¿–Œƒ®–"
+;---------------------------------------------------------------------------------------------
+[exo_bandit_outfit]:outfit_base
+additional_inventory_weight		= 55
+additional_inventory_weight2	= 55
+inv_weight						= 15.0
+cost							= 180000
+$spawn 							= "outfit\exo_outfit"
+visual							= equipments\bandit_exoskelet
+actor_visual					= actors\bandit\stalker_bandit_exoskeleton.ogf
+ef_equipment_type				= 5
+inv_name						= exo_bandit_outfit_name
+inv_name_short					= exo_bandit_outfit_name
+description						= exo_bandit_outfit_description
+icon_group                      = 1
+inv_grid_width					= 3
+inv_grid_height					= 3
+inv_grid_x						= 4
+inv_grid_y						= 14
+full_icon_name					= npc_icon_bandit_exo_outfit
+night_vision_device				= nano_nvd
+immunities_sect					= sect_exo_bandit_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.23
+shock_protection 				= 0.10
+wound_protection				= 0.30
+radiation_protection 			= 0.20
+telepatic_protection 			= 0.10
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+sprint_allowed					= false
+bones_koeff_protection 			= actor_damage ;exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_6_gray
+power_loss    					= 0.5
+
+[sect_exo_bandit_outfit_immunities]
+burn_immunity					= 0.0100
+strike_immunity					= 0.0100
+shock_immunity					= 0.2000
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ œ—«-9‰
+;---------------------------------------------------------------------------------------------
+[dolg_outfit]:outfit_base
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 4.6
+cost							= 27000
+$spawn 							= "outfit\dolg_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\dolg_suit
+actor_visual					= actors\hero\stalker_dolg.ogf
+ef_equipment_type				= 3
+inv_name						= dolg_outfit_name
+inv_name_short					= dolg_outfit_name
+description						= dolg_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 9
+inv_grid_y						= 3
+full_icon_name					= npc_icon_dolg_outfit
+full_scale_icon					= 8,11
+immunities_sect					= sect_dolg_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.45
+shock_protection 				= 0.15
+wound_protection				= 0.45
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.95
+bones_koeff_protection 			= actor_damage ;kombez_antigas_damage
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+
+[sect_dolg_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0520
+shock_immunity					= 0.0100
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ œ—«-9‰-2
+;---------------------------------------------------------------------------------------------
+[dolg_gaz_outfit_m1]:dolg_outfit
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 6.1
+cost							= 39000
+actor_visual					= actors\dolg\stalker_do_antigas.ogf
+ef_equipment_type				= 3
+inv_name						= dolg_outfit_gaz_m1_name
+inv_name_short					= dolg_outfit_gaz_m1_name
+description						= dolg_outfit_gaz_m1_description
+inv_grid_x						= 9
+inv_grid_y						= 6
+full_icon_name					= npc_icon_dolg_gaz_outfit_m1
+full_scale_icon					= 8,11
+immunities_sect					= sect_dolg_gaz_outfit_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.45
+shock_protection 				= 0.15
+wound_protection				= 0.45
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.10
+bones_koeff_protection 			= actor_damage ;kombez_antigas_damage
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+
+[sect_dolg_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0520
+shock_immunity					= 0.0100
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		Õ¿”◊Õ€… ƒŒÀ√¿ œ—«-9Ã‰
+;---------------------------------------------------------------------------------------------
+[dolg_scientific_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 7.8
+cost							= 76700
+$spawn 							= "outfit\dolg_scientific_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\stalker_dolg_nauchniy_suit
+actor_visual					= actors\dolg\stalker_do_nauchniy.ogf
+ef_equipment_type				= 4
+inv_name						= dolg_scientific_outfit_name
+inv_name_short					= dolg_scientific_outfit_name
+description						= dolg_scientific_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 9
+inv_grid_y						= 9
+full_icon_name					= npc_icon_dolg_scientific_outfit
+night_vision_device				= elite_nvd
+full_scale_icon					= 8,6
+immunities_sect					= sect_dolg_scientific_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.45
+shock_protection 				= 0.30
+wound_protection				= 0.45
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.15
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+
+[sect_dolg_scientific_outfit_immunities]
+burn_immunity					= 0.0100
+strike_immunity					= 0.0520
+shock_immunity					= 0.0060
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0520
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ œ—«-9‰-Œ
+;---------------------------------------------------------------------------------------------
+[outfit_dolg_m1]:dolg_outfit
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 6.5
+cost							= 38000
+actor_visual					= actors\dolg\stalker_do_antigas.ogf
+$spawn							= "outfit\uniq\outfit_dolg_m1"
+
+inv_name						= dolg_outfit_name_m1
+inv_name_short					= dolg_outfit_name_m1
+description						= dolg_outfit_description_m1
+burn_protection 				= 0.15
+strike_protection 				= 0.60
+shock_protection 				= 0.15
+wound_protection				= 0.60
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+full_icon_name					= npc_icon_dolg_gaz_outfit_m1
+full_scale_icon					= 8,11
+inv_grid_x						= 9
+inv_grid_y						= 12
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+immunities_sect					= sect_outfit_dolg_m1_immunities
+
+[sect_outfit_dolg_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0520
+shock_immunity					= 0.0100
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0320
+
+
+;----------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“ ƒŒÀ√¿
+;---------------------------------------------------------------------------------------------
+[dolg_black_exoskeleton]:exo_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 20
+cost							= 183000
+$spawn							= "outfit\uniq\outfit_exo_m1"
+inv_name						= dolg_black_exoskeleton_name
+inv_name_short					= dolg_black_exoskeleton_name
+description						= dolg_black_exoskeleton_description
+inv_grid_x                      = 4
+inv_grid_y                      = 17
+visual							= equipments\exoskelet_do_skunk
+actor_visual					= actors\dolg\stalker_do_exoskeleton.ogf
+full_icon_name					= npc_icon_dolg_exo_outfit
+night_vision_device				= nano_nvd
+immunities_sect					= sect_dolg_black_exoskeleton_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.60
+shock_protection 				= 0.00
+wound_protection				= 0.60
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss                      = 0.6
+sprint_allowed					= true
+bones_koeff_protection 			= actor_damage ;exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_6_gray
+
+[sect_dolg_black_exoskeleton_immunities]
+burn_immunity					= 0.0150
+strike_immunity					= 0.0050
+shock_immunity					= 0.0350
+wound_immunity					= 0.0050
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0150
+explosion_immunity				= 0.0150
+fire_wound_immunity				= 0.0150
+
+
+;---------------------------------------------------------------------------------------------
+;		— ¿‘¿Õƒ– ——œ-99 "› ŒÀŒ√"
+;---------------------------------------------------------------------------------------------
+[ecolog_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 7.2
+cost							= 71000
+$spawn 							= "outfit\ecolog_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\ecolog_suit.ogf
+actor_visual					= actors\hero\stalker_ecolog.ogf
+ef_equipment_type				= 2
+inv_name						= ecolog_outfit_name
+inv_name_short					= ecolog_outfit_name
+description						= ecolog_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 9
+inv_grid_y						= 15
+full_icon_name					= npc_icon_ecolog_outfit
+night_vision_device				= grey_nvd
+full_scale_icon					= 14,6
+immunities_sect					= sect_ecolog_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.15
+shock_protection 				= 0.45
+wound_protection				= 0.15
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.60
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.00
+fire_wound_protection  			= 0.00
+bones_koeff_protection 			= actor_damage ;kurtka_kupol_damage
+power_loss 						= 1.15
+backpack_type 					= ui_icon_rykzack_8_orange
+
+[sect_ecolog_outfit_immunities]
+burn_immunity					= 0.0060
+strike_immunity					= 0.0800
+shock_immunity					= 0.0060
+wound_immunity					= 0.0900
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.0900
+
+
+;---------------------------------------------------------------------------------------------
+;		— ¿‘¿Õƒ– ——œ-99Ã "¬≈√¿"
+;---------------------------------------------------------------------------------------------
+[protection_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 8.0
+cost							= 76000
+$spawn 							= "outfit\protection_outfit"
+visual							= equipments\scientist_suit.ogf
+actor_visual					= actors\hero\stalker_chemical.ogf
+ef_equipment_type				= 2
+inv_name						= protection_outfit_name
+inv_name_short					= protection_outfit_name
+description						= protection_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 11
+inv_grid_y						= 0
+full_icon_name					= npc_icon_protection_outfit
+night_vision_device				= grey_nvd
+full_scale_icon					= 12,6
+immunities_sect					= sect_protection_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.30
+shock_protection 				= 0.45
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.60
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+power_loss 						= 1.15
+backpack_type 					= ui_icon_rykzack_9_green
+
+[sect_protection_outfit_immunities]
+burn_immunity					= 0.0040
+strike_immunity					= 0.0800
+shock_immunity					= 0.0040
+wound_immunity					= 0.0800
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0800
+fire_wound_immunity				= 0.0800
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ —œ≈÷œŒƒ–¿«ƒ≈À≈Õ»…
+;---------------------------------------------------------------------------------------------
+[killer_outfit]:outfit_base
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 6.4
+cost							= 26000
+$spawn 							= "outfit\killer_outfit"
+visual							= equipments\stalker_killer_suit
+actor_visual					= actors\hero\stalker_killer.ogf
+ef_equipment_type				= 4
+inv_name						= killer_outfit_name
+inv_name_short					= killer_outfit_name
+description						= killer_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 11
+inv_grid_y						= 3
+full_icon_name					= npc_icon_killer_outfit
+full_scale_icon					= 4,11
+immunities_sect					= sect_killer_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.60
+fire_wound_protection  			= 0.60
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+power_loss 						= 0.95
+backpack_type 					= ui_icon_rykzack_9_gray
+
+[sect_killer_outfit_immunities]
+burn_immunity					= 0.0200
+strike_immunity					= 0.0200
+shock_immunity					= 0.0080
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0300
+explosion_immunity				= 0.0100
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ —œ≈÷œŒƒ–¿«ƒ≈À≈Õ»… — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[killer_gaz_outfit_m1]:killer_outfit
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 7.6
+cost							= 37000
+actor_visual					= actors\killer\stalker_ki_antigas.ogf
+ef_equipment_type				= 3
+inv_name						= killer_gaz_outfit_m1_name
+inv_name_short					= killer_gaz_outfit_m1_name
+description						= killer_gaz_outfit_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 11
+inv_grid_y						= 6
+night_vision_device				= good_nvd
+full_icon_name					= npc_icon_killer_gaz_outfit_m1
+immunities_sect					= sect_killer_gaz_outfit_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.15
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.60
+fire_wound_protection  			= 0.60
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+power_loss 						= 1.10
+backpack_type 					= ui_icon_rykzack_9_gray
+
+[sect_killer_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0200
+strike_immunity					= 0.0200
+shock_immunity					= 0.0080
+wound_immunity					= 0.0200
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0300
+explosion_immunity				= 0.0100
+fire_wound_immunity				= 0.0060
+
+
+;---------------------------------------------------------------------------------------------
+;		” –≈œÀ≈ÕÕ€…  ŒÃ¡»Õ≈«ŒÕ —œ≈÷œŒƒ–¿«ƒ≈À≈Õ»…
+;---------------------------------------------------------------------------------------------
+[outfit_killer_m1]:killer_gaz_outfit_m1
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 7.2
+cost							= 40000
+$spawn							= "outfit\uniq\outfit_killer_m1"
+inv_name						= killer_outfit_name_m1
+inv_name_short					= killer_outfit_name_m1
+description						= killer_outfit_description_m1
+
+wound_protection				= 0.45
+radiation_protection 			= 0.30
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+
+bones_koeff_protection 			= actor_damage
+inv_grid_x						= 11
+inv_grid_y						= 9
+night_vision_device				= good_nvd
+power_loss 						= 0.75
+backpack_type 					= ui_icon_rykzack_9_gray
+immunities_sect					= sect_killer_outfit_m1_immunities
+
+[sect_killer_outfit_m1_immunities]
+burn_immunity					= 0.0100
+strike_immunity					= 0.0060
+shock_immunity					= 0.0040
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0060
+fire_wound_immunity				= 0.0020
+
+
+;---------------------------------------------------------------------------------------------
+;		Õ¿”◊Õ€… —œ≈÷œŒƒ–¿«ƒ≈À≈Õ»…
+;---------------------------------------------------------------------------------------------
+[merc_scientific_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 8.5
+cost							= 75700
+$spawn 							= "outfit\dolg_scientific_outfit"
+visual							= equipments\stalker_kill_nauchniy_suit
+actor_visual					= actors\killer\stalker_ki_nauchniy.ogf
+ef_equipment_type				= 4
+inv_name						= merc_scientific_outfit_name
+inv_name_short					= merc_scientific_outfit_name
+description						= merc_scientific_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 11
+inv_grid_y						= 12
+full_icon_name					= npc_icon_merc_scientific_outfit
+night_vision_device				= good_nvd
+full_scale_icon					= 8,6
+immunities_sect					= sect_merc_scientific_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.15
+shock_protection 				= 0.45
+wound_protection				= 0.15
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+power_loss 						= 1.15
+bones_koeff_protection 			= actor_damage
+backpack_type 					= ui_icon_rykzack_8_darkly_gray
+
+[sect_merc_scientific_outfit_immunities]
+burn_immunity					= 0.0062
+strike_immunity					= 0.0520
+shock_immunity					= 0.0050
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0060
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0240
+
+
+;---------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“ —œ≈÷œŒƒ–¿«ƒ≈À≈Õ»…
+;---------------------------------------------------------------------------------------------
+[killer_blue_exoskeleton]:exo_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 20.0
+cost							= 175000
+inv_name						= killer_blue_exoskeleton_name
+inv_name_short					= killer_blue_exoskeleton_name
+description						= killer_blue_exoskeleton_description
+inv_grid_x						= 13
+inv_grid_y						= 0
+visual							= equipments\exoskelet_ki_skunk
+actor_visual					= actors\killer\stalker_ki_exoskeleton.ogf
+full_icon_name					= npc_icon_killer_blue_exoskeleton
+night_vision_device				= good_nvd
+immunities_sect					= sect_killer_blue_exoskeleton_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.0
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.60
+fire_wound_protection  			= 0.60
+power_loss                      = 0.6
+sprint_allowed					= true
+bones_koeff_protection 			= actor_damage ;exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_5_gray
+
+[sect_killer_blue_exoskeleton_immunities]
+burn_immunity					= 0.0150
+strike_immunity					= 0.0150
+shock_immunity					= 0.1000
+wound_immunity					= 0.0150
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0150
+explosion_immunity				= 0.0050
+fire_wound_immunity				= 0.0050
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ "¬≈“≈– —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[svoboda_light_outfit]:outfit_base
+additional_inventory_weight		= 28
+additional_inventory_weight2	= 28
+inv_weight						= 6.1
+cost							= 44000
+$spawn 							= "outfit\svoboda_light_outfit"
+visual							= equipments\svoboda_light_suit
+actor_visual					= actors\hero\stalker_svoboda_light.ogf
+ef_equipment_type				= 3
+inv_name						= svoboda_light_outfit_name
+inv_name_short					= svoboda_light_outfit_name
+description						= svoboda_light_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 11
+inv_grid_y						= 15
+full_icon_name					= npc_icon_svoboda_light_outfit
+full_scale_icon					= 10,11
+immunities_sect					= sect_svoboda_light_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.30
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.83
+bones_koeff_protection 			= actor_damage ;gilet_mask_damage
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_svoboda_light_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0400
+shock_immunity					= 0.0100
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0200
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ "¬≈“≈– —¬Œ¡Œƒ€" ¿Õ“»ÿŒ 
+;---------------------------------------------------------------------------------------------
+[outfit_svoboda_m1]:svoboda_light_outfit
+additional_inventory_weight		= 28
+additional_inventory_weight2	= 28
+inv_weight						= 6.4
+cost							= 46000
+$spawn							= "outfit\uniq\outfit_svoboda_m1"
+inv_name						= svoboda_outfit_name_m1
+inv_name_short					= svoboda_outfit_name_m1
+description						= svoboda_outfit_description_m1
+inv_grid_x						= 13
+inv_grid_y						= 3
+
+shock_protection 				= 0.60
+
+power_loss 						= 0.83
+immunities_sect					= sect_outfit_svoboda_m1_immunities
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_outfit_svoboda_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0400
+shock_immunity					= 0.0080
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0520
+fire_wound_immunity				= 0.0200
+
+;---------------------------------------------------------------------------------------------
+;		”À”◊ÿ≈ÕÕ€…  ŒÃ¡»Õ≈«ŒÕ "¬≈“≈– —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[svoboda_gaz_outfit_m1]:svoboda_light_outfit
+additional_inventory_weight		= 28
+additional_inventory_weight2	= 28
+inv_weight						= 6.6
+cost							= 47000
+actor_visual					= actors\svoboda\stalker_sv_hood_91.ogf
+ef_equipment_type				= 3
+inv_name						= outfit_svoboda_gaz_m1_name
+inv_name_short					= outfit_svoboda_gaz_m1_name
+description						= outfit_svoboda_gaz_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 13
+inv_grid_y						= 6
+full_scale_icon					= 10,11
+full_icon_name					= npc_icon_svoboda_gaz_outfit_m1
+immunities_sect					= sect_svoboda_gaz_outfit_m1_immunities
+night_vision_device				= 0_nvd
+
+radiation_protection 			= 0.45
+chemical_burn_protection 		= 0.45
+
+power_loss 						= 0.85
+bones_koeff_protection 			= actor_damage ;gilet_mask_damage
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_svoboda_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0320
+shock_immunity					= 0.0080
+wound_immunity					= 0.0080
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0160
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0160
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ  "—“–¿∆ —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[svoboda_heavy_outfit]:outfit_base
+additional_inventory_weight		= 30
+additional_inventory_weight2	= 30
+inv_weight						= 7.3
+cost							= 49000
+GroupControlSection				= spawn_group
+$spawn 							= "outfit\svoboda_heavy_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\svoboda_heavy_suit
+actor_visual					= actors\hero\stalker_svoboda_heavy.ogf
+ef_equipment_type				= 3
+inv_name						= svoboda_heavy_outfit_name
+inv_name_short					= svoboda_heavy_outfit_name
+description						= svoboda_heavy_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 13
+inv_grid_y						= 9
+full_icon_name					= npc_icon_svoboda_heavy_outfit
+night_vision_device				= 0_nvd
+full_scale_icon					= 2,6
+immunities_sect					= sect_svoboda_heavy_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.30
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+bones_koeff_protection 			= actor_damage ;kombez_antigas_damage
+power_loss 						= 1.00
+backpack_type 					= ui_icon_rykzack_4_green
+
+[sect_svoboda_heavy_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0320
+shock_immunity					= 0.0080
+wound_immunity					= 0.0080
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0160
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0160
+
+
+;---------------------------------------------------------------------------------------------
+;		”—»À≈ÕÕ€…  ŒÃ¡»Õ≈«ŒÕ  "—“–¿∆ —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[svoboda_heavy_gaz_outfit_m1]:outfit_base
+additional_inventory_weight		= 30
+additional_inventory_weight2	= 30
+inv_weight						= 7.7
+cost							= 51000
+GroupControlSection				= spawn_group
+$spawn 							= "outfit\svoboda_heavy_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\svoboda_heavy_suit
+actor_visual					= actors\svoboda\stalker_sv_hood_9.ogf
+ef_equipment_type				= 3
+inv_name						= svoboda_heavy_gaz_outfit_m1_name
+inv_name_short					= svoboda_heavy_gaz_outfit_m1_name
+description						= svoboda_heavy_gaz_outfit_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 13
+inv_grid_y						= 12
+full_icon_name					= npc_icon_svoboda_heavy_gaz_outfit_m1
+night_vision_device				= 0_nvd
+full_scale_icon					= 2,6
+immunities_sect					= sect_svoboda_heavy_gaz_outfit_m1_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.30
+wound_protection				= 0.30
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.60
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+bones_koeff_protection 			= actor_damage ;kombez_antigas_damage
+power_loss 						= 1.05
+backpack_type 					= ui_icon_rykzack_4_green
+
+[sect_svoboda_heavy_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0200
+shock_immunity					= 0.0080
+wound_immunity					= 0.0060
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0120
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		Õ¿”◊Õ€… "◊≈—“‹ —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[freedom_scientific_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 8.3
+cost							= 81000
+GroupControlSection				= spawn_group
+$spawn 							= "outfit\dolg_scientific_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\stalker_free_nauchniy_suit
+actor_visual					= actors\svoboda\stalker_sv_nauchniy
+ef_equipment_type				= 4
+inv_name						= freedom_scientific_outfit_name
+inv_name_short					= freedom_scientific_outfit_name
+description						= freedom_scientific_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 13
+inv_grid_y						= 15
+full_icon_name					= npc_icon_freedom_scientific_outfit
+night_vision_device				= elite_nvd
+full_scale_icon					= 8,6
+immunities_sect					= sect_freedom_scientific_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.30
+shock_protection 				= 0.60
+wound_protection				= 0.30
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+power_loss 						= 0.95
+backpack_type 					= ui_icon_rykzack_8_light_green
+
+[sect_freedom_scientific_outfit_immunities]
+burn_immunity					= 0.0100
+strike_immunity					= 0.0320
+shock_immunity					= 0.0320
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0100
+
+;---------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“ "ÃŒŸ‹ —¬Œ¡Œƒ€"
+;---------------------------------------------------------------------------------------------
+[svoboda_exoskeleton]:exo_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 19.0
+cost							= 175000
+$spawn							= "outfit\uniq\outfit_exo_m1"
+inv_name						= svoboda_exoskeleton_name
+inv_name_short					= svoboda_exoskeleton_name
+description						= svoboda_exoskeleton_description
+inv_grid_x                      = 15
+inv_grid_y                      = 3
+visual							= equipments\exoskelet_sv_skunk
+actor_visual					= actors\svoboda\stalker_sv_exoskeleton.ogf
+full_icon_name					= npc_icon_svoboda_exo_outfit
+night_vision_device				= nano_nvd
+burn_protection 				= 0.45
+strike_protection 				= 0.30
+shock_protection 				= 0.0
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss                      = 0.6
+immunities_sect					= sect_svoboda_exoskeleton_immunities
+sprint_allowed					= true
+bones_koeff_protection 			= actor_damage ;exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_6_gray
+
+[sect_svoboda_exoskeleton_immunities]
+burn_immunity					= 0.0050
+strike_immunity					= 0.0150
+shock_immunity					= 0.0200
+wound_immunity					= 0.0150
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0050
+explosion_immunity				= 0.0150
+fire_wound_immunity				= 0.0150
+
+
+[svoboda_yellow_exo_outfit_m1]:svoboda_exoskeleton
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈∆»À≈“
+;---------------------------------------------------------------------------------------------
+[outfit_soldier_m1]:outfit_base
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 4.9
+cost							= 26000
+$spawn 							= "outfit\obsolete\soldier_outfit"
+visual							= equipments\specnaz_soldier_suit
+actor_visual					= actors\soldier\soldier_mask.ogf
+ef_equipment_type				= 3
+inv_name						= outfit_soldier_m1_name
+inv_name_short					= outfit_soldier_m1_name
+description						= outfit_soldier_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 9
+inv_grid_y						= 18
+full_icon_name					= npc_icon_outfit_soldier_m1
+full_scale_icon					= 6,6
+bones_koeff_protection 			= actor_damage ;gilet_mask_damage
+immunities_sect					= sect_outfit_soldier_m1_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.0
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.30
+fire_wound_protection  			= 0.30
+power_loss 						= 0.95
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_outfit_soldier_m1_immunities]
+burn_immunity					= 0.0500
+strike_immunity					= 0.0010
+shock_immunity					= 0.0010
+wound_immunity					= 0.0060
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.0060
+fire_wound_immunity				= 0.0010
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ ¡≈–»ÀÀ-5Ã
+;---------------------------------------------------------------------------------------------
+[specops_outfit]:outfit_base
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 7.1
+cost							= 39000
+$spawn 							= "outfit\specops_outfit"
+visual							= equipments\specnaz_suit
+actor_visual					= actors\soldier\soldier_antigas.ogf
+ef_equipment_type				= 3
+inv_name						= specops_outfit_name
+inv_name_short					= specops_outfit_name
+description						= specops_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 16
+inv_grid_y						= 0
+full_icon_name					= npc_icon_specops_outfit
+night_vision_device				= bad_new_nvd
+full_scale_icon					= 4,6
+immunities_sect					= sect_specops_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.15
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+bones_koeff_protection 			= actor_damage ;kombez_helmet_damage
+power_loss 						= 1.05
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_specops_outfit_immunities]
+burn_immunity					= 0.0500
+strike_immunity					= 0.0100
+shock_immunity					= 0.0080
+wound_immunity					= 0.0150
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0300
+explosion_immunity				= 0.0100
+fire_wound_immunity				= 0.0060
+
+
+[outfit_specnaz_m1]:specops_outfit
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ — ¿“-9Ã
+;---------------------------------------------------------------------------------------------
+[military_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 8.0
+cost							= 47000
+$spawn 							= "outfit\military_outfit"
+visual							= equipments\stalker_military_suit
+actor_visual					= actors\soldier\stalker_military_green.ogf
+ef_equipment_type				= 4
+inv_name						= military_outfit_name
+inv_name_short					= military_outfit_name
+description						= military_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 18
+inv_grid_y						= 3
+full_icon_name					= npc_icon_military_outfit
+night_vision_device				= bad_new_nvd
+full_scale_icon					= 10,6
+immunities_sect					= sect_military_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.45
+shock_protection 				= 0.30
+wound_protection				= 0.45
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+power_loss 						= 1.05
+bones_koeff_protection 			= actor_damage ;armor_helmet_damage
+backpack_type 					= ui_icon_rykzack_9_gray
+
+[sect_military_outfit_immunities]
+burn_immunity					= 0.0300
+strike_immunity					= 0.0150
+shock_immunity					= 0.0080
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0100
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ — ¿“-10
+;---------------------------------------------------------------------------------------------
+[militaryspec_outfit]:outfit_base
+additional_inventory_weight		= 28
+additional_inventory_weight2	= 28
+inv_weight						= 9.4
+cost							= 60000
+$spawn 							= "outfit\militaryspec_outfit"
+visual							= equipments\stalker_comander_suit
+actor_visual					= actors\soldier\stalker_military_black.ogf
+ef_equipment_type				= 4
+inv_name						= militaryspec_outfit_name
+inv_name_short					= militaryspec_outfit_name
+description						= militaryspec_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 15
+inv_grid_y						= 6
+full_icon_name					= npc_icon_militaryspec_outfit
+night_vision_device				= elite_nvd
+full_scale_icon					= 10,6
+immunities_sect					= sect_militaryspec_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.45
+shock_protection 				= 0.30
+wound_protection				= 0.45
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.45
+chemical_burn_protection 		= 0.30
+explosion_protection 			= 0.60
+fire_wound_protection  			= 0.60
+power_loss 						= 1.10
+bones_koeff_protection 			= actor_damage ;armor_helmet_damage
+backpack_type 					= ui_icon_rykzack_5_gray
+
+[sect_militaryspec_outfit_immunities]
+burn_immunity					= 0.0200
+strike_immunity					= 0.0080
+shock_immunity					= 0.0080
+wound_immunity					= 0.0080
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0200
+explosion_immunity				= 0.0050
+fire_wound_immunity				= 0.0050
+
+
+;---------------------------------------------------------------------------------------------
+;		√–¿¬»¡–ŒÕ» 
+;---------------------------------------------------------------------------------------------
+[soldier_outfit]:outfit_base
+additional_inventory_weight		= 200
+additional_inventory_weight2	= 200
+inv_weight						= 20
+cost							= 95000
+$spawn 							= "outfit\obsolete\soldier_outfit"
+visual							= equipments\soldier_suit
+actor_visual					= actors\hero\stalker_soldier.ogf
+ef_equipment_type				= 3
+inv_name						= outfit_gravisak_name
+inv_name_short					= outfit_gravisak_name
+description						= outfit_gravisak_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 2
+inv_grid_x						= 11
+inv_grid_y						= 18
+full_icon_name					= npc_icon_specops_outfit
+full_scale_icon					= 4,6
+immunities_sect					= sect_soldier_outfit_immunities
+burn_protection 				= -0.1
+strike_protection 				= -0.2
+shock_protection 				= -0.2
+wound_protection				= 0.0
+radiation_protection 			= 0.0
+telepatic_protection 			= 0.10
+chemical_burn_protection 		= -0.2
+explosion_protection 			= -0.5
+fire_wound_protection  			= 0.10
+bones_koeff_protection 			= actor_damage ;gravi_gilet_mask_damage
+power_loss 						= 0.7
+backpack_type 					= ui_icon_rykzack_7_darkly_green
+
+[sect_soldier_outfit_immunities]
+burn_immunity					= 0.1000
+strike_immunity					= 0.1000
+shock_immunity					= 0.1000
+wound_immunity					= 0.1000
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.1000
+explosion_immunity				= 0.1000
+fire_wound_immunity				= 0.1000
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈∆»À≈“ ◊Õ-1
+;---------------------------------------------------------------------------------------------
+[cs_light_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 5.4
+cost							= 32000
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn 							= "outfit\cs_light_outfit"
+;$prefetch 						= 32
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\cs_light_outfit
+actor_visual					= actors\clear_sky_1.ogf
+ef_equipment_type				= 3
+inv_name						= cs_light_outfit_name
+inv_name_short					= cs_light_outfit_name
+description						= cs_light_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 15
+inv_grid_y						= 9
+full_icon_name					= npc_icon_cs_light_outfit
+full_scale_icon					= 0,11
+immunities_sect					= sect_cs_light_outfit_immunities
+burn_protection 				= 0.15
+strike_protection 				= 0.30
+shock_protection 				= 0.15
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.60
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.9
+bones_koeff_protection 			= actor_damage ;gilet_antigas_damage
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_cs_light_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0320
+shock_immunity					= 0.0080
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.0400
+fire_wound_immunity				= 0.0200
+
+
+;---------------------------------------------------------------------------------------------
+;		¡–ŒÕ≈ Œ—“ﬁÃ ◊Õ-3‡
+;---------------------------------------------------------------------------------------------
+[cs_heavy_outfit]:outfit_base
+additional_inventory_weight		= 35
+additional_inventory_weight2	= 35
+inv_weight						= 7.0
+cost							= 55000
+GroupControlSection				= spawn_group
+discovery_dependency 			=
+$spawn 							= "outfit\cs_heavy_outfit"
+class							= E_STLK
+cform           				= skeleton
+visual							= equipments\cs_heavy_outfit
+actor_visual					= actors\stalker_nebo\stalker_nebo_2.ogf
+ef_equipment_type				= 3
+inv_name						= cs_heavy_outfit_name
+inv_name_short					= cs_heavy_outfit_name
+description						= cs_heavy_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 15
+inv_grid_y						= 12
+full_icon_name					= npc_icon_cs_heavy_outfit
+night_vision_device				= elite_nvd
+slot							= 6
+full_scale_icon					= 2,6
+immunities_sect					= sect_cs_heavy_outfit_immunities
+burn_protection 				= 0.30
+strike_protection 				= 0.30
+shock_protection 				= 0.60
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.30
+chemical_burn_protection 		= 0.60
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.05
+bones_koeff_protection 			= actor_damage ;armor_helmet_damage
+backpack_type 					= ui_icon_rykzack_5_gray
+
+[sect_cs_heavy_outfit_immunities]
+burn_immunity					= 0.0100
+strike_immunity					= 0.0150
+shock_immunity					= 0.0080
+wound_immunity					= 0.0150
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0100
+explosion_immunity				= 0.0200
+fire_wound_immunity				= 0.0200
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ "ÃŒÕŒÀ»“"
+;---------------------------------------------------------------------------------------------
+[monolit_outfit]:outfit_base
+additional_inventory_weight		= 22
+additional_inventory_weight2	= 22
+inv_weight						= 5.5
+cost							= 32000
+$spawn 							= "outfit\monolit_outfit"
+visual							= equipments\monolit_suit
+actor_visual					= actors\hero\stalker_monolit.ogf
+ef_equipment_type				= 3
+inv_name						= monolit_outfit_name
+inv_name_short					= monolit_outfit_name
+description						= monolit_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 15
+inv_grid_y						= 15
+full_icon_name					= npc_icon_monolit_outfit
+full_scale_icon					= 6,11
+immunities_sect					= sect_monolit_outfit_immunities
+burn_protection 				= 0.45
+strike_protection 				= 0.45
+shock_protection 				= 0.45
+wound_protection				= 0.45
+radiation_protection 			= 0.15
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 0.95
+bones_koeff_protection 			= actor_damage ;kombez_mask_damage
+backpack_type 					= ui_icon_rykzack_4_green
+
+[sect_monolit_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0100
+shock_immunity					= 0.0080
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0520
+
+
+
+;---------------------------------------------------------------------------------------------
+;		 ŒÃ¡»Õ≈«ŒÕ "ÃŒÕŒÀ»“" — œ–Œ“»¬Œ√¿«ŒÃ
+;---------------------------------------------------------------------------------------------
+[monolit_gaz_outfit_m1]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 6.5
+cost							= 53000
+$spawn 							= "outfit\monolit_outfit"
+visual							= equipments\monolit_suit
+actor_visual					= actors\monolit\stalker_mo_hood_9.ogf
+ef_equipment_type				= 3
+inv_name						= monolit_gaz_outfit_m1_name
+inv_name_short					= monolit_gaz_outfit_m1_name
+description						= monolit_gaz_outfit_m1_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 17
+inv_grid_y						= 6
+full_icon_name					= npc_icon_monolit_gaz_outfit_m1
+full_scale_icon					= 6,11
+immunities_sect					= sect_monolit_gaz_outfit_m1_immunities
+night_vision_device				= kat_eye_nvd
+burn_protection 				= 0.45
+strike_protection 				= 0.45
+shock_protection 				= 0.45
+wound_protection				= 0.45
+radiation_protection 			= 0.30
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+bones_koeff_protection 			= actor_damage ;kombez_mask_damage
+power_loss 						= 1.10
+backpack_type 					= ui_icon_rykzack_3_green
+
+[sect_monolit_gaz_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0100
+shock_immunity					= 0.0080
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		Õ¿”◊Õ€… "ÃŒÕŒÀ»“"
+;---------------------------------------------------------------------------------------------
+[monolit_scientific_outfit]:outfit_base
+additional_inventory_weight		= 25
+additional_inventory_weight2	= 25
+inv_weight						= 8.0
+cost							= 85000
+$spawn 							= "outfit\dolg_scientific_outfit"
+visual         					= equipments\stalker_mono_nauchniy_suit
+actor_visual					= actors\monolit\stalker_mo_nauchniy
+ef_equipment_type				= 4
+inv_name						= monolit_scientific_outfit_name
+inv_name_short					= monolit_scientific_outfit_name
+description						= monolit_scientific_outfit_description
+icon_group                      = 1
+inv_grid_width					= 2
+inv_grid_height					= 3
+inv_grid_x						= 17
+inv_grid_y						= 9
+full_icon_name					= npc_icon_monolit_scientific_outfit
+night_vision_device				= kat_eye_nvd
+full_scale_icon					= 8,6
+immunities_sect					= sect_monolit_scientific_outfit_immunities
+burn_protection 				= 0.60
+strike_protection 				= 0.30
+shock_protection 				= 0.60
+wound_protection				= 0.30
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.60
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss 						= 1.15
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+backpack_type 					= ui_icon_rykzack_8_light_gray
+
+[sect_monolit_scientific_outfit_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0100
+shock_immunity					= 0.0050
+wound_immunity					= 0.0160
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0100
+
+
+;---------------------------------------------------------------------------------------------
+;		› «Œ— ≈À≈“ "ÃŒÕŒÀ»“"
+;---------------------------------------------------------------------------------------------
+[monolit_exoskeleton]:exo_outfit
+additional_inventory_weight		= 12
+additional_inventory_weight2	= 12
+inv_weight						= 20.0
+cost							= 200000
+$spawn							= "outfit\uniq\outfit_exo_m1"
+inv_name						= monolit_exoskeleton_name
+inv_name_short					= monolit_exoskeleton_name
+description						= monolit_exoskeleton_description
+inv_grid_x                      = 17
+inv_grid_y                      = 12
+visual							= equipments\exoskelet_mo_skunk
+actor_visual					= actors\monolit\stalker_mo_exo.ogf
+full_icon_name					= npc_icon_monolit_exoskeleton
+night_vision_device				= kat_eye_nvd
+burn_protection 				= 0.45
+strike_protection 				= 0.45
+shock_protection 				= 0.00
+wound_protection				= 0.45
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.00
+chemical_burn_protection 		= 0.45
+explosion_protection 			= 0.45
+fire_wound_protection  			= 0.45
+power_loss                      = 0.6
+immunities_sect					= sect_monolit_exoskeleton_immunities
+sprint_allowed					= true
+bones_koeff_protection 			= actor_damage ;exo_helmet_damage
+backpack_type 					= ui_icon_rykzack_5_gray
+
+[sect_monolit_exoskeleton_immunities]
+burn_immunity					= 0.0150
+strike_immunity					= 0.0180
+shock_immunity					= 0.0230
+wound_immunity					= 0.0180
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0150
+explosion_immunity				= 0.0180
+fire_wound_immunity				= 0.0180
+
+
+;---------------------------------------------------------------------------------------------
+;		› —œ≈–»Ã≈Õ“¿À‹Õ¿ﬂ —œ≈÷«¿Ÿ»“¿
+;---------------------------------------------------------------------------------------------
+[super_scientific_outfit]:outfit_base
+additional_inventory_weight		= 35
+additional_inventory_weight2	= 35
+inv_weight						= 8.3
+cost							= 102000
+$spawn 							= "outfit\dolg_scientific_outfit"
+visual							= equipments\stalker_kill_nauchniy_suit
+actor_visual					= actors\killer\stalker_ki_nauchniy.ogf
+ef_equipment_type				= 4
+inv_name						= super_scientific_outfit_name
+inv_name_short			        = super_scientific_outfit_name
+description					    = super_scientific_outfit_description
+icon_group                      = 3
+inv_grid_width     = 2
+inv_grid_height    = 3
+inv_grid_x         = 4
+inv_grid_y         = 0
+full_icon_name					= npc_icon_super_scientific_outfit
+night_vision_device				= elite_nvd
+full_scale_icon					= 8,6
+immunities_sect					= sect_super_scientific_outfit_immunities
+burn_protection 				= 0.60
+strike_protection 				= 0.30
+shock_protection 				= 0.60
+wound_protection				= 0.30
+radiation_protection 			= 0.45
+telepatic_protection 			= 0.45
+chemical_burn_protection 	    = 0.60
+explosion_protection 			= 0.15
+fire_wound_protection  			= 0.15
+power_loss                      = 0.85
+bones_koeff_protection 			= actor_damage ;kombez_kupol_damage
+backpack_type 					= ui_icon_rykzack_3_darkly_gray
+
+[sect_super_scientific_outfit_immunities]
+burn_immunity					= 0.005
+strike_immunity					= 0.006
+shock_immunity					= 0.005
+wound_immunity					= 0.006
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.006
+explosion_immunity				= 0.005
+fire_wound_immunity				= 0.005
+
+
+
+;---------------------------------------------------------------------------------------------
+;		 Ã-2
+;---------------------------------------------------------------------------------------------
+[ecolog_outfit_m1]:super_scientific_outfit
+additional_inventory_weight		= 30
+additional_inventory_weight2	= 30
+cost							= 130000
+inv_name						= ecolog_outfit_m1_name
+inv_name_short					= ecolog_outfit_m1_name
+description						= ecolog_outfit_m1_description
+icon_group                      = 3
+inv_grid_width     = 2
+inv_grid_height    = 3
+inv_grid_x         = 4
+inv_grid_y         = 0
+
+immunities_sect					= sect_ecolog_outfit_m1_immunities
+burn_protection 				= 0.35
+strike_protection 				= 0.35
+shock_protection 				= 0.35
+wound_protection				= 0.35
+radiation_protection 			= 0.60
+telepatic_protection 			= 0.60
+chemical_burn_protection 	    = 0.35
+explosion_protection 			= 0.25
+fire_wound_protection  			= 0.25
+power_loss                      = 1.25
+
+watcher_act.bad_item = true
+
+[sect_ecolog_outfit_m1_immunities]
+burn_immunity					= 0.0320
+strike_immunity					= 0.0100
+shock_immunity					= 0.0050
+wound_immunity					= 0.0100
+radiation_immunity				= 0.0000
+telepatic_immunity				= 0.0000
+chemical_burn_immunity			= 0.0320
+explosion_immunity				= 0.0320
+fire_wound_immunity				= 0.0060

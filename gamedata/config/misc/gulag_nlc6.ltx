@@ -1,0 +1,354 @@
+[logic@mil_patrol_glavn]
+active = walker@mil_patrol_glavn1
+on_death = death@mil_patrol_glavn
+combat_ignore = combat_ignore@mil_patrol_glavn
+on_hit = hit@mil_patrol_glavn
+
+[hit@mil_patrol_glavn]
+on_info = %+mil_patrol_kill_continue +mil_patrol_go_cover%
+
+[combat_ignore@mil_patrol_glavn]
+
+[death@mil_patrol_glavn]
+on_info = %+mil_patrol_man1_dead +mil_patrol_go_cover +mil_patrol_kill_continue =mil_patrol_death_check%
+
+[walker@mil_patrol_glavn1]
+path_walk = dead_walk3
+path_look = dead_walk3
+wounded_enabled = false
+combat_ignore_cond = always
+on_signal = arrive | walker@mil_patrol_glavn2 %+mil_patrol_kill_continue%
+on_info = {+mil_patrol_go_cover} camper@mil_patrol_glavn1
+on_info2 = {+mil_actor_nearest} remark@mil_patrol_glavn1
+meet = meet@mil_patrol_glavn
+
+[remark@mil_patrol_glavn1]
+no_move = true
+no_rotate = true
+snd = mil_freedom_patrol
+anim = hello_wpn
+combat_ignore_cond = always
+on_signal = action_end | walker@mil_patrol_glavn2
+on_info = {+mil_patrol_go_cover} camper@mil_patrol_glavn1
+
+[walker@mil_patrol_glavn2]
+path_walk = dead_walk3_2
+path_look = dead_walk3_2
+on_signal = final | camper@mil_patrol_glavn1
+meet = meet@mil_patrol_glavn
+on_info = {+mil_patrol_go_cover} camper@mil_patrol_glavn1
+
+[meet@mil_patrol_glavn]
+use = true
+use_wpn = true
+victim = 5|actor
+victim_wpn = 5|actor
+meet_state = 5|hello_wpn,2|ward@talk_hello
+meet_state_wpn = 5|hello_wpn,2|ward@talk_hello
+meet_dialog	= mil_patrol_glavn_start
+
+[camper@mil_patrol_glavn1]
+path_walk = dead_patrol_way1
+path_look = dead_patrol_look1
+radius = 1
+def_state_moving = rush
+on_info = {+mil_dolg_dead} walker@mil_patrol_glavn3
+no_retreat = false
+
+
+[walker@mil_patrol_glavn6]
+path_walk = dead_walk3_3
+path_look = dead_walk3_3
+on_info = {+mil_dolg_dead} walker@mil_patrol_glavn3
+
+[walker@mil_patrol_glavn3]
+path_walk = dead_walk3_4
+on_signal = ready | kamp1
+
+[kamp@mil_patrol_glavn1]
+center_point = camp_center
+
+[logic@mil_patrol_1]
+active = walker@mil_patrol_11
+on_death = death@mil_patrol_1
+on_hit = hit@mil_patrol_1
+combat_ignore = combat_ignore@mil_patrol_1
+
+[combat_ignore@mil_patrol_1]
+
+[hit@mil_patrol_1]
+on_info = %+mil_patrol_kill_continue +mil_patrol_go_cover%
+
+[death@mil_patrol_1]
+on_info = %+mil_patrol_man2_dead =mil_patrol_death_check%
+
+[walker@mil_patrol_11]
+path_walk = kamikadze_walk2
+on_info = {+mil_actor_nearest} remark@mil_patrol_11
+on_info2 = {+mil_patrol_go_cover} walker@mil_patrol_13
+combat_ignore_cond = always
+
+[remark@mil_patrol_11]
+anim = guard
+no_move = true
+no_rotate = true
+on_info = {+mil_dolg_dead} walker@mil_patrol_13
+
+[walker@mil_patrol_13]
+path_walk = dead_walk3_4
+on_signal = ready | kamp@mil_patrol_11
+
+[kamp@mil_patrol_11]
+center_point = camp_center
+
+[logic@mil_patrol_2]
+active = walker@mil_patrol_21
+on_death = death@mil_patrol_2
+on_hit = hit@mil_patrol_2
+combat_ignore = combat_ignore@mil_patrol_2
+
+[combat_ignore@mil_patrol_2]
+
+[hit@mil_patrol_2]
+on_info = %+mil_patrol_kill_continue +mil_patrol_go_cover%
+
+[death@mil_patrol_2]
+on_info = %+mil_patrol_man3_dead =mil_patrol_death_check%
+
+[walker@mil_patrol_21]
+path_walk = kamikadze_walk1
+on_info = {+mil_actor_nearest} remark@mil_patrol_21
+on_info2 = {+mil_patrol_go_cover} walker@mil_patrol_23
+combat_ignore_cond = always
+
+[remark@mil_patrol_21]
+anim = guard
+no_move = true
+no_rotate = true
+on_info = {+mil_dolg_dead} walker@mil_patrol_23
+
+[walker@mil_patrol_23]
+path_walk = dead_walk3_4
+on_signal = ready | kamp@mil_patrol_21
+
+[kamp@mil_patrol_21]
+center_point = camp_center
+
+[logic@esc_dram_post1]
+active = walker@esc_dram_post1
+combat_ignore = combat_ignore@esc_dram
+on_hit = hit@green
+on_death = death@green_dan
+
+[walker@esc_dram_post1]
+path_walk = dram_post1_walk
+path_look = dram_post1_look
+meet = meet@dram_zoneguard
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+on_actor_dist_le_nvis = 15 | remark@esc_dram_post1_1
+on_info = {+esc_dram_pass_fire} walker3@esc_dram_post1
+
+[remark@esc_dram_post1_1]
+anim = guard
+target = actor
+on_actor_dist_le_nvis = 8 | remark@esc_dram_post1
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+on_info = {+esc_bridge_pass_fire} walker3@esc_dram_post1
+
+[remark@esc_dram_post1]
+anim = guard
+target = actor
+snd = esc_bridge_soldiers
+on_signal = sound_end| walker2@esc_dram_post1
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+
+[walker2@esc_dram_post1]
+path_walk = dram_post1_walk
+path_look = dram_post1_look
+meet = meet@dram_zoneguard
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+
+[walker3@esc_dram_post1]
+path_walk = dram_post1_walk
+path_look = dram_post1_look
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+
+[logic@esc_dram_post2]
+active = walker@esc_dram_post2
+combat_ignore = combat_ignore@esc_dram
+on_hit = hit@green
+on_death = death@green
+
+[walker@esc_dram_post2]
+path_walk = dram_post2_walk
+path_look = dram_post2_look
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+
+[logic@esc_dram_post3]
+active = walker@esc_dram_post3
+combat_ignore = combat_ignore@esc_dram
+on_hit = hit@green
+on_death = death@green
+
+[walker@esc_dram_post3]
+path_walk = dram_post3_walk
+path_look = dram_post3_look
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+on_info = {+esc_dram_pass_fire} walker@esc_dram_post3_fire %=bar_arena_hit%
+
+[walker@esc_dram_post3_fire]
+path_walk = dram_post3_walk
+path_look = dram_post3_look
+on_info = {-esc_dram_pass_fire} walker@esc_dram_post3
+
+[logic@esc_dram_post4]
+active = walker@esc_dram_post4
+combat_ignore = combat_ignore@esc_dram
+on_hit = hit@green
+on_death = death@green
+
+[walker@esc_dram_post4]
+path_walk = dram_post4_walk
+path_look = dram_post4_look
+meet = meet@sold_zoneguard
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+on_info = {+esc_dram_pass_fire} walker2@esc_dram_post4 %=bar_arena_hit%
+
+[walker2@esc_dram_post4]
+path_walk = dram_post4_walk
+path_look = dram_post4_look
+on_info = {-esc_dram_pass_fire} walker@esc_dram_post4
+
+[logic@esc_dram_post5]
+active = walker@esc_dram_post5
+combat_ignore = combat_ignore@esc_dram
+on_hit = hit@green
+on_death = death@green
+
+[walker@esc_dram_post5]
+path_walk = dram_post5_walk
+path_look = dram_post5_look
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+on_info = {+esc_dram_pass_fire} walker@esc_dram_post5_fire %=bar_arena_hit%
+
+[walker@esc_dram_post5_fire]
+path_walk = dram_post5_walk
+path_look = dram_post5_look
+on_info = {-esc_dram_pass_fire} walker@esc_dram_post5
+
+[meet@dram_zoneguard]
+meet_state 		= 30| {+esc_dram_pass_on} guard, guard@ {+esc_dram_pass_on} talk_hello, wait
+meet_state_wpn 	= 30| {+esc_dram_pass_on} guard, guard@ {+esc_dram_pass_on} talk_hello, wait
+victim 			= 30| actor
+victim_wpn 		= 30| actor
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog		= esc_green_dan_start
+precond = visibility
+
+[combat_ignore@esc_dram]
+combat_ignore_cond = {-esc_dram_pass_fire =fighting_actor}
+
+[hit@green]
+on_info = {=hit_by_actor} %+esc_dram_pass_fire =xr_gulag.setGulagEnemy("esc_dram", actor) =sak.mil_abuse()%
+
+[death@green]
+on_info = {=killed_by_actor} %+esc_dram_pass_fire =xr_gulag.setGulagEnemy("esc_dram", actor) =sak.mil_abuse()%
+
+[death@green_dan]
+on_info = {=killed_by_actor} %+green_dan_umer +esc_dram_pass_fire =xr_gulag.setGulagEnemy("esc_dram", actor) =sak.mil_abuse()%, %+green_dan_umer%
+
+
+[logic@rad_stalkers_1]
+active = kamp@rad_stalkers
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[logic@rad_stalkers_2]
+active = kamp@rad_stalkers
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[kamp@rad_stalkers]
+center_point = camp_center
+path_walk = camp_center_task
+danger = danger_condition@rad_stalkers
+
+[logic@rad_stalkers_glavn]
+active = walker@rad_stalkers_glavn
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[walker@rad_stalkers_glavn]
+path_walk = glavn_walk
+path_look = glavn_look
+meet = meet@rad_stalkers_glavn
+
+[meet@rad_stalkers_glavn]
+meet_state 		= 20| sit_ass
+meet_state_wpn 	= 10| wait
+victim 			= 30| actor
+victim_wpn 		= 30| actor
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog		= rad_seryi_start_dialog
+precond = visibility
+
+[logic@rad_stalkers_zam_glavn]
+active = walker@rad_stalkers_zam_glavn
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[walker@rad_stalkers_zam_glavn]
+path_walk = zam_glavn_walk
+path_look = zam_glavn_look
+meet = meet@rad_stalkers_zam_glavn
+
+[meet@rad_stalkers_zam_glavn]
+meet_state 		= 20| sit
+meet_state_wpn 	= 10| wait
+victim 			= 30| actor
+victim_wpn 		= 30| actor
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog		= rad_bes_start_dialog
+precond = visibility
+
+[logic@rad_stalkers_sub_glavn]
+active = walker@rad_stalkers_sub_glavn
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[walker@rad_stalkers_sub_glavn]
+path_walk = glavn_walk
+path_look = glavn_look
+meet = meet@rad_stalkers_sub_glavn
+
+[meet@rad_stalkers_sub_glavn]
+meet_state 		= 20| sit_ass
+meet_state_wpn 	= 10| wait
+victim 			= 30| actor
+victim_wpn 		= 30| actor
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog		= rad_sub_glavn_start_dialog
+precond = visibility
+
+[logic@rad_stalkers_sub_zam_glavn]
+active = walker@rad_stalkers_sub_zam_glavn
+combat_ignore = combat_ignore@rad_stalkers
+danger = danger_condition@rad_stalkers
+
+[walker@rad_stalkers_sub_zam_glavn]
+path_walk = zam_glavn_walk
+path_look = zam_glavn_look
+
+[combat_ignore@rad_stalkers]
+
+[danger_condition@rad_stalkers]
+ignore_distance = 5
+ignore_types = corpse

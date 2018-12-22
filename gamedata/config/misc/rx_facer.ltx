@@ -1,0 +1,43 @@
+;--------------------------------------
+; Модуль facer
+; Rulix aka Bak
+;--------------------------------------
+
+[main]
+enabled = true
+forbidden_factions = zombied
+forbidden_npcs = bar_barman
+
+[novice]
+power = 70		; сила удара
+min_delay = 1200	;мс; минимальное время между ударами
+; коэффициенты
+k_mutant = 1.6		; бьем монстра
+k_friend = 0.1		; бьем друга(нейтрала)
+k_stalker = 0.6		; бьем нпс
+k_actor = 1		; бьем гг
+
+[experienced]
+power = 80
+min_delay = 1000
+k_mutant = 1.7
+k_friend = 0.1
+k_stalker = 1.0
+k_actor = 1
+
+[veteran]
+power = 90
+min_delay = 1000
+k_mutant = 1.8
+k_friend = 0.1
+k_stalker = 1.1
+k_actor = 1
+
+[master]
+power = 99
+min_delay = 1000
+k_mutant = 1.9
+k_friend = 0.05
+k_stalker = 1.0
+k_actor = 1
+

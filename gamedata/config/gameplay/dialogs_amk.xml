@@ -1,0 +1,2434 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<!-- AMK Dialogs-->
+<game_dialogs>
+	<!--Диалог с Кулинаром-->
+	<dialog id="artem_kulinar">
+	<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+			<phrase id="0">
+				<text></text>
+				<next>100</next>
+				<next>200</next>
+				<next>250</next>
+				<next>300</next>
+			</phrase>
+			<phrase id="100">
+				<text></text>
+				<dont_has_info>kulinar_info_done</dont_has_info>
+				<next>101</next>
+			</phrase>
+			<phrase id="200">
+			<precondition>sak_dialog.is_day</precondition>
+			<precondition>sak_dialog.is_ready_time_to_game</precondition>
+				<text></text>
+				<has_info>kulinar_info_done</has_info>
+				<next>201</next>
+			</phrase>
+			<phrase id="250">
+			<precondition>sak_dialog.is_day</precondition>
+			<precondition>sak_dialog.not_ready_time_to_game</precondition>
+				<text></text>
+				<has_info>kulinar_info_done</has_info>
+				<next>251</next>
+			</phrase>
+			<phrase id="300">
+				<text></text>
+			<precondition>sak_dialog.no_day</precondition>
+				<has_info>kulinar_info_done</has_info>
+				<next>301</next>
+			</phrase>
+		
+			<phrase id="101">
+				<text>artem_kulinar_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>artem_kulinar_1</text>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>artem_kulinar_2</text>
+				<next>3</next>
+			</phrase>
+			<phrase id="3">
+				<text>artem_kulinar_3</text>
+				<next>4</next>
+			</phrase>
+			<phrase id="4">
+				<text>artem_kulinar_4</text>
+				<next>5</next>
+			</phrase>
+			<phrase id="5">
+				<text>artem_kulinar_5</text>
+				<next>6</next>
+			</phrase>
+			<phrase id="6">
+				<text>artem_kulinar_6</text>
+				<give_info>kulinar_info_done</give_info>
+				<next>7</next>
+			</phrase>
+			<phrase id="7">
+				<text>artem_kulinar_7</text>
+			</phrase>
+			<phrase id="201">
+				<text>artem_kulinar_201</text>
+				<action>dialogs.yes_trade</action>
+				<next>202</next>
+			</phrase>
+			<phrase id="202">
+				<text>artem_kulinar_202</text>
+				<next>203</next>
+				<next>2031</next>
+				<next>2032</next>
+			</phrase>
+			<phrase id="203">
+			<dont_has_info>agroprom_military_case_done</dont_has_info>
+				<text>artem_kulinar_203</text>
+			</phrase>
+			<phrase id="2032">
+			<has_info>agroprom_military_case_done</has_info>
+			<has_info>kulinar_voron_info</has_info>
+				<text>artem_kulinar_2032</text>
+			</phrase>
+			<phrase id="2031">
+			<has_info>agroprom_military_case_done</has_info>
+			<dont_has_info>kulinar_voron_info</dont_has_info>
+				<text>artem_kulinar_2031</text>
+				<give_info>kulinar_voron_info</give_info>
+				<next>2041</next>
+				<next>2042</next>
+			</phrase>
+			<phrase id="2042">
+				<text>artem_kulinar_2042</text>
+				<next>2052</next>
+			</phrase>
+			<phrase id="2052">
+				<text>artem_kulinar_2052</text>
+			</phrase>
+			<phrase id="2041">
+				<text>artem_kulinar_2041</text>
+				<next>2051</next>
+			</phrase>
+			<phrase id="2051">
+				<text>artem_kulinar_2051</text>
+				<next>2061</next>
+			</phrase>
+			<phrase id="2061">
+				<text>artem_kulinar_2061</text>
+				<next>2071</next>
+			</phrase>
+			<phrase id="2071">
+				<text>artem_kulinar_2071</text>
+				<next>20811</next>
+				<next>20812</next>
+			</phrase>
+			<phrase id="20811">
+				<text>artem_kulinar_20811</text>
+				<next>20911</next>
+			</phrase>
+			<phrase id="20911">
+				<text>artem_kulinar_20911</text>
+				<action>sak_dialog.add_kulinar_voron_box</action>
+			</phrase>
+			<phrase id="20812">
+				<text>artem_kulinar_20812</text>
+				<next>20912</next>
+			</phrase>
+			<phrase id="20912">
+				<text>artem_kulinar_20912</text>
+			</phrase>
+			<phrase id="2032">
+			<has_info>kulinar_voron_info</has_info>
+				<text>artem_kulinar_2031</text>
+			</phrase>
+			<phrase id="301">
+				<text>artem_kulinar_301</text>
+				<action>dialogs.no_trade_trader</action>
+				<next>302</next>
+			</phrase>
+			<phrase id="302">
+				<text>artem_kulinar_302</text>
+				<next>303</next>
+			</phrase>
+			<phrase id="303">
+				<text>artem_kulinar_303</text>
+			</phrase>
+			<phrase id="251">
+				<text>artem_kulinar_251</text>
+				<action>dialogs.no_trade_trader</action>
+				<next>252</next>
+			</phrase>
+			<phrase id="252">
+				<text>artem_kulinar_252</text>
+				<next>253</next>
+			</phrase>
+			<phrase id="253">
+				<text>artem_kulinar_253</text>
+				<next>254</next>
+			</phrase>
+			<phrase id="254">
+				<text>artem_kulinar_254</text>
+				<!--<action>dialogs.break_dialog</action>-->
+			</phrase>
+		</phrase_list>
+	</dialog>
+	
+	<!--Диалог с Вороном-->
+	<dialog id="vitek_voron">
+		<dont_has_info>voron_info_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>vitek_voron_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>vitek_voron_1</text>
+				<next>2</next>
+			</phrase>
+			<phrase id="2">
+				<text>vitek_voron_2</text>
+				<next>3</next>
+			</phrase>
+			<phrase id="3">
+				<text>vitek_voron_3</text>
+				<next>4</next>
+			</phrase>
+			<phrase id="4">
+				<text>vitek_voron_4</text>
+				<next>5</next>
+			</phrase>
+			<phrase id="5">
+				<text>vitek_voron_5</text>
+				<next>6</next>
+			</phrase>
+			<phrase id="6">
+				<text>vitek_voron_6</text>
+				<next>7</next>
+			</phrase>
+			<phrase id="7">
+				<text>vitek_voron_7</text>
+				<give_info>voron_info_done</give_info>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	
+<dialog id="kulinar_voron_box_dialog">
+<precondition>dialogs.is_not_wounded</precondition>
+<precondition>sak_dialog.kulinar_voron_box_have</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>kulinar_voron_box_dialog_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>kulinar_voron_box_dialog_1</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+		<precondition>sak_dialog.is_ready_time_kulinar_voron_box</precondition>
+			<text>kulinar_voron_box_dialog_11</text>
+			<action>sak_dialog.give_kulinar_voron_box</action>
+			<next>21</next>
+		</phrase>
+		<phrase id="12">
+		<precondition>sak_dialog.not_ready_time_kulinar_voron_box</precondition>
+			<text>kulinar_voron_box_dialog_12</text>
+			<action>sak_dialog.give_kulinar_voron_box</action>
+			<next>22</next>
+		</phrase>
+		<phrase id="21">
+			<text>kulinar_voron_box_dialog_21</text>
+			<action>sak_dialog.add_1antirad</action>
+		</phrase>
+		<phrase id="22">
+			<text>kulinar_voron_box_dialog_22</text>
+			<give_info>kulinar_voron_info_done</give_info>
+			<action>sak_dialog.add_5antirad</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+	
+	
+<dialog id="botans_dialogs">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>botans_dialogs_0</text>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+		</phrase>
+		<phrase id="201">
+		<precondition>sak_dialog.time_is_01</precondition>
+			<text>botans_dialogs_201</text>
+			<next>3011</next>
+			<next>3012</next>
+		</phrase>
+		<phrase id="3011">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3011</text>
+			<next>4011</next>
+		</phrase>
+		<phrase id="4011">
+			<text>botans_dialogs_4011</text>
+			<next>501</next>
+		</phrase>
+		<phrase id="501">
+			<text>botans_dialogs_501</text>
+			<next>601</next>
+		</phrase>
+		<phrase id="601">
+			<text>botans_dialogs_601</text>
+			<next>701</next>
+		</phrase>
+		<phrase id="701">
+			<text>botans_dialogs_701</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>801</next>
+		</phrase>
+		<phrase id="801">
+			<text>botans_dialogs_801</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3012">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3012</text>
+			<next>4012</next>
+		</phrase>
+		<phrase id="4012">
+			<text>botans_dialogs_4012</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="202">
+		<precondition>sak_dialog.time_is_02</precondition>
+			<text>botans_dialogs_202</text>
+			<next>3021</next>
+			<next>3022</next>
+		</phrase>
+		<phrase id="3021">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3021</text>
+			<next>4021</next>
+		</phrase>
+		<phrase id="4021">
+			<text>botans_dialogs_4021</text>
+			<next>502</next>
+		</phrase>
+		<phrase id="502">
+			<text>botans_dialogs_502</text>
+			<next>602</next>
+		</phrase>
+		<phrase id="602">
+			<text>botans_dialogs_602</text>
+			<next>702</next>
+		</phrase>
+		<phrase id="702">
+			<text>botans_dialogs_702</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>802</next>
+		</phrase>
+		<phrase id="802">
+			<text>botans_dialogs_802</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3022">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3022</text>
+			<next>4022</next>
+		</phrase>
+		<phrase id="4022">
+			<text>botans_dialogs_4022</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="203">
+		<precondition>sak_dialog.time_is_03</precondition>
+			<text>botans_dialogs_203</text>
+			<next>3031</next>
+			<next>3032</next>
+		</phrase>
+		<phrase id="3031">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3031</text>
+			<next>4031</next>
+		</phrase>
+		<phrase id="4031">
+			<text>botans_dialogs_4031</text>
+			<next>503</next>
+		</phrase>
+		<phrase id="503">
+			<text>botans_dialogs_503</text>
+			<next>603</next>
+		</phrase>
+		<phrase id="603">
+			<text>botans_dialogs_603</text>
+			<next>703</next>
+		</phrase>
+		<phrase id="703">
+			<text>botans_dialogs_703</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>803</next>
+		</phrase>
+		<phrase id="803">
+			<text>botans_dialogs_803</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3032">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3032</text>
+			<next>4032</next>
+		</phrase>
+		<phrase id="4032">
+			<text>botans_dialogs_4032</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="204">
+		<precondition>sak_dialog.time_is_04</precondition>
+			<text>botans_dialogs_204</text>
+			<next>3041</next>
+			<next>3042</next>
+		</phrase>
+		<phrase id="3041">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3041</text>
+			<next>4041</next>
+		</phrase>
+		<phrase id="4041">
+			<text>botans_dialogs_4041</text>
+			<next>504</next>
+		</phrase>
+		<phrase id="504">
+			<text>botans_dialogs_504</text>
+			<next>604</next>
+		</phrase>
+		<phrase id="604">
+			<text>botans_dialogs_604</text>
+			<next>704</next>
+		</phrase>
+		<phrase id="704">
+			<text>botans_dialogs_704</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>804</next>
+		</phrase>
+		<phrase id="804">
+			<text>botans_dialogs_804</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3042">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3042</text>
+			<next>4042</next>
+		</phrase>
+		<phrase id="4042">
+			<text>botans_dialogs_4042</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="205">
+		<precondition>sak_dialog.time_is_05</precondition>
+			<text>botans_dialogs_205</text>
+			<next>3051</next>
+			<next>3052</next>
+		</phrase>
+		<phrase id="3051">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3051</text>
+			<next>4051</next>
+		</phrase>
+		<phrase id="4051">
+			<text>botans_dialogs_4051</text>
+			<next>505</next>
+		</phrase>
+		<phrase id="505">
+			<text>botans_dialogs_505</text>
+			<next>605</next>
+		</phrase>
+		<phrase id="605">
+			<text>botans_dialogs_605</text>
+			<next>705</next>
+		</phrase>
+		<phrase id="705">
+			<text>botans_dialogs_705</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>805</next>
+		</phrase>
+		<phrase id="805">
+			<text>botans_dialogs_805</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3052">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3052</text>
+			<next>4052</next>
+		</phrase>
+		<phrase id="4052">
+			<text>botans_dialogs_4052</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="206">
+		<precondition>sak_dialog.time_is_06</precondition>
+			<text>botans_dialogs_206</text>
+			<next>3061</next>
+			<next>3062</next>
+		</phrase>
+		<phrase id="3061">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3061</text>
+			<next>4061</next>
+		</phrase>
+		<phrase id="4061">
+			<text>botans_dialogs_4061</text>
+			<next>506</next>
+		</phrase>
+		<phrase id="506">
+			<text>botans_dialogs_506</text>
+			<next>606</next>
+		</phrase>
+		<phrase id="606">
+			<text>botans_dialogs_606</text>
+			<next>706</next>
+		</phrase>
+		<phrase id="706">
+			<text>botans_dialogs_706</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>806</next>
+		</phrase>
+		<phrase id="806">
+			<text>botans_dialogs_806</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3062">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3062</text>
+			<next>4062</next>
+		</phrase>
+		<phrase id="4062">
+			<text>botans_dialogs_4062</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="207">
+		<precondition>sak_dialog.time_is_07</precondition>
+			<text>botans_dialogs_207</text>
+			<next>3071</next>
+			<next>3072</next>
+		</phrase>
+		<phrase id="3071">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3071</text>
+			<next>4071</next>
+		</phrase>
+		<phrase id="4071">
+			<text>botans_dialogs_4071</text>
+			<next>507</next>
+		</phrase>
+		<phrase id="507">
+			<text>botans_dialogs_507</text>
+			<next>607</next>
+		</phrase>
+		<phrase id="607">
+			<text>botans_dialogs_607</text>
+			<next>707</next>
+		</phrase>
+		<phrase id="707">
+			<text>botans_dialogs_707</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>807</next>
+		</phrase>
+		<phrase id="807">
+			<text>botans_dialogs_807</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3072">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3072</text>
+			<next>4072</next>
+		</phrase>
+		<phrase id="4072">
+			<text>botans_dialogs_4072</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="208">
+		<precondition>sak_dialog.time_is_08</precondition>
+			<text>botans_dialogs_208</text>
+			<next>3081</next>
+			<next>3082</next>
+		</phrase>
+		<phrase id="3081">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3081</text>
+			<next>4081</next>
+		</phrase>
+		<phrase id="4081">
+			<text>botans_dialogs_4081</text>
+			<next>508</next>
+		</phrase>
+		<phrase id="508">
+			<text>botans_dialogs_508</text>
+			<next>608</next>
+		</phrase>
+		<phrase id="608">
+			<text>botans_dialogs_608</text>
+			<next>708</next>
+		</phrase>
+		<phrase id="708">
+			<text>botans_dialogs_708</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>808</next>
+		</phrase>
+		<phrase id="808">
+			<text>botans_dialogs_808</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3082">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3082</text>
+			<next>4082</next>
+		</phrase>
+		<phrase id="4082">
+			<text>botans_dialogs_4082</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="209">
+		<precondition>sak_dialog.time_is_09</precondition>
+			<text>botans_dialogs_209</text>
+			<next>3091</next>
+			<next>3092</next>
+		</phrase>
+		<phrase id="3091">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3091</text>
+			<next>4091</next>
+		</phrase>
+		<phrase id="4091">
+			<text>botans_dialogs_4091</text>
+			<next>509</next>
+		</phrase>
+		<phrase id="509">
+			<text>botans_dialogs_509</text>
+			<next>609</next>
+		</phrase>
+		<phrase id="609">
+			<text>botans_dialogs_609</text>
+			<next>709</next>
+		</phrase>
+		<phrase id="709">
+			<text>botans_dialogs_709</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>809</next>
+		</phrase>
+		<phrase id="809">
+			<text>botans_dialogs_809</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3092">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3092</text>
+			<next>4092</next>
+		</phrase>
+		<phrase id="4092">
+			<text>botans_dialogs_4092</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="210">
+		<precondition>sak_dialog.time_is_10</precondition>
+			<text>botans_dialogs_210</text>
+			<next>3101</next>
+			<next>3102</next>
+		</phrase>
+		<phrase id="3101">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3101</text>
+			<next>4101</next>
+		</phrase>
+		<phrase id="4101">
+			<text>botans_dialogs_4101</text>
+			<next>510</next>
+		</phrase>
+		<phrase id="510">
+			<text>botans_dialogs_510</text>
+			<next>610</next>
+		</phrase>
+		<phrase id="610">
+			<text>botans_dialogs_610</text>
+			<next>710</next>
+		</phrase>
+		<phrase id="710">
+			<text>botans_dialogs_710</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>810</next>
+		</phrase>
+		<phrase id="810">
+			<text>botans_dialogs_810</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3102">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3102</text>
+			<next>4102</next>
+		</phrase>
+		<phrase id="4102">
+			<text>botans_dialogs_4102</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="211">
+		<precondition>sak_dialog.time_is_11</precondition>
+			<text>botans_dialogs_211</text>
+			<next>3111</next>
+			<next>3112</next>
+		</phrase>
+		<phrase id="3111">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3111</text>
+			<next>4111</next>
+		</phrase>
+		<phrase id="4111">
+			<text>botans_dialogs_4111</text>
+			<next>511</next>
+		</phrase>
+		<phrase id="511">
+			<text>botans_dialogs_511</text>
+			<next>611</next>
+		</phrase>
+		<phrase id="611">
+			<text>botans_dialogs_611</text>
+			<next>711</next>
+		</phrase>
+		<phrase id="711">
+			<text>botans_dialogs_711</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>811</next>
+		</phrase>
+		<phrase id="811">
+			<text>botans_dialogs_811</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3112">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3112</text>
+			<next>4112</next>
+		</phrase>
+		<phrase id="4112">
+			<text>botans_dialogs_4112</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="212">
+		<precondition>sak_dialog.time_is_12</precondition>
+			<text>botans_dialogs_212</text>
+			<next>3121</next>
+			<next>3122</next>
+		</phrase>
+		<phrase id="3121">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3121</text>
+			<next>4121</next>
+		</phrase>
+		<phrase id="4121">
+			<text>botans_dialogs_4121</text>
+			<next>512</next>
+		</phrase>
+		<phrase id="512">
+			<text>botans_dialogs_512</text>
+			<next>612</next>
+		</phrase>
+		<phrase id="612">
+			<text>botans_dialogs_612</text>
+			<next>712</next>
+		</phrase>
+		<phrase id="712">
+			<text>botans_dialogs_712</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>812</next>
+		</phrase>
+		<phrase id="812">
+			<text>botans_dialogs_812</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3122">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3122</text>
+			<next>4122</next>
+		</phrase>
+		<phrase id="4122">
+			<text>botans_dialogs_4122</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="213">
+		<precondition>sak_dialog.time_is_13</precondition>
+			<text>botans_dialogs_213</text>
+			<next>3131</next>
+			<next>3132</next>
+		</phrase>
+		<phrase id="3131">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3131</text>
+			<next>4131</next>
+		</phrase>
+		<phrase id="4131">
+			<text>botans_dialogs_4131</text>
+			<next>513</next>
+		</phrase>
+		<phrase id="513">
+			<text>botans_dialogs_513</text>
+			<next>613</next>
+		</phrase>
+		<phrase id="613">
+			<text>botans_dialogs_613</text>
+			<next>713</next>
+		</phrase>
+		<phrase id="713">
+			<text>botans_dialogs_713</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>813</next>
+		</phrase>
+		<phrase id="813">
+			<text>botans_dialogs_813</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3132">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3132</text>
+			<next>4132</next>
+		</phrase>
+		<phrase id="4132">
+			<text>botans_dialogs_4132</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="214">
+		<precondition>sak_dialog.time_is_14</precondition>
+			<text>botans_dialogs_214</text>
+			<next>3141</next>
+			<next>3142</next>
+		</phrase>
+		<phrase id="3141">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3141</text>
+			<next>4141</next>
+		</phrase>
+		<phrase id="4141">
+			<text>botans_dialogs_4141</text>
+			<next>514</next>
+		</phrase>
+		<phrase id="514">
+			<text>botans_dialogs_514</text>
+			<next>614</next>
+		</phrase>
+		<phrase id="614">
+			<text>botans_dialogs_614</text>
+			<next>714</next>
+		</phrase>
+		<phrase id="714">
+			<text>botans_dialogs_714</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>814</next>
+		</phrase>
+		<phrase id="814">
+			<text>botans_dialogs_814</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3142">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3142</text>
+			<next>4142</next>
+		</phrase>
+		<phrase id="4142">
+			<text>botans_dialogs_4142</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="215">
+		<precondition>sak_dialog.time_is_15</precondition>
+			<text>botans_dialogs_215</text>
+			<next>3151</next>
+			<next>3152</next>
+		</phrase>
+		<phrase id="3151">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3151</text>
+			<next>4151</next>
+		</phrase>
+		<phrase id="4151">
+			<text>botans_dialogs_4151</text>
+			<next>515</next>
+		</phrase>
+		<phrase id="515">
+			<text>botans_dialogs_515</text>
+			<next>615</next>
+		</phrase>
+		<phrase id="615">
+			<text>botans_dialogs_615</text>
+			<next>715</next>
+		</phrase>
+		<phrase id="715">
+			<text>botans_dialogs_715</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>815</next>
+		</phrase>
+		<phrase id="815">
+			<text>botans_dialogs_815</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3152">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3152</text>
+			<next>4152</next>
+		</phrase>
+		<phrase id="4152">
+			<text>botans_dialogs_4152</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="216">
+		<precondition>sak_dialog.time_is_16</precondition>
+			<text>botans_dialogs_216</text>
+			<next>3161</next>
+			<next>3162</next>
+		</phrase>
+		<phrase id="3161">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3161</text>
+			<next>4161</next>
+		</phrase>
+		<phrase id="4161">
+			<text>botans_dialogs_4161</text>
+			<next>516</next>
+		</phrase>
+		<phrase id="516">
+			<text>botans_dialogs_516</text>
+			<next>616</next>
+		</phrase>
+		<phrase id="616">
+			<text>botans_dialogs_616</text>
+			<next>716</next>
+		</phrase>
+		<phrase id="716">
+			<text>botans_dialogs_716</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>816</next>
+		</phrase>
+		<phrase id="816">
+			<text>botans_dialogs_816</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3162">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3162</text>
+			<next>4162</next>
+		</phrase>
+		<phrase id="4162">
+			<text>botans_dialogs_4162</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="217">
+		<precondition>sak_dialog.time_is_17</precondition>
+			<text>botans_dialogs_217</text>
+			<next>3171</next>
+			<next>3172</next>
+		</phrase>
+		<phrase id="3171">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3171</text>
+			<next>4171</next>
+		</phrase>
+		<phrase id="4171">
+			<text>botans_dialogs_4171</text>
+			<next>517</next>
+		</phrase>
+		<phrase id="517">
+			<text>botans_dialogs_517</text>
+			<next>617</next>
+		</phrase>
+		<phrase id="617">
+			<text>botans_dialogs_617</text>
+			<next>717</next>
+		</phrase>
+		<phrase id="717">
+			<text>botans_dialogs_717</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>817</next>
+		</phrase>
+		<phrase id="817">
+			<text>botans_dialogs_817</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3172">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3172</text>
+			<next>4172</next>
+		</phrase>
+		<phrase id="4172">
+			<text>botans_dialogs_4172</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="218">
+		<precondition>sak_dialog.time_is_18</precondition>
+			<text>botans_dialogs_218</text>
+			<next>3181</next>
+			<next>3182</next>
+		</phrase>
+		<phrase id="3181">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3181</text>
+			<next>4181</next>
+		</phrase>
+		<phrase id="4181">
+			<text>botans_dialogs_4181</text>
+			<next>518</next>
+		</phrase>
+		<phrase id="518">
+			<text>botans_dialogs_518</text>
+			<next>618</next>
+		</phrase>
+		<phrase id="618">
+			<text>botans_dialogs_618</text>
+			<next>718</next>
+		</phrase>
+		<phrase id="718">
+			<text>botans_dialogs_718</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>818</next>
+		</phrase>
+		<phrase id="818">
+			<text>botans_dialogs_818</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3182">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3182</text>
+			<next>4182</next>
+		</phrase>
+		<phrase id="4182">
+			<text>botans_dialogs_4182</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="219">
+		<precondition>sak_dialog.time_is_19</precondition>
+			<text>botans_dialogs_219</text>
+			<next>3191</next>
+			<next>3192</next>
+		</phrase>
+		<phrase id="3191">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3191</text>
+			<next>4191</next>
+		</phrase>
+		<phrase id="4191">
+			<text>botans_dialogs_4191</text>
+			<next>519</next>
+		</phrase>
+		<phrase id="519">
+			<text>botans_dialogs_519</text>
+			<next>619</next>
+		</phrase>
+		<phrase id="619">
+			<text>botans_dialogs_619</text>
+			<next>719</next>
+		</phrase>
+		<phrase id="719">
+			<text>botans_dialogs_719</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>819</next>
+		</phrase>
+		<phrase id="819">
+			<text>botans_dialogs_819</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3192">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3192</text>
+			<next>4192</next>
+		</phrase>
+		<phrase id="4192">
+			<text>botans_dialogs_4192</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="220">
+		<precondition>sak_dialog.time_is_20</precondition>
+			<text>botans_dialogs_220</text>
+			<next>3201</next>
+			<next>3202</next>
+		</phrase>
+		<phrase id="3201">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3201</text>
+			<next>4201</next>
+		</phrase>
+		<phrase id="4201">
+			<text>botans_dialogs_4201</text>
+			<next>520</next>
+		</phrase>
+		<phrase id="520">
+			<text>botans_dialogs_520</text>
+			<next>620</next>
+		</phrase>
+		<phrase id="620">
+			<text>botans_dialogs_620</text>
+			<next>720</next>
+		</phrase>
+		<phrase id="720">
+			<text>botans_dialogs_720</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>820</next>
+		</phrase>
+		<phrase id="820">
+			<text>botans_dialogs_820</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3202">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3202</text>
+			<next>4202</next>
+		</phrase>
+		<phrase id="4202">
+			<text>botans_dialogs_4202</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="221">
+		<precondition>sak_dialog.time_is_21</precondition>
+			<text>botans_dialogs_221</text>
+			<next>3211</next>
+			<next>3212</next>
+		</phrase>
+		<phrase id="3211">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3211</text>
+			<next>4211</next>
+		</phrase>
+		<phrase id="4211">
+			<text>botans_dialogs_4211</text>
+			<next>521</next>
+		</phrase>
+		<phrase id="521">
+			<text>botans_dialogs_521</text>
+			<next>621</next>
+		</phrase>
+		<phrase id="621">
+			<text>botans_dialogs_621</text>
+			<next>721</next>
+		</phrase>
+		<phrase id="721">
+			<text>botans_dialogs_721</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>821</next>
+		</phrase>
+		<phrase id="821">
+			<text>botans_dialogs_821</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3212">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3212</text>
+			<next>4212</next>
+		</phrase>
+		<phrase id="4212">
+			<text>botans_dialogs_4212</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="222">
+		<precondition>sak_dialog.time_is_22</precondition>
+			<text>botans_dialogs_222</text>
+			<next>3221</next>
+			<next>3222</next>
+		</phrase>
+		<phrase id="3221">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3221</text>
+			<next>4221</next>
+		</phrase>
+		<phrase id="4221">
+			<text>botans_dialogs_4221</text>
+			<next>522</next>
+		</phrase>
+		<phrase id="522">
+			<text>botans_dialogs_522</text>
+			<next>622</next>
+		</phrase>
+		<phrase id="622">
+			<text>botans_dialogs_622</text>
+			<next>722</next>
+		</phrase>
+		<phrase id="722">
+			<text>botans_dialogs_722</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>822</next>
+		</phrase>
+		<phrase id="822">
+			<text>botans_dialogs_822</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3222">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3222</text>
+			<next>4222</next>
+		</phrase>
+		<phrase id="4222">
+			<text>botans_dialogs_4222</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="223">
+		<precondition>sak_dialog.time_is_23</precondition>
+			<text>botans_dialogs_223</text>
+			<next>3231</next>
+			<next>3232</next>
+		</phrase>
+		<phrase id="3231">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3231</text>
+			<next>4231</next>
+		</phrase>
+		<phrase id="4231">
+			<text>botans_dialogs_4231</text>
+			<next>523</next>
+		</phrase>
+		<phrase id="523">
+			<text>botans_dialogs_523</text>
+			<next>623</next>
+		</phrase>
+		<phrase id="623">
+			<text>botans_dialogs_623</text>
+			<next>723</next>
+		</phrase>
+		<phrase id="723">
+			<text>botans_dialogs_723</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>823</next>
+		</phrase>
+		<phrase id="823">
+			<text>botans_dialogs_823</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3232">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3232</text>
+			<next>4232</next>
+		</phrase>
+		<phrase id="4232">
+			<text>botans_dialogs_4232</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="224">
+		<precondition>sak_dialog.time_is_24</precondition>
+			<text>botans_dialogs_224</text>
+			<next>3241</next>
+			<next>3242</next>
+		</phrase>
+		<phrase id="3241">
+		<dont_has_info>botans_dialog_done</dont_has_info>
+			<text>botans_dialogs_3241</text>
+			<next>4241</next>
+		</phrase>
+		<phrase id="4241">
+			<text>botans_dialogs_4241</text>
+			<next>524</next>
+		</phrase>
+		<phrase id="524">
+			<text>botans_dialogs_524</text>
+			<next>624</next>
+		</phrase>
+		<phrase id="624">
+			<text>botans_dialogs_624</text>
+			<next>724</next>
+		</phrase>
+		<phrase id="724">
+			<text>botans_dialogs_724</text>
+			<give_info>botans_dialog_done</give_info>
+			<next>824</next>
+		</phrase>
+		<phrase id="824">
+			<text>botans_dialogs_824</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="3242">
+		<has_info>botans_dialog_done</has_info>
+			<text>botans_dialogs_3242</text>
+			<next>4242</next>
+		</phrase>
+		<phrase id="4242">
+			<text>botans_dialogs_4242</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_1">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_1_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_1_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_1_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_1_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_1_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_1_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_1_105</text>
+			<give_info>fake_new_gg_1_info</give_info>
+			<action>sak_dialog.fake_new_1_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_1_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_1_201</text>
+			<action>sak_dialog.fake_new_1_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_2">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_2_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_2_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_2_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_2_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_2_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_2_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_2_105</text>
+			<give_info>fake_new_gg_2_info</give_info>
+			<action>sak_dialog.fake_new_2_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_2_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_2_201</text>
+			<action>sak_dialog.fake_new_2_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_3">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_3_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_3_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_3_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_3_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_3_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_3_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_3_105</text>
+			<give_info>fake_new_gg_3_info</give_info>
+			<action>sak_dialog.fake_new_3_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_3_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_3_201</text>
+			<action>sak_dialog.fake_new_3_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_4">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_4_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_4_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_4_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_4_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_4_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_4_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_4_105</text>
+			<give_info>fake_new_gg_4_info</give_info>
+			<action>sak_dialog.fake_new_4_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_4_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_4_201</text>
+			<action>sak_dialog.fake_new_4_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_5">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_5_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_5_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_5_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_5_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_5_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_5_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_5_105</text>
+			<give_info>fake_new_gg_5_info</give_info>
+			<action>sak_dialog.fake_new_5_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_5_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_5_201</text>
+			<action>sak_dialog.fake_new_5_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_6">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_6_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_6_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_6_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_6_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_6_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_6_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_6_105</text>
+			<give_info>fake_new_gg_6_info</give_info>
+			<action>sak_dialog.fake_new_6_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_6_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_6_201</text>
+			<action>sak_dialog.fake_new_6_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_7">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_7_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_7_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_7_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_7_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_7_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_7_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_7_105</text>
+			<give_info>fake_new_gg_7_info</give_info>
+			<action>sak_dialog.fake_new_7_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_7_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_7_201</text>
+			<action>sak_dialog.fake_new_7_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_8">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_8_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_8_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_8_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_8_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_8_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_8_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_8_105</text>
+			<give_info>fake_new_gg_8_info</give_info>
+			<action>sak_dialog.fake_new_8_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_8_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_8_201</text>
+			<action>sak_dialog.fake_new_8_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_9">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_9_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_9_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_9_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_9_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_9_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_9_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_9_105</text>
+			<give_info>fake_new_gg_9_info</give_info>
+			<action>sak_dialog.fake_new_9_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_9_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_9_201</text>
+			<action>sak_dialog.fake_new_9_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_10">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_10_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_10_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_10_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_10_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_10_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_10_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_10_105</text>
+			<give_info>fake_new_gg_10_info</give_info>
+			<action>sak_dialog.fake_new_10_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_10_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_10_201</text>
+			<action>sak_dialog.fake_new_10_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_11">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_11_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_11_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_11_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_11_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_11_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_11_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_11_105</text>
+			<give_info>fake_new_gg_11_info</give_info>
+			<action>sak_dialog.fake_new_11_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_11_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_11_201</text>
+			<action>sak_dialog.fake_new_11_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_12">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_12_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_12_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_12_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_12_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_12_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_12_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_12_105</text>
+			<give_info>fake_new_gg_12_info</give_info>
+			<action>sak_dialog.fake_new_12_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_12_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_12_201</text>
+			<action>sak_dialog.fake_new_12_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_13">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_13_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_13_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_13_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_13_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_13_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_13_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_13_105</text>
+			<give_info>fake_new_gg_13_info</give_info>
+			<action>sak_dialog.fake_new_13_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_13_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_13_201</text>
+			<action>sak_dialog.fake_new_13_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="fake_new_gg_14">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text></text>
+			<next>100</next>
+			<next>200</next>
+		</phrase>
+		<phrase id="100">
+			<text></text>
+			<dont_has_info>fake_new_gg_14_info</dont_has_info>
+			<next>101</next>
+		</phrase>
+		<phrase id="200">
+			<text></text>
+			<has_info>fake_new_gg_14_info</has_info>
+			<next>201</next>
+		</phrase>
+		<phrase id="101">
+			<text>fake_new_gg_14_101</text>
+			<next>102</next>
+		</phrase>
+		<phrase id="102">
+			<text>fake_new_gg_14_102</text>
+			<next>103</next>
+		</phrase>
+		<phrase id="103">
+			<text>fake_new_gg_14_103</text>
+			<next>104</next>
+		</phrase>
+		<phrase id="104">
+			<text>fake_new_gg_14_104</text>
+			<next>105</next>
+		</phrase>
+		<phrase id="105">
+			<text>fake_new_gg_14_105</text>
+			<give_info>fake_new_gg_14_info</give_info>
+			<action>sak_dialog.fake_new_14_remove</action>
+			<next>106</next>
+		</phrase>
+		<phrase id="106">
+			<text>fake_new_gg_14_106</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="201">
+			<text>fake_new_gg_14_201</text>
+			<action>sak_dialog.fake_new_14_remove</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_1">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_1_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_1_11</text>
+			<dont_has_info>fake_rem_gg_1_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_1_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_1_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_1_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_1_5</text>
+			<give_info>fake_rem_gg_1_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_1_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_1_info</has_info>
+			<text>fake_rem_gg_1_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_1_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_2">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_2_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_2_11</text>
+			<dont_has_info>fake_rem_gg_2_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_2_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_2_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_2_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_2_5</text>
+			<give_info>fake_rem_gg_2_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_2_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_2_info</has_info>
+			<text>fake_rem_gg_2_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_2_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_3">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_3_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_3_11</text>
+			<dont_has_info>fake_rem_gg_3_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_3_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_3_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_3_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_3_5</text>
+			<give_info>fake_rem_gg_3_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_3_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_3_info</has_info>
+			<text>fake_rem_gg_3_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_3_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_4">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_4_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_4_11</text>
+			<dont_has_info>fake_rem_gg_4_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_4_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_4_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_4_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_4_5</text>
+			<give_info>fake_rem_gg_4_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_4_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_4_info</has_info>
+			<text>fake_rem_gg_4_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_4_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_5">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_5_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_5_11</text>
+			<dont_has_info>fake_rem_gg_5_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_5_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_5_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_5_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_5_5</text>
+			<give_info>fake_rem_gg_5_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_5_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_5_info</has_info>
+			<text>fake_rem_gg_5_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_5_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_6">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_6_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_6_11</text>
+			<dont_has_info>fake_rem_gg_6_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_6_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_6_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_6_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_6_5</text>
+			<give_info>fake_rem_gg_6_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_6_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_6_info</has_info>
+			<text>fake_rem_gg_6_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_6_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_7">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_7_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_7_11</text>
+			<dont_has_info>fake_rem_gg_7_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_7_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_7_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_7_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_7_5</text>
+			<give_info>fake_rem_gg_7_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_7_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_7_info</has_info>
+			<text>fake_rem_gg_7_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_7_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_8">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_8_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_8_11</text>
+			<dont_has_info>fake_rem_gg_8_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_8_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_8_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_8_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_8_5</text>
+			<give_info>fake_rem_gg_8_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_8_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_8_info</has_info>
+			<text>fake_rem_gg_8_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_8_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_9">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_9_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_9_11</text>
+			<dont_has_info>fake_rem_gg_9_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_9_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_9_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_9_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_9_5</text>
+			<give_info>fake_rem_gg_9_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_9_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_9_info</has_info>
+			<text>fake_rem_gg_9_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_9_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+<dialog id="fake_rem_gg_10">
+<precondition>dialogs.is_not_wounded</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>fake_rem_gg_10_0</text>
+			<next>11</next>
+			<next>12</next>
+		</phrase>
+		<phrase id="11">
+			<text>fake_rem_gg_10_11</text>
+			<dont_has_info>fake_rem_gg_10_info</dont_has_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>fake_rem_gg_10_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>fake_rem_gg_10_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>fake_rem_gg_10_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>fake_rem_gg_10_5</text>
+			<give_info>fake_rem_gg_10_info</give_info>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>fake_rem_gg_10_6</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="12">
+		<has_info>fake_rem_gg_10_info</has_info>
+			<text>fake_rem_gg_10_12</text>
+			<next>7</next>
+		</phrase>
+		<phrase id="7">
+			<text>fake_rem_gg_10_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+</game_dialogs>

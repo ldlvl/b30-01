@@ -1,0 +1,41 @@
+[logic]
+active = walker1
+
+[walker1]
+path_walk = kruglov_rostok_walk_way
+path_look = kruglov_rostok_way_look
+danger = danger_condition
+on_signal = kruglov_rostok | walker2
+;meet = no_meet
+
+[walker2]
+path_walk = kruglov_rostok_walk_way
+path_look = kruglov_rostok_2way_look
+danger = danger_condition
+on_timer = 30000 | %+go_heli% walker3
+;meet = no_meet
+
+[walker3]
+path_walk = kruglov_rostok_walk_way
+path_look = kruglov_rostok_3way_look
+;meet = no_meet
+danger = danger_condition
+on_info = {+go_to_heli} walker4
+
+[walker4]
+path_walk = kruglov_rostok_walk_way
+path_look = kruglov_rostok_3way_look
+meet = no_meet
+on_timer = 30000 | walker5
+
+[walker5]
+path_walk = kruglov_rostok_out_walk_way
+path_look = kruglov_rostok_out_way_look
+meet = no_meet
+on_signal = kruglov_out | %+kruglov_is_fly%
+
+
+
+[danger_condition]
+ignore_distance = 5
+

@@ -1,0 +1,16 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_npc_in_zone = 106|gar_graveyard_car|sr_idle@alarm
+on_info = {+gar_bandits_killed} nil, {+gar_bandit_leader_dead} sr_idle@alarm
+
+[sr_idle@alarm]
+on_actor_inside = {+gar_bandits_raid} sr_idle@remark %+gar_counter_fire%
+on_info = {+gar_counter_fire} sr_idle@remark
+
+[sr_idle@remark]
+on_timer = 1000| sr_idle@alive %+gar_open_fire%
+
+[sr_idle@alive]
+on_info = {+gar_hellcar_help -gar_bandits_killed =gulag_population_active_le(gar_bandit_agr:5)} nil %+gar_bandits_killed%

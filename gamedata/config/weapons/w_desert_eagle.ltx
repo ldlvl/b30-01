@@ -1,0 +1,177 @@
+;Desert Eagle
+[wpn_desert_eagle]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\Desert Eagle"
+$npc						= on	
+$prefetch					= 8
+scheduled					= off	
+cform						= skeleton
+class						= WP_PM
+min_radius					= 0
+max_radius					= 65
+description					= enc_weapons1_wpn-desert-eagle
+
+default_to_ruck				= false
+
+ef_weapon_type				= 5
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 1.0
+
+cost						= 10000
+
+ammo_limit					= 120
+ammo_current				= 90
+ammo_elapsed				= 12
+
+f_mode						= 1
+
+ammo_mag_size				= 9
+ammo_class					= ammo_11.43x23_hydro
+
+hand_dependence				= 1
+single_handed				= 1
+
+slot						= 1,2,4
+animation_slot				= 1
+
+inv_name					= wp_desert_eagle
+inv_name_short				= wp_desert_eagle
+
+inv_weight					= 1.7
+
+icon_group         			= 2
+inv_grid_width     			= 2
+inv_grid_height    			= 2
+inv_grid_x         			= 4
+inv_grid_y         			= 15
+
+kill_msg_x					= 194
+kill_msg_y					= 123
+kill_msg_width				= 46
+kill_msg_height				= 27
+
+fire_dispersion_base		= 0.18
+control_inertion_factor		= 1.15f
+
+cam_relax_speed				= 7.0
+cam_dispersion				= 1.2
+cam_dispersion_inc			= 0.0
+cam_dispertion_frac			= 1.0	
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 0.6
+
+fire_dispersion_condition_factor = 3
+misfire_probability			= 0.003
+misfire_condition_k			= 0.50
+condition_shot_dec			= 0.0004
+
+direction                	= 0, 0, 1
+fire_point					= -0.005000,0.130000,0.220000
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+rpm_empty_click				= 200
+
+shell_point		 			= 0.0, 0.133, 0.06
+shell_dir		 			= 0.0, 0.0, 0.4
+
+PDM_disp_base 				= 1.5
+PDM_disp_vel_factor 		= 2.0
+PDM_disp_accel_factor 		= 3.0
+PDM_crouch					= 1.5
+PDM_crouch_no_acc			= 0.7
+
+hit_power					= 1
+hit_impulse					= 1
+hit_type					= fire_wound
+
+fire_distance    			= 60
+bullet_speed				= 420
+rpm							= 200
+
+use_aim_bullet				= false
+time_to_aim					= 1.0
+
+hud							= wpn_desert_eagle_hud
+normal                   	= 0, 1, 0
+position                 	= -0.021, -0.085, 0.0
+orientation              	= 0, 0, 0
+
+;strap_position				= -0.1,-0.45,0.2
+;strap_orientation			= 1.57,0,0
+;strap_bone0				= bip01_spine2
+;strap_bone1				= bip01_spine1
+
+startup_ammo				= 90
+visual						= weapons\desert_eagle\wpn_desert_eagle.ogf
+
+light_color					= 0.6,0.5,0.3
+light_range					= 3.0
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.2
+
+ph_mass						= 1
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 80
+
+snd_draw					= weapons\pistol_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\de\de_shoot 
+snd_shoot1					= weapons\de\de_shoot1       
+snd_empty					= weapons\de\de_empty
+snd_reload					= weapons\de\de_reload
+snd_close					= weapons\pistol_holster
+snd_silncer_shot			= weapons\de\de_shot_sil
+snd_razgruzka				= weapons\razgruzka\ammo_6
+
+silencer_name				= wpn_addon_silencer
+silencer_x					= 87
+silencer_y					= 10
+
+;silencer_flame_particles	= weapons\generic_weapon01
+silencer_smoke_particles	= weapons\generic_shoot_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time			= 0.2
+
+[wpn_desert_eagle_hud]
+shell_point					= -0.000000,0.040000,-0.235000
+fire_point					= 0.000000,-0.005000,-0.323000
+fire_bone                	= wpn_body
+
+position					= 0.010000,0.000000,0.005000
+orientation					= 0.000000,0.000000,0.000000
+visual                   	= weapons\desert_eagle\wpn_desert_eagle_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= idle_empty
+anim_reload					= reload
+anim_reload_empty			= reload_empty
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.147400,0.038500,0.166000
+zoom_rotate_x				= -0.000200
+zoom_rotate_y				= 0.000100
+zoom_hide_crosshair			= true
+
+zoom_rotate_time			= 0.22
+rotate_time					= 0.22

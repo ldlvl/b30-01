@@ -1,0 +1,173 @@
+;Franchi SPAS-12
+[wpn_spas12]:weapon_immunities
+GroupControlSection				= spawn_group
+discovery_dependency 			= 
+$spawn                   		= "weapons\spas12"	
+$npc			 				= on
+$prefetch 		 				= 8
+scheduled                		= off
+cform                    		= skeleton
+class                    		= W_SHOTGN
+min_radius               		= 0
+max_radius               		= 50
+description						= enc_weapons1_wpn-spas12
+
+default_to_ruck					= false
+
+ef_main_weapon_type				= 1
+ef_weapon_type					= 6
+
+holder_range_modifier			= 1.0
+holder_fov_modifier				= 0.7
+
+tri_state_reload				= on
+
+cost					 		= 12000
+weapon_class			 		= shotgun
+
+ammo_limit		 				= 60
+ammo_current		 			= 10
+ammo_elapsed		 			= 0
+
+f_mode							= 1
+
+ammo_mag_size		 			= 8
+ammo_class		 				= ammo_12x70_buck,ammo_12x76_dart,ammo_12x76_zhekan
+
+fire_dispersion_base			= 0.47
+control_inertion_factor			= 1.25f
+
+cam_relax_speed					= 6
+cam_dispersion					= 2.0
+cam_dispersion_inc				= 1.75
+cam_dispertion_frac				= 0.7
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.2
+
+fire_dispersion_condition_factor = 2
+misfire_probability 			= 0.03
+misfire_condition_k				= 0.50
+condition_shot_dec 				= 0.0005
+
+hand_dependence 	 			= 1
+single_handed					= 0
+
+slot 				 			= 2
+animation_slot		 			= 9
+
+inv_name						= wpn-spas12
+inv_name_short					= wpn-spas12
+
+inv_weight						= 4.4
+
+icon_group                      = 2
+inv_grid_width     				= 6
+inv_grid_height    				= 2
+inv_grid_x         				= 8
+inv_grid_y         				= 4
+
+kill_msg_x						= 91
+kill_msg_y						= 104
+kill_msg_width					= 80
+kill_msg_height					= 20
+
+direction                		= 0, 0, 1
+shell_point				 		= 0.0, 0.138, 0.07
+fire_point               		= 0, 0.235, 0.66
+fire_point2              		= 0.0, 0.103, 0.686
+
+flame_particles		   			= weapons\generic_weapon05
+smoke_particles		   			= weapons\rpg_shoot_02
+rpm_empty_click 	   			= 200
+
+PDM_disp_base 					= 2.0
+PDM_disp_vel_factor 			= 3.0
+PDM_disp_accel_factor 			= 5.0
+PDM_crouch						= 1.9
+PDM_crouch_no_acc				= 0.7
+
+hit_power        				= 0.84
+hit_impulse      				= 1
+hit_type						= fire_wound
+
+fire_distance           		= 48
+bullet_speed					= 270
+rpm                     		= 240
+
+use_aim_bullet					= false
+time_to_aim						= 1.0
+
+hud                      		= wpn_spas12_hud
+normal                   		= 0, 1, 0
+position                 		= -0.026,-0.165, -0.019
+orientation              		= 0, 0, 0
+
+strap_position         			= -0.37,-0.09,0.11
+strap_orientation      			= -05,-5,110
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+
+startup_ammo             		= 10
+visual                   		= weapons\spas12\wpn_spas12.ogf
+
+light_color		 				= 0.6,0.5,0.3
+light_range		 				= 6.0
+light_var_color		 			= 0.05
+light_var_range		 			= 0.5
+light_time 		 				= 0.2
+
+ph_mass			 				= 3
+
+scope_status					= 0
+silencer_status					= 0
+grenade_launcher_status			= 0
+
+zoom_enabled					= true
+scope_zoom_factor	    		= 90
+
+snd_draw						= weapons\mp153\mp153_draw
+snd_holster						= weapons\mp153\mp153_holster
+snd_shoot						= weapons\spas12\shoot1
+snd_shoot1						= weapons\spas12\shoot2
+snd_shoot2						= weapons\spas12\shoot3
+snd_shoot3						= weapons\spas12\shoot4
+snd_empty						= weapons\spas12\empty, 0.5
+snd_reload						= weapons\toz34\toz34_reload
+snd_shoot_duplet				= weapons\toz34\toz34_shoot_both
+snd_open_weapon					= weapons\spas12\open
+snd_add_cartridge				= weapons\spas12\load
+snd_close_weapon				= weapons\spas12\reload_end		
+snd_razgruzka					= weapons\razgruzka\ammo_1
+ 
+[wpn_spas12_hud]
+shell_point	= 0.0, 0.0, 0.0
+
+fire_point      				= 0,0.03,0.065
+
+fire_bone                		= wpn_body ;muzzle
+
+position						= -0.115000,0.080000,-0.280000
+orientation						= 0.000000,0.000000,0.000000
+visual                   		= weapons\spas12\wpn_spas12_hud.ogf
+
+anim_idle						= idle
+anim_reload						= draw
+anim_draw						= draw
+anim_holster					= holster
+anim_shoot						= shoot
+anim_shoot_both 				= shoot
+anim_idle_aim					= idle_aim
+anim_idle_sprint				= idle_sprint
+
+
+anim_open_weapon				= reload_open
+anim_add_cartridge				= reload_add
+anim_close_weapon				= reload_close
+
+zoom_offset						= -0.115200,0.044700,-0.083000
+zoom_rotate_x					= -0.007400
+zoom_rotate_y					= 0.000500
+
+zoom_rotate_time				= 0.27
+rotate_time						= 0.27

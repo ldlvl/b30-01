@@ -1,0 +1,474 @@
+[logic@aver_monolith_glavn]
+active = walker@aver_monolith_glavn
+combat_ignore = combat_ignore@aver_monolith
+danger = danger_condition@aver_monolith
+on_hit = hit@aver_monolith
+on_death = death@aver_monolith
+
+[walker@aver_monolith_glavn]
+path_walk = glavn_walk_way
+path_look = glavn_way_look
+combat_ignore_cond = {-aver_monolith_fire =fighting_actor}
+danger = danger_condition@aver_monolith
+meet = meet@aver_monolith_glavn
+
+[meet@aver_monolith_glavn]
+meet_state 		= 3| wait ;psy_pain
+meet_state_wpn 	= 3| psy_armed
+use				= true
+use_wpn			= false
+abuse       	= false
+meet_dialog		= aver_monolith_glavn_start_dialog
+precond = visibility
+
+[logic@aver_monolith_kamper]
+active = kamp@aver_monolith
+combat_ignore = combat_ignore@aver_monolith
+danger = danger_condition@aver_monolith
+on_hit = hit@aver_monolith
+on_death = death@aver_monolith
+
+[kamp@aver_monolith]
+center_point = kamp_center
+radius = 1.3
+meet = no_meet
+combat_ignore_cond = {-aver_monolith_fire =fighting_actor}
+danger = danger_condition@aver_monolith
+
+[combat_ignore@aver_monolith]
+combat_ignore_cond = {-aver_monolith_fire =fighting_actor}
+
+[danger_condition@aver_monolith]
+ignore_distance = 5
+ignore_types = corpse
+
+[hit@aver_monolith]
+on_info = {-aver_monolith_fire =hit_by_actor} %+aver_monolith_fire%
+
+[death@aver_monolith]
+on_info = {-aver_monolith_fire =killed_by_actor} %+aver_monolith_fire%
+
+
+
+[logic@dsc_dom_sit]
+active = walker@dsc_dom_sit
+
+[walker@dsc_dom_sit]
+path_walk = sit_way
+path_look = sit_look
+danger = danger_condition@dsc_dom
+meet = meet@dsc_dom_sit
+
+[meet@dsc_dom_sit]
+meet_state 		= 3| sit
+meet_state_wpn 	= 3| guard
+use				= true
+use_wpn			= false
+abuse       	= false
+;meet_dialog		= val_mongol_dialog_start
+precond = visibility
+
+[logic@dsc_dom_sleep]
+active = sleeper@dsc_dom_sleep
+
+[sleeper@dsc_dom_sleep]
+path_main = sleep_way
+danger = danger_condition@dsc_dom
+wakeable = true
+
+[danger_condition@dsc_dom]
+ignore_distance = 3
+
+[logic@val_mongol]
+active = walker@val_mongol
+on_death = death@mongol
+
+[walker@val_mongol]
+path_walk = walk_way
+path_look = way_look
+meet = meet@val_mongol
+
+[death@mongol]
+on_info = %+mongol_umer%
+
+[meet@val_mongol]
+meet_state 		= 10| wait
+meet_state_wpn 	= 10| guard
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+use				= true
+use_wpn			= false
+abuse       	= false
+meet_dialog		= val_mongol_dialog_start
+precond = visibility
+---------------------------------------------------
+
+[logic@val_dram_bandit_glavn]
+active = walker@val_dram_bandit_glavn
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+
+[walker@val_dram_bandit_glavn]
+path_walk = bandit_glavn_walk
+path_look = bandit_glavn_look
+meet = meet@val_dram_bandit_glavn
+on_actor_dist_le_nvis = 14 | remark@val_dram_bandit_glavn
+on_info = {+val_dram_scene_end} walker3@val_dram_bandit_kamp
+show_spot = false 
+ 
+
+[remark@val_dram_bandit_glavn_1]
+anim = guard
+target = actor
+on_actor_dist_le_nvis = 7 | remark@val_dram_bandit_glavn
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false 
+
+[remark@val_dram_bandit_glavn]
+anim = guard
+target = actor
+snd = val_dram_glavn
+meet = no_meet
+on_signal = sound_end| walker2@val_dram_bandit_glavn
+on_timer = 5000| walker2@val_dram_bandit_glavn
+
+[remark@val_dram_bandit_glavn2]
+anim = guard
+target = actor
+snd = val_dram_glavn
+meet = no_meet
+on_signal = sound_end| walker3@val_dram_bandit_kamp2
+on_timer = 5000| walker3@val_dram_bandit_kamp2
+
+[walker2@val_dram_bandit_glavn]
+path_walk = bandit_glavn_walk
+path_look = bandit_glavn_look
+meet = meet@val_dram_bandit_glavn
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+on_info2 = {+val_dram_scene_end} walker3@val_dram_bandit_kamp
+
+[walker3@val_dram_bandit_kamp]
+path_walk = glawn_kamp_walk
+path_look = glawn_kamp_look
+on_signal = glawn_kamp|walker3@val_dram_bandit_kamp3
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+meet = no_meet
+show_spot = false
+
+[walker3@val_dram_bandit_kamp3]
+path_walk = glawn_kamp_walk
+path_look = glawn_kamp_look
+on_actor_dist_le_nvis = 7 | remark@val_dram_bandit_glavn2
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+meet = no_meet
+show_spot = false 
+
+[walker3@val_dram_bandit_kamp2]
+path_walk = glawn_kamp_walk
+path_look = glawn_kamp_look
+meet = meet@val_dram_bandit_glavn
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false
+
+[logic@val_dram_bandit1]
+active = walker@val_dram_bandit1
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+[walker@val_dram_bandit1]
+anim = assault
+target = actor
+path_walk = bandit1_walk
+path_look = bandit1_look
+meet = meet@val_dram_bandit
+;on_info = {+val_dram_scene_end} kamp@val_dram_bandit_kamp
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false 
+
+
+[logic@val_dram_bandit2]
+active = walker@val_dram_bandit2
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+[walker@val_dram_bandit2]
+path_walk = bandit2_walk
+path_look = bandit2_look
+meet = meet@val_dram_bandit
+;on_info = {+val_dram_scene_end} kamp@val_dram_bandit_kamp
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false 
+
+
+[logic@val_dram_bandit3]
+active = walker@val_dram_bandit3
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+show_spot = false 
+
+[walker@val_dram_bandit3]
+path_walk = bandit3_walk
+path_look = bandit3_look
+meet = meet@val_dram_bandit
+;on_info = {+val_dram_scene_end} kamp@val_dram_bandit_kamp
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false 
+
+[meet@val_dram_bandit_glavn]
+meet_state 		= 10| wait@wait
+meet_state_wpn 	= 10| backoff@threat_weap
+victim 			= 10| actor
+victim_wpn 		= 10| actor
+syndata			= backoff@threat_weap
+use			= true
+use_wpn		= false
+abuse       = true
+meet_dialog		= val_dram_bandit_glavn_start
+precond = visibility
+
+[meet@val_dram_bandit]
+meet_state 		= 20| assault
+meet_state_wpn 	= 20| assault
+victim 			= 20| actor
+victim_wpn 		= 20| actor
+syndata			= backoff@threat_weap
+use			= false
+use_wpn		= false
+abuse       = true
+
+
+[logic@val_dram_bandit_kamp]
+active = kamp@val_dram_bandit_kamp
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+[kamp@val_dram_bandit_kamp]
+center_point = bandit_kamp
+path_walk = bandit_kamp_task
+on_info = {+val_dram_fire} %=sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+show_spot = false 
+
+[combat_ignore@val_dram]
+combat_ignore_cond = {-val_dram_fire =fighting_actor}
+
+[hit@val_dram_bandit]
+on_info = {=hit_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor =sak.mil_abuse%
+
+[death@val_dram_bandit_glavn]
+on_info = {=killed_by_actor} %+val_dram_bandit_umer +val_dram_fire =sak.set_val_gulag_enemy_actor =sak.mil_abuse%, %+val_dram_bandit_umer%
+
+[death@val_dram_bandit]
+on_info = {=killed_by_actor} %+val_dram_bandit_umer +val_dram_fire =sak.set_val_gulag_enemy_actor =sak.mil_abuse%, %+val_dram_bandit_umer%
+
+
+;--Командир группы. Находится в комнате Борова.
+[logic@val_lager_dolg_commander]
+active = walker@val_lager_dolg_commander
+
+[walker@val_lager_dolg_commander]
+path_walk = commander_walk
+path_look = commander_look
+danger = danger_condition@val_lager_dolg
+meet = meet@val_lager_dolg_commander
+
+[meet@val_lager_dolg_commander]
+meet_state			= 8|hello@talk_hello|5|ward
+meet_state_wpn		= 8|hello@talk_hello|5|ward
+victim 				= 8|actor
+victim_wpn 			= 8|actor
+use					= true
+use_wpn				= true
+precond 			= visibility
+abuse 				= false
+meet_dialog			= val_dolg_commander_start
+
+[logic@val_lager_dolg_sub_commander]
+active = walker@val_lager_dolg_sub_commander
+
+[walker@val_lager_dolg_sub_commander]
+path_walk = commander_walk
+path_look = commander_look
+danger = danger_condition@val_lager_dolg
+meet = meet@val_lager_dolg_sub_commander
+
+[meet@val_lager_dolg_sub_commander]
+meet_state			= 8|hello@talk_hello|5|ward
+meet_state_wpn		= 8|hello@talk_hello|5|ward
+victim 				= 8|actor
+victim_wpn 			= 8|actor
+use					= true
+use_wpn				= true
+precond 			= visibility
+abuse 				= false
+meet_dialog			= val_dolg_sub_commander_start
+
+
+;-- Охранник входа в поземелье
+[logic@val_lager_dolg_guard]
+active = walker@val_lager_dolg_guard
+
+[walker@val_lager_dolg_guard]
+path_walk = guard_walk
+path_look = guard_look
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+
+;-- Охранник входа в здание.
+[logic@val_lager_dolg_zoneguard1]
+active = walker@val_lager_dolg_zoneguard1
+
+[walker@val_lager_dolg_zoneguard1]
+path_walk = zoneguard1_walk
+path_look = zoneguard1_look
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+
+;-- Охранник входа в здание.
+[logic@val_lager_dolg_zoneguard2]
+active = walker@val_lager_dolg_zoneguard2
+
+[walker@val_lager_dolg_zoneguard2]
+path_walk = zoneguard2_walk
+path_look = zoneguard2_look
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+
+;-- Патрульный. Ходит внутри здания, на первом и втором этаже, всё осматривает, заглядывает в окна.
+[logic@val_lager_dolg_patrol]
+active = walker@val_lager_dolg_patrol
+
+[walker@val_lager_dolg_patrol]
+path_walk = patrol_walk
+path_look = patrol_look
+def_state_moving1 = patrol
+def_state_moving2 = patrol
+def_state_moving3 = patrol
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+
+;-- Место для сна на втором этаже, на матрасе.
+[logic@val_lager_dolg_sleep1]
+active = sleeper@val_lager_dolg_sleep1
+
+[sleeper@val_lager_dolg_sleep1]
+path_main = sleep1
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+
+;-- Место для сна на втором этаже, на матрасе.
+[logic@val_lager_dolg_sleep2]
+active = sleeper@val_lager_dolg_sleep2
+
+[sleeper@val_lager_dolg_sleep2]
+path_main = sleep2
+danger = danger_condition@val_lager_dolg
+meet = no_meet
+
+[logic@val_lager_dolg_kamp_1]
+active = kamp@lager_dolg_kamp_1
+
+[kamp@lager_dolg_kamp_1]
+center_point = kamp1
+danger = danger_condition@val_lager_dolg
+
+[logic@val_lager_dolg_kamp_2]
+active = kamp@lager_dolg_kamp_2
+
+[kamp@lager_dolg_kamp_2]
+center_point = kamp2
+danger = danger_condition@val_lager_dolg
+
+[logic@val_lager_dolg_kamp_3]
+active = kamp@lager_dolg_kamp_3
+
+[kamp@lager_dolg_kamp_3]
+center_point = kamp3
+danger = danger_condition@val_lager_dolg
+
+[logic@val_lager_dolg_kamp_4]
+active = kamp@lager_dolg_kamp_4
+
+[kamp@lager_dolg_kamp_4]
+center_point = kamp4
+danger = danger_condition@val_lager_dolg
+
+
+
+[danger_condition@val_lager_dolg]
+ignore_distance = 5
+
+
+[logic@generators_zombies_kamp1]
+active = kamp@generators_zombies_kamp1
+
+[kamp@generators_zombies_kamp1]
+center_point = kamp_1
+
+
+[logic@generators_zombies_kamp2]
+active = kamp@generators_zombies_kamp2
+
+[kamp@generators_zombies_kamp2]
+center_point = kamp_2
+
+
+[logic@generators_zombies_kamp3]
+active = kamp@generators_zombies_kamp3
+
+[kamp@generators_zombies_kamp3]
+center_point = kamp_3
+
+[logic@generators_zombies_kamp4]
+active = kamp@generators_zombies_kamp4
+
+[kamp@generators_zombies_kamp4]
+center_point = kamp_4
+
+[logic@generators_zombies_walker]
+active = walker@generators_zombies_walker
+
+[walker@generators_zombies_walker]
+path_walk = walker_walk	
+sound_idle = state
+
+[logic@dsc_usadba_watch]
+active = walker@dsc_usadba_watch
+danger = danger_condition@dsc_usadba
+
+[walker@dsc_usadba_watch]
+path_walk = watch_walk
+path_look = watch_look
+danger = danger_condition@dsc_usadba
+meet = meet@dsc_usadba_watch
+
+[meet@dsc_usadba_watch]
+meet_state 		= 3| wait
+meet_state_wpn 	= 3| guard
+use				= true
+use_wpn			= false
+abuse       	= false
+;meet_dialog		= val_mongol_dialog_start
+precond = visibility
+
+[logic@dsc_usadba_kamp]
+active = kamp@dsc_usadba_kamp
+
+[kamp@dsc_usadba_kamp]
+center_point = kamp
+danger = danger_condition@dsc_usadba
+show_spot = false 
+
+[danger_condition@dsc_usadba]
+ignore_distance = 3

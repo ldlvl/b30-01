@@ -1,0 +1,44 @@
+[logic]
+active        = remark1
+on_death      = death
+combat_ignore = combat_ignore
+
+[death]
+on_info = %+val_sos_dead%
+
+[remark1]
+anim               = wait
+on_info            = {+val_sos_got_medkit} remark2
+meet               = meet@def
+wounded            = wounded1
+combat_ignore_cond = always
+
+[remark2]
+anim                  = wait
+meet                  = meet@def
+wounded               = wounded1
+on_actor_dist_ge_nvis = 30 | nil
+
+[danger1]
+ignore_distance = 5
+ignore_types    = sound
+
+[meet@def]
+meet_dialog    = val_sos_dialog
+meet_state     = 5|wait
+meet_state_wpn = 5|wait
+victim         = 5|actor
+victim_wpn     = 5|actor
+use            = true
+use_wpn        = true
+
+[wounded1]
+hp_state          = 30|help_me@help
+hp_state_see      = 30|wounded@help_see
+psy_state         = 30|psy_pain
+hp_victim         = 30|nil
+hp_cover          = 30|false
+hp_fight          = 30|false
+syndata           = wounded@help
+help_start_dialog = val_sos_dialog
+

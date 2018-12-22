@@ -1,0 +1,31 @@
+[logic]
+active = walker1
+on_death = death
+
+[death]
+on_info = %+gar_dm_novice_dead%
+
+
+[walker1]
+path_walk = yurik_walk_way
+path_look = yurik_way_look
+on_timer = 120000 | sleeper@yurik
+meet = meet1
+danger = danger_condition
+
+[sleeper@yurik]
+path_main = yurik_sleep
+meet = meet1
+on_timer = 600000| walker1
+
+[meet1]
+meet_state = 3|wait@wait
+meet_state_wpn = 3|wait@wait
+victim = 3|actor
+victim_wpn = 3|actor
+use = true
+use_wpn = true
+meet_dialog	= yurik_start_dialog
+
+[danger_condition]
+ignore_distance = 5

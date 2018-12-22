@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="windows-1251"  ?>
+<game_dialogs>
+	
+	<dialog id="val_sos_dialog"> 
+		<phrase_list>
+			<phrase id="0">
+				<text />
+				<next>1</next>
+				<next>2</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="1">
+				<text />
+				<dont_has_info>val_sos_got_medkit</dont_has_info>
+				<next>11</next>
+			</phrase>
+			<phrase id="2">
+				<text />
+				<has_info>val_sos_got_medkit</has_info>
+				<dont_has_info>molchun_new_gg</dont_has_info>
+				<next>21</next>
+			</phrase>
+			<phrase id="3">
+				<text />
+				<has_info>molchun_new_gg</has_info>
+				<next>31</next>
+			</phrase>
+			<phrase id="11">
+				<text>val_sos_dialog_11</text>
+				<next>111</next>
+				<next>112</next>
+			</phrase>
+			<phrase id="111">
+				<text>val_sos_dialog_111</text>
+				<precondition>dialogs.actor_have_medkit</precondition>
+				<action>dialogs.transfer_medkit</action>
+				<action>dialogs.break_dialog</action>
+				<give_info>val_sos_got_medkit</give_info>
+			</phrase>
+			<phrase id="112">
+				<text>val_sos_dialog_112</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="21">
+				<text>val_sos_dialog_21</text>
+				<give_info>molchun_new_gg</give_info>
+				<next>22</next>
+			</phrase>
+			<phrase id="22">
+				<text>val_sos_dialog_22</text>
+				<next>23</next>
+			</phrase>
+			<phrase id="23">
+				<text>val_sos_dialog_23</text>
+				<next>241</next>
+				<!--<next>242</next>-->
+			</phrase>
+			<phrase id="241">
+			<!--<dont_has_info>oksana_new_gg</dont_has_info>-->
+				<text>val_sos_dialog_241</text>
+				<next>251</next>
+			</phrase>
+			<phrase id="242">
+			<has_info>oksana_new_gg</has_info>
+				<text>val_sos_dialog_242</text>
+				<next>252</next>
+			</phrase>
+			<phrase id="251">
+				<text>val_sos_dialog_251</text>
+				<next>261</next>
+			</phrase>
+			<phrase id="261">
+				<text>val_sos_dialog_261</text>
+				<next>271</next>
+			</phrase>
+			<phrase id="271">
+				<text>val_sos_dialog_271</text>
+				<!-- <give_info>info_amk_recipt_sopl_dikoobraz</give_info>
+				<action>sak.info_amk_received</action> -->
+				<action>test.give_rnd_recipt(7)</action>
+				<give_info>val_sos_give_info</give_info>
+				<next>281</next>
+			</phrase>
+			<phrase id="281">
+				<text>val_sos_dialog_281</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="252">
+				<text>val_sos_dialog_252</text>
+				<next>2621</next>
+				<next>2622</next>
+				<next>2623</next>
+				<next>2624</next>
+			</phrase>
+			<phrase id="2621">
+			<has_info>oksana_kordon_out</has_info>
+				<text>val_sos_dialog_2621</text>
+				<give_info>molchun_go_oksana</give_info>
+				<give_info>val_sos_give_info</give_info>
+				<next>2721</next>
+			</phrase>
+			<phrase id="2622">
+			<has_info>oksana_go_to_marsh_end</has_info>
+				<text>val_sos_dialog_2622</text>
+				<give_info>molchun_go_oksana</give_info>
+				<give_info>val_sos_give_info</give_info>
+				<next>2722</next>
+			</phrase>
+			<phrase id="2623">
+			<has_info>oksana_umer</has_info>
+				<text>val_sos_dialog_2623</text>
+				<give_info>molchun_go_oksana</give_info>
+				<give_info>val_sos_give_info</give_info>
+				<next>2723</next>
+			</phrase>
+			<phrase id="2624">
+				<text>val_sos_dialog_2624</text>
+				<give_info>molchun_go_oksana</give_info>
+				<give_info>val_sos_give_info</give_info>
+				<next>2722</next>
+			</phrase>
+			<phrase id="2721">
+				<text>val_sos_dialog_2721</text>
+			</phrase>
+			<phrase id="2722">
+				<text>val_sos_dialog_2722</text>
+			</phrase>
+			<phrase id="2723">
+				<text>val_sos_dialog_2723</text>
+			</phrase>
+			<phrase id="2724">
+				<text>val_sos_dialog_2724</text>
+			</phrase>
+			<phrase id="31">
+				<text>val_sos_dialog_31</text>
+				<next>32</next>
+			</phrase>
+			<phrase id="32">
+				<text>val_sos_dialog_32</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="val_prisoner_hello">
+		<phrase_list>
+			<phrase id="0">
+				<text />
+				<next>1</next>
+				<next>2</next>
+				<next>3</next>
+				<next>4</next>
+			</phrase>
+			<phrase id="1">
+				<text />
+				<dont_has_info>val_prisoner_free</dont_has_info>
+				<dont_has_info>val_prisoner_door_unlocked</dont_has_info>
+				<dont_has_info>val_prisoner_sit</dont_has_info>
+				<next>11</next>
+			</phrase>
+			<phrase id="2">
+				<text />
+				<dont_has_info>val_prisoner_give_info</dont_has_info>
+				<has_info>val_prisoner_free</has_info>
+				<next>21</next>
+			</phrase>
+			<phrase id="3">
+				<text />
+				<has_info>val_prisoner_give_info</has_info>
+				<next>31</next>
+			</phrase>
+			<phrase id="4">
+				<text />
+				<dont_has_info>val_prisoner_free</dont_has_info>
+				<dont_has_info>val_prisoner_door_unlocked</dont_has_info>
+				<has_info>val_prisoner_sit</has_info>
+				<next>41</next>
+			</phrase>
+			<phrase id="11">
+				<text>val_prisoner_hello_11</text>
+				<next>111</next>
+				<next>112</next>
+			</phrase>
+			<phrase id="111">
+				<text>val_prisoner_hello_111</text>
+				<action>dialogs.break_dialog</action>
+				<give_info>val_prisoner_sit</give_info>
+			</phrase>
+			<phrase id="112">
+				<text>val_prisoner_hello_112</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="2111">
+				<text>val_prisoner_hello_2111</text>
+				<give_info>info_artmod_cristall_flower_galant</give_info>
+				<action>sak.add_ak47</action>
+				<action>sak.info_artmod</action>
+				<next>21111</next>
+			</phrase>
+			<phrase id="21111">
+				<text>val_prisoner_hello_21111</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			
+			<phrase id="311">
+				<text>val_prisoner_hello_311</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			
+			
+			<phrase id="31">
+				<text>val_prisoner_hello_31</text>
+				<next>311</next>
+			</phrase>
+			
+			<phrase id="211">
+				<text>val_prisoner_hello_211</text>
+				<give_info>val_prisoner_give_info</give_info>
+				<next>2111</next>
+			</phrase>
+			<phrase id="21">
+				<text>val_prisoner_hello_21</text>
+				<next>211</next>
+			</phrase>
+			
+			<phrase id="41">
+				<text>val_prisoner_hello_41</text>
+				<next>411</next>
+			</phrase>
+			<phrase id="411">
+				<text>val_prisoner_hello_411</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			
+		</phrase_list>
+	</dialog>
+	<dialog id="val_rob_dialog">
+		<phrase_list>
+			<phrase id="11">
+				<text>val_rob_dialog_11</text>
+				<next>1111</next>
+				<next>1112</next>
+				<next>1113</next>
+				<next>1114</next>
+				<next>112</next>
+				<next>113</next>
+			</phrase>
+			<phrase id="21">
+				<text>val_rob_dialog_21</text>
+				<next>1111</next>
+				<next>1112</next>
+				<next>1113</next>
+				<next>1114</next>
+				<next>112</next>
+				<next>113</next>
+			</phrase>
+			<phrase id="3">
+				<text>val_rob_dialog_3</text>
+				<next>31</next>
+			</phrase>
+			<phrase id="31">
+				<text>val_rob_dialog_31</text>
+				<action>sak_dialog.add_1_ammo_ak</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="32">
+				<text>val_rob_dialog_32</text>
+				<action>sak_dialog.add_5_ammo_ak</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="33">
+				<text>val_rob_dialog_33</text>
+				<action>sak_dialog.add_10_ammo_ak</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="34">
+				<text>val_rob_dialog_34</text>
+				<action>sak_dialog.add_25_ammo_ak</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="4">
+				<text>val_rob_dialog_4</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="113">
+				<text>val_rob_dialog_113</text>
+				<action>dialogs.break_dialog</action>
+				<give_info>val_rob_no_money</give_info>
+			</phrase>
+			<phrase id="112">
+				<text>val_rob_dialog_112</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="1111">
+			<precondition>sak_dialog.actor_200_have</precondition>
+				<text>val_rob_dialog_1111</text>
+				<action>sak_dialog.give_200_money</action>
+				<next>31</next>
+			</phrase>
+			<phrase id="1112">
+			<precondition>sak_dialog.actor_1000_have</precondition>
+				<text>val_rob_dialog_1112</text>
+				<action>sak_dialog.give_1000_money</action>
+				<next>32</next>
+			</phrase>
+			<phrase id="1113">
+			<precondition>sak_dialog.actor_2000_have</precondition>
+				<text>val_rob_dialog_1113</text>
+				<action>sak_dialog.give_2000_money</action>
+				<next>33</next>
+			</phrase>
+			<phrase id="1114">
+			<precondition>sak_dialog.actor_5000_have</precondition>
+				<text>val_rob_dialog_1114</text>
+				<action>sak_dialog.give_5000_money</action>
+				<next>34</next>
+			</phrase>
+			<phrase id="2">
+				<text />
+				<has_info>val_rob_no_money</has_info>
+				<next>21</next>
+			</phrase>
+			<phrase id="1">
+				<text />
+				<dont_has_info>val_rob_no_money</dont_has_info>
+				<next>11</next>
+			</phrase>
+			<phrase id="0">
+				<text />
+				<next>1</next>
+				<next>2</next>
+			</phrase>
+		</phrase_list>
+	</dialog>
+	
+	<dialog id="val_escort_nap1_dialog">
+		<phrase_list>
+		<phrase id="0">
+				<text></text>
+				<next>100</next>
+				<next>200</next>
+				<next>300</next>
+				<next>400</next>
+			</phrase>
+			<phrase id="100">
+				<text></text>
+				<dont_has_info>val_escort_captive_dead</dont_has_info>
+				<dont_has_info>val_escort_got_reward</dont_has_info>
+				<has_info>val_escort_guard1_dead</has_info>
+				<has_info>val_escort_guard2_dead</has_info>
+				<has_info>val_escort_guard3_dead</has_info>
+				<has_info>val_escort_actor_helped</has_info>
+				<next>101</next>
+			</phrase>
+			<phrase id="200">
+				<text></text>
+				<dont_has_info>val_escort_got_reward</dont_has_info>
+				<has_info>val_escort_captive_dead</has_info>
+				<has_info>val_escort_actor_helped</has_info>
+				<has_info>val_escort_guard1_dead</has_info>
+				<has_info>val_escort_guard2_dead</has_info>
+				<has_info>val_escort_guard3_dead</has_info>
+				<next>201</next>
+			</phrase>
+			<phrase id="300">
+				<text></text>
+				<has_info>val_escort_got_reward</has_info>
+				<has_info>val_escort_actor_helped</has_info>
+				<next>301</next>
+			</phrase>
+			<phrase id="400">
+				<text></text>
+				<dont_has_info>val_escort_actor_helped</dont_has_info>
+				<next>401</next>
+			</phrase>
+			<phrase id="101">
+				<text>val_escort_nap1_dialog_101</text>
+				<action>sak_dialog.val_escort_reward</action>
+		        <!-- <give_info>info_artmod_ameba_slug_ice</give_info>
+		        <action>sak.info_artmod</action> -->	
+		        <action>test.give_rnd_recipt(2)</action>			
+				<give_info>val_escort_got_reward</give_info>
+				<next>102</next>
+			</phrase>
+			<phrase id="102">
+				<text>val_escort_nap1_dialog_102</text>
+				<next>103</next>
+			</phrase>
+			<phrase id="103">
+				<text>val_escort_nap1_dialog_103</text>
+				<next>104</next>
+			</phrase>
+			<phrase id="104">
+				<text>val_escort_nap1_dialog_104</text>
+				<next>105</next>
+			</phrase>
+			<phrase id="105">
+				<text>val_escort_nap1_dialog_105</text>
+				<next>1061</next>
+				<next>1062</next>
+				<next>1063</next>
+			</phrase>
+			<phrase id="1061">
+				<text>val_escort_nap1_dialog_1061</text>
+				<next>1071</next>
+			</phrase>
+			<phrase id="1062">
+			<has_info>gar_hellcar_thanks</has_info>
+			<dont_has_info>gar_hellcar_umer</dont_has_info>
+				<text>val_escort_nap1_dialog_1062</text>
+				<next>1072</next>
+			</phrase>
+			<phrase id="1063">
+				<text>val_escort_nap1_dialog_1063</text>
+				<next>1073</next>
+			</phrase>
+			<phrase id="1071">
+				<text>val_escort_nap1_dialog_1071</text>
+			</phrase>
+			<phrase id="1072">
+				<text>val_escort_nap1_dialog_1072</text>
+				<give_info>val_pula_ammo_start</give_info>
+				<next>108</next>
+			</phrase>
+			<phrase id="108">
+				<text>val_escort_nap1_dialog_108</text>
+				<next>109</next>
+			</phrase>
+			<phrase id="109">
+				<text>val_escort_nap1_dialog_109</text>
+				<next>110</next>
+			</phrase>
+			<phrase id="110">
+				<text>val_escort_nap1_dialog_110</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="1073">
+				<text>val_escort_nap1_dialog_1073</text>
+			</phrase>
+			<phrase id="201">
+				<text>val_escort_nap1_dialog_201</text>
+				<action>sak_dialog.val_escort_reward</action>
+				<give_info>val_escort_got_reward</give_info>
+				<next>202</next>
+			</phrase>
+			<phrase id="202">
+				<text>val_escort_nap1_dialog_202</text>
+				<next>203</next>
+			</phrase>
+			<phrase id="203">
+				<text>val_escort_nap1_dialog_203</text>
+				<next>204</next>
+			</phrase>
+			<phrase id="204">
+				<text>val_escort_nap1_dialog_204</text>
+				<next>205</next>
+			</phrase>
+			<phrase id="205">
+				<text>val_escort_nap1_dialog_205</text>
+				<next>206</next>
+			</phrase>
+			<phrase id="206">
+				<text>val_escort_nap1_dialog_206</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+			<phrase id="301">
+				<text>val_escort_nap1_dialog_301</text>
+				<next>302</next>
+			</phrase>
+			<phrase id="302">
+				<text>val_escort_nap1_dialog_302</text>
+				<next>303</next>
+			</phrase>
+			<phrase id="303">
+				<text>val_escort_nap1_dialog_303</text>
+			</phrase>
+			<phrase id="401">
+				<text>val_escort_nap1_dialog_401</text>
+				<next>402</next>
+			</phrase>
+			<phrase id="402">
+				<text>val_escort_nap1_dialog_402</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+
+			
+			<phrase id="2121">
+				<text>val_escort_nap1_dialog_2121</text>
+				<give_info>val_show_zones</give_info>
+				<next>21219</next>
+			</phrase>
+			
+			<phrase id="213">
+				<text>val_escort_nap1_dialog_213</text>
+				<dont_has_info>val_escort_captive_give_main_info</dont_has_info>
+				<next>2131</next>
+			</phrase>
+			
+			
+		</phrase_list>
+	</dialog>
+	<dialog id="dark_pulia_talk_story">	   
+	<precondition>dialogs.is_not_wounded</precondition>
+		<phrase_list>
+			<phrase id="0">
+				<text>dark_pulia_talk_story_0</text>
+				<next>1</next>
+			</phrase>
+		<phrase id="1">
+				<text>dark_pulia_talk_story_1</text>
+			</phrase>
+		</phrase_list>
+	</dialog>
+</game_dialogs>

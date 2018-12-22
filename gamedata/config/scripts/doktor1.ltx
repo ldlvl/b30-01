@@ -1,0 +1,114 @@
+[logic]
+active = walker@one
+
+[walker@one]
+on_info = {+helping_fox} walker@two1
+path_walk = doktor1_walk_way
+path_look = doktor1_way_look
+meet = meet
+danger = danger_condition
+
+[walker@two1]
+on_info = {+agr_find_rygyi_start} walker@three
+on_info2 = {+doktor_move} walker@two2
+path_walk = doktor2_2walk_way
+path_look = doktor2_2way_look
+on_signal = doktor_move | %+doktor_move% walker@two2
+meet = no_meet
+danger = danger_condition
+
+[walker@two2]
+on_info = {+agr_find_rygyi_start} walker@three
+on_info2 = {+doktor_move2} walker@two3
+path_walk = doktor2_3walk_way
+path_look = doktor2_3way_look
+on_signal = doktor_move2 | %+doktor_move2% walker@two3
+meet = meet2
+danger = danger_condition
+
+[walker@two3]
+on_info = {+trader_job} walker@two5
+on_info2 = {+agr_find_rygyi_start} walker@three
+path_walk = doktor2_walk_way
+path_look = doktor2_way_look
+meet = meet5
+danger = danger_condition
+
+[walker@two5]
+on_info = {+agr_find_rygyi_start} walker@three
+path_walk = doktor2_4walk_way
+path_look = doktor2_4way_look
+meet = meet5
+danger = danger_condition
+
+[walker@three]
+path_walk = doktor3_walk_way
+path_look = doktor3_way_look
+meet = meet3
+danger = danger_condition
+on_info = {+agr_find_rygyi_1have} walker@four
+
+[walker@four]
+path_walk = doktor3_walk_way
+path_look = doktor3_way_look
+meet = meet3
+danger = danger_condition
+on_timer = 130000| %+agr_find_rygyi_2have% walker@five
+
+[walker@five]
+path_walk = doktor3_walk_way
+path_look = doktor3_way_look
+meet = meet4
+danger = danger_condition
+on_info = {+agr_find_rygyi_done} walker@six
+
+[walker@six]
+path_main = doktor6_sleep
+meet = meet4
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 1
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_state = 3|ward@doktor_hello|2|ward
+meet_state_wpn = 3|ward@doktor_hello|3|ward
+
+[meet2]
+use = true
+use_wpn = false
+abuse = false
+meet_talk_enabled = true
+meet_state = 2|ward
+meet_state_wpn = 3|ward
+
+
+[meet3]
+use = true
+use_wpn = false
+abuse = false
+meet_talk_enabled = true
+meet_state = 2|ward
+meet_state_wpn = 3|ward
+meet_dialog	= doktor_new_start_dialog
+
+[meet4]
+use = true
+use_wpn = false
+abuse = false
+meet_talk_enabled = true
+meet_state = 2|ward
+meet_state_wpn = 3|ward
+meet_dialog	= doktor_new_start_2dialog
+
+[meet5]
+use = true
+use_wpn = false
+abuse = false
+meet_talk_enabled = true
+meet_state = 2|ward
+meet_state_wpn = 3|ward
+meet_dialog	= doktor_new_start_5dialog

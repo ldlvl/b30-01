@@ -1,0 +1,33 @@
+[logic]
+active = remark@demand
+trade = misc\trade_logic\trade_vergas.ltx
+inv_max_weight = 10000
+combat_ignore_cond = always
+
+[remark@demand]
+no_move = true
+no_rotate = true
+anim = sit_stul
+reactions = ignore
+combat_ignore_cond = always
+meet = no_meet
+on_info ={+kvest_art_done} remark@demand2
+danger = danger_condition
+
+[remark@demand2]
+no_move = true
+no_rotate = true
+anim = sit_stul
+reactions = ignore
+combat_ignore_cond = always
+meet = meet
+danger = danger_condition
+
+
+[danger_condition]
+ignore_distance = 0
+
+[meet]
+use			= true
+use_wpn		= false
+meet_dialog	= esc_vergas_start_dialog

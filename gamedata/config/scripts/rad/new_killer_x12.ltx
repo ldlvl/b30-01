@@ -1,0 +1,41 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = remark
+danger = danger_condition
+combat_ignore = combat_ignore
+threshold = threshold
+meet = meet
+
+[remark]
+anim = hello_wpn
+no_move = true
+anim = wait
+meet = meet
+danger = danger_condition
+combat_ignore = combat_ignore
+target = actor
+
+[meet]
+use	= true
+use_wpn	= true
+meet_state = wait
+victim = 10|actor
+victim_wpn = 10|actor
+meet_dialog	= mercs_gun_2_dialog
+combat_ignore = combat_ignore
+abuse = false
+
+[danger_condition]
+ignore_distance = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+;danger_inertion_time_hit = 1000
+;danger_inertion_time_ricochet = 1000
+
+[combat_ignore]
+combat_ignore_cond = always
+
+[threshold]
+max_ignore_distance = 0

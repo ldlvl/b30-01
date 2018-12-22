@@ -1,0 +1,40 @@
+[logic]
+active = walker@normal_marsh_provodnik_sev_khutor
+;on_death = death@marsh_provodnik_sev_khutor
+;on_hit = hit@marsh_provodnik_sev_khutor
+
+
+[walker@normal_marsh_provodnik_sev_khutor]
+state = wounded_heavy_1
+state_see = wounded_heavy_1
+path_walk = marsh_provodnik_sev_khutor_walk_way
+path_look = marsh_provodnik_sev_khutor_way_look
+wounded = wounded@marsh_provodnik_sev_khutor
+on_info = {+marsh_botan_to_gigant_end} walker@marsh_provodnik_go_base
+meet = no_meet
+danger = danger_condition
+
+[wounded@marsh_provodnik_sev_khutor]
+hp_state = wounded_heavy_1
+hp_state_see = wounded_heavy_1
+psy_state = 50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20| {=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy
+hp_victim = nil
+hp_cover = false
+hp_fight = true
+;syndata = wounded@help
+meet = no_meet
+help_dialog = nil ;marsh_provodnik_sev_khutor_dialog
+
+[walker@marsh_provodnik_go_base]
+path_walk = marsh_base_botan_lager_provodnik_way
+path_look = marsh_base_botan_lager_provodnik_look
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 5
+
+[death@marsh_provodnik_sev_khutor]
+on_info = %+marsh_provodnik_umer%
+
+[hit@marsh_provodnik_sev_khutor]
+on_info = {=hit_by_actor} %+marsh_provodnik_umer%

@@ -1,0 +1,43 @@
+[logic]
+active = ph_sound@normal
+on_hit = hit
+
+[hit]
+on_info = %+mil_matugalnik_off%
+
+[ph_sound@normal]
+snd = music_fri_day
+on_info = {+mil_freedom_under_attack} ph_sound@alarm
+on_info2 = {+mil_matugalnik_off} nil
+on_info3 = {=is_fri_mor} ph_sound@morning
+on_info4 = {=is_fri_eve} ph_sound@evening
+on_info5 = {=is_fri_nig} ph_idle
+
+[ph_sound@morning]
+snd = music_fri_mor
+on_info = {+mil_freedom_under_attack} ph_sound@alarm
+on_info2 = {+mil_matugalnik_off} nil
+on_info3 = {=is_fri_day} ph_sound@normal
+on_info4 = {=is_fri_eve} ph_sound@evening
+on_info5 = {=is_fri_nig} ph_sound@ph_idle
+
+[ph_sound@evening]
+snd = music_fri_eve
+on_info = {+mil_freedom_under_attack} ph_sound@alarm
+on_info2 = {+mil_matugalnik_off} nil
+on_info3 = {=is_fri_mor} ph_sound@morning
+on_info4 = {=is_fri_day} ph_sound@normal
+on_info5 = {=is_fri_nig} ph_sound@ph_idle
+
+[ph_idle]
+on_info = {+mil_freedom_under_attack} ph_sound@alarm
+on_info2 = {+mil_matugalnik_off} nil
+on_info3 = {=is_fri_mor} ph_sound@morning
+on_info4 = {=is_fri_day} ph_sound@normal
+on_info5 = {=is_fri_eve} ph_sound@evening
+
+[ph_sound@alarm]
+snd = siren
+on_info = {-mil_freedom_under_attack} ph_sound@normal
+on_info2 = {+mil_matugalnik_off} nil
+looped = true

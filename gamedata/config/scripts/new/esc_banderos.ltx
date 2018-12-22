@@ -1,0 +1,32 @@
+[smart_terrains]
+none = true
+
+[logic]
+active=camper
+combat_ignore = combat_ignore
+
+[combat_ignore]
+
+[camper]
+sniper = true
+def_state_campering = threat_na
+radius = 50
+path_walk = esc_banderos_walk1
+path_look = esc_banderos_look1
+no_move = true
+on_info = {+prizrak_finalzver_begin} walker1
+
+
+[walker1]
+path_walk = esc_banderos_walk2
+path_look = esc_banderos_look2
+def_state_moving1 = run
+team = followers
+radius = 3
+on_info = {+prizrak_finalzver_have} walker2
+
+[walker2]
+path_walk = esc_banderos_walk3
+path_look = esc_banderos_look3
+def_state_moving1 = run
+combat_ignore = always

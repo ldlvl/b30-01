@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@idle
+
+[sr_idle@idle]
+on_info = {+open_rad_seif} sr_idle@work, {+sleep_on_prip} sr_idle@work
+
+[sr_idle@work]
+on_actor_outside = %+closed_rad_seif -sleep_on_prip% sr_idle@idle

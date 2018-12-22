@@ -1,0 +1,43 @@
+[logic]
+active = sleeper
+combat_ignore = combat_ignore@shersh
+on_hit = hit@shersh
+
+[sleeper]
+path_main = shersh_sleep
+meet = meet
+danger = danger_condition
+on_info ={+shersh_enemy} %+shersh_fire%
+combat_ignore_cond = {-shersh_fire =fighting_actor}
+
+[danger_condition]
+ignore_distance = 1
+
+[wounded@shersh]
+hp_state = 30|help_me@help|29|wounded_heavy@help_heavy
+hp_state_see = 30|wounded@help_see|29|wounded_heavy@help_heavy
+;psy_state = 50|{=best_pistol}psy_armed,psy_pain@wounded_psy|20| {=best_pistol}psy_shoot,psy_pain@{=best_pistol}wounded_psy_shoot,wounded_psy
+hp_victim = 30|nil|10|nil
+hp_cover = 30|true|29|false
+hp_fight = 30|true|29|false
+syndata = wounded@help
+help_dialog = shersh_start_dialog
+
+[meet]
+use = true
+use_wpn = false
+abuse = true
+meet_talk_enabled = true
+;wakeable = true
+meet_dialog = shersh_start_dialog
+meet_state = 2|{-shersh_fire} wait@wait
+meet_state_wpn = 2|{-shersh_fire} wait@wait
+victim = 2|actor
+victim_wpn = 2|actor
+target = actor
+
+[combat_ignore@shersh]
+combat_ignore_cond = {-shersh_fire =fighting_actor}
+
+[hit@shersh]
+on_info = {=hit_by_actor} %+shersh_fire%

@@ -1,0 +1,248 @@
+;Снайперская винтовка Драгунова (СВД)
+[wpn_svd]:weapon_immunities
+GroupControlSection				= spawn_group
+discovery_dependency 			= 
+$spawn                  		= "weapons\svd"
+$npc			 				= on
+$prefetch 		 				= 8
+scheduled               		= off
+cform                   		= skeleton
+class                   		= WP_SVD
+min_radius              		= 20
+max_radius              		= 200
+inv_name						= wpn-svd
+inv_name_short					= wpn-svd
+description						= enc_weapons1_wpn-svd
+dialog_description		        = desc_dialog_wpn-svd
+
+default_to_ruck					= false
+
+ef_main_weapon_type		 		= 3
+ef_weapon_type			 		= 8
+sprint_allowed					= true
+
+holder_range_modifier			= 2.15
+holder_fov_modifier				= 0.3 
+
+cost							= 30000
+weapon_class					= sniper_rifle
+
+ammo_limit						= 60
+ammo_current					= 10
+ammo_elapsed					= 0
+
+f_mode							= 1
+
+ammo_mag_size					= 10
+ammo_class						= ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_7h14
+
+fire_dispersion_base			= 0.08
+control_inertion_factor			= 1.35f
+
+cam_relax_speed         		= 5
+cam_dispersion          		= 0.95
+cam_dispersion_inc				= 0.95
+cam_dispertion_frac				= 1.0
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.3
+
+fire_dispersion_condition_factor = 1.25
+misfire_probability 			= 0.009 
+misfire_condition_k				= 0.50
+condition_shot_dec 				= 0.0005
+
+hand_dependence 				= 1
+single_handed					= 0
+
+slot 							= 2
+animation_slot					= 2
+
+inv_weight						= 4.5
+
+icon_group                      = 2
+inv_grid_width     				= 7
+inv_grid_height    				= 2
+inv_grid_x         				= 6
+inv_grid_y         				= 16
+
+kill_msg_x						= 0
+kill_msg_y						= 0
+kill_msg_width					= 98
+kill_msg_height					= 23
+
+direction              			= 0, 0, 1
+
+fire_point              		= 0.0, 0.223, 0.984
+
+flame_particles		    		= weapons\generic_weapon06
+smoke_particles		   			= weapons\generic_shoot_00
+silencer_smoke_particles		= weapons\generic_shoot_00
+rpm_empty_click 				= 200
+
+shell_point		 				= 0.0, 0.23, 0.179
+shell_dir		 				= 0.0, 0.0, 0.4
+;shell_particles	 			= weapons\arsenal_shells1; generic_shells
+
+PDM_disp_base 					= 4.0
+PDM_disp_vel_factor 			= 5.0
+PDM_disp_accel_factor 			= 7.0
+PDM_crouch						= 3.9
+PDM_crouch_no_acc				= 2.7
+
+hit_power           			= 1
+hit_impulse		 				= 1
+hit_type 						= fire_wound
+
+fire_distance           		= 400
+bullet_speed		 			= 830
+rpm                     		= 200
+
+use_aim_bullet					= false
+time_to_aim						= 1.0	
+
+hud                     		= wpn_svd_hud
+normal                  		= 0, 1, 0
+position                		= -0.026,-0.172,0.015
+orientation             		= 0, 0, 0
+
+strap_position         			= 0.01,-0.21,0.45
+strap_orientation      			= 05,-183, -99
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+
+startup_ammo            		= 10
+visual                  		= weaponsv\svd\wpn_svd.ogf
+
+light_color		 				= 0.6,0.5,0.3
+light_range		 				= 4.0
+light_var_color		 			= 0.05
+light_var_range		 			= 0.5
+light_time 		 				= 0.2
+
+ph_mass			 				= 5
+
+scope_status					= 2
+silencer_status					= 2
+grenade_launcher_status			= 0
+silencer_name  					= wpn_addon_sil_762_sr1
+silencer_x 						= 263
+silencer_y 						= 14
+allow_inertion					= false
+
+scope_x							= 51
+scope_y							= 3
+zoom_enabled					= true
+
+scope_mode 						= 3
+scope_name 						= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+
+ironsight_zoom_factor       	= 65
+scope_zoom_factor           	= 50
+
+snd_draw						= weapons\ak_74x\rifle_draw
+snd_holster						= weapons\ak_74x\rifle_holster
+snd_shoot						= weapons\svd\svd_shoot
+snd_empty						= weapons\rifle_empty
+snd_reload						= weapons\svd\svd_reload
+snd_silncer_shot				= weapons\svd\svd_silent
+snd_razgruzka					= weapons\razgruzka\ammo_5
+
+silencer_flame_particles		= weapons\generic_weapon00
+silencer_smoke_particles 		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time 			= 0.2
+ 
+[wpn_svd_hud]
+allow_inertion					= true
+shell_point						= 0.000000,0.050000,-0.08000
+shell_dir		 				= 0.0, 1.0, 0.0
+
+fire_point						= 0.133000,-0.212000,1.105000
+;fire_point						= 0.153000,-0.242000,1.105000
+;fire_point						= 0.203000,-0.242000,1.105000
+fire_point2              		= 0.037,-0.040,0.085000
+fire_bone               		= wpn_body
+
+orientation      	        	= 1.7, 1.5, 0
+position			        	= 0.040000,-0.05,-0.0250
+visual                  		= weaponsv\svd\wpn_svd_hud.ogf
+
+anim_holster					= svd_holster
+anim_idle						= svd_idle
+anim_idle_aim					= svd_idle_aim
+anim_reload						= svd_reload
+anim_draw						= svd_draw
+anim_holster					= svd_holster
+anim_shoot						= svd_shoot
+anim_idle_sprint				= svd_idle_sprint
+
+zoom_offset						= -0.153690,0.087157,-0.120800
+zoom_rotate_x					= 0.013088
+zoom_rotate_y					= 0.029712
+
+zoom_rotate_time				= 0.30
+rotate_time						= 0.30
+
+[wpn_svd_1pso]:wpn_svd
+visual                  		= weaponsv\svd\wpn_svd.ogf
+
+hud                     		= wpn_svd_1pso_hud
+grenade_launcher_status			= 0
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+[wpn_svd_1pso_hud]: wpn_svd_hud
+;fire_point						= 0.400000,-0.500000,2.255000
+visual                  		= weaponsv\svd\wpn_svd_hud.ogf
+
+zoom_offset						= -0.140590,0.066557,2.541400
+zoom_rotate_x					= 0.030188
+zoom_rotate_y					= 0.029812
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31
+
+[wpn_svd_1p78]:wpn_svd
+visual                  		= weaponsv\svd\wpn_svd_1p78.ogf
+
+hud                     		= wpn_svd_1p78_hud
+grenade_launcher_status			= 0
+scope_attached         			= 0
+
+control_inertion_factor			= 1.4f
+
+[wpn_svd_1p78_hud]:wpn_svd_hud
+;fire_point						= 0.400000,-0.500000,2.255000
+visual                  		= weaponsv\svd\wpn_svd_1p78_hud.ogf
+
+zoom_offset						= -0.153290,0.056757,0.964200
+zoom_rotate_x					= 0.026988
+zoom_rotate_y					= 0.029612
+
+zoom_rotate_time				= 0.31
+rotate_time						= 0.31
+
+[wpn_svd_cobra]:wpn_svd
+visual                  		= weaponsv\svd\wpn_svd_cobra.ogf
+
+hud                     		= wpn_svd_cobra_hud
+grenade_launcher_status			= 0
+scope_attached         			= 0
+
+control_inertion_factor			= 1.35f
+
+[wpn_svd_cobra_hud]: wpn_svd_hud
+visual                  		= weaponsv\svd\wpn_svd_cobra_hud.ogf
+
+zoom_offset						= -0.153290,0.051157,-0.050800
+zoom_rotate_x					= 0.031488
+zoom_rotate_y					= 0.029812
+
+zoom_rotate_time				= 0.3
+rotate_time						= 0.3

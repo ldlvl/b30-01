@@ -1,0 +1,44 @@
+;HK MP5 под калибр 9х18
+[wpn_mp5_m1]:wpn_mp5
+$spawn						= "weapons\uniq\wpn_mp5_m1"
+inv_name					= wpn-mp5_m1
+inv_name_short				= wpn-mp5_m1
+description					= enc_weapons1_wpn-mp5_m1
+
+default_to_ruck				= false
+
+inv_grid_x                  = 8
+inv_grid_y                  = 0
+ammo_class					= ammo_9x18_fmj, ammo_9x18_pmm
+cost						= 18000
+ammo_mag_size				= 30
+fire_dispersion_base		= 0.34
+hit_power        			= 1.2
+hit_impulse		 			= 1.1
+bullet_speed				= 340
+fire_distance      			= 85
+
+icon_group                  = 2
+inv_grid_width     			= 4
+inv_grid_height    			= 2
+inv_grid_x         			= 29
+inv_grid_y         			= 16
+
+condition_shot_dec			= 0.0004
+
+cam_dispersion         		= 0.19
+cam_dispersion_inc			= 0.11
+cam_step_angle_horz			= 1.4
+
+fire_dispersion_condition_factor = 3
+
+visual                  	= weapons\mp5\wpn_mp5_m1.ogf
+hud  						= wpn_mp5_m1_hud
+snd_shoot					= weapons\mp5\mp5_m1_shoot
+snd_shoot1					= weapons\mp5\mp5_m1_shoot1
+snd_shoot2					= weapons\mp5\mp5_m1_shoot2
+snd_shoot3					= weapons\mp5\mp5_m1_shoot3
+snd_silncer_shot			= weapons\mp5\mp5_m1_shot_sil
+
+[wpn_mp5_m1_hud]:wpn_mp5_hud
+visual                  	= weapons\mp5\wpn_mp5_m1_hud.ogf

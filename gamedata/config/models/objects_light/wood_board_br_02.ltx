@@ -1,0 +1,60 @@
+
+
+[disable]
+linear_factor            = 0.7
+angular_factor           = 0.7
+
+
+[collide]
+not_collide_parts        = 1
+
+
+[destroyed]
+physics\large_trash\prt\prt_none
+physics\small_trash\prt\wood_board_br_01_prt1
+physics\small_trash\prt\wood_board_br_01_prt2
+physics\small_trash\prt\wood_board_br_01_prt3
+physics\small_trash\prt\wood_board_br_01_prt4
+
+[autoremove_parts]
+time					  = 5
+
+
+[collision_damage]
+link                     = 0.004
+
+
+[particles]
+destroy_particles        = destroy_fx\destroy_wood_00
+
+
+[particle_bones]
+link                     =  0.0, 0.0, 0.0
+
+
+[sound]
+break_sound              =  material\wood\wood_crash1_hl2
+
+
+
+default                  = 1.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0.5
+strike_immunity          = 0.0
+shock_immunity           = 0.0
+wound_immunity           = 0.0
+radiation_immunity       = 0.0
+telepatic_immunity       = 0.0
+chemical_burn_immunity   = 0.0
+explosion_immunity       = 0.5
+fire_wound_immunity      = 0.5
+
+
+[impulse_transition_to_parts]
+random_min               = 1.0
+random_hit_imp           = 0.1
+
+imp_transition_factor    = 1.0
+lv_transition_factor     = 0.1
+av_transition_factor     = 0.1

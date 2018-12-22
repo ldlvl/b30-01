@@ -1,0 +1,52 @@
+[logic]
+active = heli_move@idle
+
+[heli_move@idle]
+path_move = heli_rostok_idle_move
+engine_sound = false
+on_info = {+go_heli} heli_move@fly_to_kruglov1
+combat_safe_altitude = -50
+
+[heli_move@fly_to_kruglov1]
+path_move = heli_rostok_fly
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = true
+combat_safe_altitude = 0
+max_velocity = 10 
+stop_fire = true
+on_timer = 30000 | heli_move@fly_to_kruglov2
+
+[heli_move@fly_to_kruglov2]
+path_move = heli_rostok_defense_1
+max_velocity = 10
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = 0
+on_signal = end | %+go_to_heli%
+on_info = {+kruglov_is_fly} heli_move@fly_out3
+
+[heli_move@fly_out3]
+path_move = heli_rostok_defense_2
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = -50
+on_signal = end | heli_move@fly_out4
+
+[heli_move@fly_out4]
+path_move = heli_rostok_idle_move
+engine_sound = true
+combat_enemy = nil
+combat_use_rocket = false
+combat_use_mgun = false
+combat_safe_altitude = -70
+on_timer = 20000 | heli_move@stop
+
+[heli_move@stop]
+path_move = heli_rostok_idle_move
+engine_sound = false

@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@wait
+
+[sr_idle@wait]
+on_info = {+bar_korovan_info3} sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = %+bar_korovan_info4% nil

@@ -1,0 +1,23 @@
+[logic]
+active = walker@day
+on_death = death
+danger = danger_condition
+
+[walker@day]
+path_walk = rad_prizrak_walk
+path_look = rad_prizrak_look
+meet = meet@prizrak
+danger = danger_condition
+
+[meet@prizrak]
+use = true
+use_wpn = false
+abuse = false
+meet_state = wait
+meet_dialog = vergas_start_dialog
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+vergas_umer%

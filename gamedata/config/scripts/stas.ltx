@@ -1,0 +1,91 @@
+[logic]
+active = walker@day
+on_death = death
+on_hit = hit
+
+[walker@day]
+path_walk = esc_stas_walk_way
+path_look = esc_stas_way_look
+on_actor_dist_le_nvis = 5 | remark@stas_hello
+meet = no_meet
+danger = danger_condition
+on_info = {!is_day}  walker@night
+on_info2 = {=is_holiday_sidor}  %=sak.sidor_out% walker@night
+on_info3 = {=is_day =is_holiday_sidor} %=sak.sidor_out% walker@day_no_sidor
+on_info4 = {=is_day !is_holiday_sidor} %=sak.sidor_in%
+
+
+[meet@esc_guard]
+meet_state         = guard
+meet_state_wpn     = guard_na
+victim             = 5 | actor
+victim_wpn         = 5 | actor
+use            = true
+use_wpn        = false
+abuse       = true
+
+[remark@stas_hello]
+anim = guard
+target = actor
+snd = stas_hello
+meet = no_meet
+danger = danger_condition
+on_signal = sound_end| walker@day_2
+
+[walker@day_2]
+path_walk = esc_stas_walk_way
+path_look = esc_stas_way_look
+on_actor_dist_ge_nvis = 5 | remark@stas_bye
+meet = meet@esc_guard
+danger = danger_condition
+on_info = {!is_day}  walker@night
+on_info2 = {=is_holiday_sidor}  %=sak.sidor_out% walker@night
+on_info3 = {=is_day =is_holiday_sidor} %=sak.sidor_out% walker@day_no_sidor
+
+;[meet@esc_guard_bye]
+;meet_state         = guard
+;meet_state_wpn     = guard_na
+;victim             = 5 | actor
+;victim_wpn         = 5 | actor
+;use            = true
+;use_wpn        = false
+;abuse       = true
+
+[remark@stas_bye]
+anim = guard
+target = actor
+snd = stas_bye
+meet = no_meet -- это значит пока не договорит - не остановишь
+on_signal = sound_end| walker@day
+
+[walker@night]
+path_walk = esc_stas_walk_night_way
+path_look = esc_stas_way_night_look
+meet = meet@esc_guard2
+on_info = {=is_day !is_holiday_sidor} %=sak.sidor_in% walker@day
+on_info2 = {=is_day =is_holiday_sidor} %=sak.sidor_out% walker@day_no_sidor
+
+[walker@day_no_sidor]
+path_walk = esc_stas_way_day_way
+path_look = esc_stas_way_day_look
+meet = meet@esc_guard2
+on_info = {!is_day}  walker@night
+on_info2 = {=is_day !is_holiday_sidor} %=sak.sidor_in% walker@day
+
+[meet@esc_guard2]
+meet_state = 2|sit_ass
+meet_state_wpn = 5|claim
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= false
+abuse       = false
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+esc_sid_guard_umer%
+
+[hit]
+on_info = {=killed_by_actor} %+esc_sid_guard_fire%

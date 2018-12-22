@@ -1,0 +1,31 @@
+[logic]
+active = sr_idle@idle
+
+[sr_idle@idle]
+on_info = {!is_day !is_holiday_sidor}  ph_idle@night
+on_info2 = {=is_holiday_sidor}  %=sak.sidor_out% ph_idle@holiday_sidor
+on_info3 = {=is_day !is_holiday_sidor} %=sak.sidor_in% ph_idle@day
+
+[ph_idle@day]
+tips = speaker
+on_info = {!is_day}  ph_idle@night
+on_info2 = {=is_holiday_sidor}  %=sak.sidor_out% ph_idle@holiday_sidor
+on_use = ph_idle@2 %=play_snd(device\speakerfon_sound\lamp_switch)%
+
+[ph_idle@night]
+tips = speaker
+on_info = {=is_holiday_sidor}  %=sak.sidor_out% ph_idle@holiday_sidor
+on_info2 = {=is_day !is_holiday_sidor} %=sak.sidor_in% ph_idle@day
+on_use = ph_idle@3 %=play_snd(device\speakerfon_sound\speaker_night_2)%
+
+[ph_idle@holiday_sidor]
+tips = speaker
+on_info = {!is_day !is_holiday_sidor}  ph_idle@night
+on_info2 = {=is_day !is_holiday_sidor} %=sak.sidor_in% ph_idle@day
+on_use = ph_idle@3 %=play_snd(device\speakerfon_sound\lamp_switch)%
+
+[ph_idle@2]
+on_timer = 4000|{+esc_sid_guard_umer -esc_sid_guard_fire -l01_escape_prot_out} ph_idle@3 %+esc_open_door%, {+esc_sid_guard_umer -esc_sid_guard_fire +l01_escape_prot_out +esc_sid_guard_sub_umer} ph_idle@3 %+esc_open_door% , ph_idle@3
+
+[ph_idle@3]
+on_timer = 20000| sr_idle@idle

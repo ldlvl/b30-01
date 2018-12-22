@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle1
+
+[sr_idle1]
+on_info = {+oksana_go_to_kordon} sr_idle2
+
+[sr_idle2]
+on_npc_in_zone = 9535 | mar_esc_oksana_zone | %+oksana_go_to_kordon_end% nil

@@ -1,0 +1,25 @@
+[smart_terrains]
+val_dram = true
+[logic]
+active = walker@val_dram_bandit1
+on_hit = hit@val_dram_bandit
+on_death = death@val_dram_bandit
+
+[walker@val_dram_bandit1]
+path_walk = val_dram_bandit1_walk
+path_look = val_dram_bandit1_look
+show_spot = false 
+
+[combat_ignore@val_dram]
+combat_ignore_cond = {-val_dram_fire =fighting_actor}
+
+[hit@val_dram_bandit]
+on_info = {=hit_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+
+[death@val_dram_bandit_glavn]
+on_info = {=killed_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+
+[death@val_dram_bandit]
+on_info = {=killed_by_actor} %+val_dram_fire =sak.set_val_gulag_enemy_actor%
+on_death = %+val_dram_bandit_umer%
+

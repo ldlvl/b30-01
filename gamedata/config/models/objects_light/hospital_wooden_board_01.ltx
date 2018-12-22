@@ -1,0 +1,60 @@
+
+
+[disable]
+linear_factor            = 0.5
+angular_factor           = 0.5
+
+
+[collide]
+not_collide_parts       
+
+
+[destroyed]
+dynamics\scene_objects\hospital\part\hospital_wooden_board_01_part_01
+dynamics\scene_objects\hospital\part\hospital_wooden_board_01_part_02
+dynamics\scene_objects\hospital\part\hospital_wooden_board_01_part_03
+dynamics\scene_objects\hospital\part\hospital_wooden_board_01_part_04
+dynamics\scene_objects\hospital\part\hospital_wooden_board_01_part_05
+
+[autoremove_parts]
+time                     = 30
+
+
+[collision_damage]
+link                     = 5.0
+
+
+[particles]
+destroy_particles        = explosions\explosion_mine
+
+
+[particle_bones]
+link                     =  -0.7, 0.0, 0.0
+
+
+[sound]
+break_sound              =  material\large_furniture\large_furniture_1
+
+
+
+default                  = 1.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0
+strike_immunity          = 0
+shock_immunity           = 0
+wound_immunity           = 0
+radiation_immunity       = 0
+telepatic_immunity       = 0
+chemical_burn_immunity   = 1
+explosion_immunity       = 0
+fire_wound_immunity      = 0
+
+
+[impulse_transition_to_parts]
+random_min               = 2.0
+random_hit_imp           = 1.0
+
+imp_transition_factor    = 1.0
+lv_transition_factor     = 0.1
+av_transition_factor     = 0.1

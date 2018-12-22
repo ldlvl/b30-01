@@ -1,0 +1,164 @@
+;Пулемет Калашникова модернизированный (ПКМ)
+[wpn_pkm]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn              		= "weapons\pkm"
+$npc						= on				
+$prefetch 					= 8
+scheduled					= off
+cform               		= skeleton
+class               		= WP_LR300
+min_radius          		= 0
+max_radius          		= 250
+description					= enc_weapons1_wpn-pkm
+dialog_description		    = desc_dialog_wpn-pkm
+
+default_to_ruck				= false
+	
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+sprint_allowed				= true
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+
+cost						= 45000
+weapon_class				= assault_rifle	
+	
+ammo_limit					= 100
+ammo_elapsed				= 100
+	
+ammo_mag_size				= 100
+fire_modes					= -1
+
+ammo_class					= ammo_7.62x54r
+
+hand_dependence				= 1						
+single_handed				= 0
+	
+slot 						= 2
+animation_slot				= 2							
+
+inv_name	        		= wpn-pkm_name
+inv_name_short				= wpn-pkm_name	
+
+inv_weight					= 7.5
+
+icon_group                  = 2
+inv_grid_width              = 7
+inv_grid_height             = 2
+inv_grid_x                  = 6
+inv_grid_y                  = 14
+
+weapon_type					= heavy
+heavy_ammo					= ammo
+
+kill_msg_x					= 0
+kill_msg_y					= 123
+kill_msg_width				= 69
+kill_msg_height				= 30
+
+fire_dispersion_base 		= 0.25
+control_inertion_factor 	= 1.35f
+
+cam_relax_speed          	= 8
+cam_dispersion           	= 1.0
+cam_dispersion_inc 			= 0.2
+cam_dispertion_frac 		= 0.2
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz 		= 2.2
+
+fire_dispersion_condition_factor = 1.5     
+misfire_probability 		= 0.008
+misfire_condition_k 		= 0.50 
+condition_shot_dec 			= 0.0001
+
+fire_point             		=  0.0, 0.262, 0.447
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+	
+shell_point		 			= 0.00, 0.262, 0.189
+shell_particles	 			= weapons\generic_shells
+
+PDM_disp_base 				= 6.0
+PDM_disp_vel_factor 		= 7.0
+PDM_disp_accel_factor 		= 9.0
+PDM_crouch					= 5.9
+PDM_crouch_no_acc			= 4.7
+
+hit_power                 	= 1
+hit_impulse		 			= 1
+hit_type 					= fire_wound
+
+fire_distance             	= 300
+bullet_speed 				= 825
+rpm                       	= 650	
+
+hud                      	= wpn_pkm_hud
+
+position         	        = -0.026,-0.172,0
+orientation      	        = 0,0,0
+
+strap_position         		= -0.18,-0.45,0.2
+strap_orientation      		= -10,-5,10	
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+visual         		        = weapons\pkm\wpn_pkm.ogf
+
+light_color					= 0.6,0.5,0.3
+light_range					= 5
+light_var_color				= 0.05						
+light_var_range				= 0.5
+light_time 					= 0.2						
+
+ph_mass						= 5
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 85
+
+snd_draw					= weapons\pkm\pkm_draw
+snd_holster					= weapons\pkm\pkm_holster
+snd_shoot					= weapons\pkm\pkm_shoot
+snd_shoot1					= weapons\pkm\pkm_shoot1
+snd_shoot2					= weapons\pkm\pkm_shoot2
+snd_shoot3					= weapons\pkm\pkm_shoot3
+snd_empty					= weapons\pkm\pkm_empty, 0.5
+snd_reload					= weapons\pkm\pkm_reload
+snd_switch					= weapons\groza_switch, 1.0, 0.5
+snd_razgruzka				= weapons\razgruzka\ammo_3
+ 
+[wpn_pkm_hud]
+shell_point     	   	 	= 0.0, -0.05, -0.3
+shell_dir			     	= 0.0, 1.0, 0.0
+
+fire_point					= 0.0000,0.050000,0.00000
+fire_point2              	= 0.0, 0.00, 0.05
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0		
+position                	= 0, 0, 0
+visual                  	= weapons\pkm\wpn_pkm_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.08877,0.017,-0.0
+zoom_rotate_x				= 0.005
+zoom_rotate_y				= 0.0
+zoom_hide_crosshair			= true 
+
+zoom_rotate_time			= 0.35
+rotate_time					= 0.35

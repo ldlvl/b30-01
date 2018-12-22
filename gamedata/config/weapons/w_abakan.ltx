@@ -1,0 +1,281 @@
+;АН-94 "Абакан"
+[wpn_abakan]:weapon_immunities
+GroupControlSection					= spawn_group
+discovery_dependency				= 
+$spawn								= "weapons\abakan"
+$npc								= on
+$prefetch							= 8
+scheduled							= off                                         
+cform								= skeleton
+class								= WP_AK74
+min_radius							= 0
+max_radius							= 150
+description							= enc_weapons1_wpn-abakan
+
+default_to_ruck						= false
+			
+ef_main_weapon_type					= 2
+ef_weapon_type						= 6
+			
+holder_range_modifier				= 1.0
+holder_fov_modifier					= 0.7
+			
+cost								= 5000
+weapon_class						= assault_rifle
+			
+ammo_limit							= 210
+ammo_elapsed						= 30
+			
+ammo_mag_size						= 30
+fire_modes							= 1, 2, -1
+f_mode								= 2
+			
+ammo_class							= ammo_5.45x39_fmj,ammo_5.45x39_ap,ammo_ak,ammo_5.45x39_merc
+grenade_class						= ammo_vog-25, ammo_vog-25p
+launch_speed						= 50
+			
+hand_dependence						= 1
+single_handed						= 0
+				
+slot								= 2	
+animation_slot						= 2	
+			
+inv_name							= wpn-abakan
+inv_name_short						= wpn-abakan
+inv_weight							= 3.9
+icon_group              			= 2
+inv_grid_width          			= 6
+inv_grid_height         			= 2
+inv_grid_x              			= 8
+inv_grid_y              			= 0
+			
+kill_msg_x							= 119
+kill_msg_y							= 199
+kill_msg_width						= 93
+kill_msg_height						= 32
+			
+fire_dispersion_base				= 0.17
+control_inertion_factor				= 1.25f
+			
+cam_relax_speed						= 4.5	
+cam_dispersion						= 0.2
+cam_dispersion_inc					= 0.27
+cam_dispertion_frac					= 0.5
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 0.3
+
+fire_dispersion_condition_factor	= 2.5
+misfire_probability					= 0.005	
+misfire_condition_k					= 0.50
+condition_shot_dec					= 0.0002
+			
+fire_point             				=  0,0.225,0.687
+fire_point2            				=  0,0.148,0.558
+flame_particles						= weapons\generic_weapon05
+smoke_particles						= weapons\generic_shoot_00
+grenade_flame_particles				= weapons\generic_weapon01
+				
+shell_point		 					= 0,0.252,0.196
+shell_particles						= amik\weapons\5_45x39\5_45x39_shells_r_01
+			
+PDM_disp_base 						= 2.0
+PDM_disp_vel_factor 				= 3.0
+PDM_disp_accel_factor 				= 5.0
+PDM_crouch							= 1.9
+PDM_crouch_no_acc					= 0.7
+			
+hit_power							= 1.0
+hit_impulse							= 1.0
+hit_type							= fire_wound
+			
+fire_distance						= 250		
+bullet_speed						= 900
+rpm									= 750
+			
+use_aim_bullet						= false
+time_to_aim							= 1.0
+			
+hud									= wpn_abakan_hud
+			
+position							= -0.026,-0.172,0
+orientation							= 0,0,0
+			
+strap_position						= -0.16,-0.40,0.15
+strap_orientation					= -10,-5,10
+strap_bone0							= bip01_spine2
+strap_bone1							= bip01_spine1
+			
+visual								= weapons\abakan\wpn_abakan
+			
+light_color							= 0.6,0.5,0.3
+light_range							= 5
+light_var_color						= 0.05						
+light_var_range						= 0.5
+light_time 							= 0.2						
+			
+ph_mass								= 5	
+
+scope_status 						= 2	
+silencer_status						= 0
+grenade_launcher_status				= 2
+scope_mode 							= 3
+scope_name 							= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_x								= 63
+scope_y								= -4
+zoom_enabled						= true
+ironsight_zoom_factor   			= 75
+scope_zoom_factor       			= 75
+
+
+silencer_name						= wpn_addon_silencer	
+silencer_x							= 218
+silencer_y							= 9					
+grenade_launcher_name				= wpn_addon_grenade_launcher
+grenade_launcher_x          		= 153
+grenade_launcher_y          		= 26
+
+snd_draw							= weapons\ak_74x\rifle_draw
+snd_holster							= weapons\ak_74x\rifle_holster
+snd_empty							= weapons\abakan\abakan_empty
+snd_shoot							= weapons\abakan\abakan_shoot
+snd_shoot1							= weapons\abakan\abakan_shoot1
+snd_reload							= weapons\abakan\abakan_reload
+snd_shoot_grenade					= weapons\gp25\gp25_grenshoot
+snd_switch							= weapons\gp25\gp25_switch, 1.0, 0.5
+snd_reload_grenade					= weapons\abakan\abakan_reload_gl
+snd_silncer_shot					= weapons\abakan\abakan_shot_sil
+snd_razgruzka						= weapons\razgruzka\ammo_5
+
+silencer_smoke_particles 			= weapons\generic_shoot_00
+
+silencer_light_color				= 0.6,0.5,0.3
+silencer_light_range				= 0.01
+silencer_light_var_color			= 0.05
+silencer_light_var_range			= 0.5
+silencer_light_time 				= 0.2
+ 
+[wpn_abakan_hud]
+allow_inertion						= true
+		
+shell_point							= 0.200000,0.000000,-0.450000
+shell_dir			     			= 0.0, 0.0, 0.0
+		
+fire_point							= 0.001000,0.000030,-0.187002
+fire_point2							= 0.101000,-0.320000,0.240000
+fire_bone               			= wpn_body
+		
+;position							= 0.010000,-0.035000,0.015000
+;orientation						= 0.000000,0.000000,0.000000
+orientation      	        		= 1.7, 1.5, 0
+position			        		= 0.040000,-0.05,-0.0250
+visual								= weapons\abakan\wpn_abakan_hud.ogf
+		
+grenade_bone						= wpn_grenade
+		
+anim_idle							= normal_idle
+anim_idle_aim						= normal_idle_aim
+anim_reload							= normal_reload
+anim_draw							= normal_draw
+anim_holster						= normal_holster
+anim_shoot							= normal_shoot
+		
+anim_idle_g							= g_idle
+anim_idle_g_aim						= g_idle_aim
+anim_reload_g						= g_reload
+anim_shoot_g						= g_shoot
+anim_switch_grenade_on				= w_gl_switch_on
+anim_switch_grenade_off				= w_gl_switch_off
+anim_draw_g							= g_draw
+anim_holster_g						= g_holster
+anim_idle_sprint_gl         		= w_gl_idle_sprint
+		
+anim_idle_gl						= w_gl_idle
+anim_idle_gl_aim					= w_gl_idle_aim
+anim_reload_gl						= w_gl_reload
+anim_draw_gl						= w_gl_draw
+anim_holster_gl						= w_gl_holster
+anim_shoot_gl						= w_gl_shoot
+anim_idle_sprint					= normal_idle_sprint
+		
+zoom_offset							= -0.138450,0.086520,-0.220600
+zoom_rotate_x						= 0.027300
+zoom_rotate_y						= 0.029700
+		
+zoom_hide_crosshair					= true
+
+grenade_normal_zoom_offset			= -0.138450,0.086520,-0.220600
+grenade_normal_zoom_rotate_x		= 0.027300
+grenade_normal_zoom_rotate_y		= 0.029700
+
+grenade_zoom_offset					= -0.065800,-0.383300,-0.033000
+grenade_zoom_rotate_x				= -0.422600
+grenade_zoom_rotate_y				= 0.028000
+		
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27
+
+[wpn_abakan_1pso]:wpn_abakan
+grenade_launcher_status				= 2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.3f
+
+visual         		        		= weapons\abakan\wpn_abakan.ogf
+hud                      			= wpn_abakan_1pso_hud
+
+[wpn_abakan_1pso_hud]:wpn_abakan_hud
+fire_point							= 0.201000,-0.299970,1.412998
+visual                  			= weapons\abakan\wpn_abakan_hud.ogf
+		
+zoom_offset							= -0.116280,0.028300,2.472870
+zoom_rotate_x						= 0.028850
+zoom_rotate_y						= 0.029150
+
+grenade_normal_zoom_offset			= -0.116280,0.028300,2.472870
+grenade_normal_zoom_rotate_x		= 0.028850
+grenade_normal_zoom_rotate_y		= 0.029150
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_abakan_1p78]:wpn_abakan
+grenade_launcher_status				= 2
+scope_attached         				= 0
+control_inertion_factor				= 1.3f
+visual         		        		= weapons\abakan\wpn_abakan_1p78.ogf
+hud                      			= wpn_abakan_1p78_hud
+
+[wpn_abakan_1p78_hud]:wpn_abakan_hud
+fire_point			= 0.201000,-0.299970,1.412998
+visual                  			= weapons\abakan\wpn_abakan_1p78_hud.ogf	
+zoom_offset							= -0.132120,0.023100,1.380870
+zoom_rotate_x						= 0.028560
+zoom_rotate_y						= 0.031140
+
+grenade_normal_zoom_offset			= -0.132120,0.023100,1.380870
+grenade_normal_zoom_rotate_x		= 0.028560
+grenade_normal_zoom_rotate_y		= 0.031140
+
+zoom_rotate_time					= 0.28
+rotate_time							= 0.28
+
+[wpn_abakan_cobra]:wpn_abakan
+grenade_launcher_status				= 2
+scope_attached         				= 0
+control_inertion_factor				= 1.25f
+visual         		        		= weapons\abakan\wpn_abakan_cobra.ogf
+hud                      			= wpn_abakan_cobra_hud
+
+[wpn_abakan_cobra_hud]:wpn_abakan_hud
+visual                  			= weapons\abakan\wpn_abakan_cobra_hud.ogf	
+zoom_offset							= -0.122180,0.019300,-0.024130
+zoom_rotate_x						= 0.034950
+zoom_rotate_y						= 0.018050
+
+grenade_normal_zoom_offset			= -0.122180,0.019300,-0.024130
+grenade_normal_zoom_rotate_x		= 0.034950
+grenade_normal_zoom_rotate_y		= 0.018050
+
+zoom_rotate_time					= 0.27
+rotate_time							= 0.27

@@ -1,0 +1,242 @@
+;Снайперская винтовка укороченная  (СВУ)
+[wpn_svu]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                  	= "weapons\svu"
+$npc			 			= on
+$prefetch 		 			= 8
+scheduled               	= off
+cform                   	= skeleton
+class                   	= WP_SVU
+min_radius              	= 10
+max_radius              	= 180
+inv_name		 			= wpn-svu
+inv_name_short		 		= wpn-svu
+description					= enc_weapons1_wpn-svu
+
+default_to_ruck				= false
+
+ef_main_weapon_type		 	= 3
+ef_weapon_type			 	= 8
+
+holder_range_modifier		= 2.15
+holder_fov_modifier			= 0.3 
+
+cost						= 27000
+weapon_class				= sniper_rifle
+
+ammo_limit		 			= 60
+ammo_current				= 10
+ammo_elapsed		 		= 0
+
+fire_modes					= 1
+f_mode						= 1, 3
+
+ammo_mag_size		 		= 10
+ammo_class		 			= ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_7h14
+
+sprint_allowed				= true
+
+fire_dispersion_base		= 0.14
+control_inertion_factor		= 1.3f
+
+cam_relax_speed         	= 5
+cam_dispersion          	= 1.25
+cam_dispersion_inc			= 1.4
+cam_dispertion_frac			= 1.0
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 0.3
+
+fire_dispersion_condition_factor = 1.25
+misfire_probability 		= 0.009
+misfire_condition_k			= 0.50
+condition_shot_dec 			= 0.0005
+
+hand_dependence 			= 1
+single_handed				= 0
+
+slot 			 			= 2
+animation_slot				= 2
+
+inv_weight		 			= 4.4
+
+icon_group                  = 2
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 21
+inv_grid_y         			= 12
+
+kill_msg_x					= 0
+kill_msg_y					= 59
+kill_msg_width				= 80
+kill_msg_height				= 26
+
+direction               	= 0, 0, 1
+fire_point              	= 0.0, 0.205, 0.56
+fire_point2             	= 0.0, 0.128, 0.522
+
+flame_particles		   		= weapons\generic_shoot_00
+smoke_particles		   		= weapons\generic_shoot_00
+rpm_empty_click 	 		= 200
+
+shell_point		 			= 0.0, 0.23, -0.123
+shell_dir		 			= 0.0, 0.0, 0.4
+shell_particles	 			= weapons\arsenal_shells1
+
+PDM_disp_base 				= 4.0
+PDM_disp_vel_factor 		= 5.0
+PDM_disp_accel_factor 		= 7.0
+PDM_crouch					= 3.9
+PDM_crouch_no_acc			= 2.7
+
+hit_power           		= 0.93
+hit_impulse		 			= 1
+hit_type 		  			= fire_wound
+
+fire_distance           	= 360
+bullet_speed		 		= 805
+rpm                     	= 200
+
+use_aim_bullet				= false
+time_to_aim					= 1.0
+
+hud                     	= wpn_svu_hud
+normal                  	= 0, 1, 0
+position 					= -0.026, -0.168, 0.005
+orientation             	= 0, 0, 0
+
+strap_position         		= 0.02,-0.21,0.25
+strap_orientation      		= 05,-183, -99
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            	= 10
+visual                  	= weaponsv\svu\wpn_svu.ogf
+
+light_disabled				= true
+
+ph_mass			 			= 3
+
+scope_status				= 2
+silencer_status				= 0
+grenade_launcher_status		= 0
+silencer_name  				= wpn_addon_tgp-a_silencer
+silencer_x 					= 263
+silencer_y 					= 14
+allow_inertion				= false
+
+scope_x						= 87
+scope_y						= -3
+zoom_enabled				= true
+
+scope_mode 					= 3
+scope_name 					= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+
+ironsight_zoom_factor       = 75
+scope_zoom_factor           = 75
+
+zoom_enabled				= true
+
+snd_draw					= weapons\svu\svu_draw
+snd_holster					= weapons\svu\svu_holster
+snd_shoot					= weapons\svu\svu_shoot
+snd_empty					= weapons\rifle_empty, 0.5
+snd_reload					= weapons\svu\svu_reload
+snd_close					= weapons\generic_close
+snd_razgruzka				= weapons\razgruzka\ammo_5
+ 
+[wpn_svu_hud]
+shell_point          		= -0.02, 0.32, 0.1
+shell_dir					= 0.0, 1.0, 0.0
+
+fire_point					= 0.010000,-0.175999,-0.029999
+fire_bone               	= wpn_body
+position					= 0.115000,-0.020900,0.124000
+orientation					= 2.344327,1.593801,0.000000
+visual                  	= weaponsv\svu\wpn_svu_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.120200,0.030550,-0.207000
+zoom_rotate_x				= 0.036660
+zoom_rotate_y				= 0.041710
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_svu_1pso]:wpn_svu
+visual                  	= weaponsv\svu\wpn_svu_1pso.ogf
+
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 27
+inv_grid_y         			= 12
+hud                     	= wpn_svu_1pso_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+control_inertion_factor		= 1.35f
+
+[wpn_svu_1pso_hud]:wpn_svu_hud
+fire_point					= -0.190000,-1.775999,-0.129999
+visual                  	= weaponsv\svu\wpn_svu_1pso_hud.ogf
+
+zoom_offset					= -0.106900,0.009650,1.718000
+zoom_rotate_x				= 0.030860
+zoom_rotate_y				= 0.039710
+
+zoom_rotate_time			= 0.29
+rotate_time					= 0.29
+
+[wpn_svu_1p78]:wpn_svu
+visual                  	= weaponsv\svu\wpn_svu_1p78.ogf
+
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 27
+inv_grid_y         			= 12
+hud                     	= wpn_svu_1p78_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+
+control_inertion_factor		= 1.35f
+
+[wpn_svu_1p78_hud]:wpn_svu_hud
+fire_point					= -0.190000,-1.775999,-0.129999
+visual                  	= weaponsv\svu\wpn_svu_1p78_hud.ogf
+
+zoom_offset					= -0.120290,0.002657,0.835700
+zoom_rotate_x				= 0.029488
+zoom_rotate_y				= 0.041512
+
+zoom_rotate_time			= 0.29
+rotate_time					= 0.29
+
+[wpn_svu_cobra]:wpn_svu
+visual                  	= weaponsv\svu\wpn_svu_cobra.ogf
+
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 27
+inv_grid_y         			= 12
+hud                     	= wpn_svu_cobra_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+
+control_inertion_factor		= 1.3f
+
+[wpn_svu_cobra_hud]:wpn_svu_hud
+visual                  	= weaponsv\svu\wpn_svu_cobra_hud.ogf
+
+zoom_offset					= -0.120900,-0.003450,-0.287000
+zoom_rotate_x				= 0.025060
+zoom_rotate_y				= 0.043110
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28

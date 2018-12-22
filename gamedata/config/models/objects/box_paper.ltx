@@ -1,0 +1,58 @@
+
+
+[disable]
+linear_factor            = 1.0
+angular_factor           = 1.0
+
+
+[collide]
+not_collide_parts 
+
+[collide_parts]
+small_object
+
+[destroyed]
+dynamics\box\part\box_paper_part_1
+
+[autoremove_parts]
+time					  = 50
+
+
+[collision_damage]
+link                     = 0.004
+
+
+[particles]
+destroy_particles        = destroy_fx\destroy_paper_box
+
+
+[particle_bones]
+link                     =  0.0, 0.2, 0.0
+
+
+[sound]
+break_sound              =  material\large_furniture\large_furniture_1
+
+
+
+default                  = 1.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0.2
+strike_immunity          = 0.01
+shock_immunity           = 0.0
+wound_immunity           = 0.5
+radiation_immunity       = 0.0
+telepatic_immunity       = 0.0
+chemical_burn_immunity   = 0.0
+explosion_immunity       = 1.0
+fire_wound_immunity      = 0.01
+
+
+[impulse_transition_to_parts]
+random_min               = 0.0
+random_hit_imp           = 0.0
+
+imp_transition_factor    = 0.0
+lv_transition_factor     = 0.0
+av_transition_factor     = 0.0

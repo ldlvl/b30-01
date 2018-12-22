@@ -1,0 +1,99 @@
+;--------------------------------------
+; Модуль knife
+; Rulix aka Bak
+;--------------------------------------
+
+[main]
+weapon_to_spawn = wpn_knife			; секция ножа для выдачи
+spawn_chance = 0.06				; шанс на автоматическую выдачу новенькому сталкеру ножа
+forbidden_factions = zombied,ecolog,trader,arena_enemy,sniper			; группировки, для которых схема будет отключена
+
+[forbidden_npcs]	; имена НПС, для которых схема будет отключена
+gar_hellcar
+esc_fox
+mil_stalker0012
+yantar_ecolog_general
+
+;---------------------------------------
+; список классов, на которых разрешено применение
+; тип существа = минимально требуемая величина courage
+
+[attack_courage]
+actor		= 45
+stalker		= 45
+bloodsucker	= 55
+boar		= 50
+burer		= 70
+;cat		= 40
+;chimera	= 90
+controller	= 40
+;dog		= 40
+;flesh		= 35
+;fracture	= 50
+;giant		= 75
+poltergeist	= 65
+pseudodog	= 55
+psy_dog		= 40
+;psy_dog_phantom = 40
+;snork		= 70
+;tushkano	= 30
+zombie		= 55
+
+;---------------------------------------
+; настройки для разных рангов НПС
+; множитель урона
+
+[novice]
+k_actor = 0.4
+k_stalker = 1.0
+k_mutant = 1.5
+
+[experienced]
+k_actor = 0.7
+k_stalker = 1.3
+k_mutant = 2.0
+
+[veteran]
+k_actor = 1
+k_stalker = 2.0
+k_mutant = 2.5
+
+[master]
+k_actor = 1.5
+k_stalker = 3.0
+k_mutant = 3.5
+
+;---------------------------------------
+; настройки для разных группировок
+
+[stalker]
+courage = 0.9		; чтобы идти в атаку с ножом, нужна смелость
+mutant_hunt = true	; можно ли охотиться на монстров
+
+[bandit]
+courage = 0.7
+mutant_hunt = false
+
+[freedom]
+courage = 1.25
+mutant_hunt = true
+
+[dolg]
+courage = 1
+mutant_hunt = true
+
+[killer]
+courage = 0.7
+mutant_hunt = false
+
+[military]
+courage = 0.6
+mutant_hunt = false
+
+[monolith]
+courage = 1.35
+mutant_hunt = false
+
+[green]
+courage = 0.7
+mutant_hunt = false

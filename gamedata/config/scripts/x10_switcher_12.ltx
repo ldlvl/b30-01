@@ -1,0 +1,27 @@
+[logic]
+active = ph_button@deactive
+
+[ph_button@deactive]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_01
+on_info={+labx10_lamp_12_off} ph_button@deactivate
+on_info2={+labx10_lamp_12_on} ph_button@activate
+on_press = ph_button@activate  %=play_snd_from_obj(4112:device\power_switch)%
+
+[ph_button@activate]
+anim = lab_primary_switcher_idle 
+on_timer = 500 | %=turn_on(4285) =turn_on(4264) =turn_on(4265) =turn_on(4266) =turn_on(4267) =turn_on(4268) =turn_on(4269) =turn_on(4272) =turn_on(4273) =turn_on(4274)% ph_button@activate2
+
+[ph_button@activate2]
+anim = lab_primary_switcher_idle 
+tooltip = tips_x8_switcher_press_01
+on_press = ph_button@deactivate  %=play_snd_from_obj(4112:device\power_switch) +labx10_lamp_12_off%
+
+[ph_button@deactivate]
+anim = lab_primary_switcher_off
+on_timer = 500 | %=turn_off(4285) =turn_off(4264) =turn_off(4265) =turn_off(4266) =turn_off(4267) =turn_off(4268) =turn_off(4269) =turn_off(4272) =turn_off(4273) =turn_off(4274)% ph_button@deactivate2
+
+[ph_button@deactivate2]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_01
+on_press = ph_button@activate  %=play_snd_from_obj(4112:device\power_switch) +labx10_lamp_12_on%

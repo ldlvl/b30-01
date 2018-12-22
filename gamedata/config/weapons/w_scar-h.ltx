@@ -1,0 +1,175 @@
+;FN SCAR-H
+[wpn_lr300]:weapon_immunities
+GroupControlSection				= spawn_group
+discovery_dependency 			= 
+$spawn                  		= "weapons\scar"
+$npc			 				= on
+$prefetch 		 				= 8
+scheduled               		= off
+cform                   		= skeleton
+class                   		= WP_LR300
+min_radius              		= 0
+max_radius              		= 70
+
+ef_main_weapon_type				= 2
+ef_weapon_type					= 6
+
+holder_range_modifier			= 1.0
+holder_fov_modifier				= 0.7
+
+weapon_class					= assault_rifle
+
+cost							= 50000
+
+ammo_limit		 				= 210
+ammo_current					= 30
+ammo_elapsed		 			= 30
+
+ammo_mag_size		 			= 20
+ammo_class		 				= ammo_7.62x51_fmj,  ammo_7.62x51_ap 
+fire_modes						= 1, -1
+
+hand_dependence		 			= 1
+single_handed					= 0
+
+inv_name						= scar-h
+inv_name_short					= scar-h
+description						= enc_weapons1_wpn-scar-h
+dialog_description		        = desc_dialog_wpn_scar-h
+
+inv_weight						= 3.62
+icon_group              		= 6
+inv_grid_width     				= 6
+inv_grid_height    				= 2
+inv_grid_x         				= 4
+inv_grid_y         				= 4
+
+kill_msg_x						= 72
+kill_msg_y						= 82
+kill_msg_width					= 56
+kill_msg_height					= 23
+
+slot 							= 2
+animation_slot					= 2
+
+fire_dispersion_base			= 0.12
+control_inertion_factor			= 1.2f
+
+cam_relax_speed         		= 3.7
+cam_dispersion          		= 0.28	
+cam_dispersion_inc				= 0.2	
+cam_dispertion_frac				= 0.4
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.3
+
+fire_dispersion_condition_factor = 1.4
+misfire_probability 			= 0.001
+misfire_condition_k				= 0.05
+condition_shot_dec 				= 0.00008
+
+direction               		= 0, 0, 1
+
+fire_point              		= 0.0, 0.188, 0.392
+
+flame_particles					= weapons\generic_weapon06
+smoke_particles         		= weapons\generic_shoot_00
+
+shell_point		 				= 0.0, 0.188, 0.082
+shell_dir		 				= 0.0, 1.0, 0.0
+shell_particles	 				= amik\weapons\nato_shells_r_02
+
+rpm_empty_click 	 			= 200
+
+PDM_disp_base 					= 2.0
+PDM_disp_vel_factor 			= 3.0
+PDM_disp_accel_factor 			= 4.0
+PDM_crouch	 					= 1.5
+PDM_crouch_no_acc 				= 0.55
+
+hit_power        				= 1
+hit_impulse		 				= 1
+hit_type 						= fire_wound
+
+fire_distance          			= 300
+bullet_speed					= 800
+rpm                     		= 600	
+
+hud                     		= wpn_lr300_hud
+normal                  		= 0, 1, 0
+position         	        	= -0.026,-0.172,0
+orientation      	        	= 0,0,0
+
+strap_position         			= -0.16,-0.36,0.15
+strap_orientation      			= -10,-5,10
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+
+visual                  		= weaponsv\scar\wpn_scar.ogf
+
+light_color		 				= 0.6,0.5,0.3
+light_range		 				= 5
+light_var_color		 			= 0.05
+light_var_range		 			= 0.1
+light_time 		 				= 0.2
+
+ph_mass			 				= 3
+
+;addons
+scope_status					= 2		
+silencer_status					= 2					
+grenade_launcher_status			= 0
+scope_mode 						= 3
+scope_name 						= wpn_addon_eotech, wpn_addon_acog
+scope_x_eotech	               	= 107
+scope_y_eotech	               	= -7
+scope_x_acog	               	= 107
+scope_y_acog	               	= -7
+
+ironsight_zoom_factor       	= 80
+scope_zoom_factor           	= 50
+zoom_enabled					= true
+silencer_name  					= wpn_addon_sil_762_sr2
+silencer_x 						= 183
+silencer_y 						= -1
+
+snd_draw						= weapons\draw_misc
+snd_holster						= weapons\holster_misc
+snd_shoot						= weapons\scar\scar_shot
+snd_empty						= weapons\gen_empty, 0.5
+snd_reload						= weapons\scar\scar_reload
+
+;silencer_flame_particles 		= weapons\generic_weapon01
+silencer_smoke_particles 		= weapons\generic_shoot_00
+
+snd_silncer_shot				= weapons\scar\scar_shot_sil
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time 			= 0.2
+
+[wpn_lr300_hud]
+shell_point          			= 0.0, 0.0, -0.4
+shell_dir		 				= 0.0, 0.0, 0.0
+
+fire_point						= 0.0000,0.0,-0.40
+fire_bone               		= wpn_body
+orientation             		= 0, 0, 0
+position                		= 0, 0, 0
+visual                  		= weaponsv\scar\wpn_scar_hud.ogf
+
+anim_idle						= idle
+anim_idle_aim					= idle_aim
+anim_reload						= reload
+anim_draw						= draw
+anim_holster					= holster
+anim_shoot						= shoot
+anim_idle_sprint				= idle_sprint
+
+zoom_offset						= -0.096870,-0.003460,-0.228000
+zoom_rotate_x					= -0.000600
+zoom_rotate_y					= -0.000200
+
+zoom_rotate_time				= 0.27
+rotate_time						= 0.27

@@ -1,0 +1,50 @@
+[logic]
+active = walker@day
+on_death = death
+danger = danger_condition
+
+[walker@day]
+path_walk = sanek_walk_way
+path_look = sanek_way_look
+on_info = {+trup_sanek_to_marsh} walker@to_marsh
+meet = meet@sanek
+danger = danger_condition
+
+[walker@to_marsh]
+path_walk = sanek_vil_way
+path_look = sanek_vil_look
+on_signal = to_marsh_end| walker@to_marsh_end
+meet = no_meet
+danger = danger_condition
+
+[walker@to_marsh_end]
+path_walk = sanek_vil_way
+path_look = sanek_vil_look
+meet = meet@sanek2
+danger = danger_condition
+
+[meet@sanek]
+meet_state = 2|sit_ass
+meet_state_wpn = 5|sit_ass
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= true
+abuse       = false
+
+[meet@sanek2]
+meet_state = 2|guard
+meet_state_wpn = 5|wait
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= true
+abuse       = false
+
+[danger_condition]
+ignore_distance = 5
+ignore_types = corpse
+ignore_distance_sound = 2
+
+[death]
+on_info = %+sanek_umer%

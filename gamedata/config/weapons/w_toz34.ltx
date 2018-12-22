@@ -1,0 +1,176 @@
+;ТОЗ-34
+[wpn_toz34]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn				     	= "weapons\toz-34"	
+$npc			 			= on
+$prefetch 		 			= 8
+scheduled				  	= off
+cform				      	= skeleton
+class				      	= WP_BM16
+min_radius					= 0
+max_radius				 	= 60
+description					= enc_weapons1_wpn-toz34
+
+default_to_ruck				= false
+
+ef_main_weapon_type			= 1
+ef_weapon_type				= 7
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+
+cost					 	= 2700
+weapon_class			 	= shotgun
+
+ammo_limit		 			= 60
+ammo_current		 		= 10
+ammo_elapsed		 		= 0
+
+f_mode						= 1
+
+ammo_mag_size				= 2
+ammo_class		 			= ammo_12x70_buck,ammo_12x76_dart,ammo_12x76_zhekan
+
+fire_dispersion_base		= 0.44  
+control_inertion_factor		= 1.25f
+
+cam_relax_speed         	= 7.0
+cam_dispersion          	= 2.7
+cam_dispersion_inc			= 2.7
+cam_dispertion_frac			= 0.8
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 1.3
+
+fire_dispersion_condition_factor = 1.5
+misfire_probability 		= 0.03
+misfire_condition_k			= 0.50
+condition_shot_dec 			= 0.0005
+
+hand_dependence 	 		= 1
+single_handed		 		= 0
+
+slot 				 		= 2
+animation_slot		 		= 3
+
+inv_name					= wpn-toz34
+inv_name_short				= wpn-toz34
+
+inv_weight					= 3.2
+
+icon_group         			= 2
+inv_grid_width     			= 7
+inv_grid_height    			= 2
+inv_grid_x         			= 13
+inv_grid_y         			= 8
+
+kill_msg_x					= 127
+kill_msg_y					= 82
+kill_msg_width				= 97
+kill_msg_height				= 23
+
+direction				 	= 0, 0, 1
+shell_point					= 0.0, 0.183, 0.07
+fire_point					= 0.0, 0.183, 0.730
+fire_point2					= 0.0, 0.160, 0.730
+
+flame_particles		   		= weapons\generic_weapon05
+smoke_particles		   		= _ecp\weapon_shotgun
+rpm_empty_click 	   		= 200
+
+PDM_disp_base 				= 2.0
+PDM_disp_vel_factor 		= 3.0
+PDM_disp_accel_factor 		= 5.0
+PDM_crouch					= 1.9
+PDM_crouch_no_acc			= 0.7
+
+hit_power        			= 1
+hit_impulse      			= 1
+hit_type 					= fire_wound
+
+fire_distance            	= 60
+bullet_speed				= 330
+rpm				        	= 1000
+
+use_aim_bullet				= false
+time_to_aim					= 1.0
+
+hud				        	= wpn_shotgun_hud
+normal  					= 0, 1, 0
+position				   	= -0.026, -0.132, 0.06
+orientation					= 0, 30, 0
+
+strap_position         		= -0.01,-0.20,0.35
+strap_orientation      		= 05,-183, -99
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo             	= 10
+visual				     	= weaponsv\toz34\wpn_toz34.ogf
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 6.0
+light_var_color		 		= 0.05
+light_var_range		 		= 0.5
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor	    	= 70
+
+snd_draw					= weapons\toz34\toz34_draw
+snd_holster					= weapons\toz34\toz34_holster
+snd_shoot					= weapons\toz34\toz34_shoot  
+snd_empty					= weapons\toz34\toz34_empty
+snd_reload					= weapons\toz34\toz34_reload
+snd_shoot_duplet			= weapons\toz34\toz34_shoot_both
+snd_shoot_1					= weapons\toz34\toz34_shoot
+snd_reload_1				= weapons\toz34\toz34_reload_one
+snd_razgruzka				= weapons\razgruzka\ammo_1
+
+[wpn_shotgun_hud]
+shell_point					= 0.0, 0.0, 0.0
+fire_point					= 0.130000,0.000000,0.020000
+fire_point2					= 0.130000,0.000000,0.020000
+fire_bone				  	= wpn_barrel_0
+
+position					= -0.010000,0.000000,-0.065000
+orientation					= 0.000000,0.000000,0.000000  
+
+visual				    	= weaponsv\toz34\wpn_toz34_hud.ogf
+
+anim_draw_empty_both		= draw
+anim_draw_empty_right		= draw
+anim_draw_empty_left		= draw
+
+anim_idle					= idle
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot1
+anim_shoot_both 			= shoot1
+
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+anim_reload_1				= reload_one
+anim_shoot_1				= shoot1
+
+anim_idle_1					= idle
+anim_idle_2					= idle
+
+anim_zoomed_idle_1			= idle_aim
+anim_zoomedidle_2			= idle_aim
+
+zoom_offset					= -0.118100,0.042300,0.101000
+zoom_rotate_x				= 0.009800
+zoom_rotate_y				= 0.017700
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27

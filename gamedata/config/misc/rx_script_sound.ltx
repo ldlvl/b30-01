@@ -1,0 +1,108 @@
+[list]
+gl_fire
+knife_attack
+knife_attack_mutant
+;monster_defend
+friendly_fire
+friendly_grenade
+;enemy_hit
+enemy_death
+kill_wounded
+
+help_thanks
+;help_heavy
+wounded_medkit
+
+
+[example]			; описание параметров
+sound = sound_die		; движковый айди звука (из stalker_ids); Для проигрывания стандартных движковых фраз
+path = fight\fire\fire_		; путь к набору фраз
+idle = 20,40,80			; минимальная пауза между фразами, максимальная пауза, вероятность воспроизведения
+avail_communities = stalker, dolg	; список группировок, для которых доступна озвучка ; по умолчанию разрешено для всех
+delay_sound = 1			; задержка проигрывания звука в секундах ; минимальная, максимальная
+npc_prefix = false		; использовать префикс персонажа в пути к звуку, по умолчанию true
+shuffle = seq			; способ выбора звука: rnd - случайно, seq - последовательно, loop - последовательно с повторением ; по умолчанию rnd
+group_snd = true		; групповой звук - может говорить только 1 персонаж одновременно
+pda_snd = true			; проигрывать также звук по рации для игрока, если есть
+type = talk			; тип звука (snd_type), определяет реакцию персонажей, по умолчанию monster_talk
+
+
+[gl_fire]
+path = fight\fire\fire_
+idle = 20,40,80
+avail_communities = stalker, dolg, freedom, military, monolith
+
+[knife_attack]
+path = fight\threat\threat_close_
+idle = 6,18,50
+avail_communities = stalker, dolg, freedom, military, monolith
+delay_sound = 0.3,1.5
+
+[knife_attack_mutant]
+path = fight\threat\threat_distant_
+idle = 5,20,50
+avail_communities = stalker, dolg, freedom, military, monolith
+delay_sound = 1
+
+[monster_defend]
+path = states\panic_monster\panic_monster_
+idle = 6,16,50
+avail_communities = stalker, bandit, dolg, freedom, military	;, monolith
+
+[npc_hit]
+sound = sound_injuring
+idle = 3,8,80
+
+[friendly_fire]
+sound = sound_injuring_by_friend
+idle = 2,5,100
+
+[friendly_grenade]
+sound = sound_friendly_grenade_alarm
+idle = 10,30,100
+
+[enemy_hit]
+sound = sound_enemy_critically_wounded
+idle = 5,10,100
+;avail_communities = stalker, dolg, freedom, military, monolith
+
+[enemy_death]
+sound = sound_enemy_killed_or_wounded
+idle = 5,10,70
+delay_sound = 0.6
+
+[kill_wounded]
+sound = sound_kill_wounded
+idle = 4,6,100
+
+; check end
+
+
+; corpse detection & help_wounded
+[corpse_loot_begin]
+path = states\loot\loot_begin_
+idle = 10,30,50
+
+[corpse_loot_good]
+path = states\loot\loot_good_
+idle = 10,15,90
+
+[corpse_loot_bad]
+path = states\loot\loot_bad_
+idle = 10,20,80
+
+[help_heavy]
+avail_communities = military, csky, stalker, bandit, dolg, freedom, killer
+path = help\wounded_heavy\help_
+idle = 4,8,100
+
+[help_thanks]
+avail_communities = military, csky, stalker, bandit, dolg, freedom, killer
+path = help\wounded_thanx\thanx_
+idle = 20,20,80
+delay_sound = 2.5
+
+[wounded_medkit]
+avail_communities = military, csky, stalker, bandit, dolg, freedom, killer
+path = help\wounded\medkit_
+idle = 20,60,80

@@ -1,0 +1,10 @@
+[logic]
+active = ph_idle@no_enable
+
+[ph_idle@no_enable]
+nonscript_usable = false
+on_info = {+rem_open} ph_idle@enable
+
+[ph_idle@enable]
+nonscript_usable = true
+tips = what_this

@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = {+val_actor_has_borov_key} sr_idle@wait %+val_dram_pass_on%
+
+[sr_idle@wait]
+on_actor_outside = {-val_dram_scene_end} nil %+val_dram_fire =sak.set_val_gulag_enemy_actor()%
+on_info2 = {+val_dram_scene_end} sr_idle@check3
+
+[sr_idle@check2]
+on_actor_outside = nil %+val_actor_leave_bandits_base%
+
+[sr_idle@check3]
+on_actor_outside = nil 

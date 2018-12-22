@@ -1,0 +1,60 @@
+
+[zone_rusty_hair]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\rusty hair"
+;$prefetch 		= 16
+class			= Z_RUSTYH
+visual			= physics\anomaly\anomaly_liana
+
+
+
+min_speed_to_react = 0 ;7.01 ;скорость объектов, на которые аномалия будет реагировать.При 7.01 мочит только быстробегущих.
+
+
+
+ef_anomaly_type			= 7
+ef_weapon_type			= 19
+
+hit_impulse_scale	= 0.5
+effective_radius	= 1.5
+sound			= zone_mosquito_bald
+postprocess		= postprocess_new
+
+artefacts		= af_rusty_thorn,0.7,af_rusty_kristall,0.25,af_rusty_sea-urchin,0.05
+BirthProbability = 0
+
+
+min_start_power		= 90
+max_start_power		= 100
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+hit_type		= chemical_burn
+
+disable_time		= -1
+disable_time_small	= 500	
+disable_idle_time	= -1
+
+ignore_nonalive		= false;
+ignore_small		= false;
+ignore_artefacts	= true
+
+awaking_time				= 500
+blowout_time				= 1000	
+accamulate_time				= 5000
+
+attack_animation_start		= 0
+attack_animation_end		= 1000
+
+blowout_light		= off
+idle_light			= off
+
+visible_by_detector = on
+
+blowout_wind		= off
+
+
+
+spawn_blowout_artefacts = off

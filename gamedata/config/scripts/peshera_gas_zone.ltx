@@ -1,0 +1,15 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = {-pesh_prison_go} sr_idle@wait %+pesh_prison_go =sak.actor_hide_weapon() =play_snd(anomaly\steam)% 
+
+[sr_idle@wait]
+on_timer = 3000| sr_teleport1
+
+[sr_teleport1]
+point1 = pesh_prison_way
+look1  = pesh_prison_look
+timeout = 5
+on_info = {+pesh_prison_gg_info} nil 
+on_timer = 1000| nil %=sleep_manager.sleep_grot() =sak_dialog.pesh_out_all_item() =sak.restore_weap()%

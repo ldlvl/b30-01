@@ -1,0 +1,196 @@
+;Ручной пулемёт Калашникова (РПК-74)
+[wpn_rpk74]:wpn_ak74
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\uniq\wpn_rpk74"
+$npc						= on				
+$prefetch 					= 8
+scheduled					= off
+cform               		= skeleton
+class               		= WP_LR300
+min_radius          		= 0	
+max_radius          		= 150
+description					= enc_weapons1_wpn_rpk74
+
+default_to_ruck				= false
+	
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+	
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+	
+cost						= 25000
+weapon_class				= assault_rifle
+	
+ammo_limit					= 210
+ammo_elapsed				= 45
+	
+ammo_mag_size				= 45
+fire_modes					= 1, -1
+	
+ammo_class					= ammo_5.45x39_fmj,ammo_5.45x39_ap,ammo_ak,ammo_5.45x39_merc
+	
+hand_dependence				= 1									
+single_handed				= 0
+	
+slot 						= 2									
+animation_slot				= 2									
+	
+inv_name					= wpn_rpk74
+inv_name_short				= wpn_rpk74
+
+inv_weight					= 4.9
+
+inv_grid_width     			= 6
+inv_grid_height    			= 2
+inv_grid_x         			= 32
+inv_grid_y         			= 6
+
+kill_msg_x					= 0
+kill_msg_y					= 28
+kill_msg_width				= 84
+kill_msg_height				= 28
+
+fire_dispersion_base		= 0.20
+control_inertion_factor		= 1.25f
+
+cam_relax_speed        	 	= 6	
+cam_dispersion          	= 0.2
+cam_dispersion_inc			= 0.25	
+cam_dispertion_frac			= 0.55
+cam_max_angle				= 30
+cam_max_angle_horz			= 10	
+cam_step_angle_horz			= 2.0
+
+fire_dispersion_condition_factor = 5	    
+misfire_probability 		= 0.002	
+misfire_condition_k			= 0.05
+condition_shot_dec 			= 0.0002	
+
+fire_point             		=  0,0.216,0.65	
+fire_point2            		=  0,0.1650,0.730
+
+PDM_disp_base 				= 3.0
+PDM_disp_vel_factor 		= 3.0
+PDM_disp_accel_factor 		= 5.0
+PDM_crouch	 				= 2.3
+PDM_crouch_no_acc 			= 0.9
+
+hit_power                	= 1.1
+hit_impulse		 			= 1.1	
+hit_type 					= fire_wound 	
+fire_distance            	= 250		
+bullet_speed				= 960		
+rpm                      	= 600
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud                      	= wpn_rpk74_hud				
+
+position         	        = -0.026,-0.166,-0.015			
+orientation      	        = 0,0,0	
+strap_position         		= 0.02,-0.24,0.40
+strap_orientation      		= -01,-183, -109
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles		= weapons\generic_weapon01
+
+visual         		        = weapons\rpk74\wpn_rpk74.ogf						
+
+ph_mass						= 5
+
+scope_status 				= 2
+silencer_status				= 2
+grenade_launcher_status		= 0
+
+scope_mode 					= 3
+scope_name 					= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_x						= 49
+scope_y						= -7
+zoom_enabled				= true						
+ironsight_zoom_factor       = 90
+scope_zoom_factor           = 50
+
+silencer_name  				= wpn_addon_sil_545_ar		
+silencer_x 					= 268						
+silencer_y 					= 4				
+grenade_launcher_name 		= wpn_addon_grenade_launcher
+grenade_launcher_x 			= 116						
+grenade_launcher_y 			= 23
+
+snd_reload					= weapons\ak_74x\ak74_reload
+snd_razgruzka				= weapons\razgruzka\ammo_5
+
+[wpn_rpk74_hud]:wpn_ak74_hud
+fire_point					= 0.009500,-0.042000,0.255000
+visual                  	= weapons\rpk74\wpn_rpk74_hud.ogf
+
+zoom_hide_crosshair			= true
+
+zoom_offset					= -0.138080,0.063100,-0.179730
+zoom_rotate_x				= 0.029000
+zoom_rotate_y				= 0.029900
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_rpk74_1pso]:wpn_rpk74
+visual                  	= weapons\rpk74\wpn_rpk74.ogf
+
+hud                      	= wpn_rpk74_1pso_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+control_inertion_factor		= 1.3f
+
+[wpn_rpk74_1pso_hud]: wpn_rpk74_hud
+fire_point					= 0.400000,-0.400000,2.755000
+visual              		= weapons\rpk74\wpn_rpk74_hud.ogf
+
+zoom_offset					= -0.123480,0.035500,2.472870
+zoom_rotate_x				= 0.032250
+zoom_rotate_y				= 0.028550
+
+zoom_rotate_time			= 0.29
+rotate_time					= 0.29
+
+[wpn_rpk74_1p78]:wpn_rpk74
+visual                  	= weapons\rpk74\wpn_rpk74_1p78.ogf
+
+hud                      	= wpn_rpk74_1p78_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+control_inertion_factor		= 1.3f
+
+[wpn_rpk74_1p78_hud]: wpn_rpk74_hud
+fire_point					= 0.400000,-0.500000,2.755000
+visual						= weapons\rpk74\wpn_rpk74_1p78_hud.ogf
+
+zoom_offset					= -0.138220,0.029200,1.380870
+zoom_rotate_x				= 0.029460
+zoom_rotate_y				= 0.030440
+
+zoom_rotate_time			= 0.29
+rotate_time					= 0.29
+
+[wpn_rpk74_cobra]:wpn_rpk74
+visual                  	= weapons\rpk74\wpn_rpk74_cobra.ogf
+
+hud                      	= wpn_rpk74_cobra_hud
+grenade_launcher_status		= 0
+scope_attached         		= 0
+control_inertion_factor		= 1.25f
+
+[wpn_rpk74_cobra_hud]: wpn_rpk74_hud
+visual						= weapons\rpk74\wpn_rpk74_cobra_hud.ogf
+
+zoom_offset					= -0.136180,0.019300,-0.024130
+zoom_rotate_x				= 0.026850
+zoom_rotate_y				= 0.026150
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28

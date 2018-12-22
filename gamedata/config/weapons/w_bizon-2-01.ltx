@@ -1,0 +1,237 @@
+;ПП-19 "Бизон-2-01"
+[wpn_pp19]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                  	= "weapons\pp19"
+$npc			 			= on
+$prefetch 		 			= 8
+scheduled               	= off
+cform                   	= skeleton
+class                   	= WP_LR300
+min_radius              	= 0
+max_radius              	= 75
+description					= enc_weapons_wpn_bizon_m
+dialog_description		    = desc_dialog_wpn-bizon_m
+
+default_to_ruck				= false
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+weapon_class				= assault_rifle
+
+cost						= 15000
+
+ammo_limit		 			= 210
+ammo_current				= 30
+ammo_elapsed		 		= 30
+
+ammo_mag_size		 		= 53
+ammo_class		 			= ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes					= 1, -1
+
+hand_dependence		 		= 1
+single_handed				= 0
+
+inv_name					= wpn_bizon_m
+inv_name_short				= wpn_bizon_m
+
+inv_weight					= 2.9
+
+icon_group                  = 2
+inv_grid_width     			= 4
+inv_grid_height    			= 2
+inv_grid_x         			= 31
+inv_grid_y         			= 18
+
+kill_msg_x					= 72
+kill_msg_y					= 82
+kill_msg_width				= 56
+kill_msg_height				= 23
+
+slot 						= 1,2
+animation_slot				= 2
+
+fire_dispersion_base		= 0.32
+control_inertion_factor		= 1.1f
+
+cam_relax_speed        		= 3.5
+cam_dispersion         		= 0.2
+cam_dispersion_inc			= 0.12
+cam_dispertion_frac			= 0.4
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 0.5
+
+fire_dispersion_condition_factor = 2 
+misfire_probability 		= 0.002
+misfire_condition_k			= 0.50
+condition_shot_dec 			= 0.00025
+
+direction               	= 0, 0, 1
+
+fire_point              	= 0.0, 0.188, 0.392
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles         	= weapons\generic_shoot_00
+
+shell_point		 			= 0.0, 0.188, 0.082
+shell_dir		 			= 0.0, 1.0, 0.0
+
+rpm_empty_click 	 		= 200
+
+PDM_disp_base 				= 1.7
+PDM_disp_vel_factor 		= 2.0
+PDM_disp_accel_factor 		= 3.0
+PDM_crouch					= 1.1
+PDM_crouch_no_acc			= 0.5
+
+hit_power        			= 1.2
+hit_impulse		 			= 1.1
+hit_type 					= fire_wound
+
+fire_distance      			= 95
+bullet_speed				= 380
+rpm               			= 700
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud                     	= wpn_pp19_hud
+normal                  	= 0, 1, 0
+position                	= -0.026,-0.172,0
+orientation             	= 0, 0, 0
+
+strap_position         		= -0.16,-0.36,0.15
+strap_orientation      		= -10,-5,10
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo           		= 1000
+visual                  	= weapons\pp19\wpn_pp19
+
+light_color		 			= 0.6,0.5,0.3
+light_range		 			= 5
+light_var_color		 		= 0.05
+light_var_range		 		= 0.1
+light_time 		 			= 0.2
+
+ph_mass			 			= 3
+
+scope_status				= 2
+silencer_status				= 2
+grenade_launcher_status		= 0
+scope_mode 					= 3
+scope_name 					= wpn_addon_1pso,wpn_addon_cobra,wpn_addon_1p78
+scope_x						= 54
+scope_y						= 5
+
+ironsight_zoom_factor       = 80
+scope_zoom_factor           = 50	
+zoom_enabled				= true
+
+silencer_name  				= wpn_addon_sil_9_p
+silencer_x 					= 181
+silencer_y 					= 18
+
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+snd_draw					= weapons\ak_74x\rifle_draw
+snd_holster					= weapons\ak_74x\rifle_holster
+snd_empty					= weapons\bizon\bizon_empty
+snd_shoot					= weapons\bizon\bizon_shoot
+snd_shoot1					= weapons\bizon\bizon_shoot1
+snd_shoot2					= weapons\bizon\bizon_shoot2
+snd_shoot3					= weapons\bizon\bizon_shoot3
+snd_silncer_shot			= weapons\bizon\bizon_shot_sil
+snd_reload					= weapons\bizon\pp19_reload
+snd_razgruzka				= weapons\razgruzka\ammo_2
+
+[wpn_pp19_hud]
+shell_point					= 0.005000,0.035000,-0.380000
+shell_dir		 			= 0.0, 0.0, 0.0
+
+fire_point					= 0.001000,-0.004970,-0.170001
+fire_bone               	= wpn_body
+
+;position					= 0.025000,-0.015050,0.080000
+;orientation				= 0.000000,0.000000,0.000000
+orientation      	        = 1.7, 1.5, 0
+position			        = 0.040000,-0.05,-0.0250
+visual                 		= weapons\pp19\wpn_pp19_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim_moving
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.134900,0.063070,-0.121500
+zoom_rotate_x				= 0.022400
+zoom_rotate_y				= 0.028970
+
+zoom_rotate_time			= 0.25
+rotate_time					= 0.25
+
+[wpn_pp19_cobra]: wpn_pp19
+visual 						= weapons\pp19\wpn_pp19_cobra.ogf
+hud                      	= wpn_pp19_cobra_hud
+scope_attached         		= 0
+
+control_inertion_factor		= 1.1f
+
+[wpn_pp19_cobra_hud]: wpn_pp19_hud
+visual                   	= weapons\pp19\wpn_pp19_cobra_hud.ogf
+
+zoom_offset					= -0.132000,0.017770,-0.000500
+zoom_rotate_x				= 0.018500
+zoom_rotate_y				= 0.023270
+
+zoom_rotate_time			= 0.25
+rotate_time					= 0.25
+
+[wpn_pp19_1p78]: wpn_pp19
+visual 						= weapons\pp19\wpn_pp19_1p78.ogf
+hud                      	= wpn_pp19_1p78_hud
+scope_attached         		= 0
+
+control_inertion_factor		= 1.15f
+
+[wpn_pp19_1p78_hud]: wpn_pp19_hud
+fire_point					= 0.600000,-0.700000,2.355000
+visual                   	= weapons\pp19\wpn_pp19_1p78_hud.ogf
+
+zoom_offset					= -0.138000,0.026770,1.299500
+zoom_rotate_x				= 0.025500
+zoom_rotate_y				= 0.031570
+
+zoom_rotate_time			= 0.26
+rotate_time					= 0.26
+
+[wpn_pp19_1pso]: wpn_pp19
+visual 						= weapons\pp19\wpn_pp19.ogf
+hud                      	= wpn_pp19_1pso_hud
+scope_attached         		= 0
+
+control_inertion_factor		= 1.15f
+
+[wpn_pp19_1pso_hud]: wpn_pp19_hud
+fire_point					= 0.600000,-0.700000,2.355000
+visual                   	= weapons\pp19\wpn_pp19_hud.ogf
+
+zoom_offset					= -0.122200,0.037770,2.699500
+zoom_rotate_x				= 0.028500
+zoom_rotate_y				= 0.029870
+
+zoom_rotate_time			= 0.26
+rotate_time					= 0.26

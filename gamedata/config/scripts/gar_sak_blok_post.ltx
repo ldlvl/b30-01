@@ -1,0 +1,8 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = %=sak.mutant_blok_post% sr_idle
+
+[sr_idle]
+on_timer  = 1200000 | sr_idle@work

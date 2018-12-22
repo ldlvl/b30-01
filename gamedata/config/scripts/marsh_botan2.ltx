@@ -1,0 +1,31 @@
+[logic]
+active = walker@marsh_end
+danger = danger_condition
+
+[walker@marsh_end]
+path_walk = marsh_base_botan_lager_botan2_way
+path_look = marsh_base_botan_lager_botan2_look
+on_signal = base_botan2_end| walker@botan2_end
+meet = meet@marsh_end
+danger = danger_condition
+
+[walker@botan2_end]
+path_walk = marsh_base_botan_lager_botan2_way
+path_look = marsh_base_botan_lager_botan2_look
+meet = meet@botan2_end
+danger = danger_condition
+
+[meet@marsh_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_botan2_start_dialog
+
+[meet@botan2_end]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_botan2_base_start_dialog
+
+[danger_condition]
+ignore_distance = 5

@@ -1,0 +1,71 @@
+;Colt King Cobra (6")
+[wpn_eagle_m1]:wpn_desert_eagle
+$spawn						= "weapons\uniq\wpn_eagle_m1"
+inv_name					= wpn-eagle_m1
+inv_name_short				= wpn-eagle_m1
+description					= enc_weapons1_wpn-eagle_m1
+
+default_to_ruck				= false
+
+cost 						= 14000
+
+slot						= 1,2,4
+
+inv_weight					= 1.2
+
+fire_dispersion_base		= 0.18
+control_inertion_factor		= 1.15f
+
+cam_dispersion				= 1.5
+
+icon_group         			= 2
+inv_grid_width     			= 2
+inv_grid_height    			= 2
+inv_grid_x         			= 4
+inv_grid_y         			= 5
+
+ammo_class					= ammo_11.43x23_hydro
+ammo_mag_size				= 6
+
+rpm							= 200
+
+hit_power					= 1
+
+condition_shot_dec			= 0.0004
+
+visual                   	= weapons\desert_eagle\wpn_python
+snd_draw					= weapons\de\python_draw
+snd_holster					= weapons\de\python_holster
+snd_shoot					= weapons\de\python_fire
+snd_shoot1					= weapons\de\python_fire1 
+snd_reload					= weapons\de\python_reload
+
+hud							= wpn_eagle_m1_hud
+
+[wpn_eagle_m1_hud]
+shell_point					= -0.000000,0.040000,-0.235000
+fire_point               	= 0.019000,-0.344000,-0.217000 ;0.019000,-0.344000,-0.200000 ;-0.001000,0.056000,-0.200000
+
+fire_bone                	= wpn_body
+orientation              	= 0,0,0
+position                 	= 0.15,-0.1,0.9
+visual                   	= weapons\desert_eagle\wpn_python_hud.ogf
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= idle
+anim_reload					= reload
+anim_reload_empty			= reload
+anim_draw					= draw
+anim_draw_empty				= draw
+anim_shoot					= shoot
+anim_shot_last				= shoot
+anim_close					= holster ;draw
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= de_sprint
+
+zoom_offset					= -0.158400,0.054800,-0.011400
+zoom_rotate_x				= -0.000700
+zoom_rotate_y				= 0.000400
+
+zoom_rotate_time			= 0.22
+rotate_time					= 0.22

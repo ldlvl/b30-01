@@ -1,0 +1,38 @@
+[logic]
+active = walker1
+on_death = death
+
+[death]
+on_info = %+gar_dm_bandit1_dead%
+
+[walker1]
+path_walk = bandit1_1walk_way
+path_look = bandit1_1way_look
+on_timer = 20000 | walker2
+meet = meet1
+danger = danger_condition
+
+[walker2]
+path_walk = bandit1_2walk_way
+path_look = bandit1_2way_look
+meet = meet1
+on_timer = 140000| walker3
+
+[walker3]
+path_walk = bandit1_3walk_way
+path_look = bandit1_3way_look
+meet = meet1
+on_timer = 30000| walker1
+
+[meet1]
+meet_state = 3|wait@wait
+meet_state_wpn = 3|wait@wait
+victim = 3|actor
+victim_wpn = 3|actor
+use = true
+use_wpn = false
+meet_dialog	= bandit1_start_dialog
+
+[danger_condition]
+ignore_distance = 1
+

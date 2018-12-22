@@ -1,0 +1,16 @@
+[logic]
+active = ph_sound1
+on_hit = nil
+
+[ph_sound1]
+tips = switch_off
+on_use = ph_idle@idle
+snd = bar_sultan_music
+looped = true
+min_idle = 300
+max_idle = 500
+random = true
+
+[ph_idle@idle]
+tips = switch_on
+on_use = ph_sound1

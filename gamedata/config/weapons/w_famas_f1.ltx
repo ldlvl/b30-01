@@ -1,0 +1,215 @@
+;FAMAS F1
+[wpn_famas_f1]:weapon_immunities
+scheduled								= off
+cform									= skeleton
+class									= WP_LR300
+min_radius								= 0
+max_radius								= 160
+description								= enc_weapons1_wpn-famas_f1
+
+ef_main_weapon_type						= 2
+ef_weapon_type							= 6
+
+holder_range_modifier					= 1.85
+holder_fov_modifier						= 0.3
+
+cost									= 10000
+weapon_class							= assault_rifle
+launch_speed							= 0
+
+ammo_limit								= 210
+ammo_current							= 180
+ammo_elapsed							= 30
+
+ammo_mag_size							= 25
+ammo_class								= ammo_5.56x45_ss190,ammo_5.56x45_ap,ammo_ak,ammo_5.56x45_merc
+grenade_class							= ammo_m209
+fire_modes								= 1, 3, -1
+
+hand_dependence							= 1
+single_handed							= 0
+
+slot									= 2
+animation_slot							= 2
+
+inv_name								= wpn-famas_f1
+inv_name_short							= wpn-famas_f1
+
+inv_weight								= 3.61
+
+icon_group     							= 4
+inv_grid_width							= 5
+inv_grid_height							= 2
+inv_grid_x								= 15
+inv_grid_y								= 4
+
+kill_msg_x								= 84
+kill_msg_y								= 28
+kill_msg_width							= 73
+kill_msg_height							= 30
+
+fire_dispersion_base					= 0.16
+control_inertion_factor					= 1.15f
+
+cam_relax_speed							= 4.3
+cam_dispersion							= 0.17
+cam_dispersion_inc						= 0.15
+cam_dispertion_frac						= 0.7
+cam_max_angle							= 30
+cam_max_angle_horz						= 10
+cam_step_angle_horz						= 0.3
+
+fire_dispersion_condition_factor		= 2
+misfire_probability						= 0.0015
+misfire_condition_k						= 0.05
+condition_shot_dec						= 0.00009
+
+PDM_disp_base 							= 2.0
+PDM_disp_vel_factor 					= 2.5
+PDM_disp_accel_factor 					= 4.0
+PDM_crouch								= 1.6
+PDM_crouch_no_acc						= 0.64
+
+direction								= 0,0,1
+fire_point								= 0.0,0.186,0.435
+fire_point2								= 0.0,0.106,0.468
+
+flame_particles							= weapons\generic_weapon05
+smoke_particles							= weapons\generic_shoot_00
+grenade_flame_particles					= weapons\generic_weapon01
+
+shell_point								= 0.0,0.186,0.0
+shell_dir								= 0.0,0.0,0.4
+shell_particles							= amik\weapons\nato_shells_r_00
+
+rpm_empty_click							= 200
+
+hit_power								= 0.96
+hit_impulse								= 1
+hit_type								= fire_wound
+
+fire_distance							= 250
+bullet_speed							= 960
+rpm										= 900
+
+use_aim_bullet							= false
+time_to_aim								= 1.0
+
+hud										= wpn_famas_f1_hud
+normal									= 0,1,0
+
+position								= -0.026,-0.135,0.0
+orientation								= 0,0,0
+
+strap_position							= -0.15,-0.36,0.25
+strap_orientation						= -10,-5,10
+strap_bone0								= bip01_spine2
+strap_bone1								= bip01_spine1
+
+startup_ammo							= 90
+visual									= weapons\famas_f1\wpn_famas_f1.ogf
+
+light_color								= 0.6,0.5,0.3
+light_range								= 5
+light_var_color							= 0.05
+light_var_range							= 0.5
+light_time								= 0.2
+
+ph_mass									= 5
+
+scope_status							= 2		
+silencer_status							= 2					
+grenade_launcher_status					= 0
+scope_mode 								= 3
+scope_name 								= wpn_addon_eotech, wpn_addon_acog
+scope_x_eotech	              			= 98
+scope_y_eotech	              			= -8
+scope_x_acog	              			= 96
+scope_y_acog	              			= -11
+zoom_enabled							= true
+ironsight_zoom_factor      				= 75
+scope_zoom_factor          				= 50
+
+silencer_name							= wpn_addon_sil_556_ar
+silencer_x								= 183
+silencer_y								= 18
+grenade_launcher_name					= wpn_addon_grenade_launcher_m203
+grenade_launcher_x						= 128
+grenade_launcher_y						= 28
+
+snd_draw								= weapons\rifle_draw
+snd_holster								= weapons\rifle_holster
+snd_shoot								= weapons\famas_f1\famas_shoot
+snd_shoot1								= weapons\famas_f1\famas_shoot1
+snd_shoot2								= weapons\famas_f1\famas_shoot2
+snd_shoot3								= weapons\famas_f1\famas_shoot3
+snd_empty								= weapons\rifle_empty,0.7
+snd_reload								= weapons\famas_f1\famas_reload
+snd_silncer_shot						= weapons\famas_f1\famas_f1_shoot_sil
+
+silencer_smoke_particles				= weapons\generic_shoot_00
+
+silencer_light_color					= 0.6,0.5,0.3
+silencer_light_range					= 0.01
+silencer_light_var_color				= 0.05
+silencer_light_var_range				= 0.5
+silencer_light_time						= 0.2
+
+[wpn_famas_f1_hud]
+
+shell_point								= 0.045000,0.025000,-0.240000
+shell_dir								= 0.0,0.0,0.0
+fire_bone								= wpn_body
+fire_point								= 0.000000,-0.010000,0.072000
+fire_point2								= 0.000000,-0.060000,0.375000
+
+position								= 0.040000,0.000000,-0.100000
+orientation								= 0.000000,0.000000,0.000000
+visual									= weapons\famas_f1\wpn_famas_f1_hud.ogf
+
+grenade_bone							= wpn_grenade
+
+anim_draw								= draw
+anim_holster							= holster
+anim_idle								= idle
+anim_idle_aim							= idle_aim
+anim_idle_sprint						= idle_sprint;normal_idle_sprint w_gl_idle_sprint
+anim_reload								= reload
+anim_shoot								= shoot
+
+zoom_offset								= -0.127450,0.014580,-0.220000
+zoom_rotate_x							= 0.000900
+zoom_rotate_y							= 0.00020
+
+zoom_rotate_time						= 0.26
+rotate_time								= 0.26
+
+[wpn_famas_f1_eotech]:wpn_famas_f1
+hud										= wpn_famas_f1_eotech_hud
+visual									= weapons\famas_f1\wpn_famas_f1_eotech.ogf
+scope_attached         					= 0
+
+[wpn_famas_f1_eotech_hud]:wpn_famas_f1_hud
+visual									= weapons\famas_f1\wpn_famas_f1_eotech_hud.ogf
+
+zoom_offset								= -0.127450,-0.068020,-0.220000
+zoom_rotate_x							= 0.000900
+zoom_rotate_y							= 0.000200
+
+[wpn_famas_f1_acog]:wpn_famas_f1
+hud										= wpn_famas_f1_acog_hud
+visual									= weapons\famas_f1\wpn_famas_f1_acog.ogf
+scope_attached         					= 0
+control_inertion_factor					= 1.2f
+
+[wpn_famas_f1_acog_hud]:wpn_famas_f1_hud
+visual									= weapons\famas_f1\wpn_famas_f1_acog_hud.ogf
+
+zoom_offset								= -0.128150,-0.078920,-0.207500
+zoom_rotate_x							= 0.001900
+zoom_rotate_y							= 0.001800
+zoom_rotate_time						= 0.35
+rotate_time								= 0.35
+
+zoom_rotate_time						= 0.27
+rotate_time								= 0.27

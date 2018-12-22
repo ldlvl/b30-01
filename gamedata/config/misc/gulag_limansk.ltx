@@ -1,0 +1,628 @@
+;---------------------------
+;-----LIM LAGER BANDITS-----
+;---------------------------
+
+[logic@lim_lager_bandits_borov]
+active = walker@lim_lager_bandits_borov
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@borov
+
+[walker@lim_lager_bandits_borov]
+path_walk = borov_walk
+path_look = borov_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+meet = meet@lim_lager_bandits_borov
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_borov_danger
+
+[walker@lim_lager_bandits_borov_danger]
+path_walk = borov_danger_walk
+path_look = borov_danger_look
+meet = no_meet
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+
+
+[meet@lim_lager_bandits_borov]
+meet_state			= 7|hello@talk_hello|3|ward
+meet_state_wpn		= 7|backoff@threat_weap
+victim 				= 10|actor
+victim_wpn 			= 10|actor
+use					= true
+use_wpn				= false
+syndata				= backoff@threat_weap
+precond 			= visibility
+meet_dialog = borov_limansk_start_dialog
+
+
+;--Телохранитель Борова1 (стоит рядом с Боровым)
+;--При приближении ГГ, пялится на него. Если ГГ со стволом, направляет оружие на ГГ и просит убрать
+
+[logic@lim_lager_bandits_bodyguard1]
+active = walker@lim_lager_bandits_bodyguard1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_bodyguard1]
+path_walk = bodyguard_walk
+path_look = bodyguard_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+meet = meet@lim_lager_bandits_bodyguard
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_bodyguard1_danger
+
+;--Телохранитель Борова1 (защищает спрятавшегося за стол Борова)
+
+[walker@lim_lager_bandits_bodyguard1_danger]
+path_walk = bodyguard1_danger_walk
+path_look = bodyguard1_danger_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+meet = no_meet
+
+
+;--Телохранитель Борова2 (стоит рядом с Боровым)
+;--При приближении ГГ, пялится на него. Если ГГ со стволом, направляет оружие на ГГ и просит убрать
+
+[logic@lim_lager_bandits_bodyguard2]
+active = walker@lim_lager_bandits_bodyguard2
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_bodyguard2]
+path_walk = bodyguard_look
+path_look = bodyguard_walk
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+meet = meet@lim_lager_bandits_bodyguard
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_bodyguard2_danger
+
+;--Телохранитель Борова2 (защищает спрятавшегося за стол Борова)
+
+[walker@lim_lager_bandits_bodyguard2_danger]
+path_walk = bodyguard2_danger_walk
+path_look = bodyguard2_danger_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@borov
+meet = no_meet
+
+
+[meet@lim_lager_bandits_bodyguard]
+meet_state			= 10|threat|2|guard
+meet_state_wpn		= 10|backoff@threat_weap
+victim 				= 10|actor
+victim_wpn 			= 10|actor
+use					= false
+use_wpn				= false
+syndata				= backoff@threat_weap
+precond 			= visibility
+
+
+;--Охранник у входа1
+;--Перекрывает проход в здание и в случае приближения ГГ ближе, чем на 5 метров, отходит в сторонку
+;--В случае, если ГГ находится дальше 5ти метров, через 5 секунд возвращается на исходную
+;--Вместо on_actor_dist_le_nvis = 5| и on_timer = 5000| лучше задать свои условия пропуска ГГ
+
+[logic@lim_lager_bandits_zoneguard1]
+active = walker@lim_lager_bandits_zoneguard1_1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_zoneguard1_1]
+path_walk = zoneguard1_1_walk
+path_look = zoneguard1_1_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_actor_dist_le_nvis = 5| walker@lim_lager_bandits_zoneguard1_2
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard1_danger
+
+[walker@lim_lager_bandits_zoneguard1_2]
+path_walk = zoneguard1_2_walk
+path_look = zoneguard1_2_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_timer = 5000| walker@lim_lager_bandits_zoneguard1_1
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard1_danger
+
+;--Охранник у входа1 (отполз назад, пасёт выход)
+
+[walker@lim_lager_bandits_zoneguard1_danger]
+path_walk = zoneguard1_danger_walk
+path_look = zoneguard1_danger_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Охранник у входа2
+;--Перекрывает проход в здание и в случае приближения ГГ ближе, чем на 5 метров, отходит в сторонку
+;--В случае, если ГГ находится дальше 5ти метров, через 5 секунд возвращается на исходную
+;--Вместо on_actor_dist_le_nvis = 5| и on_timer = 5000| лучше задать свои условия пропуска ГГ
+
+[logic@lim_lager_bandits_zoneguard2]
+active = walker@lim_lager_bandits_zoneguard2_1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_zoneguard2_1]
+path_walk = zoneguard2_1_walk
+path_look = zoneguard2_1_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_actor_dist_le_nvis = 5| walker@lim_lager_bandits_zoneguard2_2
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard2_danger
+
+[walker@lim_lager_bandits_zoneguard2_2]
+path_walk = zoneguard2_2_walk
+path_look = zoneguard2_2_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_timer = 5000| walker@lim_lager_bandits_zoneguard2_1
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard2_danger
+
+;--Охранник у входа2 (отполз назад, пасёт выход)
+
+[walker@lim_lager_bandits_zoneguard2_danger]
+path_walk = zoneguard2_danger_walk
+path_look = zoneguard2_danger_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Охранник у входа3
+;--Перекрывает проход в здание и в случае приближения ГГ ближе, чем на 5 метров, отходит в сторонку
+;--В случае, если ГГ находится дальше 5ти метров, через 5 секунд возвращается на исходную
+;--Вместо on_actor_dist_le_nvis = 5| и on_timer = 5000| лучше задать свои условия пропуска ГГ
+
+[logic@lim_lager_bandits_zoneguard3]
+active = walker@lim_lager_bandits_zoneguard3_1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_zoneguard3_1]
+path_walk = zoneguard3_1_walk
+path_look = zoneguard3_1_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_actor_dist_le_nvis = 5| walker@lim_lager_bandits_zoneguard3_2
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard3_danger
+
+[walker@lim_lager_bandits_zoneguard3_2]
+path_walk = zoneguard3_2_walk
+path_look = zoneguard3_2_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+on_timer = 5000| walker@lim_lager_bandits_zoneguard3_1
+on_info = {+lim_lager_bandits_fire} walker@lim_lager_bandits_zoneguard3_danger
+
+;--Охранник у входа3 (отполз назад, пасёт выход)
+
+[walker@lim_lager_bandits_zoneguard3_danger]
+path_walk = zoneguard3_danger_walk
+path_look = zoneguard3_danger_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Бродячий охранник на первом этаже (ходит, заглядывает в окна и бормочет себе под нос звуки state)
+
+[logic@lim_lager_bandits_guard1]
+active = walker@lim_lager_bandits_guard1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard1]
+path_walk = guard1_walk
+path_look = guard1_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Бродячий охранник на втором этаже (ходит, заглядывает в окна и бормочет себе под нос звуки state)
+
+[logic@lim_lager_bandits_guard2]
+active = walker@lim_lager_bandits_guard2
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard2]
+path_walk = guard2_walk
+path_look = guard2_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Патрульный1
+;--Ходят по территории, вокруг сидячих в кампе, от здания до речки, останавливаясь у моста
+
+[logic@lim_lager_bandits_patrol_man1]
+active = patrol@lim_lager_bandits_patrol_man1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[patrol@lim_lager_bandits_patrol_man1]
+path_walk = patrol_walk
+path_look = patrol_look
+formation = back
+commander = true
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Патрульный2
+;--Ходят по территории, вокруг сидячих в кампе, от здания до речки, останавливаясь у моста
+
+[logic@lim_lager_bandits_patrol_man2]
+active = patrol@lim_lager_bandits_patrol_man2
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[patrol@lim_lager_bandits_patrol_man2]
+path_walk = patrol_walk
+path_look = patrol_look
+formation = back
+commander = false
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Патрульный3
+;--Ходят по территории, вокруг сидячих в кампе, от здания до речки, останавливаясь у моста
+
+[logic@lim_lager_bandits_patrol_man3]
+active = patrol@lim_lager_bandits_patrol_man3
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[patrol@lim_lager_bandits_patrol_man3]
+path_walk = patrol_walk
+path_look = patrol_look
+formation = back
+commander = false
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+meet = no_meet
+
+
+;--Сидящие у костра1 (только без самого костра)
+
+[logic@lim_lager_bandits_kamp1]
+active = kamp@lim_lager_bandits_kamp1
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[kamp@lim_lager_bandits_kamp1]
+center_point = kamp1
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Сидящие у костра2 (только без самого костра)
+
+[logic@lim_lager_bandits_kamp2]
+active = kamp@lim_lager_bandits_kamp2
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[kamp@lim_lager_bandits_kamp2]
+center_point = kamp2
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Сидящие у костра3 (только без самого костра)
+
+[logic@lim_lager_bandits_kamp3]
+active = kamp@lim_lager_bandits_kamp3
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[kamp@lim_lager_bandits_kamp3]
+center_point = kamp3
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Охранник внутри здания
+
+[logic@lim_lager_bandits_guard3]
+active = walker@lim_lager_bandits_guard3
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard3]
+path_walk = guard3_walk
+path_look = guard3_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Охранник внутри здания
+
+[logic@lim_lager_bandits_guard4]
+active = walker@lim_lager_bandits_guard4
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard4]
+path_walk = guard4_walk
+path_look = guard4_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Охранник внутри здания
+
+[logic@lim_lager_bandits_guard5]
+active = walker@lim_lager_bandits_guard5
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard5]
+path_walk = guard5_walk
+path_look = guard5_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+;--Охранник внутри здания
+
+[logic@lim_lager_bandits_guard6]
+active = walker@lim_lager_bandits_guard6
+combat_ignore = combat_ignore@lim_lager_bandits
+on_hit = hit@lim_lager_bandits
+on_death = death@lim_lager_bandits
+
+[walker@lim_lager_bandits_guard6]
+path_walk = guard6_walk
+path_look = guard6_look
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+danger = danger_condition@lim_lager_bandits
+
+
+[combat_ignore@lim_lager_bandits]
+combat_ignore_cond = {-lim_lager_bandits_fire =fighting_actor}
+
+
+[hit@lim_lager_bandits]
+on_info = {-lim_lager_bandits_fire =hit_by_actor} %+lim_lager_bandits_fire%
+
+
+[death@lim_lager_bandits]
+on_info = {-lim_lager_bandits_fire =killed_by_actor} %+lim_lager_bandits_fire%
+
+
+[death@borov]
+on_info = %+val_borov_dead%
+
+
+[danger_condition@lim_lager_bandits]
+ignore_distance = 10
+
+
+[danger_condition@borov]
+ignore_distance = 0
+ignore_distance_sound = 0
+
+;------------------------------------
+;-----LIM LAGER FREEDOM STALKERS-----
+;------------------------------------
+
+[logic@lim_lager_freedom_stalkers_commander]
+active = walker@lim_lager_freedom_stalkers_commander
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_commander]
+path_walk = commander_walk
+path_look = commander_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = meet@lim_lager_freedom_stalkers_commander
+
+
+[meet@lim_lager_freedom_stalkers_commander]
+meet_state			= 7|hello@talk_hello|3|ward
+meet_state_wpn		= 7|backoff@threat_weap
+victim 				= 7|actor
+victim_wpn 			= 7|actor
+use					= true
+use_wpn				= false
+syndata				= backoff@threat_weap
+precond 			= visibility
+
+
+;--Охранник у входа1
+;--Перекрывает проход в здание и в случае приближения ГГ ближе, чем на 5 метров, отходит в сторонку
+;--В случае, если ГГ находится дальше 5ти метров, через 5 секунд возвращается на исходную
+;--Вместо on_actor_dist_le_nvis = 5| и on_timer = 5000| лучше задать свои условия пропуска ГГ
+
+[logic@lim_lager_freedom_stalkers_zoneguard1]
+active = walker@lim_lager_freedom_stalkers_zoneguard1_1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_zoneguard1_1]
+path_walk = zoneguard1_1_walk
+path_look = zoneguard1_1_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+on_actor_dist_le_nvis = 5| walker@lim_lager_freedom_stalkers_zoneguard1_2
+
+[walker@lim_lager_freedom_stalkers_zoneguard1_2]
+path_walk = zoneguard1_2_walk
+path_look = zoneguard1_2_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+on_timer = 5000| walker@lim_lager_freedom_stalkers_zoneguard1_1
+
+
+;--Охранник у входа2
+;--Перекрывает проход в здание и в случае приближения ГГ ближе, чем на 5 метров, отходит в сторонку
+;--В случае, если ГГ находится дальше 5ти метров, через 5 секунд возвращается на исходную
+;--Вместо on_actor_dist_le_nvis = 5| и on_timer = 5000| лучше задать свои условия пропуска ГГ
+
+[logic@lim_lager_freedom_stalkers_zoneguard2]
+active = walker@lim_lager_freedom_stalkers_zoneguard2_1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_zoneguard2_1]
+path_walk = zoneguard2_1_walk
+path_look = zoneguard2_1_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+on_actor_dist_le_nvis = 5| walker@lim_lager_freedom_stalkers_zoneguard2_2
+
+[walker@lim_lager_freedom_stalkers_zoneguard2_2]
+path_walk = zoneguard2_2_walk
+path_look = zoneguard2_2_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+on_timer = 5000| walker@lim_lager_freedom_stalkers_zoneguard2_1
+
+
+;--Охранник на балконе
+
+[logic@lim_lager_freedom_stalkers_guard1]
+active = walker@lim_lager_freedom_stalkers_guard1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_guard1]
+path_walk = guard1_walk
+path_look = guard1_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+
+
+;--Бродячий охранник внутри здания
+
+[logic@lim_lager_freedom_stalkers_guard2]
+active = walker@lim_lager_freedom_stalkers_guard2
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_guard2]
+path_walk = guard2_walk
+path_look = guard2_look
+combat_ignore_cond = {=fighting_dist_ge(10)}
+danger = danger_condition@lim_lager_freedom_stalkers
+
+
+;--Патрульный1
+;--Ходят вокруг детской площадки, во дворе
+
+[logic@lim_lager_freedom_stalkers_patrol_man1]
+active = patrol@lim_lager_freedom_stalkers_patrol_man1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[patrol@lim_lager_freedom_stalkers_patrol_man1]
+path_walk = patrol_walk
+path_look = patrol_look
+formation = around
+commander = true
+combat_ignore_cond = {=fighting_dist_ge(20)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+
+
+;--Патрульный2
+;--Ходят вокруг детской площадки, во дворе
+
+[logic@lim_lager_freedom_stalkers_patrol_man2]
+active = patrol@lim_lager_freedom_stalkers_patrol_man2
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[patrol@lim_lager_freedom_stalkers_patrol_man2]
+path_walk = patrol_walk
+path_look = patrol_look
+formation = around
+commander = false
+combat_ignore_cond = {=fighting_dist_ge(20)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = no_meet
+
+
+;--Сидящие у костра1 (только без самого костра)
+
+[logic@lim_lager_freedom_stalkers_drink1]
+active = walker@lim_lager_freedom_stalkers_drink1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_drink1]
+path_walk = drink1_walk
+path_look = drink1_look
+combat_ignore_cond = {=fighting_dist_ge(2)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = meet@stalkers_drink1
+
+[meet@stalkers_drink1]
+meet_dialog = monolit_instruments_start
+use = true
+use_wpn = true
+meet_state = 5|sit
+victim = 5|actor
+victim_wpn = 5|actor
+
+[logic@lim_lager_freedom_stalkers_drink2]
+active = walker@lim_lager_freedom_stalkers_drink2
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[walker@lim_lager_freedom_stalkers_drink2]
+path_walk = drink2_walk
+path_look = drink2_look
+combat_ignore_cond = {=fighting_dist_ge(2)}
+danger = danger_condition@lim_lager_freedom_stalkers
+meet = meet@stalkers_drink2
+
+[meet@stalkers_drink2]
+meet_dialog = monolit_instruments_second
+use = true
+use_wpn = false
+meet_state = 5|sit
+victim = 5|actor
+victim_wpn = 5|actor
+
+[logic@lim_lager_freedom_stalkers_kamp1]
+active = kamp@lim_lager_freedom_stalkers_kamp1
+combat_ignore = combat_ignore@lim_lager_freedom_stalkers
+
+[kamp@lim_lager_freedom_stalkers_kamp1]
+center_point = kamp1
+combat_ignore_cond = {=fighting_dist_ge(20)}
+danger = danger_condition@lim_lager_freedom_stalkers
+
+
+[combat_ignore@lim_lager_freedom_stalkers]
+combat_ignore_cond = {=fighting_dist_ge(20)}
+
+[danger_condition@lim_lager_freedom_stalkers]
+ignore_distance = 2
+ignore_distance_sound = 2

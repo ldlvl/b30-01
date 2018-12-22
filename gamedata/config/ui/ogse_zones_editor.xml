@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<ogse_zones_editor>
+	<main x="0" y="0" width="1024" height="768"/>
+	<obj_list_bgd x="100" y="210" width="344" height="480" stretch="1">
+		<texture x="0" y="0" width="344" height="480">ui\ui_inventory</texture>
+		<auto_static x="25" y="5" width="140" height="20">
+			<text align="c" font="graffiti22" color="UI_orange">Zones List</text>
+		</auto_static>
+		<obj_list x="16" y="32" width="320" height="442" item_height="20" active_bg="1" always_show_scroll="1">
+		</obj_list>
+		
+	</obj_list_bgd>
+	<filters_bg x="100" y="5" width="572" height="205" stretch="1">
+		<texture x="450" y="790" width="572" height="205">ui\ui_hud</texture>
+		<auto_static x="450" y="20" width="110" height="20">
+			<text align="c" font="graffiti22" color="UI_orange">Filters</text>
+		</auto_static>
+		<edit_stub       x="20" y="20"  width="100" height="20">
+			<texture>ui_linetext_e</texture>
+			<text font="letterica16" r="240" g="217" b="182"/>
+		</edit_stub>
+		<filter_lc       x="20" y="70"  width="20" height="20" check_mode="1">
+			<text>show level changers</text>
+		</filter_lc>
+		<filter_sp_restr x="20" y="90"  width="20" height="20" check_mode="1">
+			<text>show space restrictors</text>
+		</filter_sp_restr>
+		<filter_anom     x="20" y="110" width="20" height="20" check_mode="1">
+			<text>show anomalies</text>
+		</filter_anom>
+		<filter_cust_zon x="20" y="130" width="20" height="20" check_mode="1">
+			<text>show custom zones</text>
+		</filter_cust_zon>
+		<filter_clim     x="20" y="150" width="20" height="20" check_mode="1">
+			<text>show climable objects</text>
+		</filter_clim>
+		<filter_smarts   x="20" y="170" width="20" height="20" check_mode="1">
+			<text>show smart zones</text>
+		</filter_smarts>
+		<filter_zon_vis  x="200" y="70" width="20" height="20" check_mode="1">
+			<text>show visual zones</text>
+		</filter_zon_vis>
+		<filter_tor_zon  x="200" y="90" width="20" height="20" check_mode="1">
+			<text>show torrid zones</text>
+		</filter_tor_zon>
+		<filter_editor_saves  x="200" y="110" width="20" height="20" check_mode="1">
+			<text>show saved restrictors</text>
+		</filter_editor_saves>
+	</filters_bg>
+	<save_btn x="100" y="700" width="117" height="29" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text align="c" font="graffiti22" color="UI_orange">Save</text>
+	</save_btn>
+	<export_btn x="230" y="700" width="117" height="29" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text align="c" font="graffiti22" color="UI_orange">Export</text>
+	</export_btn>
+	<btn_clear_shown x="547" y="700" width="117" height="29" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text align="c" font="graffiti22" color="UI_orange">Clear Shown</text>
+	</btn_clear_shown>
+	<hide_btn x="677" y="700" width="117" height="29" hR="255" hB="83" hG="179" highlight_text="1" stretch="1">
+		<texture>ui_button_ordinary</texture>
+		<text align="c" font="graffiti22" color="UI_orange">Hide</text>
+	</hide_btn>
+	<zone_editor_bgd x="450" y="210" width="344" height="480" stretch="1">
+		<texture x="0" y="0" width="344" height="480">ui\ui_inventory</texture>
+		<auto_static x="25" y="5" width="140" height="20">
+			<text align="c" font="graffiti22" color="UI_orange">Selected Zone Editor</text>
+		</auto_static>
+		<zone_name x="16" y="32" width="20" height="20">
+			<text font="graffiti22" r="255" g="0" b="0"/>
+		</zone_name>
+		<btn_new_sphere x="230" y="32" width="52" height="19">
+			<texture>ui_ogse_zone_editor_btn3</texture>
+			<text align="c" font="letterica16" r="227" g="199" b="178">new sph.</text>
+		</btn_new_sphere>
+		<btn_new_box x="288" y="32" width="52" height="19">
+			<texture>ui_ogse_zone_editor_btn3</texture>
+			<text align="c" font="letterica16" r="227" g="199" b="178">new box</text>
+		</btn_new_box>
+
+		<btn_show_all x="230" y="52" width="52" height="19">
+			<texture>ui_ogse_zone_editor_btn3</texture>
+			<text align="c" font="letterica16" r="227" g="199" b="178">show all</text>
+		</btn_show_all>
+		<btn_hide_all x="288" y="52" width="52" height="19">
+			<texture>ui_ogse_zone_editor_btn3</texture>
+			<text align="c" font="letterica16" r="227" g="199" b="178">hide all</text>
+		</btn_hide_all>
+		
+		<zone_pos x="16" y="54" width="320" height="20">
+			<text font="letterica16" color="UI_orange"/>
+		</zone_pos>
+		<shapes_list x="16" y="76" width="320" height="390" item_height="125" active_bg="1" always_show_scroll="1">
+			<shape_editor x="0" y="0" width="320" height="122">
+				<bg x="0" y="0" width="304" height="122" stretch="1">
+					<texture x="370" y="36" width="328" height="90">ui\ui_common</texture>
+				</bg>
+				<txt_type x="0" y="0" width="50" height="18">
+					<text font="letterica16" color="ui_clr_2"></text>
+				</txt_type>
+				<edit x="65" y="0" width="30" height="18" check_mode="0">
+					<text font="letterica16" color="UI_orange">edit</text>
+				</edit>
+				<visualize x="130" y="0" width="30" height="18" check_mode="0">
+					<text font="letterica16" color="UI_orange">show</text>
+				</visualize>
+				<txt_offset x="4" y="20" width="30" height="18">
+					<text font="letterica16" color="UI_orange">offset:</text>
+				</txt_offset>
+				<edit_x x="44" y="20" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_x>
+				<edit_y x="92" y="20" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_y>
+				<edit_z x="140" y="20" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_z>
+				<txt_radius x="4" y="45" width="30" height="18">
+					<text font="letterica16" color="UI_orange">radius:</text>
+				</txt_radius>
+				<edit_radius x="44" y="45" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_radius>
+				<txt_size x="4" y="45" width="30" height="18">
+					<text font="letterica16" color="UI_orange">sizes:</text>
+				</txt_size>
+				<edit_size_x x="44" y="45" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_size_x>
+				<edit_size_y x="92" y="45" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_size_y>
+				<edit_size_z x="140" y="45" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_size_z>
+				<txt_rot x="4" y="70" width="30" height="18">
+					<text font="letterica16" color="UI_orange">rot. xzy:</text>
+				</txt_rot>
+				<edit_rot_x x="44" y="70" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_rot_x>
+				<edit_rot_z x="92" y="70" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_rot_z>
+				<edit_rot_y x="140" y="70" width="46" height="20" numonly="1" float="1">
+					<texture>ui_linetext_e</texture>
+					<text font="letterica16" r="240" g="217" b="182"/>
+				</edit_rot_y>
+				<txt_particle_sizes x="200" y="2" width="30" height="18">
+					<text font="letterica16" color="UI_orange">p. size</text>
+				</txt_particle_sizes>
+				<particle_sizes_list x="200" y="23" width="30" height="62" item_height="20" active_bg="1">
+					<font font="arial_14" r="45" g="250" b="200"></font>
+				</particle_sizes_list>
+				<txt_particle_colors x="245" y="2" width="30" height="18">
+					<text font="letterica16" color="UI_orange">p. color</text>
+				</txt_particle_colors>
+				<particle_colors_list x="245" y="23" width="40" height="82" item_height="20" active_bg="1">
+					<font font="arial_14" r="45" g="250" b="200"></font>
+				</particle_colors_list>
+				<btn_set x="4" y="100" width="52" height="19">
+					<texture>ui_ogse_zone_editor_btn3</texture>
+					<text align="c" font="letterica16" r="227" g="199" b="178">set</text>
+				</btn_set>
+				<btn_clone x="60" y="100" width="52" height="19">
+					<texture>ui_ogse_zone_editor_btn3</texture>
+					<text align="c" font="letterica16" r="227" g="199" b="178">clone</text>
+				</btn_clone>
+				<btn_align x="115" y="100" width="52" height="19">
+					<texture>ui_ogse_zone_editor_btn3</texture>
+					<text align="c" font="letterica16" r="227" g="199" b="178">align</text>
+				</btn_align>
+				<btn_delete x="170" y="100" width="37" height="19">
+					<texture>ui_ogse_zone_editor_btn1</texture>
+					<text align="c" font="letterica16" r="227" g="199" b="178">del.</text>
+				</btn_delete>
+				
+			</shape_editor>
+		</shapes_list>
+	</zone_editor_bgd>
+</ogse_zones_editor>

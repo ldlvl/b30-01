@@ -1,0 +1,35 @@
+[smart_terrains]
+esc_dram = true
+
+;[logic]
+active = walker
+on_death = death
+
+[walker]
+anim = claim
+target = actor
+path_walk = esc_dram_dram_post1_walk
+path_look = esc_dram_dram_post1_look
+meet = meet@esc_guard
+danger = danger_condition
+
+[meet@esc_guard]
+meet_state 		= 5 | guard@bar_guard_prohodi
+meet_state_wpn 	= 5 | guard@bar_guard_prohodi
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= false
+abuse       = true
+
+[danger_condition]
+ignore_distance = 0
+
+[death]
+on_info = %+esc_sid_guard_umer%
+
+
+
+
+
+

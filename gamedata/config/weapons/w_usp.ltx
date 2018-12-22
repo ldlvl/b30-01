@@ -1,0 +1,174 @@
+;HK USP
+[wpn_usp]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\usp"	
+$npc						= on
+$prefetch					= 8
+scheduled					= off
+cform						= skeleton
+class						= WP_USP45
+min_radius					= 0
+max_radius					= 55
+description					= enc_weapons1_wpn-usp
+
+default_to_ruck				= false
+
+ef_weapon_type				= 5
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 1.0
+
+cost						= 6000
+
+ammo_limit					= 120
+ammo_current				= 96
+ammo_elapsed				= 8
+
+f_mode						= 1
+
+ammo_mag_size				= 10
+ammo_class					= ammo_11.43x23_fmj
+
+hand_dependence				= 1
+single_handed				= 1
+
+slot						= 1,2,4
+animation_slot				= 1
+
+inv_name					= wpn_usp
+inv_name_short				= wpn_usp
+
+inv_weight					= .79
+
+icon_group                 	= 2
+inv_grid_width             	= 2
+inv_grid_height            	= 2
+inv_grid_x                 	= 6
+inv_grid_y                 	= 0
+
+kill_msg_x					= 134
+kill_msg_y					= 177
+kill_msg_width				= 31
+kill_msg_height				= 25
+
+fire_dispersion_base		= 0.25
+control_inertion_factor		= 1.1f
+
+cam_relax_speed				= 6.3
+cam_dispersion				= 0.53
+cam_dispersion_inc			= 0.0
+cam_dispertion_frac			= 1.0
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 0.6
+
+fire_dispersion_condition_factor = 1.5
+misfire_probability			= 0.005
+misfire_condition_k			= 0.50
+condition_shot_dec			= 0.0003
+
+direction                	= 0, 0, 1
+fire_point               	= 0.0, 0.132, 0.137
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point		 			= 0.0, 0.132, 0.03
+shell_dir		 			= 0.0, 0.0, 0.4
+;shell_particles			= weapons\generic_shells
+
+rpm_empty_click				= 200
+
+PDM_disp_base 				= 1.5
+PDM_disp_vel_factor 		= 2.0
+PDM_disp_accel_factor 		= 3.0
+PDM_crouch					= 1.5
+PDM_crouch_no_acc			= 0.7
+
+hit_power					= 1
+hit_impulse					= 1
+hit_type					= fire_wound
+
+fire_distance				= 50
+bullet_speed				= 250
+rpm							= 250
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud							= wpn_usp_hud
+normal                   	= 0, 1, 0
+position                 	= -0.021, -0.085, 0.0
+orientation              	= 0, 0, 0
+
+visual						= weapons\usp_45\wpn_usp_45.ogf
+
+light_color					= 0.6,0.5,0.3
+light_range					= 4.0
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time					= 0.2
+
+ph_mass						= 1
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 80
+
+snd_draw					= weapons\pistol_draw
+snd_holster					= weapons\pistol_holster
+snd_shoot					= weapons\usp\usp_shoot
+snd_shoot1					= weapons\usp\usp_shoot1
+snd_shoot2					= weapons\usp\usp_shoot2
+snd_shoot3					= weapons\usp\usp_shoot3
+snd_empty					= weapons\usp\usp_empty
+snd_reload					= weapons\usp\usp_reload
+snd_holster					= weapons\pistol_holster
+snd_silncer_shot			= weapons\usp\usp_shot_sil
+snd_razgruzka				= weapons\razgruzka\ammo_2
+
+silencer_name				= wpn_addon_silencer
+silencer_x					= 75
+silencer_y					= 10					
+
+silencer_smoke_particles	= weapons\generic_shoot_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time			= 0.2
+
+[wpn_usp_hud]
+shell_point					= -0.320000,-0.010000,0.070000
+fire_point					= -0.000000,-0.005000,-0.353000
+fire_bone                	= wpn_body
+position					= 0.010000,-0.020000,-0.020000
+orientation					= 0.000000,0.000000,0.000000
+visual                   	= weapons\usp_45\wpn_usp_45_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= idle_empty
+anim_reload					= reload
+anim_reload_empty			= reload_empty
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.145000,0.053300,0.161000
+zoom_rotate_x				= -0.002900
+zoom_rotate_y				= 0.000200
+
+zoom_hide_crosshair			= true
+
+zoom_rotate_time			= 0.22
+rotate_time					= 0.22

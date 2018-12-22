@@ -1,0 +1,52 @@
+;Форт-17
+[wpn_fort_m1]:wpn_fort
+$spawn						= "weapons\uniq\wpn_fort_m1"
+inv_name					= wpn-fort_m1
+inv_name_short				= wpn-fort_m1
+inv_weight					= 0.70
+description					= enc_weapons1_wpn-fort_m1
+
+default_to_ruck				= false
+
+visual						= weapons\fort\wpn_fort17.ogf
+inv_grid_x              	= 4
+inv_grid_y              	= 0
+cost 						= 8000
+hud							= wpn_fort_m1_hud
+ammo_mag_size				= 15
+fire_dispersion_base		= 0.28
+misfire_probability			= 0.001
+
+rpm				        	= 290
+
+cam_relax_speed				= 6
+cam_dispersion          	= 0.34
+
+[wpn_fort_m1_hud]:wpn_fort_hud
+
+fire_point					= -0.000000,-0.005000,-0.35000
+
+position					= 0.005000,0.005000,-0.075000
+orientation					= 0.000000,0.000000,0.000000
+
+visual						= weapons\fort\wpn_fort17_hud.ogf
+
+anim_holster				= holster
+anim_idle					= idle
+anim_empty					= idle_empty
+anim_reload					= reload
+anim_reload_empty			= reload_empty
+anim_draw					= draw
+anim_draw_empty				= draw_empty
+anim_shoot					= shoot
+anim_shot_last				= shoot_last
+anim_close					= holster_empty
+anim_idle_aim				= idle_aim
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.119800,0.047850,0.106000
+zoom_rotate_x				= 0.000400
+zoom_rotate_y				= 0.000675
+
+zoom_rotate_time			= 0.22
+rotate_time					= 0.22

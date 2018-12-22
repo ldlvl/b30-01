@@ -1,0 +1,67 @@
+[smart_terrains]
+none = {-tutorial_wounded_give_info}
+esc_lager = {+tutorial_wounded_give_info}
+
+[logic]
+active = walker
+combat_ignore = combat_ignore
+
+[walker]
+path_walk = esc_lager_prisoner_walk
+path_look = esc_lager_prisoner_look
+combat_ignore_cond = always
+def_state_campering = prisoner
+on_info = {=esc_bandits_die} remark@esc_lager_help
+on_info2 = {+tutorial_wounded_give_info} sleeper4@esc_lager
+meet = no_meet
+danger = danger_condition@shustryi1
+
+[remark@esc_lager_help]
+snd = esc_shustryi_help
+anim = prisoner
+meet = no_meet
+target = esc_lager_prisoner_look, 0
+on_actor_dist_le = 5| remark@esc_lager_prisoner
+combat_ignore_cond = always
+danger = danger_condition@shustryi1
+on_signal = sound_end| remark@esc_shustryi_wait
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+[remark@esc_shustryi_wait]
+anim = prisoner
+meet = no_meet
+target = esc_lager_prisoner_look, 0
+on_actor_dist_le = 5| remark@esc_lager_prisoner
+combat_ignore_cond = always
+danger = danger_condition@shustryi1
+on_timer = 10000| remark@esc_lager_help
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+
+[remark@esc_lager_prisoner]
+anim = wait
+anim_reset = false
+target = esc_lager_prisoner_look, 0
+snd = esc_shustryi_thanks
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+on_signal = sound_end| remark@wait_player_at_lager
+combat_ignore_cond = always
+meet = meet@no_meet
+danger = danger_condition@shustryi1
+
+[remark@wait_player_at_lager]
+anim = wait
+anim_reset = false
+target = actor
+meet = meet@friend
+danger = danger_condition@shustryi1
+on_info = {+tutorial_wounded_give_info} sleeper4@esc_lager
+
+[sleeper4@esc_lager]
+path_main = esc_lager_sleep4
+meet = meet@friend
+danger = danger_condition@shustryi1
+
+
+[danger_condition@shustryi1]
+ignore_distance = 0

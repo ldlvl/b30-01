@@ -1,0 +1,33 @@
+[logic]
+active = camper2
+on_death = death
+
+[death]
+on_info = %+mil_crazy_dead%
+
+[camper1]
+path_walk = mil_zomb_stalker_walk1
+path_look = mil_zomb_stalker_look1
+on_actor_in_zone = crazy_zone | camper2
+danger = danger_condition
+radius = 0
+
+[camper2]
+path_walk = mil_zomb_stalker_walk2
+path_look = mil_zomb_stalker_look2
+danger = danger_condition
+meet = meet_crazy
+radius = 10
+no_retreat = true
+
+[danger_condition]
+ignore_distance = 1
+
+[meet_crazy]
+meet_state 		= 2 | refuse  
+meet_state_wpn 	= 2 | refuse
+victim 			= 2 | actor
+victim_wpn 		= 2 | actor
+use			= true
+use_wpn		= true
+abuse       = false

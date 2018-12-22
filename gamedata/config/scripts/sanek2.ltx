@@ -1,0 +1,53 @@
+[logic]
+active = walker@day
+on_death = death
+trade = misc\sanek_trade.ltx
+
+[walker@day]
+path_walk = sanek2_way
+path_look = sanek2_look
+meet = meet@sanek2
+on_info = {+trup_sanek_to_charch} walker@to_charch
+danger = danger_condition
+
+[walker@to_charch]
+path_walk = sanek_marsh_to_charch_way
+path_look = sanek_marsh_to_charch_look
+on_signal = marsh_charch_end| walker@marsh_charch_end
+meet = no_meet
+danger = danger_condition
+
+[walker@marsh_charch_end]
+path_walk = sanek_marsh_to_charch_way
+path_look = sanek_marsh_to_charch_look
+meet = meet@sanek2
+on_info = {+trup_sanek_to_charch_end} walker@charch_end
+danger = danger_condition
+
+[walker@charch_end]
+path_walk = sanek_marsh_to_charch_way
+path_look = sanek_marsh_to_charch_look
+on_timer = 15000 | walker@to_charch_end
+danger = danger_condition
+
+[walker@to_charch_end]
+path_walk = sanek_marsh_charch_end_way
+path_look = sanek_marsh_charch_end_look
+meet = no_meet
+danger = danger_condition
+
+[meet@sanek2]
+meet_state = 2|wait
+meet_state_wpn = 5|guard
+victim 			= 5 | actor
+victim_wpn 		= 5 | actor
+use			= true
+use_wpn		= true
+abuse       = false
+meet_dialog	= marsh_sanek_start_dialog
+
+[danger_condition]
+ignore_distance = 1
+
+[death]
+on_info = %+sanek_umer%

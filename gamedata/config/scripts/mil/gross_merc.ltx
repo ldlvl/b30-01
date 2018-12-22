@@ -1,0 +1,43 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = walker
+combat_ignore = combat_ignore
+danger = danger_condition@gross_merk
+on_hit = hit
+on_death = death
+
+[walker]
+path_walk = mil_mercs_volkodav_walk
+path_look = mil_mercs_volkodav_look
+;combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+combat_ignore_cond = always
+meet = meet
+danger = danger_condition@gross_merk
+
+[meet]
+use	= true
+;use_wpn	= false
+meet_state = sit_ass
+meet_state_wpn = sit_ass
+meet_dialog	= gross_merc_start_dialog
+precond = visibility
+
+[combat_ignore]
+;combat_ignore_cond = {-mil_mercs_fire =fighting_actor}
+combat_ignore_cond = always
+
+[danger_condition@gross_merk]
+ignore_distance = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse  = 0
+ignore_distance_danger_hit     = 20
+ignore_distance_sound   = 0 
+danger_inertion_time_hit = 1
+
+[hit]
+on_info = {-mil_mercs_fire =hit_by_actor} %+mil_mercs_fire =sak.mil_abuse()%
+
+[death]
+on_info = {-mil_mercs_fire =killed_by_actor} %+mil_mercs_fire =sak.mil_abuse()%

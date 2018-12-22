@@ -1,0 +1,168 @@
+;АК Стрелка_ремонт
+[wpn_ak74_m2]:wpn_ak104
+description							= enc_weapons1_wpn-ak_strelok_rem
+
+default_to_ruck						= false
+
+inv_name                    		= wpn-ak_strelok    
+inv_name_short              		= wpn-ak_strelok
+ammo_class							= ammo_7.62x39_fmj,ammo_7.62x39_ap
+grenade_launcher_status				= 0
+scope_status 						= 2
+scope_mode 							= 3
+scope_name 							= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+silencer_status						= 2
+silencer_name						= wpn_addon_sil_762_ar
+silencer_x							= 159
+silencer_y							= 6
+
+cost								= 50000
+
+ammo_limit							= 210
+ammo_elapsed						= 45
+ammo_mag_size						= 45
+
+inv_weight							= 2.5
+
+fire_modes							= 1, 3, -1
+
+icon_group                  		= 2
+inv_grid_width     					= 4
+inv_grid_height    					= 2
+inv_grid_x         					= 14
+inv_grid_y         					= 2
+
+control_inertion_factor				= 1.1f
+scope_x					    		= 65
+scope_y								= -13
+
+	
+ironsight_zoom_factor       		= 80
+scope_zoom_factor           		= 50	
+	
+hud									= wpn_ak74_m1_hud
+visual         		        		= weaponsv\ak_strel\wpn_ak_strelok.ogf	
+	
+snd_shoot							= weapons\ak_strel\ak_strel_shoot
+snd_silncer_shot					= weapons\ak_strel\ak_strel_sil_shoot
+snd_reload							= weapons\ak_strel\ak_strel_reload
+	
+slot 								= 1,2
+smoke_particles						= weapons\generic_shoot_00
+flame_particles						= 
+light_disabled						= true
+	
+fire_dispersion_base				= 0.3
+
+fire_dispersion_condition_factor 	= 2.5
+misfire_probability 				= 0.002
+misfire_condition_k					= 0.50
+
+condition_shot_dec 					= 0.00035
+	
+cam_relax_speed         			= 4	
+cam_dispersion          			= 0.30
+cam_dispersion_inc					= 0.3
+cam_dispertion_frac					= 0.9
+cam_max_angle						= 30
+cam_max_angle_horz					= 10
+cam_step_angle_horz					= 1
+
+PDM_disp_base 						= 1.8
+PDM_disp_vel_factor 				= 2.2
+PDM_disp_accel_factor 				= 3.5
+PDM_crouch	 						= 1.45
+PDM_crouch_no_acc 					= 0.65 
+
+hit_power                			= 0.9
+hit_impulse		 					= 1.0
+fire_distance            			= 150	
+bullet_speed						= 740
+rpm                      			= 700
+
+[wpn_ak74_m2_hud]:wpn_ak104_hud
+visual                  			= weaponsv\ak_strel\wpn_ak_strelok_hud.ogf
+fire_point							= 0.001000,0.000030,0.092998
+	
+anim_shoot							= normal_shoot
+
+anim_idle_gl						= normal_idle
+anim_idle_gl_aim					= normal_idle_aim
+anim_reload_gl						= normal_reload
+anim_draw_gl						= normal_draw
+anim_holster_gl						= normal_holster
+anim_shoot_gl						= normal_shoot
+anim_idle_sprint_gl					= normal_idle_sprint
+
+anim_idle_g							= normal_idle
+anim_idle_g_aim						= normal_idle_aim
+anim_reload_g						= normal_reload
+anim_shoot_g						= normal_shoot
+anim_switch_grenade_on				= normal_idle_aim
+anim_switch_grenade_off				= normal_idle_aim
+anim_draw_g							= normal_draw
+anim_holster_g						= normal_holster
+
+position							= 0.02000,-0.020000,-0.010000
+orientation							= 0.000000,0.0000000,0.000000
+	
+zoom_offset							= -0.115900,0.027300,-0.157000
+zoom_rotate_x						= -0.000800
+zoom_rotate_y						= -0.000400
+
+zoom_rotate_time					= 0.25
+rotate_time							= 0.25
+
+[wpn_ak74_m2_acog]:wpn_ak74_m2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.15f
+
+hud									= wpn_ak74_m1_acog_hud
+
+visual         		        		= weaponsv\ak_strel\wpn_ak_strelok.ogf
+
+[wpn_ak74_m2_acog_hud]:wpn_ak74_m1_hud
+visual                  			= weaponsv\ak_strel\wpn_ak_strelok_hud.ogf
+zoom_offset							= -0.115480,-0.015900,1.004270
+zoom_rotate_x						= -0.000350
+zoom_rotate_y						= 0.000200
+
+zoom_rotate_time					= 0.26
+rotate_time							= 0.26
+
+[wpn_ak74_m2_eotech]:wpn_ak74_m2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.15f
+
+hud									= wpn_ak74_m1_eotech_hud
+
+visual         		        		= weaponsv\ak_strel\wpn_ak_strelok_eotech.ogf
+
+[wpn_ak74_m2_eotech_hud]:wpn_ak74_m1_hud
+visual                  			= weaponsv\ak_strel\wpn_ak_strelok_eotech_hud.ogf
+zoom_offset							= -0.115480,-0.006900,-0.164730
+zoom_rotate_x						= 0.014250
+zoom_rotate_y						= -0.000100
+
+zoom_rotate_time					= 0.25
+rotate_time							= 0.25
+
+[wpn_ak74_m2_mt]:wpn_ak74_m2
+scope_attached         				= 0
+
+control_inertion_factor				= 1.15f
+
+hud									= wpn_ak74_m1_mt_hud
+
+visual         		        		= weaponsv\ak_strel\wpn_ak_strelok_mt.ogf
+
+[wpn_ak74_m2_mt_hud]:wpn_ak74_m1_hud
+visual                  			= weaponsv\ak_strel\wpn_ak_strelok_mt_hud.ogf
+zoom_offset							= -0.115480,-0.009900,2.437270
+zoom_rotate_x						= 0.002250
+zoom_rotate_y						= -0.000200
+
+zoom_rotate_time					= 0.26
+rotate_time							= 0.26

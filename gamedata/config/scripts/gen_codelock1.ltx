@@ -1,0 +1,12 @@
+[logic]
+active = ph_code@lock
+
+[ph_code@lock]
+on_check_code1 = 45287 | {+generators_code_door1_info} %+generators_code_door_unlocked% ph_idle@idle
+on_check_code2 = 25863 | {+generators_code_door2_info} %+generators_code_door_unlocked% ph_idle@idle
+on_check_code3 = 24589 | {+generators_code_door3_info} %+generators_code_door_unlocked% ph_idle@idle
+on_check_code4 = 23481 | {+generators_code_door4_info} %+generators_code_door_unlocked% ph_idle@idle
+on_check_code5 = 98524 | {+generators_code_door5_info} %+generators_code_door_unlocked% ph_idle@idle
+
+[ph_idle@idle]
+on_timer = 10000| %-generators_code_door_unlocked% ph_code@lock

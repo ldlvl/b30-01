@@ -1,0 +1,220 @@
+;АС "Вал"
+[wpn_val]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn                  	= "weapons\val"	
+$npc			 			= on
+$prefetch 					= 8
+scheduled            		= off
+cform                		= skeleton
+class                		= WP_VAL
+min_radius					= 0
+max_radius					= 100
+description					= enc_weapons1_wpn-val
+
+default_to_ruck				= false
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+holder_range_modifier		= 1.0
+holder_fov_modifier			= 0.7
+
+cost		 	 			= 18000
+weapon_class				= assault_rifle
+
+ammo_limit					= 210
+ammo_current				= 180
+ammo_elapsed				= 20
+	
+ammo_mag_size				= 20
+ammo_class		 			= ammo_9x39_sp5, ammo_9x39_ap, ammo_9x39_pab9
+fire_modes					= 1, -1
+f_mode						= 2
+
+hand_dependence		 		= 1
+single_handed				= 0
+	
+slot 				 		= 2
+animation_slot		 		= 2
+
+inv_name	         		= wpn-val
+inv_name_short		 		= wpn-val
+inv_weight		 			= 2.7
+icon_group         			= 2
+inv_grid_width     			= 5
+inv_grid_height    			= 2
+inv_grid_x         			= 6
+inv_grid_y         			= 12
+
+kill_msg_x					= 0
+kill_msg_y					= 154
+kill_msg_width				= 78
+kill_msg_height				= 21
+
+fire_dispersion_base		= 0.2
+control_inertion_factor		= 1.2f
+
+cam_relax_speed         	= 5
+cam_dispersion          	= 0.28
+cam_dispersion_inc			= 0.28
+cam_dispertion_frac			= 0.9
+cam_max_angle				= 30
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 1.4
+
+fire_dispersion_condition_factor = 2 
+misfire_probability 		= 0.007
+misfire_condition_k 		= 0.50
+condition_shot_dec 			= 0.00035
+
+direction            	    = 0, 0, 1
+
+fire_point           	    = 0.0, 0.175, 0.580
+
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point		 			= 0,0.190,0.120
+shell_dir		 			= 0.0, 1.0, 0.0
+shell_particles	 			= weapons\arsenal_shells1
+
+rpm_empty_click 			= 200
+
+PDM_disp_base 				= 2.0
+PDM_disp_vel_factor 		= 3.0
+PDM_disp_accel_factor 		= 5.0
+PDM_crouch					= 1.9
+PDM_crouch_no_acc			= 0.7
+
+hit_power        			= 1
+hit_impulse		 			= 1
+hit_type 					= fire_wound
+
+fire_distance				= 150
+bullet_speed				= 290
+rpm             			= 900
+
+use_aim_bullet				= false
+time_to_aim					= 1.0	
+
+hud             	        = wpn_val_hud
+normal          	        = 0, 1, 0
+position        	        = -0.026, -0.131, 0.0
+orientation     	        = 0, 0, 0
+
+strap_position         		= -0.32,-0.10,0.08
+strap_orientation      		= -05,-5,110
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo    	        = 90
+visual          	        = weaponsv\9x39\val\wpn_val
+
+light_disabled				= true
+
+ph_mass			 			= 5
+
+scope_status				= 2
+silencer_status				= 1
+grenade_launcher_status		= 0
+
+zoom_enabled				= true
+scope_name 					= wpn_addon_1pso,wpn_addon_1p78,wpn_addon_cobra
+scope_x						= 56
+scope_y						= -2
+
+scope_mode 					= 3
+
+ironsight_zoom_factor       = 90
+scope_zoom_factor           = 50
+
+snd_draw					= weapons\val_vss\val_draw
+snd_holster					= weapons\val_vss\val_holster
+snd_shoot					= weapons\val_vss\val_9x39_shotbullet_0
+snd_shoot1					= weapons\val_vss\val_9x39_shotbullet_1
+snd_shoot2					= weapons\val_vss\val_9x39_shotbullet_2
+snd_shoot3					= weapons\val_vss\val_9x39_shotbullet_3
+snd_empty					= weapons\rifle_empty, 0.6
+snd_reload					= weapons\val_vss\val_reload_swmt
+snd_close					= weapons\generic_close
+snd_razgruzka				= weapons\razgruzka\ammo_4
+
+[wpn_val_hud]
+shell_point					= 0.005000,0.005000,-0.130000
+shell_dir			 		= 0.0, 1.0, 0.0
+fire_point					= -0.004000,-0.014970,0.124999
+fire_bone               	= wpn_body
+
+position					= 0.1000,-0.035000,-0.170000
+orientation					= 0.000000,0.000000,0.000000
+
+visual						= weaponsv\9x39\val\wpn_val_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset					= -0.099800,0.038400,-0.079000
+zoom_rotate_x				= -0.002000
+zoom_rotate_y				= 0.000700
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27
+
+[wpn_val_1pso]:wpn_val
+hud  						= wpn_val_1pso_hud
+visual              		= weaponsv\9x39\val\wpn_val
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+[wpn_val_1pso_hud]:wpn_val_hud
+visual              		= weaponsv\9x39\val\wpn_val_hud.ogf
+
+zoom_offset					= -0.090900,-0.004100,1.873500
+zoom_rotate_x				= 0.001200
+zoom_rotate_y				= -0.001360
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_val_1p78]:wpn_val
+hud  						= wpn_val_1p78_hud
+visual              		= weaponsv\9x39\val\wpn_val_1p78
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.25f
+
+[wpn_val_1p78_hud]:wpn_val_hud
+visual              		= weaponsv\9x39\val\wpn_val_1p78_hud.ogf
+
+zoom_offset					= -0.102600,-0.006900,1.122000
+zoom_rotate_x				= 0.001800
+zoom_rotate_y				= 0.000800
+
+zoom_rotate_time			= 0.28
+rotate_time					= 0.28
+
+[wpn_val_cobra]:wpn_val
+hud  						= wpn_val_cobra_hud
+visual              		= weaponsv\9x39\val\wpn_val_cobra
+
+scope_attached         		= 0
+
+control_inertion_factor		= 1.2f
+
+[wpn_val_cobra_hud]:wpn_val_hud
+visual              		= weaponsv\9x39\val\wpn_val_cobra_hud.ogf
+
+zoom_offset					= -0.100300,-0.024100,-0.078900
+zoom_rotate_x				= -0.015600
+zoom_rotate_y				= -0.003700
+
+zoom_rotate_time			= 0.27
+rotate_time					= 0.27

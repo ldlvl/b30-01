@@ -1,0 +1,12 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = %+new_teleport_anomalies% sr_teleport
+
+[sr_teleport]
+point1 = gar_sak_teleport_0001_exit_walk
+look1  = gar_sak_teleport_0001_exit_look
+timeout = 20
+
+on_info =  {+gar_bandits_raid} nil 

@@ -1,0 +1,21 @@
+[logic]
+active = ph_idle@lock
+
+[ph_idle@lock]
+tips = no_supply
+on_info = {+supply_radar_on} ph_code@lock
+
+[ph_code@lock]
+on_check_code1 = 35698 | {+x18_iq_check_info1} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code2 = 42563 | {+x18_iq_check_info2} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code3 = 25639 | {+x18_iq_check_info3} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code4 = 75246 | {+x18_iq_check_info4} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code5 = 86536 | {+x18_iq_check_info5} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code6 = 78425 | {+x18_iq_check_info6} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code7 = 89512 | {+x18_iq_check_info7} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code8 = 95861 | {+x18_iq_check_info8} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code9 = 45219 | {+x18_iq_check_info9} %=play_snd(device\door_servomotor) =sak.add_new_x10_130%
+on_check_code6 = 3265987401 | %=sak.add_new_x10_130%
+
+
+

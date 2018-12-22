@@ -1,0 +1,27 @@
+[logic]
+active = ph_button@stop
+
+[ph_button@stop]
+anim = br_off_no_kay
+on_info = {+x12_pump_on} ph_button@on_tmbl
+
+[ph_button@on_tmbl]
+anim = br_run
+;on_timer = 1000 | ph_button@on_tmbl_stop %+pump_x12_on =play_snd(device\power_switch) =sak.x12_beton_add()%
+on_timer = 1000 | ph_button@on_tmbl_stop %+x12_pump_info3 =play_snd(device\power_switch) =sak.x12_beton_add()%
+
+[ph_button@on_tmbl_stop]
+anim = br_on
+on_timer = 1000 | ph_button@pult_on %=play_snd_from_obj(3160:ambient\transformer_hum1) =turn_off(3162) =turn_on(3161) =sak.restore_weap()%
+
+[ph_button@pult_on]
+anim = br_on
+on_info = {+x12_pump_off} ph_button@off_tmbl
+
+[ph_button@off_tmbl]
+anim = br_off
+on_timer = 1000 | ph_button@off_tmbl_stop %-pump_x12_on  =play_snd(device\power_switch)%
+
+[ph_button@off_tmbl_stop]
+anim = br_off_no_kay
+on_timer = 1000 | ph_button@stop %=stop_play_snd_from_obj(3160:ambient\transformer_hum1) =turn_off(3161) =turn_on(3162) =sak.restore_weap()%

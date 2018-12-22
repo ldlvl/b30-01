@@ -1,0 +1,28 @@
+[logic]
+active = ph_button@deactive
+
+[ph_button@deactive]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_04
+on_info={+labx8_lamp_4_off} ph_button@deactivate
+on_info2={+labx8_lamp_4_on} ph_button@activate
+on_press = ph_button@activate  %=play_snd_from_obj(6104:ambient\switch_1)%
+
+[ph_button@activate]
+anim = lab_primary_switcher_idle 
+on_timer = 500 | %+deactivate_radar_fall -lx8_door_unlocked =play_snd_from_obj(6104:ambient\transformer_hum1)  =turn_on(6123) =turn_on(6115) =turn_on(6136) =turn_on(6137)% ph_button@activate2
+
+[ph_button@activate2]
+anim = lab_primary_switcher_idle 
+tooltip = tips_x8_switcher_press_04
+on_timer = 1000 |%=play_snd_from_obj(6104:ambient\transformer_hum1)%
+on_press = ph_button@deactivate  %=play_snd_from_obj(6104:ambient\switch_1) +labx8_lamp_4_off%
+
+[ph_button@deactivate]
+anim = lab_primary_switcher_off
+on_timer = 500 | %=stop_play_snd_from_obj(6104:ambient\transformer_hum1) =turn_off(6123) =turn_off(6115) =turn_off(6136) =turn_off(6137)% ph_button@deactivate2
+
+[ph_button@deactivate2]
+anim = lab_primary_switcher_off
+tooltip = tips_x8_switcher_press_04
+on_press = ph_button@activate  %=play_snd_from_obj(6104:ambient\switch_1) +labx8_lamp_4_on%

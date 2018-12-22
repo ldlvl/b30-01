@@ -1,0 +1,11 @@
+[logic] ; ƒверь 2 -за ней стена
+active = ph_code@lock
+
+;[ph_code@lock]
+;code = 16252
+;on_code1 = {+bar_codelock1_info} %+bar_codelock1_unlock% 
+
+[ph_code@lock]
+on_check_code1 = 2 | %+bun_codelock2_open%
+
+

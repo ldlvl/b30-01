@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+<specific_character id="amk_artem_kulinar" team_default = "1">
+		<name>artem_kulinar_name</name>
+		<icon>ui_npc_u_kulinar</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+		
+		<class>amk_artem_kulinar</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>423</rank>
+		<reputation>1000</reputation>
+		<money min="100000" max="200000" infinitive="1"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\gavaec</visual>
+		<supplies>
+			[spawn] \n
+			ammo_5.45x39_ap = 2 \n
+			device_torch \n
+		</supplies>
+#include "gameplay\character_criticals_4.xml"
+		<start_dialog>artem_kulinar</start_dialog>
+		<actor_dialog>kulinar_help_entres_dialog</actor_dialog>
+		<actor_dialog>kulinar_help_me_entres_dialog</actor_dialog>
+		<actor_dialog>kulinar_opt_food_find_start_dialog</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+		<actor_dialog>borov_kill_stalker_dlg2</actor_dialog>
+		<actor_dialog>borov_kill_stalker_dlg3</actor_dialog>		
+</specific_character>
+
+<specific_character id="amk_vitek_voron" team_default = "1">
+		<name>vitek_voron_name</name>
+		<icon>ui_npc_u_stalker_clear_sky_1</icon>
+		<map_icon x="1" y="0"></map_icon>
+		<bio>gar_stalker_regular_bio</bio>
+
+		<class>amk_vitek_voron</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+		<rank>423</rank>
+		<reputation>1000</reputation>
+		<money min="100000" max="200000" infinitive="1"/>
+		
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+		<crouch_type>-1</crouch_type>
+		
+		<visual>actors\clear_sky_3</visual>
+
+		<supplies>
+			[spawn] \n
+			wpn_ak74m \n
+			ammo_5.45x39_ap = 2 \n
+			device_torch \n
+		</supplies>
+#include "gameplay\character_criticals_4.xml"
+		<start_dialog>dm_hello_dialog</start_dialog>
+		<actor_dialog>voron_help_entres_dialog</actor_dialog>
+		<actor_dialog>tesla_voron_dialog</actor_dialog>
+		<actor_dialog>kulinar_voron_box_dialog</actor_dialog>
+		<actor_dialog>voron_help_me_entres_dialog</actor_dialog>
+		<actor_dialog>voron_nebo_baze_dialog</actor_dialog>
+		<actor_dialog>voron_quest_art1_dialog</actor_dialog>
+		<actor_dialog>voron_quest_art2_dialog</actor_dialog>
+		<actor_dialog>voron_black_tip_1</actor_dialog>
+		<actor_dialog>voron_black_tip_2</actor_dialog>
+		<actor_dialog>voron_find_item_start</actor_dialog>
+		<actor_dialog>voron_garmonika_dialog</actor_dialog>
+		<actor_dialog>voron_artist_dialog</actor_dialog>
+		<actor_dialog>tm_voron_dialog</actor_dialog>
+		<actor_dialog>tm_voron_reward</actor_dialog>
+		<actor_dialog>dm_help_wounded_medkit_dialog</actor_dialog>
+</specific_character>
+</xml>
+

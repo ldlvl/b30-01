@@ -1,0 +1,291 @@
+;FN F2000
+[wpn_fn2000]:weapon_immunities
+GroupControlSection				= spawn_group
+discovery_dependency			= 
+$spawn              			= "weapons\fn2000"
+$npc							= on				
+$prefetch 						= 8
+scheduled						= off
+cform               			= skeleton
+class               			= WP_AK74
+min_radius          			= 30
+max_radius          			= 100
+description						= enc_weapons1_wpn-fn2000
+dialog_description		        = desc_dialog_wpn_fn2000
+
+default_to_ruck					= false
+	
+ef_main_weapon_type				= 2
+ef_weapon_type					= 6
+
+holder_range_modifier			= 1.0
+holder_fov_modifier				= 0.7
+
+cost							= 35000
+weapon_class					= assault_rifle
+	
+ammo_limit						= 210
+ammo_elapsed					= 30
+	
+ammo_mag_size					= 30
+fire_modes						= 1, -1
+ammo_class						= ammo_5.56x45_ss190,ammo_5.56x45_ap,ammo_ak,ammo_5.56x45_merc
+
+grenade_class					= ammo_m209
+launch_speed					= 0
+
+hand_dependence					= 1
+single_handed					= 0
+	
+slot 							= 2
+animation_slot					= 2
+
+inv_name		         		= wpn-fn2000
+inv_name_short		        	= wpn-fn2000
+inv_weight						= 3.8
+icon_group             			= 2
+inv_grid_width     				= 5
+inv_grid_height    				= 2
+inv_grid_x         				= 13
+inv_grid_y         				= 16
+
+kill_msg_x						= 0
+kill_msg_y						= 28
+kill_msg_width					= 84
+kill_msg_height					= 28
+
+fire_dispersion_base			= 0.11
+control_inertion_factor			= 1.15f
+
+cam_relax_speed         		= 4.0
+cam_dispersion          		= 0.15		
+cam_dispersion_inc				= 0.15	
+cam_dispertion_frac				= 0.4		
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz				= 0.3	
+
+fire_dispersion_condition_factor = 1.5
+misfire_probability 			= 0.003
+misfire_condition_k				= 0.50
+condition_shot_dec 				= 0.00025
+
+fire_point             			=  0,0.216,0.638
+fire_point2            			=  0,0.216,0.730
+
+flame_particles					= weapons\generic_weapon05
+smoke_particles					= weapons\generic_shoot_00
+grenade_flame_particles			= weapons\generic_weapon01
+	
+shell_point		 				= 0,0.216,0.174
+shell_particles					= amik\weapons\nato_shells_r_01
+
+PDM_disp_base 					= 2.0
+PDM_disp_vel_factor 			= 2.5
+PDM_disp_accel_factor 			= 3.5
+PDM_crouch	 					= 1.5
+PDM_crouch_no_acc 				= 0.55
+
+hit_power                		= 0.93
+hit_impulse		 				= 1	
+hit_type 						= fire_wound 	
+fire_distance            		= 250	
+bullet_speed					= 900
+rpm                      		= 850
+
+grenade_vel						= 71
+
+use_aim_bullet					= false
+time_to_aim						= 1.0	
+
+hud                      		= wpn_fn2000_hud
+normal                   		= 0, 1, 0
+position                 		= -0.026, -0.132, 0.0
+orientation              		= 0, 0, 0
+
+strap_position         			= -0.15,-0.35,0.27
+strap_orientation      			= -10,-3,10
+strap_bone0						= bip01_spine2
+strap_bone1						= bip01_spine1
+
+startup_ammo             		= 1000
+visual                   		= weapons\fn2000\wpn_fn2000.ogf
+
+light_color		         		= 0.6,0.5,0.3
+light_range		         		= 4
+light_var_color		     		= 0.05
+light_var_range		     		= 0.1
+light_time 		         		= 0.2						
+
+ph_mass							= 4
+
+scope_status					= 2		
+silencer_status					= 0					
+grenade_launcher_status			= 2
+scope_mode 						= 3
+scope_name 						= wpn_addon_eotech, wpn_addon_acog, wpn_addon_mt
+scope_x			                = 106
+scope_y			                = -13
+zoom_enabled					= true
+ironsight_zoom_factor       	= 72
+scope_zoom_factor           	= 72
+
+silencer_name  					= wpn_silencer_fs2000
+silencer_x 						= 218
+silencer_y 						= 13					
+grenade_launcher_name 			= wpn_addon_grenade_launcher_m203
+grenade_launcher_x 				= 125
+grenade_launcher_y 				= 32
+
+snd_draw						= weapons\fn2000\fn2000_draw
+snd_holster						= weapons\fn2000\fn2000_holster
+snd_shoot						= weapons\fn2000\fn2000_shoot
+snd_shoot1						= weapons\fn2000\fn2000_shoot1  
+snd_shoot2						= weapons\fn2000\fn2000_shoot2  
+snd_shoot3						= weapons\fn2000\fn2000_shoot3        
+snd_empty						= weapons\fn2000\fn2000_empty
+snd_reload						= weapons\fn2000\fn2000_reload_v2
+snd_shoot_grenade				= weapons\fn2000\m203_grenshoot
+snd_reload_grenade				= weapons\fn2000\fn2000_grenload
+snd_switch						= weapons\fn2000\fn2000_switch
+snd_razgruzka					= weapons\razgruzka\ammo_5
+
+;silencer_flame_particles 		= weapons\generic_weapon01
+silencer_smoke_particles 		= weapons\generic_shoot_00
+
+snd_silncer_shot				= weapons\w_ak74_shot1 
+
+silencer_light_color			= 0.6,0.5,0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time 			= 0.2
+
+[wpn_fn2000_hud]
+allow_inertion					= true
+
+shell_dir			     		= 0.0, 1.0, 0.0
+fire_point						= 0.000000,0.018000,-0.028000
+shell_point						= 0.035000,0.000000,0.005000
+fire_point2						= 0.030000,-0.460000,0.951999
+fire_bone               		= wpn_body
+
+position						= 0.102000,0.004000,-0.045000
+orientation						= 0.000000,0.000000,0.000000
+
+visual                   		= weapons\fn2000\wpn_fn2000_hud.ogf
+
+grenade_bone            		= wpn_grenade
+
+anim_idle 						= idle
+anim_idle_aim 					= idle_aim
+anim_reload 					= reload_v2
+anim_draw 						= draw
+anim_holster 					= holster
+anim_shoot 						= shoot
+
+anim_idle_g						= idle_grenade
+anim_idle_g_aim         		= idle_grenade_aim
+anim_reload_g					= reload_grenade
+anim_shoot_g					= shoot_grenade
+anim_switch_grenade_on			= switch_on_fix2
+anim_switch_grenade_off			= switch_off_fix2
+anim_draw_g						= draw_grenade
+anim_holster_g					= holster_grenade
+
+anim_idle_gl					= idle_w_gl
+anim_idle_gl_aim				= idle_w_gl_aim
+anim_reload_gl					= reload_v2_w_gl
+anim_draw_gl					= draw_w_gl
+anim_holster_gl					= holster_w_gl
+anim_shoot_gl					= shoot_w_gl
+anim_idle_sprint				= idle_sprint_w_gl
+
+zoom_offset						= -0.101300,0.015100,-0.145500
+zoom_rotate_x					= 0.004900
+zoom_rotate_y					= -0.000700
+
+zoom_hide_crosshair				= true
+
+grenade_normal_zoom_offset		= -0.101300,0.015100,-0.145500
+grenade_normal_zoom_rotate_x	= 0.004900
+grenade_normal_zoom_rotate_y	= -0.000700
+
+grenade_zoom_offset				= -0.160800,-0.152501,0.070000
+grenade_zoom_rotate_x			= -0.145301
+grenade_zoom_rotate_y			= 0.001600
+
+zoom_rotate_time				= 0.25
+rotate_time						= 0.25
+
+[wpn_fn2000_eotech]: wpn_fn2000
+visual 							= weapons\fn2000\wpn_fn2000_eotech.ogf
+
+hud                      		= wpn_fn2000_eotech_hud
+grenade_launcher_status			= 2
+scope_attached         			= 0
+
+control_inertion_factor			= 1.15f
+
+[wpn_fn2000_eotech_hud]: wpn_fn2000_hud
+visual                   		= weapons\fn2000\wpn_fn2000_eotech_hud.ogf
+
+zoom_offset						= -0.102300,-0.020000,-0.085500
+zoom_rotate_x					= 0.004600
+zoom_rotate_y					= -0.000500
+
+grenade_normal_zoom_offset		= -0.102300,-0.020000,-0.085500
+grenade_normal_zoom_rotate_x	= 0.004600
+grenade_normal_zoom_rotate_y	= -0.000500
+
+zoom_rotate_time				= 0.25
+rotate_time						= 0.25
+
+[wpn_fn2000_acog]: wpn_fn2000
+visual 							= weapons\fn2000\wpn_fn2000_acog.ogf
+
+hud                      		= wpn_fn2000_acog_hud
+grenade_launcher_status			= 2
+scope_attached         			= 0
+
+control_inertion_factor			= 1.2f
+
+[wpn_fn2000_acog_hud]: wpn_fn2000_hud
+fire_point						= 0.100000,-0.182000,0.672000
+visual                   		= weapons\fn2000\wpn_fn2000_acog_hud.ogf
+
+zoom_offset						= -0.099800,-0.020700,1.083500
+zoom_rotate_x					= 0.001900
+zoom_rotate_y					= -0.001700
+
+grenade_normal_zoom_offset		= -0.099800,-0.020700,1.083500
+grenade_normal_zoom_rotate_x	= 0.001900
+grenade_normal_zoom_rotate_y	= -0.001700
+
+zoom_rotate_time				= 0.26
+rotate_time						= 0.26
+
+[wpn_fn2000_mt]: wpn_fn2000
+fire_point						= 0.100000,-0.182000,0.672000
+visual 							= weapons\fn2000\wpn_fn2000_acog.ogf
+
+hud                      		= wpn_fn2000_mt_hud
+grenade_launcher_status			= 2
+scope_attached         			= 0
+
+control_inertion_factor			= 1.2f
+
+[wpn_fn2000_mt_hud]: wpn_fn2000_hud
+fire_point						= 0.100000,-0.182000,0.672000
+visual                   		= weapons\fn2000\wpn_fn2000_mt_hud.ogf
+
+zoom_offset						= -0.100600,-0.018000,2.484500
+zoom_rotate_x					= -0.000400
+zoom_rotate_y					= -0.002300
+
+grenade_normal_zoom_offset		= -0.100600,-0.018000,2.484500
+grenade_normal_zoom_rotate_x	= -0.000400
+grenade_normal_zoom_rotate_y	= -0.002300
+
+zoom_rotate_time				= 0.26
+rotate_time						= 0.26

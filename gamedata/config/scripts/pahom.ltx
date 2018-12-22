@@ -1,0 +1,60 @@
+[logic]
+active = walker@one
+combat_ignore = combat_ignore
+trade = misc\marsh_trader.ltx
+inv_max_weight = 10000
+
+[walker@one]
+path_walk = marsh_trader_1walk_way
+path_look = marsh_trader_1way_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = no_meet
+danger = danger_condition
+on_timer = 13000| {=actor_in_zone(marsh_trader_meet_zone)} walker@three, walker@two
+
+[walker@two]
+path_walk = marsh_trader_2walk_way
+path_look = marsh_trader_2way_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = no_meet
+danger = danger_condition
+on_timer = 13000| {=actor_in_zone(marsh_trader_meet_zone)} walker@three, walker@four
+
+
+[walker@three]
+path_walk = marsh_trader_3walk_way
+path_look = marsh_trader_3way_look
+meet = meet1
+danger = danger_condition
+on_info = {=actor_out_zone(marsh_trader_meet_zone)} walker@four
+
+[walker@four]
+path_walk = marsh_trader_4walk_way
+path_look = marsh_trader_4way_look
+def_state_standing = barman_wait_free
+def_state_moving1 = barman_walk_free
+def_state_moving2 = barman_walk_free
+def_state_moving3 = barman_walk_free
+meet = no_meet
+danger = danger_condition
+on_timer = 20000| {=actor_in_zone(marsh_trader_meet_zone)} walker@three, walker@one
+
+[danger_condition]
+ignore_distance = 0
+[combat_ignore]
+combat_ignore_cond = always
+
+[meet1]
+meet_state = 2|barman_talk_free@bar_bar_barmen_hello
+meet_state_wpn = 2|barman_talk_free@bar_bar_barmen_hello
+victim = 2|actor
+victim_wpn = 2|actor
+use = true
+use_wpn = true
+meet_dialog	= marsh_trader_start

@@ -1,0 +1,19 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = 
+on_info = {+ecolog_find_item_5_start} ph_idle@idle1
+
+[ph_idle@idle1]
+tips = take_card
+on_use = %=sak.remove_spot_from_logic(crlc_big_treasure3)=sak.actor_hide_weapon()% ph_idle@idle2_1
+
+[ph_idle@idle2_1]
+on_timer = 1000| %+ecolog_apparat_rychag_01% ph_idle@idle2
+
+[ph_idle@idle2]
+on_timer = 3000| %=sak.add_red_cart()% nil
+
+[collide]
+ignore_static

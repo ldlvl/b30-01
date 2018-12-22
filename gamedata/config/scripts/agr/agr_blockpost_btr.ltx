@@ -1,0 +1,55 @@
+[logic]
+active = ph_car@idle
+on_hit = hit
+
+[hit]
+on_info = {=hit_by_actor} %+agr_nii_alarm%
+
+[ph_car@idle]
+target=actor
+fire_range=80
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {+agr_nii_alarm} ph_car@eliminate
+on_info2 = {!is_day}  ph_car@night
+
+
+[ph_car@night]
+target=actor
+fire_range=40
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {+agr_nii_alarm} ph_car@eliminate
+on_info2 = {=is_day}  ph_car@idle
+
+
+[ph_car@eliminate]
+target=actor
+fire_range=120
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {-agr_nii_alarm} ph_car@idle
+on_info2 = {!is_day -agr_nii_alarm} ph_car@eliminate_night
+
+
+[ph_car@eliminate_night]
+target=actor
+fire_range=80
+fire_repeat=50
+auto_fire=true
+track_target=true
+on_info = {+agr_nii_alarm} ph_car@idle
+on_info2 = {=is_day -agr_nii_alarm} ph_car@eliminate
+
+
+[ph_car@no_fire]
+target=actor
+fire_range=0
+fire_repeat=50
+auto_fire=false
+track_target=true
+on_info = {-mil_find_prizrak_today} ph_car@idle
+on_death_info = esc_btr_killed

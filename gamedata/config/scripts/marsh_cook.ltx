@@ -1,0 +1,20 @@
+[logic]
+active = walker
+trade = misc\marsh_cook_trade.ltx
+inv_max_weight = 10000
+
+[walker]
+path_walk = marsh_baze_cook_1_walk
+path_look = marsh_baze_cook_1_look
+soundgroup = bar_visitors1
+meet = meet
+danger = danger_condition
+
+[danger_condition]
+ignore_distance = 0
+
+[meet]
+use = true
+use_wpn = true
+meet_talk_enabled = true
+meet_dialog	= marsh_cook_start_dialog

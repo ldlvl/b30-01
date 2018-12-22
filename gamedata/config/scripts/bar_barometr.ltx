@@ -1,0 +1,37 @@
+[logic]
+active = ph_button@peremenno
+
+[ph_button@peremenno]
+anim = peremenno
+on_info={+rain_info} ph_button@dojd
+on_info2={+groza_info} ph_button@groza
+on_info3={+clear_info} ph_button@yasno
+on_info4={+vybros_info} ph_button@vibros
+
+[ph_button@dojd]
+anim = dojd
+on_info={+pasmurno_info} ph_button@peremenno
+on_info2={+groza_info} ph_button@groza
+on_info3={+clear_info} ph_button@yasno
+on_info4={+vybros_info} ph_button@vibros
+
+[ph_button@groza]
+anim = groza
+on_info={+rain_info} ph_button@dojd
+on_info2={+pasmurno_info} ph_button@peremenno
+on_info3={+clear_info} ph_button@yasno
+on_info4={+vybros_info} ph_button@vibros
+
+[ph_button@yasno]
+anim = yasno
+on_info={+rain_info} ph_button@dojd
+on_info2={+groza_info} ph_button@groza
+on_info3={+pasmurno_info} ph_button@peremenno
+on_info4={+vybros_info} ph_button@vibros
+
+[ph_button@vibros]
+anim = vibros
+on_info={+rain_info} ph_button@dojd
+on_info2={+groza_info} ph_button@groza
+on_info3={+clear_info} ph_button@yasno
+on_info4={+pasmurno_info} ph_button@peremenno

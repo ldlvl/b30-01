@@ -1,0 +1,16 @@
+[logic] ; за дверью стена
+active = ph_door@closed
+
+[ph_door@open]
+locked = false
+closed = false
+tip_open = 
+tip_close =
+on_use = ph_door@closed
+
+[ph_door@closed]
+locked = false
+closed = true
+tip_open = 
+tip_close = 
+on_use = ph_door@open

@@ -1,0 +1,19 @@
+[smart_terrains]
+none = true
+
+[logic]
+active = mob_fake_death
+
+[mob_fake_death] 
+on_actor_dist_le_nvis = 10 | mob_home
+
+[mob_home]
+path_home = dead_zomb11
+home_min_radius = 10
+home_max_radius = 20
+aggressive_home
+on_signal = sig_attacked | mob_combat
+on_actor_dist_ge_nvis = 20 | mob_fake_death
+
+[mob_combat]
+on_timer = 30000 | mob_home

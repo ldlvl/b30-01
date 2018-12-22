@@ -1,0 +1,89 @@
+[zone_bubble]
+GroupControlSection	= spawn_group_zone
+$spawn 			= "zones\zone_bubble"
+$prefetch 		= 16
+class			= Z_BBL
+script_binding = bind_bubble.bind
+
+hit_impulse_scale			= 0.0
+effective_radius			= 3.0
+
+ef_anomaly_type				= 1
+ef_weapon_type				= 13
+
+sound			= 
+postprocess		= postprocess_flame
+
+artefacts			=
+BirthProbability	= 0
+
+
+
+
+min_start_power		= 0.99
+max_start_power		= 1.00
+attenuation			= 1
+period				= 1
+min_artefact_count	= 0
+max_artefact_count	= 0
+
+bubble					= standart
+radius_zahvat 			= 10		;радиус захвата ГГ
+time_acceleration 		= 30		;во сколько раз убыстряется время в пузыре
+time_exit 				= 6;10;3			;время открытого прохода в реальных секундах
+ppe_effect				= pas_b400_acidic.ppe
+
+idle_particles		= anomaly2\bold_idle_sarkofag;a_ufp_particles\smoke_anomalie_idle;anomaly2\tornado_00 
+;blowout_particles	= a_ufp_particles\mini_tornado_idle;anomaly2\zone_breathe_zaxvat;anomaly2\tornado_00 ;anomaly2\teleport 
+
+hit_small_particles					= anomaly2\group_items\studen_idle_bottom_00
+hit_big_particles					= anomaly2\group_items\studen_idle_bottom_00
+idle_small_particles		= anomaly2\group_items\studen_idle_bottom_00
+idle_big_particles					= anomaly2\group_items\studen_idle_bottom_00
+
+idle_sound			= anomaly\greedy_idle 	
+blowout_sound		= anomaly\anomaly_body_tear_1; anomaly_gravy_blast01
+hit_sound			= anomaly\anomaly_gravy_hit1 
+body_tearing_sound	= anomaly\gravity_entrance
+entrance_sound		= anomaly\greedy_idle_1 	
+
+hit_type					= radiation
+							  
+disable_time				= 10000
+disable_time_small			= -1
+disable_idle_time			= 50000
+
+ignore_nonalive				= false
+ignore_small				= false
+ignore_artefacts			= false
+
+blowout_light				= on
+light_color		    		= 1.1,0.7,1.4
+light_animation             = light_green_01
+light_range		    		= 4
+light_time 		    		= 0.35
+light_height				= 0.75
+
+
+idle_light					= off
+idle_light_range			= 2.0
+idle_light_range_delta 		= 0.25
+idle_light_anim				= light_green_02
+idle_light_height			= 0.70
+
+awaking_time				= 50
+blowout_time				= 100	
+accamulate_time				= 500
+
+visible_by_detector 		= off
+
+blowout_wind				= off
+
+blowout_wind_time_start 	= 0
+blowout_wind_time_peak  	= 600
+blowout_wind_time_end		= 899
+blowout_wind_power			= 0.5
+
+
+
+spawn_blowout_artefacts = off

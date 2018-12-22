@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle@work
+
+[sr_idle@work]
+on_actor_inside = %+new_teleport_anomalies% sr_teleport
+
+[sr_teleport]
+point1 = sak_teleport_0000_exit_walk
+look1  = sak_teleport_0000_exit_look
+timeout = 5

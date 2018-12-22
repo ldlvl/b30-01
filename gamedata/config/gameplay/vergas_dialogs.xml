@@ -1,0 +1,1389 @@
+<dialog id="vergas_krujka_dialog">
+	<precondition>vergas_krujka.talk_to_vergas_1</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>dialog_krujka_GG_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>dialog_krujka_V_1</text>
+			<next>10</next>
+			<next>11</next>
+			<next>12</next>
+			<next>13</next>
+			<next>14</next>
+			<next>15</next>
+		</phrase>
+		<phrase id="10">
+			<precondition>vergas_krujka.krujka_5</precondition>
+			<text>dialog_krujka_GG_10</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>100</next>
+			<next>120</next>
+		</phrase>
+		<phrase id="11">
+			<precondition>vergas_krujka.krujka_6 </precondition>
+			<text>dialog_krujka_GG_11</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>101</next>
+			<next>121</next>
+		</phrase>
+		<phrase id="12">
+			<precondition>vergas_krujka.krujka_1 </precondition>
+			<text>dialog_krujka_GG_12</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>102</next>
+			<next>122</next>
+		</phrase>
+		<phrase id="13">
+			<precondition>vergas_krujka.krujka_2 </precondition>
+			<text>dialog_krujka_GG_13</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>103</next>
+			<next>123</next>
+		</phrase>
+		<phrase id="14">
+			<precondition>vergas_krujka.krujka_3 </precondition>
+			<text>dialog_krujka_GG_14</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>104</next>
+			<next>124</next>
+		</phrase>
+		<phrase id="15">
+			<precondition>vergas_krujka.krujka_4 </precondition>
+			<text>dialog_krujka_GG_15</text>
+			<action>vergas_krujka.talk_to_vergas_2</action>
+			<action>vergas_krujka.show_icon</action>
+			<next>105</next>
+			<next>125</next>
+		</phrase>
+		<phrase id="100">
+			<precondition>vergas_krujka.krujka_yes_5</precondition>
+			<text>dialog_krujka_V_100</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="101">
+			<precondition>vergas_krujka.krujka_yes_6</precondition>
+			<text>dialog_krujka_V_101</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="102">
+			<precondition>vergas_krujka.krujka_yes_1</precondition>
+			<text>dialog_krujka_V_102</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="103">
+			<precondition>vergas_krujka.krujka_yes_2</precondition>
+			<text>dialog_krujka_V_103</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="104">
+			<precondition>vergas_krujka.krujka_yes_3</precondition>
+			<text>dialog_krujka_V_104</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="105">
+			<precondition>vergas_krujka.krujka_yes_4</precondition>
+			<text>dialog_krujka_V_105</text>
+			<next>108</next>
+			<next>109</next>
+		</phrase>
+		<phrase id="108">
+			<text>dialog_krujka_GG_108</text>
+			<action>vergas_krujka.item_from_vergas</action>
+			<next>150</next>
+		</phrase>
+		<phrase id="109">
+			<text>dialog_krujka_GG_109</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="120">
+			<precondition>vergas_krujka.krujka_no_5 </precondition>
+			<text>dialog_krujka_V_3</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="121">
+			<precondition>vergas_krujka.krujka_no_6 </precondition>
+			<text>dialog_krujka_V_4</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="122">
+			<precondition>vergas_krujka.krujka_no_1 </precondition>		
+			<text>dialog_krujka_V_5</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="123">
+			<precondition>vergas_krujka.krujka_no_2 </precondition>		
+			<text>dialog_krujka_V_6</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="124">
+			<precondition>vergas_krujka.krujka_no_3 </precondition>		
+			<text>dialog_krujka_V_7</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="125">
+			<precondition>vergas_krujka.krujka_no_4 </precondition>	
+			<text>dialog_krujka_V_8</text>
+			<next>126</next>
+		</phrase>
+		<phrase id="126">
+			<text>dialog_krujka_GG_126</text>
+			<action>vergas_krujka.talking_1_krujka_no</action>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="150">
+			<text>dialog_krujka_V_150</text>
+			<action>vergas_krujka.vergas_prizes</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="201">
+			<text>dialog_krujka_GG_700</text>
+			<action>vergas_krujka.gg_take_prize</action>
+			<next>701</next>
+		</phrase>
+		<phrase id="202">
+			<precondition>vergas_krujka.gg_exchange_2</precondition>	
+			<text>dialog_krujka_GG_202</text>
+			<next>703</next>
+		</phrase>
+		<phrase id="203">
+			<precondition>vergas_krujka.gg_exchange_3</precondition>
+			<text>dialog_krujka_GG_203</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>303</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="204">
+			<precondition>vergas_krujka.gg_exchange_4</precondition>
+			<action>vergas_krujka.set_sec_prize</action>
+			<text>dialog_krujka_GG_204</text>
+			<next>304</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="205">
+			<precondition>vergas_krujka.gg_exchange_5</precondition>
+			<text>dialog_krujka_GG_205</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>305</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="206">
+			<precondition>vergas_krujka.gg_exchange_6</precondition>
+			<text>dialog_krujka_GG_206</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>306</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="207">
+			<precondition>vergas_krujka.gg_exchange_7</precondition>
+			<text>dialog_krujka_GG_207</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>307</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="208">
+			<precondition>vergas_krujka.gg_exchange_8</precondition>
+			<text>dialog_krujka_GG_208</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>308</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="209">
+			<precondition>vergas_krujka.gg_exchange_9</precondition>
+			<text>dialog_krujka_GG_209</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>309</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="210">
+			<precondition>vergas_krujka.gg_exchange_10</precondition>
+			<text>dialog_krujka_GG_210</text>
+			<action>vergas_krujka.set_sec_prize_10</action>
+			<next>310</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="211">
+			<precondition>vergas_krujka.gg_exchange_11</precondition>
+			<text>dialog_krujka_GG_211</text>
+			<action>vergas_krujka.set_sec_prize_11</action>
+			<next>311</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="212">
+			<precondition>vergas_krujka.gg_exchange_12</precondition>
+			<text>dialog_krujka_GG_212</text>
+			<action>vergas_krujka.set_sec_prize_12</action>
+			<next>312</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="213">
+			<precondition>vergas_krujka.gg_exchange_13</precondition>
+			<text>dialog_krujka_GG_213</text>
+			<action>vergas_krujka.set_sec_prize_13</action>
+			<next>313</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="214">
+			<precondition>vergas_krujka.gg_exchange_14</precondition>
+			<text>dialog_krujka_GG_214</text>
+			<action>vergas_krujka.set_sec_prize_14</action>
+			<next>314</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="215">
+			<precondition>vergas_krujka.gg_exchange_15</precondition>
+			<text>dialog_krujka_GG_215</text>
+			<action>vergas_krujka.set_sec_prize</action>
+			<next>315</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="216">
+			<precondition>vergas_krujka.gg_exchange_16</precondition>
+			<text>dialog_krujka_GG_216</text>
+			<action>vergas_krujka.set_sec_prize_16</action>
+			<next>316</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="217">
+			<precondition>vergas_krujka.gg_exchange_17</precondition>
+			<text>dialog_krujka_GG_217</text>
+			<action>vergas_krujka.set_sec_prize_17</action>
+			<next>317</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="218">
+			<precondition>vergas_krujka.gg_exchange_18</precondition>
+			<text>dialog_krujka_GG_218</text>
+			<action>vergas_krujka.set_sec_prize_18</action>
+			<next>318</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="219">
+			<precondition>vergas_krujka.gg_exchange_19</precondition>
+			<text>dialog_krujka_GG_219</text>
+			<action>vergas_krujka.set_sec_prize_19</action>
+			<next>319</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="220">
+			<precondition>vergas_krujka.gg_exchange_20</precondition>
+			<text>dialog_krujka_GG_220</text>
+			<action>vergas_krujka.set_sec_prize_20</action>
+			<next>320</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="221">
+			<precondition>vergas_krujka.gg_exchange_21</precondition>
+			<text>dialog_krujka_GG_221</text>
+			<action>vergas_krujka.set_sec_prize_21</action>
+			<next>321</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="222">
+			<precondition>vergas_krujka.gg_exchange_22</precondition>
+			<text>dialog_krujka_GG_222</text>
+			<action>vergas_krujka.set_sec_prize_22</action>
+			<next>322</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="223">
+			<precondition>vergas_krujka.gg_exchange_23</precondition>
+			<text>dialog_krujka_GG_223</text>
+			<action>vergas_krujka.set_sec_prize_23</action>
+			<next>323</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="224">
+			<precondition>vergas_krujka.gg_exchange_24</precondition>
+			<text>dialog_krujka_GG_224</text>
+			<action>vergas_krujka.set_sec_prize_24</action>
+			<next>324</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="225">
+			<precondition>vergas_krujka.gg_exchange_25</precondition>
+			<text>dialog_krujka_GG_225</text>
+			<action>vergas_krujka.set_sec_prize_25</action>
+			<next>325</next>
+			<next>400</next>
+		</phrase>
+		<phrase id="226">
+			<precondition>vergas_krujka.gg_exchange_26</precondition>
+			<text>dialog_krujka_GG_226</text>
+			<action>vergas_krujka.set_sec_prize_26</action>
+			<next>326</next>
+			<next>400</next>
+		</phrase>
+		
+		<phrase id="303">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_303</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="304">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_304</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="305">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_305</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="306">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_306</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="307">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_307</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="308">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_308</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="309">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_309</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="310">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_310</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="311">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_311</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="312">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_312</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="313">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_313</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="314">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_314</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="315">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_315</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="316">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_316</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="317">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_317</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="318">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_318</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="319">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_319</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="320">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_320</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="321">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_321</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="322">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_322</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="323">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_323</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="324">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_324</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="325">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_325</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		<phrase id="326">
+			<precondition>vergas_krujka.exchange_yes_no</precondition>
+			<text>dialog_krujka_V_326</text>
+			<action>vergas_krujka.vergas_prizes_2</action>
+			<next>201</next>
+			<next>202</next>
+			<next>203</next>
+			<next>204</next>
+			<next>205</next>
+			<next>206</next>
+			<next>207</next>
+			<next>208</next>
+			<next>209</next>
+			<next>210</next>
+			<next>211</next>
+			<next>212</next>
+			<next>213</next>
+			<next>214</next>
+			<next>215</next>
+			<next>216</next>
+			<next>217</next>
+			<next>218</next>
+			<next>219</next>
+			<next>220</next>
+			<next>221</next>
+			<next>222</next>
+			<next>223</next>
+			<next>224</next>
+			<next>225</next>
+			<next>226</next>
+		</phrase>
+		
+		<phrase id="400">
+			<precondition>vergas_krujka.get_exchange</precondition>
+			<action>vergas_krujka.answer_vergas_no</action>
+			<next>11001</next>
+		</phrase>
+		
+		
+		
+		<phrase id="701">
+			<text>dialog_krujka_V_701</text>
+			<action>vergas_krujka.release_krujka</action>
+			<next>702</next>
+		</phrase>
+		<phrase id="702">
+			<text>dialog_krujka_GG_702</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="703">
+			<text>dialog_krujka_V_703</text>
+			<next>704</next>
+		</phrase>
+		<phrase id="704">
+			<text>dialog_krujka_GG_704</text>
+			<action>vergas_krujka.gg_take_prize</action>
+			<action>vergas_krujka.release_krujka</action>
+			<next>705</next>
+		</phrase>
+		<phrase id="705">
+			<text>dialog_krujka_V_705</text>
+			<next>702</next>
+		</phrase>
+		<phrase id="706">
+			<text>dialog_krujka_V_706</text>
+			<next>707</next>
+			<next>708</next>
+		</phrase>
+		<phrase id="707">
+			<text>dialog_krujka_GG_707</text>
+			<next>709</next>
+		</phrase>
+		<phrase id="708">
+			<text>dialog_krujka_GG_708</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="709">
+			<text>dialog_krujka_V_709</text>
+			<next>710</next>
+			<next>711</next>
+		</phrase>
+		<phrase id="710">
+			<text>dialog_krujka_GG_710</text>
+			<action>vergas_krujka.start_quest_bilbo_baggins</action>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="711">
+			<text>dialog_krujka_GG_711</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		
+		<phrase id="11000">
+			<text>dialog_krujka_V_11000</text>
+			<next>11001</next>
+		</phrase>
+		<phrase id="11001">
+			<text>dialog_krujka_GG_11001</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		
+	</phrase_list>
+</dialog>
+
+<dialog id="vergas_krujka_dialog_2">
+	<precondition>vergas_krujka.re_talking_to_vergas_1</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>dialog_krujka_GG_2_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>dialog_krujka_V_2_1</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>dialog_krujka_GG_2_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>dialog_krujka_V_2_3</text>
+			<next>10</next>
+		</phrase>
+		<phrase id="10">
+			<text>dialog_krujka_GG_2_10</text>
+			<next>11</next>
+		</phrase>		
+		<phrase id="11">
+			<action>vergas_krujka.show_icon</action>
+			<action>vergas_krujka.inspection_krujka</action>
+			<next>12</next>
+			<next>13</next>
+		</phrase>		
+		<phrase id="12">
+			<precondition>vergas_krujka.inspection_krujka_yes</precondition>
+			<text>dialog_krujka_GG_2_12</text>
+			<action>vergas_krujka.item_from_vergas</action>
+			<next>20</next>
+		</phrase>		
+		<phrase id="13">
+			<precondition>vergas_krujka.inspection_krujka_no</precondition>
+			<text>dialog_krujka_GG_2_13</text>
+			<next>30</next>
+		</phrase>		
+		<phrase id="20">
+			<text>dialog_krujka_V_2_20</text>
+			<action>vergas_krujka.vergas_prizes</action>
+			<next>21</next>
+			<next>22</next>
+		</phrase>		
+		<phrase id="21">
+			<text>dialog_krujka_GG_2_21</text>
+			<action>vergas_krujka.gg_take_prize</action>
+			<next>24</next>
+		</phrase>		
+		<phrase id="22">
+			<text>dialog_krujka_GG_2_22</text>
+			<next>23</next>
+		</phrase>		
+		<phrase id="23">
+			<action>vergas_krujka.answer_vergas_no</action>
+			<next>52</next>
+		</phrase>
+		<phrase id="24">
+			<text>dialog_krujka_V_705</text>
+			<action>vergas_krujka.release_krujka</action>
+			<next>25</next>
+		</phrase>
+		<phrase id="25">
+			<text>dialog_krujka_GG_702</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="30">
+			<text>dialog_krujka_V_2_30</text>
+			<action>vergas_krujka.gg_take_consolation_prize</action>
+			<action>vergas_krujka.talking_1_krujka_no</action>
+			<next>31</next>
+		</phrase>		
+		<phrase id="31">
+			<text>dialog_krujka_GG_2_31</text>
+			<action>vergas_krujka.stop_vergas_dialogs</action>
+			<action>dialogs.break_dialog</action>
+		</phrase>		
+
+		<phrase id="50">
+			<text>dialog_krujka_GG_2_50</text>
+			<next>51</next>
+		</phrase>		
+		<phrase id="51">
+			<text>dialog_krujka_V_2_51</text>
+			<action>vergas_krujka.stop_vergas_dialogs</action>
+			<next>11001</next>
+		</phrase>		
+		<phrase id="52">
+			<text>dialog_krujka_GG_11001</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>		
+		
+		
+		
+		<phrase id="11000">
+			<text>dialog_krujka_V_11000</text>
+			<next>11001</next>
+		</phrase>
+		<phrase id="11001">
+			<text>dialog_krujka_GG_11001</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="vergas_krujka_dialog_3">
+	<precondition>vergas_krujka.re_talking_to_vergas_2</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>dialog_krujka_GG_2_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>dialog_krujka_V_3_1</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>dialog_krujka_GG_3_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>dialog_krujka_V_3_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>dialog_krujka_GG_3_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<action>vergas_krujka.show_icon</action>
+			<action>vergas_krujka.inspection_krujka</action>
+			<next>6</next>
+			<next>7</next>
+		</phrase>		
+		<phrase id="6">
+			<precondition>vergas_krujka.inspection_krujka_yes</precondition>
+			<text>dialog_krujka_GG_2_12</text>
+			<next>10</next>
+		</phrase>		
+		<phrase id="7">
+			<precondition>vergas_krujka.inspection_krujka_no</precondition>
+			<text>dialog_krujka_GG_2_13</text>
+			<next>8</next>
+		</phrase>		
+		<phrase id="8">
+			<text>dialog_krujka_V_2_30</text>
+			<action>vergas_krujka.gg_take_consolation_prize</action>
+			<action>vergas_krujka.talking_1_krujka_no</action>
+			<next>100</next>
+		</phrase>		
+		<phrase id="10">
+			<text>dialog_krujka_V_2_20</text>
+			<action>vergas_krujka.vergas_prizes</action>
+			<next>11</next>
+			<next>12</next>
+		</phrase>		
+		<phrase id="11">
+			<text>dialog_krujka_GG_2_21</text>
+			<action>vergas_krujka.gg_take_prize</action>
+			<action>vergas_krujka.release_krujka</action>
+			<action>dialogs.break_dialog</action>
+		</phrase>		
+		<phrase id="12">
+			<text>dialog_krujka_GG_2_22</text>
+			<next>13</next>
+		</phrase>		
+		<phrase id="13">
+			<action>vergas_krujka.answer_vergas_no</action>
+			<next>11001</next>
+		</phrase>		
+
+		<phrase id="50">
+			<text>dialog_krujka_V_3_50</text>
+			<next>51</next>
+			<next>55</next>
+		</phrase>	
+		<phrase id="51">
+			<text>dialog_krujka_GG_707</text>
+			<next>52</next>
+		</phrase>	
+		<phrase id="52">
+			<text>dialog_krujka_V_709</text>
+			<next>53</next>
+			<next>54</next>
+		</phrase>	
+		<phrase id="53">
+			<text>dialog_krujka_GG_708</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>	
+		<phrase id="54">
+			<text>dialog_krujka_GG_710</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>	
+		<phrase id="55">
+			<text>dialog_krujka_GG_711</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>	
+		
+		
+
+		
+		<phrase id="100">
+			<text>dialog_krujka_GG_2_31</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		
+		
+		
+		<phrase id="11000">
+			<text>dialog_krujka_V_11000</text>
+			<next>11001</next>
+		</phrase>
+		<phrase id="11001">
+			<text>dialog_krujka_GG_11001</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>

@@ -1,0 +1,183 @@
+;M110
+
+;Еdited by Ell
+
+
+
+;M110
+[wpn_m110]: weapon_immunities
+GroupControlSection	= spawn_group
+discovery_dependency = 
+$spawn                  = "weapons\m110"
+$npc			 		= on
+$prefetch 		 		= 8
+scheduled               = off
+cform                   = skeleton
+class                   = WP_SVD
+
+min_radius              = 20
+max_radius              = 200
+description				= enc_weapons1_wpn-m110
+dialog_description		= desc_dialog_wpn_m110
+ef_main_weapon_type		 = 3
+ef_weapon_type			 = 8
+
+holder_range_modifier	= 2.15
+holder_fov_modifier		= 0.3
+
+cost					= 65000
+weapon_class			= sniper_rifle
+
+ammo_limit				= 60
+ammo_current			= 10
+ammo_elapsed			= 0
+
+ammo_mag_size			= 20
+ammo_class				= ammo_7.62x51_fmj,  ammo_7.62x51_ap
+
+sprint_allowed			= true
+
+fire_dispersion_base		= 0.015	
+control_inertion_factor		= 1.25f
+
+cam_relax_speed         = 2.5
+cam_dispersion          = 0.5	
+cam_dispersion_inc		= 0.5	
+cam_dispertion_frac		= 1.0	
+cam_max_angle					= 30
+cam_max_angle_horz				= 10
+cam_step_angle_horz		= 1.5	
+
+fire_dispersion_condition_factor = 5	
+misfire_probability 		= 0.015 
+misfire_condition_k			= 0.05
+condition_shot_dec 			= 0.0008
+
+hand_dependence 		= 1
+single_handed			= 0
+
+slot 					= 2		
+animation_slot			= 2		
+
+inv_name				= wpn-m110
+inv_name_short			= wpn-m110
+inv_weight				= 6.0
+
+icon_group              = 5
+inv_grid_width			= 7
+inv_grid_height			= 2
+inv_grid_x				= 0
+inv_grid_y				= 18
+
+kill_msg_x			= 0
+kill_msg_y			= 0
+kill_msg_width		= 98
+kill_msg_height		= 23
+
+direction               = 0, 0, 1
+
+fire_point              = 0.0, 0.129, 0.942
+
+flame_particles		    = weapons\generic_weapon06
+smoke_particles		   	= weapons\generic_shoot_00
+rpm_empty_click 		= 200
+
+shell_point		 		= 0.0, 0.129, 0.192	
+shell_dir		 		= 0.0, 0.0, 0.4
+shell_particles			= amik\weapons\nato_shells_r_02
+
+PDM_disp_base 					= 1.5
+PDM_disp_vel_factor 			= 2.0
+PDM_disp_accel_factor 			= 2.0
+PDM_crouch	 					= 1.0
+PDM_crouch_no_acc				= 1.0
+
+hit_power          		 	= 3.2
+hit_impulse		 	    	= 60
+hit_type 			      	= fire_wound
+fire_distance      			= 400
+bullet_speed		 	  	= 480	
+rpm                 		= 180
+
+use_aim_bullet					= false
+time_to_aim						= 1.0
+
+hud                     = wpn_m110_hud
+normal                  = 0, 1, 0
+position                = -0.026, -0.077, 0.00
+orientation             = 0, 0, 0
+
+strap_position         		= -0.15,-0.15,0.45
+strap_orientation      		= -25,-189,65
+;strap_position         		= -0.26,-0.11,0.15
+;strap_orientation      		= -15,-9,110
+strap_bone0					= bip01_spine2
+strap_bone1					= bip01_spine1
+
+startup_ammo            = 10
+visual                  = weapons\m110\wpn_m110.ogf
+
+light_color		 		= 0.6,0.5,0.3
+light_range		 		= 4.0
+light_var_color		 	= 0.05
+light_var_range		 	= 0.5
+light_time 		 		= 0.2
+
+ph_mass			 		= 7
+
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status		= 0
+zoom_enabled				= true
+silencer_name  				= wpn_addon_sil_762_sr2
+silencer_x                  = 262
+silencer_y                  = 22
+zoom_enabled			= true
+scope_zoom_factor	    	= 11.25 ; 6x увеличение
+
+snd_draw						= weapons\generic_draw, 0.5
+snd_holster						= weapons\generic_holster, 0.5
+snd_shoot						= weapons\sr25\sr25_shot
+snd_empty						= weapons\rifle_empty
+snd_reload						= weapons\m16_like\ar15_reload, 0.5
+snd_silncer_shot				= weapons\sr25\sr25_silent
+snd_razgruzka					= weapons\razgruzka\ammo_5
+
+silencer_flame_particles	= weapons\generic_weapon00
+silencer_smoke_particles 	= weapons\generic_shoot_00
+
+silencer_light_color		= 0.6,0.5,0.3
+silencer_light_range		= 0.01
+silencer_light_var_color	= 0.05
+silencer_light_var_range	= 0.5
+silencer_light_time 		= 0.2
+
+[wpn_m110_hud]
+allow_inertion				= true
+
+shell_point					= 0.0, 0.0, -0.35
+shell_dir			     	= 0.0, 0.0, 0.0
+
+fire_point               	= 0.0, 0.0, -0.02
+fire_point2              	= 0.0, -0.04, -0.02
+fire_bone               	= wpn_body
+
+orientation             	= 0, 0, 0		
+position                	= 0, 0, 0
+visual                  	= weapons\m110\wpn_m110_hud.ogf
+
+anim_idle					= idle
+anim_idle_aim				= idle_aim
+anim_reload					= reload
+anim_draw					= draw
+anim_holster				= holster
+anim_shoot					= shoot
+anim_idle_sprint			= idle_sprint
+
+zoom_offset			= -0.09951, 0.0052, -0.280300
+zoom_rotate_x		= 0.0
+zoom_rotate_y		= 0.0
+zoom_hide_crosshair	= true
+
+zoom_rotate_time					= 0.29
+rotate_time							= 0.29

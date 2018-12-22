@@ -1,0 +1,2340 @@
+;Загрузка идёт по приоритету. Приоритет расположен по порядку списка, сверху вниз. Заглавные секции должны находиться выше ссылок на них.
+;Основной множитель урона и импульса пули перенесён из конфига оружия в секцию патрона исходя из того, что урон в первую очередь зависит от калибра, а лишь затем от определённого оружия.
+
+#include "delayed_action_fuse.ltx"
+#include "add_gl.ltx"
+#include "add_scopes.ltx"
+#include "add_silencers.ltx"
+#include "w_1911.ltx"
+#include "w_abakan.ltx"
+#include "w_ak.ltx"
+#include "w_ak74.ltx"
+#include "w_ak74n.ltx"
+#include "w_ak74m.ltx"
+#include "w_ak74u.ltx"
+#include "w_ak103.ltx"
+#include "w_ak101.ltx"
+#include "w_ak_strelok.ltx"
+#include "w_ak_strelok_rem.ltx"
+#include "w_akm.ltx"
+#include "w_aks.ltx"
+#include "w_aps.ltx"
+#include "w_beretta92.ltx"
+#include "w_beretta93r.ltx"
+#include "w_glock17.ltx"
+#include "w_binoc.ltx"
+#include "w_bm16_full.ltx"
+#include "w_bm16_sawed-off.ltx"
+#include "w_bolt.ltx"
+#include "w_desert_eagle.ltx"
+#include "w_colt_cobra.ltx"
+#include "w_flame.ltx"
+#include "w_fn2000.ltx"
+#include "w_fort12.ltx"
+#include "w_fort17.ltx"
+#include "w_g36.ltx"
+#include "w_g36c.ltx"
+#include "w_rgm.ltx"
+#include "w_grenades.ltx"
+#include "w_gauss_rifle.ltx"
+#include "w_gauss_pistol.ltx"
+#include "w_groza.ltx"
+#include "w_knife.ltx"
+#include "w_m4a1.ltx"
+#include "w_hk417.ltx"
+#include "w_mosin.ltx"
+#include "w_mp5.ltx"
+#include "w_mp5_mod.ltx"
+#include "w_mp133_full.ltx"
+#include "w_mp133_sawed-off.ltx"
+#include "w_mp153_full.ltx"
+#include "w_mp153_sawed-off.ltx"
+#include "w_pb.ltx"
+#include "w_pkm.ltx"
+#include "w_pm.ltx"
+#include "w_bizon-2-01.ltx"
+#include "w_bizon-2.ltx"
+#include "w_rpg7.ltx"
+#include "w_rpk74.ltx"
+#include "w_saiga12c.ltx"
+#include "w_saiga12_mod.ltx"
+#include "w_sig220.ltx"
+#include "w_sig226.ltx"
+#include "w_sig550.ltx"
+#include "w_soc94.ltx"
+#include "w_spas12.ltx"
+#include "w_svd.ltx"
+#include "w_svu.ltx"
+#include "w_awm.ltx"
+#include "w_sv98.ltx"
+#include "w_toz34.ltx"
+#include "w_toz34_hunter.ltx"
+#include "w_oreh_shotgun.ltx"
+#include "w_ump45.ltx"
+#include "w_usp.ltx"
+#include "w_val.ltx"
+#include "w_vintorez.ltx"
+#include "w_vintorez_mod.ltx"
+#include "w_famas_f1.ltx"
+#include "w_vepr12.ltx"
+
+[bullet_manager]
+tracer_width				= 0.15
+tracer_length_max			= 50.0
+tracer_length_min			= 2
+;расстояние после которого учитывается hit_probabilty полностью
+hit_probability_max_dist	= 10
+gravity_const				= 9.81
+;сопротивление воздуха, процент, который отнимается от скорости полета пули
+air_resistance_k			= 0.8
+;размер шага времени (в милисекундах), по которому проигрываются 
+time_step					= 33
+;минимальная скорость (м/с), на которой пуля еще считается и показывается
+min_bullet_speed			= 1.0
+;cколько процентов энергии потеряет пуля при столкновении с материалом (при падении под прямым углом)
+collision_energy_min		= 0.2
+;сколько процентов энергии останется у пули при любом столкновении
+collision_energy_max		= 0.8
+
+whine_sounds				= weapons\whine_1, weapons\whine_2, weapons\whine_3, weapons\whine_4, weapons\whine_5, weapons\whine_6, weapons\whine_7, weapons\whine_8, weapons\whine_9, weapons\whine_10, weapons\whine_11, weapons\whine_12, weapons\whine01, weapons\whine02
+explode_particles			= amk\flame
+
+
+[tracers_color_table]		;color_table
+color_0 					= 1.0, 0.54, 0.0; yellow
+color_1 					= 1.0, 1.0, 1.0	; white
+color_2 					= 1.0, 0.1, 0.0	; red
+color_3 					= 0.3, 1.0, 0.3	; green
+color_4 					= 0.0, 0.0, 0.1 ; blue
+
+[ammo_base]:weapon_immunities
+
+
+
+;Патрон 9х18 мм ПМ
+[ammo_9x18_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x18_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x18_fmj.ogf
+description					= enc_weapons1_ammo_ammo-9x18-fmj
+$prefetch					= 64
+			
+cost						= 100
+			
+box_size					= 40
+			
+inv_name					= ammo-9x18-fmj
+inv_name_short				= ammo-9x18-fmj_s
+inv_weight					= .23
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 0
+			
+k_dist						= 1
+k_disp						= 1.1
+k_hit						= 0.5
+k_impulse					= 35
+k_pierce					= 1
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.035
+
+
+
+;Патрон 9х18 мм ПБМ
+[ammo_9x18_pmm]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x18_pmm"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x18_pmm.ogf
+description					= enc_weapons1_ammo_ammo-9x18-pmm
+$prefetch 					= 64
+			
+cost						= 150
+			
+box_size					= 40
+			
+inv_name					= ammo-9x18-pmm
+inv_name_short				= ammo-9x18-pmm_s
+inv_weight					= .28
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 1
+inv_grid_y					= 0
+			
+k_dist						= 1.1
+k_disp						= 1
+k_hit						= 0.65
+k_impulse					= 35
+k_pierce					= 1.5
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.035
+
+
+
+;Патрон 9х19 мм
+[ammo_9x19_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x19_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x19_fmj.ogf
+description					= enc_weapons1_ammo_ammo-9x19-fmj
+$prefetch 					= 64
+			
+cost						= 150
+			
+box_size					= 40
+			
+inv_name					= ammo-9x19-fmj
+inv_name_short				= ammo-9x19-fmj_s
+inv_weight					= .25
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 1
+			
+k_dist						= 1
+k_disp						= 1
+k_hit						= 0.6
+k_impulse					= 40
+k_pierce					= 1
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.035
+
+
+
+;Патрон 9x19 мм +P+
+[ammo_9x19_pbp]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x19_pbp"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x19_pbp.ogf
+description					= enc_weapons1_ammo_ammo-9x19-pbp
+$prefetch 					= 64
+			
+cost						= 200
+			
+box_size					= 40
+			
+inv_name					= ammo-9x19-pbp
+inv_name_short				= ammo-9x19-pbp_s
+inv_weight					= .3
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 1
+inv_grid_y					= 1
+			
+k_dist						= 1.1
+k_disp						= 1
+k_hit						= 0.75
+k_impulse					= 40
+k_pierce					= 1.35
+impair						= 1.2
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.035
+
+
+
+;Патрон 5.45x39 мм (7Н6) ПС
+[ammo_5.45x39_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.45x39_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_545x39_fmj.ogf
+description					= enc_weapons1_ammo_ammo-5.45x39-fmj
+$prefetch 					= 64
+			
+cost						= 200
+			
+box_size					= 30
+			
+inv_name					= ammo-5.45x39-fmj
+inv_name_short				= ammo-5.45x39-fmj_s
+inv_weight					= .32
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 3
+			
+k_dist						= 1
+k_disp						= 1
+k_hit						= 0.8
+k_impulse					= 55
+k_pierce					= 1.05
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.04
+explosive					= off
+
+
+
+;Патрон 5.45 мм 7Н22 (БП)
+[ammo_5.45x39_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.45x39_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_545x39_ap.ogf
+description					= enc_weapons1_ammo_ammo-5.45x39-ap
+$prefetch 					= 64
+			
+cost						= 250
+			
+box_size					= 30
+			
+inv_name					= ammo-5.45x39-ap
+inv_name_short				= ammo-5.45x39-ap_s
+inv_weight					= .33
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 2
+			
+k_dist						= 1
+k_disp						= 0.95
+k_hit						= 0.95
+k_impulse					= 55
+k_pierce					= 1.35
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.04
+explosive					= off
+
+
+
+;Холостые?
+[ammo_ak]:ammo_5.45x39_fmj
+k_hit						= 0.35
+cost 						= 100
+k_impulse 					= 0.5
+k_pierce 					= 0.5
+k_disp 						= 2.5
+
+
+
+;Эти патроны должны быть невидимыми для ГГ
+[ammo_5.45x39]:ammo_5.45x39_fmj
+[ammo_5.45x39_merc]:ammo_5.45x39_ap
+k_hit						= 4.6
+inv_grid_width				= 0
+inv_grid_height				= 0
+
+
+
+;Патрон 5.56 мм (SS109)
+[ammo_5.56x45_ss190]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.56x45_ss190"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_556x45_ss190.ogf
+description					= enc_weapons1_ammo_ammo-5.56x45-ss190
+$prefetch 					= 64
+			
+cost						= 250
+			
+box_size					= 30
+			
+inv_name					= ammo-5.56x45
+inv_name_short				= ammo-5.56x45-ss190_s
+inv_weight					= .33
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 5
+			
+k_dist						= 1
+k_disp						= 1
+k_hit						= 0.85
+k_impulse					= 55
+k_pierce					= 1.0
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.04
+explosive					= off
+
+
+
+;Патрон 5.56 мм (M995), чёрный носик
+[ammo_5.56x45_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.56x45_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_556x45_ap.ogf
+description					= enc_weapons1_ammo_ammo-5.56x45-ap
+$prefetch 					= 64
+			
+cost						= 300
+			
+box_size					= 30
+			
+inv_name					= ammo-5.56x45-ap
+inv_name_short				= ammo-5.56x45-ap_s
+inv_weight					= .34
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 4
+			
+k_dist						= 1.1
+k_disp						= 0.9
+k_hit						= 1.0
+k_impulse					= 55
+k_pierce					= 1.25
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.04
+explosive					= off
+
+
+
+;Эти патроны должны быть невидимыми для ГГ
+[ammo_5.56x45_merc]:ammo_5.56x45_ap
+k_hit						= 4.6
+
+
+
+;Секция подмены
+[ammo_5.56x45]:ammo_5.56x45_ss190
+
+
+
+;Патрон 7.62x39 мм 57-Н-231 (ПС)
+[ammo_7.62x39_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x39_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x39_fmj.ogf
+description					= enc_weapons1_ammo_ammo-7.62x39-fmj
+$prefetch					= 64
+
+cost						= 350
+			
+box_size					= 30
+			
+inv_name					= ammo-7.62x39-fmj
+inv_name_short				= ammo-7.62x39-fmj_s
+inv_weight					= .5
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 6
+			
+k_dist						= 1
+k_disp						= 1.15
+k_hit						= 1.1
+k_impulse					= 65
+k_pierce					= 1.2
+impair						= 1.15
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Секция подмены
+[ammo_7.62x39]:ammo_7.62x39_fmj
+
+
+
+;Патрон 7.62x39 мм 7Н23 (БП)
+[ammo_7.62x39_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x39_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x39_ap.ogf
+description					= enc_weapons1_ammo_ammo-7.62x39-ap
+$prefetch 					= 64
+			
+cost						= 400
+			
+box_size					= 30
+			
+inv_name					= ammo-7.62x39-ap
+inv_name_short				= ammo-7.62x39-ap_s
+inv_weight					= .52
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 7
+			
+k_dist						= 1
+k_disp						= 1.08
+k_hit						= 1.35
+k_impulse					= 65
+k_pierce					= 1.45
+impair						= 1.08
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Патрон 7.62х51 мм (M80)
+[ammo_7.62x51_fmj]:ammo_base   
+GroupControlSection 		= spawn_group
+discovery_dependency 		= 
+$spawn   					= "weapons\ammo\ammo_7.62x51_fmj"
+class   					= AMMO
+cform   					= skeleton
+visual   					= weapons\ammo\ammo_762x51_fmj.ogf
+description  				= enc_weapons1_ammo_ammo-7.62x51-fmj
+$prefetch   				= 64
+			
+cost   						= 500
+			
+box_size  					= 20
+			
+inv_name  					= ammo-7.62x51-fmj
+inv_name_short  			= ammo-7.62x51-fmj_s
+inv_weight  				= .5
+icon_group      			= 2
+inv_grid_width     = 1
+inv_grid_height    = 1
+inv_grid_x         = 40
+inv_grid_y         = 2
+			
+k_dist   					= 1.0
+k_disp   					= 1
+k_hit   					= 1.6
+k_impulse  					= 70
+k_pierce  					= 1.35
+impair   					= 1
+buck_shot  					= 1
+tracer   					= off
+wm_size   					= 0.07
+explosive  					= off
+
+
+
+;Патрон 7.62х51 мм (M993)
+[ammo_7.62x51_ap]:ammo_base 		
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x51_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x51_ap.ogf
+description					= enc_weapons1_ammo_ammo-7.62x51-ap
+$prefetch 					= 64
+			
+cost						= 600
+			
+box_size					= 20
+			
+inv_name					= ammo-7.62x51-ap
+inv_name_short				= ammo-7.62x51-ap_s
+inv_weight					= .5
+icon_group      			= 2
+inv_grid_width     = 1
+inv_grid_height    = 1
+inv_grid_x         = 40
+inv_grid_y         = 3
+			
+			
+k_dist						= 1.3
+k_disp						= 1.0
+k_hit						= 2.0
+k_impulse					= 70
+k_pierce					= 1.55
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.07
+explosive					= off
+
+
+
+;Патрон 7.62x54 мм R
+[ammo_7.62x54_ap]:ammo_base 		
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x54_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x54_ap.ogf
+description					= enc_weapons1_ammo_ammo-7.62x54-ap
+$prefetch 					= 64
+			
+cost						= 400
+			
+box_size					= 10
+			
+inv_name					= ammo-7.62x54-ap
+inv_name_short				= ammo-7.62x54-ap_s
+			
+inv_weight					= .23
+			
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 10
+				
+k_dist						= 1.0
+k_disp						= 1.35 
+k_hit						= 3.0
+k_impulse					= 80
+k_pierce					= 1.5
+impair						= 1.5
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.08
+explosive					= off
+
+
+
+;Патрон 7.62x54 мм (7Н1)
+[ammo_7.62x54_7h1]:ammo_base 		
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x54_7h1"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x54_7h1.ogf
+description					= enc_weapons1_ammo_ammo-7.62x54-7h1
+$prefetch 					= 64
+			
+cost						= 500
+			
+box_size					= 10
+			
+inv_name					= ammo-7.62x54-7h1
+inv_name_short				= ammo-7.62x54-7h1_s
+			
+inv_weight					= .23
+			
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 9
+			
+k_dist						= 1.2
+k_disp						= 1.2
+k_hit						= 3.5
+k_impulse					= 80
+k_pierce					= 1.5
+impair						= 1.2
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.08
+explosive					= off
+
+
+
+;Патрон 7.62x54 мм (7Н14)
+[ammo_7.62x54_7h14]:ammo_base 		
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_7.62x54_7h14"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_762x54_7h14.ogf
+description					= enc_weapons1_ammo_ammo-7.62x54-7h14
+$prefetch 					= 64
+			
+cost						= 600
+			
+box_size					= 10
+			
+inv_name					= ammo-7.62x54-7h14
+inv_name_short				= ammo-7.62x54-7h14_s
+inv_weight					= .23
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 8
+			
+k_dist						= 1.4
+k_disp						= 1.0
+k_hit						= 4.0
+k_impulse					= 80
+k_pierce					= 1.75
+impair						= 1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.08
+explosive					= off
+
+
+
+;Патрон 7.62x54 мм R (пулемётный короб)
+[ammo_7.62x54r]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_7.62x54r"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\pkm\ammo_762x54r_box.ogf
+description					= enc_weapons1_ammo_ammo-7.62x54r
+$prefetch 					= 64
+			
+cost						= 1200
+			
+box_size					= 100
+			
+inv_name					= ammo-7.62x54r
+inv_name_short				= ammo-7.62x54r_s
+inv_weight					= 3.9
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 11
+			
+k_dist						= 1
+k_disp						= 1.5 
+k_hit						= 2.7
+k_impulse					= 80
+k_pierce					= 1.5
+impair						= 1.5
+buck_shot					= 1
+tracer						= on
+tracer_color_ID 			= 3
+wm_size    					= 0.08
+explosive					= off
+
+
+
+;.338 Lapua Magnum (оболочечная пуля)"
+[ammo_8.6x70]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_8.6x70"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_86x70_fmj.ogf
+description					= enc_weapons1_ammo_ammo-8.6x70
+$prefetch 					= 64
+			
+cost						= 800
+			
+box_size					= 10
+			
+inv_name					= ammo-8.6x70
+inv_name_short				= ammo-8.6x70_s
+inv_weight					= .3
+icon_group      			= 2
+inv_grid_width     = 1
+inv_grid_height    = 1
+inv_grid_x         = 40
+inv_grid_y         = 0
+
+k_dist						= 1
+k_disp						= 1
+k_hit						= 6
+k_impulse					= 88
+k_pierce					= 1
+impair						= 1
+buck_shot					= 1
+tracer						= off
+tracer_color_ID 			= 3
+wm_size    					= 0.1
+
+
+
+;.338 Lapua Magnum (с бронебойной пулей Armour Piercing)
+[ammo_8.6x70_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_8.6x70_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_86x70_ap.ogf
+description					= enc_weapons1_ammo_ammo-8.6x70-ap
+$prefetch 					= 64
+			
+cost						= 1000
+			
+box_size					= 10
+			
+inv_name					= ammo-8.6x70-ap
+inv_name_short				= ammo-8.6x70-ap_s
+inv_weight					= .28
+icon_group      			= 2
+inv_grid_width     = 1
+inv_grid_height    = 1
+inv_grid_x         = 40
+inv_grid_y         = 1
+
+
+k_dist						= 1
+k_disp						= 1
+k_hit						= 7
+k_impulse					= 93
+k_pierce					= 1.3
+impair						= 1
+buck_shot					= 1
+tracer						= off
+tracer_color_ID 			= 3
+wm_size    					= 0.1
+
+
+
+;Патрон 9х39 мм СП-5
+[ammo_9x39_sp5]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x39_sp5"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x39_sp5.ogf
+description					= enc_weapons1_ammo_ammo-9x39-sp5
+$prefetch 					= 64
+
+cost						= 350
+
+box_size					= 30
+
+inv_name					= ammo-9x39-sp5
+inv_name_short				= ammo-9x39-sp5_s
+inv_weight					= .7
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 14
+
+k_dist						= 1.0
+k_disp						= 1.0
+k_hit						= 1.2
+k_impulse					= 65
+k_pierce					= 1
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Патрон 9х39 мм СП-6
+[ammo_9x39_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_9x39_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_9x39_ap.ogf
+description					= enc_weapons1_ammo_ammo-9x39-ap
+$prefetch 					= 64
+			
+cost						= 450
+			
+box_size					= 30
+			
+inv_name					= ammo-9x39-ap
+inv_name_short				= ammo-9x39-ap_s
+inv_weight					= .7
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 12
+			
+k_dist						= 1
+k_disp						= 1.8
+k_hit						= 1.4
+k_impulse					= 69
+k_pierce					= 1.4
+impair						= 1.4
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Патрон 9х39 мм ПАБ-9
+[ammo_9x39_pab9]:ammo_base
+GroupControlSection 		= spawn_group
+discovery_dependency 		= 
+$spawn   					= "weapons\ammo\ammo_9x39_pab9"
+class   					= AMMO
+cform   					= skeleton
+visual   					= weapons\ammo\ammo_9x39_pab9.ogf
+description  				= enc_weapons1_ammo_ammo-9x39-pab9
+$prefetch   				= 64
+
+cost   						= 300
+
+box_size  					= 30
+
+inv_name  					= ammo-9x39-pab9
+inv_name_short 				= ammo-9x39-pab9_s
+inv_weight  				= .7
+icon_group      			= 2
+inv_grid_width 				= 2
+inv_grid_height 			= 1
+inv_grid_x  				= 0
+inv_grid_y  				= 13
+
+k_dist   					= 1.3
+k_disp   					= 2
+k_hit   					= 1.6
+k_impulse  					= 74
+k_pierce  					= 1.4
+impair   					= 2.0
+buck_shot  					= 1
+tracer   					= off
+wm_size   					= 0.06
+explosive  					= off
+
+
+
+;Секция подмены
+[ammo_9x39]:ammo_9x39_pab9
+
+
+
+;Патрон .45 ACP
+[ammo_11.43x23_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_11.43x23_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_1143x23_fmj.ogf
+description					= enc_weapons1_ammo_ammo-11.43x23-fmj
+$prefetch 					= 64
+
+cost						= 400
+
+box_size					= 20
+
+inv_name					= ammo-11.43x23-fmj
+inv_name_short				= ammo-11.43x23-fmj_s
+inv_weight					= .3
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 16
+
+k_dist						= 1.0
+k_disp						= 1.0
+k_hit						= 1.0
+k_impulse					= 60
+k_pierce					= 1
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Патрон .357 Magnum
+[ammo_11.43x23_hydro]:ammo_base
+GroupControlSection	= spawn_group
+discovery_dependency	= 
+$spawn						= "weapons\ammo\ammo_11.43x23_hydro"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_1143x23_Hydro.ogf
+description					= enc_weapons1_ammo_ammo-11.43x23-hydro
+$prefetch 					= 64
+
+cost						= 500
+
+box_size					= 20
+
+inv_name					= ammo-11.43x23-hydro
+inv_name_short				= ammo-11.43x23-hydro_s
+inv_weight					= .3
+icon_group      			= 2
+inv_grid_width     = 2
+inv_grid_height    = 1
+inv_grid_x         = 38
+inv_grid_y         = 7
+
+k_dist						= 1.0
+k_disp						= 1.0
+k_hit						= 2.0
+k_impulse					= 80
+k_pierce					= 1
+impair						= 1.0
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.06
+
+
+
+;Патрон 12/70 (дробь)
+[ammo_12x70_buck]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_12x70_buck"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_12x70_buck.ogf
+description					= enc_weapons1_ammo_ammo-12x70-buck
+$prefetch 					= 64
+
+cost						= 200
+
+box_size					= 10
+
+inv_name					= ammo-12x70-buck
+inv_name_short				= ammo-12x70-buck_s
+
+inv_weight					= .45
+
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 0
+
+k_dist						= 0.6
+k_disp						= 7.3
+k_hit						= 0.11
+k_impulse					= 1
+k_pierce					= 0.7
+impair						= 1
+buck_shot					= 40
+tracer						= off
+wm_size						= 0.02
+
+
+
+;Патрон 12/76 (картечь)
+[ammo_12x76_dart]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_12x76_dart
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_12x70_kart.ogf
+description					= enc_weapons1_ammo_ammo-12x76-dart
+$prefetch 					= 64
+
+cost						= 300
+
+box_size					= 10
+
+inv_name					= ammo-12x76-dart
+inv_name_short				= ammo-12x76-dart_s
+
+inv_weight					= .45
+
+icon_group      			= 2
+inv_grid_width     			= 2
+inv_grid_height    			= 1
+inv_grid_x         			= 38
+inv_grid_y         			= 6
+
+k_dist						= 1
+k_disp						= 5.2
+k_hit						= 0.5
+k_impulse					= 6
+k_pierce					= 0.9
+impair						= 1.1
+buck_shot					= 10
+tracer						= off
+wm_size						= 0.04
+explosive					= off
+
+
+
+;Патрон 12/76 (пуля)
+[ammo_12x76_zhekan]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_12x76_zhekan"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_12x76_zhekan.ogf
+description					= enc_weapons1_ammo_ammo-12x76-zhekan
+$prefetch 					= 64
+
+cost						= 400
+
+box_size					= 10
+
+inv_name					= ammo-12x76-zhekan
+inv_name_short				= ammo-12x76-zhekan_s
+
+inv_weight					= .50
+
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 19
+
+k_dist						= 3
+k_disp						= 1.2
+k_hit						= 4.0
+k_impulse					= 65
+k_pierce					= 1.6
+impair						= 1.1
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.1
+explosive					= off
+
+
+
+;Секция подмены
+[ammo_12x76_zhekan_heli]:ammo_12x76_zhekan
+$spawn						= "weapons\ammo\ammo_12x76_zhekan_heli"
+explosive					= off
+
+
+
+;Секция подмены
+[ammo_12x7]:ammo_12x70_buck
+inv_name					= "Патроны к дробовику"
+
+
+
+;Дробь с обеднённым ураном (не используется)
+[ammo_12x70_new]:ammo_12x70_buck
+cost						= 2000
+inv_weight					= .9
+k_disp						= 8.0
+inv_name					= ammo-12x70-buck-new
+inv_name_short				= ammo-12x70-buck_s-new
+description					= enc_weapons1_ammo_ammo-12x70-buck-new
+buck_shot					= 20
+
+
+
+;Винтовочный электромагнитный картридж
+[ammo_gauss]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_gauss"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_gauss.ogf
+description					= enc_weapons1_ammo_ammo-gauss
+$prefetch 					= 64
+			
+cost						= 600
+
+box_size					= 10
+
+inv_name					= ammo-gauss
+inv_name_short				= ammo-gauss_s
+inv_weight					= .5
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 15
+
+k_dist						= 1.1
+k_disp						= 1
+k_hit						= 20
+k_impulse					= 10
+k_pierce					= 2.5
+impair						= 0.7
+buck_shot					= 1
+tracer						= off
+wm_size						= 0.05
+explosive					= off
+
+
+
+;Винтовочный электромагнитный картридж
+[ammo_gauss_oboima]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_gauss"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_gauss.ogf
+description					= enc_weapons1_ammo_ammo_gauss_oboima
+$prefetch 					= 64
+
+cost						= 550
+
+box_size					= 1000
+
+inv_name					= ammo_gauss_oboima
+inv_name_short				= ammo_gauss_oboima_s
+inv_weight					= 0.0
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 15
+
+k_dist						= 1.1
+k_disp						= 1
+k_hit						= 5
+k_impulse					= 10
+k_pierce					= 2.5
+impair						= 1
+buck_shot					= 1
+tracer						= on
+wm_size         			= 0.05
+
+explosive					= on
+
+
+
+;Пистолетный электромагнитный картридж
+[ammo_super_gauss]:ammo_gauss
+description					= enc_weapons1_ammo_super_gauss
+cost						= 1550
+box_size					= 1
+inv_name					= super_gauss
+inv_name_short				= super_gauss_s
+inv_weight					= .1
+
+k_dist						= 1.0
+k_hit						= 1.0
+k_impulse					= 0
+k_pierce					= 5.0
+impair						= 1.1
+
+
+
+;Гранатомётный выстрел ОГ-7В (РПГ-7)
+[ammo_og-7b]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_og-7b"
+class						= A_OG7B
+cform						= skeleton
+visual						= weapons\ammo\ammo_og-7b.ogf
+description					= enc_weapons1_ammo_ammo-og-7b
+$prefetch 					= 64
+
+cost						= 1000
+
+box_size					= 1
+
+inv_name					= ammo-og-7b
+inv_name_short				= ammo-og-7b
+inv_weight					= 2.0
+icon_group      			= 2
+inv_grid_width				= 3
+inv_grid_height				= 1
+inv_grid_x					= 1
+inv_grid_y					= 15
+
+k_dist						= 1
+k_disp						= 1
+k_hit						= 5
+k_impulse					= 1
+k_pierce					= 1.25
+impair						= 1.15
+buck_shot					= 0
+tracer						= off
+wm_size						= 0.1
+
+
+
+[wpn_rpg7_missile]:weapon_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+visual                  	= weapons\rpg_7\wpn_rpg_7_grenade.ogf
+cform                    	= skeleton
+class                    	= G_RPG7
+$prefetch 		 			= 32
+
+inv_weight					= 0
+
+kill_msg_x					= 0
+kill_msg_y					= 85
+kill_msg_width				= 74
+kill_msg_height				= 19
+
+cost					 	= 200
+
+blast						= 20.0
+blast_r						= 5.5
+blast_impulse				= 350
+
+blast_impulse_factor 		= 1
+
+frags						= 0
+frags_r						= 25
+frag_hit					= 1.50
+frag_hit_impulse			= 50
+
+hit_type_blast				= explosion
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0.25
+
+wm_size                  	= 0.1
+wallmark_section			= explosion_marks
+
+light_color		         	= 1.9,1.4,0.5
+light_range		         	= 24.0
+light_time 		         	= 1.28
+
+ph_mass			 			= 5
+
+jump_height 				= 0
+
+explode_particles			= explosions\explosion_04
+
+fragment_speed	     		= 100
+
+explode_duration		 	= 5
+
+snd_explode 				= weapons\rpg7\rpg7_explode
+snd_fly_sound				= weapons\rocket_fly
+
+inv_name					= "Og-7b"
+inv_name_short				= "Og-7b"
+inv_weight					= .2
+
+inv_grid_width				= 4
+inv_grid_height				= 1
+inv_grid_x					= 15
+inv_grid_y					= 5
+
+kill_msg_x					= 0
+kill_msg_y					= 85
+kill_msg_width				= 73
+kill_msg_height				= 19
+
+engine_present				= true
+engine_work_time			= 3000
+engine_impulse				= 300
+engine_impulse_up			= 133,906	;137.34 ;137.34 = 2*9.81*7 - значение этого параметра (который является некой подъёмной силой, вопреки названию),
+										;при котором ракета массой 7кг не опускается под действием 
+										;гравитации. 2*9.81=19.62 - ускорение свободного падения в мире сталкеров
+										;при меньших значениях ракета будет опускаться, при больших подниматься
+lights_enabled 				= true
+trail_light_color 			= 0.6,0.5,0.3
+trail_light_range 			= 15.0
+
+engine_particles 			= weapons\rpg_trail_00
+
+force_explode_time			= 30000
+
+
+
+
+;Гранатомётный выстрел ВОГ-25 (ГП-25)
+[ammo_vog-25]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_vog-25"
+class						= A_VOG25
+cform						= skeleton
+visual	  					= weapons\ammo\ammo_vog-25.ogf
+description					= enc_weapons1_ammo_ammo-vog-25
+
+$prefetch 					= 64
+
+cost						= 150
+snd_razgruzka				= weapons\razgruzka\ammo_3
+box_size					= 1
+
+inv_name					= ammo-vog-25
+inv_name_short				= ammo-vog-25_s
+inv_weight					= .25
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 1
+
+kill_msg_x					= 38
+kill_msg_y					= 233
+kill_msg_width				= 21
+kill_msg_height				= 22
+
+k_dist						= 0.5
+k_disp						= 1
+k_hit						= 2.5
+k_impulse					= 1.2
+k_pierce					= 1.25
+impair						= 1
+buck_shot					= 0
+tracer						= off
+wm_size						= 0.05
+
+fake_grenade_name			= wpn_fake_missile
+
+[wpn_fake_missile]:weapon_immunities
+visual						= weapons\ammo\ammo_vog-25.ogf
+cform						= skeleton
+class						= G_FAKE
+$prefetch					= 32
+
+inv_weight					= 0
+
+cost						= 150
+
+blast						= 3.5
+blast_r						= 5
+blast_impulse				= 150
+blast_impulse_factor		= 1
+
+frags						= 60
+frags_r						= 8
+frag_hit					= 0.2
+frag_hit_impulse			= 50
+
+hit_type_blast				= explosion
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0.7
+explode_particles			= explosions\explosion_01
+
+
+light_color					= 1.9,1.2,0.5
+light_range					= 25.0
+light_time					= 0.5
+
+ph_mass			 			= 5
+jump_height					= 0.2
+wm_size						= 0.01
+fragment_speed				= 300
+
+explode_duration			= 5
+snd_explode 				= weapons\explo\grenade_vog25_boom
+wallmark_section			= explosion_marks
+inv_name					= ammo-vog-25
+inv_name_short				= ammo-vog-25
+
+inv_weight					= .2
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 1
+
+kill_msg_x					= 17
+kill_msg_y					= 232
+kill_msg_width				= 21
+kill_msg_height				= 22
+engine_present				= false
+lights_enabled				= false		;свет вокруг ракеты, во время полета
+force_explode_time			= 10000
+
+
+
+;Гранатомётный ВОГ-25, световая граната (ГП-25)
+[ammo_vog-25p]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_vog-25p"
+class						= A_VOG25
+cform						= skeleton
+visual						= weapons\ammo\ammo_vog-25p.ogf    ;dynamics\light\light_white_glass.ogf
+description					= enc_weapons1_ammo_ammo-vog-25p
+$prefetch 					= 64
+
+cost						= 30
+snd_razgruzka				= weapons\razgruzka\ammo_3
+box_size					= 1
+
+inv_name					= ammo-vog-25p
+inv_name_short				= ammo-vog-25p_s
+inv_weight					= .13
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 3
+inv_grid_y					= 1
+
+kill_msg_x					= 17
+kill_msg_y					= 232
+kill_msg_width				= 21
+kill_msg_height				= 22
+
+k_dist						= 0.6
+k_disp						= 1
+k_hit						= 0
+k_impulse					= 1.3
+k_pierce					= 1.25
+impair						= 1
+buck_shot					= 0
+tracer						= off
+wm_size						= 0.05
+
+jump_height					= 1.5
+fake_grenade_name			= wpn_fake_missile1
+
+[wpn_fake_missile1]:weapon_immunities
+$prefetch 					= 32
+visual                  	= weapons\ammo\ammo_vog-25p.ogf
+cform                    	= skeleton
+class                    	= G_FAKE
+
+inv_weight					= 0
+
+cost					 	= 150
+
+blast						= 0
+blast_r						= 0
+blast_impulse				= 0
+blast_impulse_factor		= 0
+
+frags						= 0
+frags_r						= 0
+frag_hit					= 0
+frag_hit_impulse			= 0
+
+hit_type_blast				= strike
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0
+
+;trail						= weapons\rpg_trail_01, weapons\rpg_trail_02
+
+explode_particles			= anomaly2\artefact\artefact_gravi
+
+light_color					= 1.4,1.6,1.5
+light_range					= 15
+light_time					= 120
+
+ph_mass			 			= 5
+;engine_f					= 530
+;engine_u					= 90
+
+jump_height 				= 1.5
+
+;трассы от осколков
+fragment_speed				= 1
+
+wm_size         			= 0.05
+;wallmarks
+wallmark_section		 	= explosion_marks
+explode_duration		 	= 120
+explode_hide_duration		= 120
+dynamic_explosion_particles	= true
+
+snd_explode					= anomaly\bfuzz_blowout
+wallmark_section			= explosion_marks
+
+;свойства которые читаются, но не используются
+inv_name					= ammo-vog-25p
+inv_name_short				= ammo-vog-25p
+inv_weight					= .27
+
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 19
+inv_grid_y					= 9
+
+kill_msg_x					= 38
+kill_msg_y					= 233
+kill_msg_width				= 21
+kill_msg_height				= 22
+
+engine_present				= false		
+lights_enabled 				= false
+trail_light_color 			= 0.6,0.5,0.3
+trail_light_range 			= 8.0
+force_explode_time  		= 10000
+
+
+
+;Гранатомётный выстрел М406 (М203)
+[ammo_m209]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_m209"
+class						= A_M209
+cform						= skeleton
+visual						= weapons\ammo\ammo_m209.ogf
+description					= enc_weapons1_ammo_ammo-m209
+$prefetch 					= 64
+
+cost						= 155
+snd_razgruzka				= weapons\razgruzka\ammo_3
+box_size					= 1
+
+inv_name					= ammo-m209
+inv_name_short				= ammo-m209_s
+inv_weight					= .27
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 2
+
+kill_msg_x					= 61
+kill_msg_y					= 232
+kill_msg_width				= 19
+kill_msg_height				= 22
+
+k_dist						= 1
+k_disp						= 1
+k_hit						= 2.5
+k_impulse					= 1.4
+k_pierce					= 1.25
+impair						= 1
+buck_shot					= 0
+tracer						= off
+wm_size						= 0.05
+
+fake_grenade_name 			= wpn_fake_missile2
+
+[wpn_fake_missile2]:weapon_immunities
+$prefetch					= 32
+visual						= weapons\ammo\ammo_m209.ogf
+cform						= skeleton
+class						= G_FAKE
+
+inv_weight					= 0
+
+cost						= 150
+
+blast						= 3.5
+blast_r						= 6
+blast_impulse				= 150
+blast_impulse_factor		= 1
+
+frags						= 60
+frags_r						= 9
+frag_hit					= 0.2
+frag_hit_impulse			= 50
+
+hit_type_blast				= explosion
+hit_type_frag				= fire_wound
+
+up_throw_factor				= 0.7
+
+explode_particles			= explosions\explosion_01
+
+light_color					= 1.9,1.4,0.5
+light_range					= 14.0
+light_time 					= 0.85
+
+ph_mass						= 5
+jump_height 				= 1
+
+fragment_speed				= 300
+wallmark_section			= explosion_marks
+wm_size						= 0.1
+
+explode_duration			= 5
+snd_explode 				= weapons\explo\grenade_m406_boom
+inv_name					= ammo-m209
+inv_name_short				= "M209"
+inv_weight					= .2
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 2
+
+kill_msg_x					= 61
+kill_msg_y					= 232
+kill_msg_width				= 19
+kill_msg_height				= 22
+engine_present				= false
+lights_enabled				= false
+trail_light_color			= 0.6,0.5,0.3
+trail_light_range			= 8.0
+force_explode_time			= 10000
+
+
+
+[explosive_fuelcan]:weapon_immunities,delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\fuelcan"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\balon\balon_01.ogf
+inv_name					= Fuelcan
+inv_name_short				= 
+inv_weight					= .1
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 5
+can_take					= false
+
+cost						= 50
+blast						= 1.50
+blast_r						= 8
+blast_impulse				= 250
+blast_impulse_factor		= 1
+
+frags						= 5
+frags_r						= 15
+frag_hit					= 0.75
+frag_hit_impulse			= 150
+
+hit_type_blast				= burn
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_fuelcan
+
+light_color					= 1.9,1.3,0.5
+light_range					= 30.0
+light_time 					= 1.5
+
+fragment_speed				= 100
+
+explode_duration			= 5
+wallmark_section			= explosion_marks
+snd_explode 				= weapons\explo\fuelcan_boom
+immunities_sect				= explosive_fuelcan_immunities_sect
+
+
+
+[explosive_fuelcan_immunities_sect]
+burn_immunity				= 1.0
+strike_immunity				= 1.0
+shock_immunity				= 1.0
+wound_immunity				= 1.0
+radiation_immunity			= 1.0
+telepatic_immunity			= 1.0
+chemical_burn_immunity		= 1.0
+explosion_immunity			= 1.0
+fire_wound_immunity			= 0.7
+
+
+
+[explosive_tank]:weapon_immunities,delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\tank"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\balon\bomb_01.ogf
+inv_name					= Fuelcan
+inv_name_short				= 
+inv_weight					= .1
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 5
+
+can_take					= false
+
+cost						= 50
+blast						= 1.50
+blast_r						= 8
+blast_impulse				= 250
+
+blast_impulse_factor		= 1
+
+frags						= 5
+frags_r						= 15
+frag_hit					= 0.75
+frag_hit_impulse			= 150
+
+hit_type_blast				= burn
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_mobiltank
+
+light_color					= 1.9,1.3,0.5
+light_range					= 30.0
+light_time					= 1
+
+fragment_speed				= 100
+
+explode_duration			= 5	
+
+wallmark_section			= explosion_marks
+
+snd_explode 				= weapons\explo\mobiltank_boom
+immunities_sect				= explosive_tank_immunities_sect
+
+
+
+[explosive_tank_immunities_sect]
+burn_immunity				= 1.0
+strike_immunity				= 1.0
+shock_immunity				= 1.0
+wound_immunity				= 1.0
+radiation_immunity			= 1.0
+telepatic_immunity			= 1.0
+chemical_burn_immunity		= 1.0
+explosion_immunity			= 1.0
+fire_wound_immunity			= 0.7
+
+
+
+[explosive_barrel_low]:weapon_immunities,delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\barrel_low"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\balon\bochka_fuel.ogf
+inv_name					= Barrel
+inv_name_short				= 
+inv_weight					= .1
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 5
+can_take					= false
+
+cost						= 500
+blast						= 1.50
+blast_r						= 8
+blast_impulse				= 250
+
+blast_impulse_factor		= 1
+
+frags						= 5
+frags_r						= 15
+frag_hit					= 0.75
+frag_hit_impulse			= 150
+
+hit_type_blast				= explosion
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_barrel
+
+light_color					= 1.9,1.4,0.5
+light_range					= 14.0
+light_time 					= 0.85
+
+fragment_speed				= 100
+
+explode_duration			= 5
+wallmark_section			= explosion_marks
+snd_explode					= weapons\explo\barrel_boom
+immunities_sect				= explosive_barrel_low_immunities_sect
+
+
+
+[explosive_barrel_low_immunities_sect]
+burn_immunity				= 1
+strike_immunity				= 1
+shock_immunity				= 1
+wound_immunity				= 1
+radiation_immunity			= 1
+telepatic_immunity			= 1
+chemical_burn_immunity		= 1
+explosion_immunity			= 1
+fire_wound_immunity			= 5
+
+
+
+[explosive_barrel]:weapon_immunities,delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\barrel"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\balon\bochka_fuel.ogf
+inv_name					= Barrel
+inv_name_short				= 
+inv_weight					= .1
+icon_group      			= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 5
+can_take					= false
+
+cost						= 500
+blast						= 1.50
+blast_r						= 8
+blast_impulse				= 250
+blast_impulse_factor		= 1
+
+frags						= 5
+frags_r						= 15
+frag_hit					= 0.75
+frag_hit_impulse			= 150
+
+hit_type_blast				= explosion
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_barrel
+
+light_color					= 1.9,1.4,0.5
+light_range					= 14.0
+light_time 					= 0.85
+fragment_speed				= 100
+
+explode_duration			= 5
+snd_explode 				= weapons\explo\barrel_boom
+immunities_sect				= explosive_barrel_immunities_sect
+wallmark_section			= explosion_marks
+
+
+
+[explosive_barrel_immunities_sect]
+burn_immunity				= 1
+strike_immunity				= 1
+shock_immunity				= 1
+wound_immunity				= 1
+radiation_immunity			= 1
+telepatic_immunity			= 1
+chemical_burn_immunity		= 1
+explosion_immunity			= 1
+fire_wound_immunity			= 0.7
+
+
+
+[explosive_mobiltank]:weapon_immunities,delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\mobiltank"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\balon\kanistra.ogf
+inv_name					= Barrel
+inv_name_short				= 
+inv_weight					= .1
+icon_group      			= 0
+inv_grid_width				= 2
+inv_grid_height				= 2
+inv_grid_x					= 14
+inv_grid_y					= 10
+
+can_take					= false
+cost						= 500
+blast						= 1.50
+blast_r						= 8
+blast_impulse				= 250
+blast_impulse_factor		= 1
+frags						= 5
+frags_r						= 15
+frag_hit					= 0.75
+frag_hit_impulse			= 150
+
+hit_type_blast				= explosion
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_mobiltank
+
+light_color					= 1.9,1.2,0.5
+light_range					= 30.0
+light_time 					= 1
+
+fragment_speed				= 100
+
+explode_duration			= 5
+snd_explode 				= weapons\explo\mobiltank_boom
+immunities_sect				= explosive_mobiltank_immunities_sect
+wallmark_section			= explosion_marks
+
+
+
+[explosive_mobiltank_immunities_sect]
+burn_immunity				= 1.0
+strike_immunity				= 1.0
+shock_immunity				= 1.0
+wound_immunity				= 1.0
+radiation_immunity			= 1.0
+telepatic_immunity			= 1.0
+chemical_burn_immunity		= 1.0
+explosion_immunity			= 1.0
+fire_wound_immunity			= 0.7
+
+
+
+[explosive_dinamit]:delayed_action_fuse
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn 						= "weapons\explosive\dinamit"
+$prefetch					= 16
+class						= II_EXPLO
+cform						= skeleton
+visual						= physics\box\expl_dinamit.ogf
+inv_name					= Dimanit
+inv_name_short				= 
+inv_weight					= 23.0
+icon_group      			= 0
+inv_grid_width				= 2
+inv_grid_height				= 2
+inv_grid_x					= 10
+inv_grid_y					= 2
+
+can_take					= false
+
+cost						= 50
+
+blast						= 2.00
+blast_r						= 5
+blast_impulse				= 250
+
+blast_impulse_factor		= 1
+
+frags						= 5
+frags_r						= 8
+frag_hit					= 0.55
+frag_hit_impulse			= 150
+
+hit_type_blast				= chemical_burn
+hit_type_frag				= burn
+
+up_throw_factor				= 1.0
+
+wm_size						= 0.1
+
+explode_particles			= explosions\explosion_dynamite
+
+light_color					= 1.9,1.3,0.5
+light_range					= 30.0
+light_time 					= 1.5
+
+fragment_speed				= 100
+
+explode_duration			= 5
+
+snd_explode 				= weapons\explo\dynamite_boom
+
+immunities_sect				= dinamit_immunities_sect
+wallmark_section			= explosion_marks
+
+
+
+[dinamit_immunities_sect]
+burn_immunity				= 0.0
+strike_immunity				= 0.0
+shock_immunity				= 0.0
+wound_immunity				= 0.0
+radiation_immunity			= 0.0
+telepatic_immunity			= 0.0
+chemical_burn_immunity		= 1.0
+explosion_immunity			= 0.0
+fire_wound_immunity			= 0.0
+
+
+
+[fire_dinamit]:explosive_dinamit
+immunities_sect				= fire_dinamit_immunities_sect
+
+
+
+[fire_dinamit_immunities_sect]:dinamit_immunities_sect
+burn_immunity				= 1.0
+strike_immunity				= 1.0
+shock_immunity				= 1.0
+explosion_immunity			= 1.0
+fire_wound_immunity			= 1.0
+
+
+
+[ammo_flame]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_5.45x39_fmj"
+class						= AMMO
+cform                   	= skeleton
+visual                  	= weapons\ammo\ammo_545x39_fmj.ogf
+description					= ammo_flame_name
+$prefetch 					= 64
+
+cost					 	= 200
+
+box_size					= 150
+
+inv_name					= ammo_flame_name
+inv_name_short				= ammo_flame_name
+inv_weight					= 0
+
+inv_grid_width				= 0
+inv_grid_height				= 0
+inv_grid_x					= 4
+inv_grid_y					= 40
+
+k_dist						= 1
+k_disp						= 15
+k_hit						= 0.5
+k_impulse					= 0
+k_pierce					= 0
+impair						= 1
+buck_shot					= 25
+tracer						= off
+wm_size         			= 0.001
+explosive					= off
+
+
+
+[ammo_5.7x28_fmj]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.7x28_fmj"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_57x28_fmj.ogf
+description					= enc_weapons1_ammo_ammo-5.7x28-fmj
+$prefetch 					= 64
+
+cost						= 200
+
+box_size					= 30
+
+inv_name					= ammo-5.7x28-fmj
+inv_name_short				= ammo-5.7x28-fmj
+inv_weight					= .25
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 4
+
+
+k_dist						= 1
+k_disp						= 2.4
+k_hit						= 1.38
+k_impulse					= 1
+k_pierce					= 1
+impair						= 1
+buck_shot					= 1
+tracer						= on
+wm_size         			= 0.05
+
+
+
+[ammo_5.7x28_ap]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency		= 
+$spawn						= "weapons\ammo\ammo_5.7x28_ap"
+class						= AMMO
+cform						= skeleton
+visual						= weapons\ammo\ammo_57x28_ap.ogf
+description					= enc_weapons1_ammo_ammo-5.7x28-ap
+$prefetch 					= 64
+
+cost						= 250
+
+box_size					= 30
+
+inv_name					= ammo-5.7x28-ap
+inv_name_short				= ammo-5.7x28-ap
+inv_weight					= .25
+icon_group      			= 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 3
+
+k_dist						= 1
+k_disp						= 2.5
+k_hit						= 1.4
+k_impulse					= 1.2
+k_pierce					= 1.43
+impair						= 1.05
+buck_shot					= 1
+tracer						= on
+wm_size						= 0.05
+
+
+
+[ammo_5.7x28_ss190]:ammo_base
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_57x28_ss190"
+class						= AMMO
+cform                   	= skeleton
+visual                  	= weapons\p90\ammo_57x28_ss190.ogf
+description					= enc_weapons1_ammo_ammo-5.7x28
+$prefetch 					= 64
+
+cost						= 100
+
+box_size					= 30
+
+inv_name					= ammo-5.7x28_name
+inv_name_short				= ammo-5.7x28_s
+inv_weight					= 0.25
+icon_group                  = 2
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x					= 2
+inv_grid_y					= 4
+
+k_dist						= 1
+k_disp						= 2.5
+k_hit						= 1.15
+k_impulse					= 1
+k_pierce					= 1
+impair						= 1.05
+buck_shot					= 1
+tracer						= on
+wm_size         			= 0.05
+
+
+
+[ammo_btr]:identity_immunities
+GroupControlSection			= spawn_group
+discovery_dependency 		= 
+$spawn						= "weapons\ammo\ammo_gauss"
+class						= AMMO
+cform                   	= skeleton
+visual                  	= weapons\ammo\ammo_gauss.ogf
+description					= enc_weapons1_ammo_ammo-gauss
+$prefetch 					= 64
+
+cost						= 550
+
+box_size					= 10
+
+inv_name					= ammo-gauss
+inv_name_short				= ammo-gauss_s
+inv_weight					= .5
+icon_group          		= 2
+inv_grid_width				= 1
+inv_grid_height				= 1
+inv_grid_x					= 0
+inv_grid_y					= 15
+
+k_dist						= 1.1
+k_disp						= 10
+k_hit						= 1.0
+k_impulse					= 10
+k_pierce					= 2.5
+impair						= 1.0
+buck_shot					= 1
+tracer						= on
+wm_size         			= 0.1
+
+explosive					= off
+
+
+
+[stationary_mgun]
+GroupControlSection			= spawn_group
+class						= W_STMGUN
+$spawn						= "weapons\stationary_mgun"
+cform   	                = skeleton
+visual  	                = weapons\mounted_weapons\wpn_pkm_trenoga.ogf  
+
+cam_relax_speed         	= 3.0	
+cam_dispersion          	= 0.0007	
+cam_max_angle				= 1	    
+snd_shoot					= weapons\weapon_heli
+use_aim_bullet				= false
+
+ammo_class					= ammo_btr
+fire_dispersion_base		= 1.0 
+rpm            		        = 300
+hit_power					= 100
+hit_impulse					= 500
+fire_distance  		        = 1000
+bullet_speed				= 500
+
+light_color					= 0.9,0.9,0.5
+light_range					= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time 					= 0.3
+
+flame_particles				= weapons\generic_weapon_btr
+smoke_particles				= weapons\generic_shoot_00
+shell_point					= 0.0, 0.0, 0.0
+shell_particles				= weapons\generic_shells00
+
+tracer_trail_scale	 		= 1.0
+tracer_start_length	 		= 1.0
+tracer_width		 		= 1.0
+
+inv_name	        		= Mounted Weapon
+inv_name_short				= Mounted Weapon
+
+
+
+[mounted_weapon]
+GroupControlSection			= spawn_group
+class						= W_MOUNTD
+$spawn						= "weapons\mounted_weapon"
+cform   	                = skeleton
+visual  	                = weapons\mounted_weapons\wpn_pkm_trenoga.ogf  
+
+;params of weapon recoil
+fire_dispersion_base		= 1 
+
+cam_relax_speed         	= 3.0	
+cam_dispersion          	= 0.7	
+cam_max_angle				= 8	    
+cam_max_angle_horz			= 9.0   
+cam_step_angle_horz			= 1.8	
+
+fire_dispersion_condition_factor = 5
+misfire_probability 		= 0.0001
+condition_shot_dec 			= 0.00003
+
+hit_power					= 0.60
+hit_impulse					= 220
+hit_type 					= fire_wound 	
+
+fire_distance  		        = 500
+bullet_speed				= 500
+rpm            		        = 500
+
+light_color		 			= 0.9,0.9,0.5
+light_range		 			= 6
+light_var_color  			= 0.05
+light_var_range  			= 0.5
+light_time 		 			= 0.3
+
+flame_particles		    	= weapons\generic_weapon08
+smoke_particles		    	= weapons\generic_shoot_00
+
+shell_point		 			= 0.00, 0.0,0
+shell_particles	 			= weapons\generic_shells00
+
+snd_shoot					= weapons\weapon_btr
+
+ammo_class		 			= ammo_7.62x54_7h1

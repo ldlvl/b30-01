@@ -1,0 +1,49 @@
+[disable]
+linear_factor            = 0.5
+angular_factor           = 0.5
+
+[collide]
+not_collide_parts = 1
+
+
+[destroyed]
+dynamics\box\part\box_metall_01_part_1
+dynamics\box\part\box_metall_01_part_2
+
+[autoremove_parts]
+time					  = 60
+
+[collision_damage]
+link                     = 0.1
+
+[particles]
+destroy_particles        = destroy_fx\destroy_wood_00
+
+[particle_bones]
+link                     =  0.0, 0.15, 0.0
+
+[sound]
+			
+break_sound              =  material\metal_box\collide\big_metal_1
+
+default                  = 1.0, -1, 0.0
+
+[immunities]
+burn_immunity            = 0.05
+strike_immunity          = 0.0
+shock_immunity           = 0.1
+wound_immunity           = 0.15
+radiation_immunity       = 0.0
+telepatic_immunity       = 0.0
+chemical_burn_immunity   = 1.0
+explosion_immunity       = 0.1
+fire_wound_immunity      = 0.2
+
+
+[impulse_transition_to_parts]
+random_min               = 0.2
+random_hit_imp           = 0.2
+
+imp_transition_factor    = 1.0
+lv_transition_factor     = 0.2
+av_transition_factor     = 0.2

@@ -1,0 +1,9 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = news_read
+on_use = %=sak.read_bar_news()% ph_idle@day
+
+[ph_idle@day]
+on_timer = 10000|ph_idle@idle
