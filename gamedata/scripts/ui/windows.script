@@ -227,8 +227,8 @@ function windows.simple_static(parent, name, rect, text, color)
      wnd:SetWindowName(name)
      wnd:SetFont(GetFontMedium())
      list[name] = wnd
-     wprintf("[~T]. #DBG: for window~C0A %-12s~C07 added simple static~C0E %s~C07", parent:WindowName(), name)
-     dump_table(db.g_statics)
+     --wprintf("[~T]. #DBG: for window~C0A %-12s~C07 added simple static~C0E %s~C07", parent:WindowName(), name)
+     --dump_table(db.g_statics)
   end
     
   wnd:SetWndRect( unpack(rect) )
@@ -246,14 +246,14 @@ function windows.del_simple_statics(parent, name)
    local id = window_id(parent)
    local list = db.g_statics[id]
    if list == nil then
-      wprintf("[~T].~C0C #WARN:~C07 for window~C0A %-12s~C07 no child statics list", id)
-      dump_table(db.g_statics)
-      wprintf("~C0A %s~C07", lua_traceback(" "))
+      --wprintf("[~T].~C0C #WARN:~C07 for window~C0A %-12s~C07 no child statics list", id)
+      --dump_table(db.g_statics)
+      --wprintf("~C0A %s~C07", lua_traceback(" "))
       return
    end                 
    if name then
       if list[name] then
-         wprintf("[~T]. #DBG: for window~C0A %-12s~C07 removed simple static~C0E %s~C07", parent:WindowName() or 'nil', name)
+         --wprintf("[~T]. #DBG: for window~C0A %-12s~C07 removed simple static~C0E %s~C07", parent:WindowName() or 'nil', name)
          parent:DetachChild(list[name])
       end
       list[name] = nil           -- удаление конкретного статика
