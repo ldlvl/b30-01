@@ -9627,42 +9627,58 @@ end
 local tex_sw = 0
 local tex_switcher = 0
 
+function tex_switch_num( max )
+  if max == 3 then
+    if     tex_sw == 0 then tex_sw = 1
+    elseif tex_sw == 1 then tex_sw = 2
+    elseif tex_sw == 2 then tex_sw = 3
+    elseif tex_sw == 3 then tex_sw = 0
+    end
+  else
+    if     tex_switcher == 0 then tex_switcher = 1
+    elseif tex_switcher == 1 then tex_switcher = 0
+    end
+  end
+end
+
 function sak_key()
-	local active_slot = db.actor:active_slot()
-	--local slot_1 = db.actor:item_in_slot(1)
-    --local slot_2 = db.actor:item_in_slot(2)
-	if active_slot == 1 or active_slot == 2	then
-		--if strpos(slot_1,"addon",1,true) or strpos(slot_2,"addon",1,true) then
-			vergas_lib.s_play([[weapons\light_on]],1)
-		--end
-	end
-   texman.swap_simple ("wpnv\\addons\\cobra\\collimator", tostring(tex_sw))
-   texman.swap_simple ("wpnv\\addons\\elcan\\cetka", tostring(tex_sw))
-   texman.swap_simple ("wpnv\\addons\\elcan\\setka", tostring(tex_sw))
-
-   if tex_sw == 0 then
-      tex_sw = 1
-   elseif tex_sw == 1 then
-      tex_sw = 2
-   elseif tex_sw == 2 then
-      tex_sw = 3
-   elseif tex_sw == 3 then
-      tex_sw = 0
-   end
-   texman.swap_simple ("wpnv\\addons\\pso1\\kross", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\pso1\\cross", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\eotech\\mark", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\1p78\\crosshair", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\1p78\\krosshair", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\march_tactical\\cross", tostring(tex_switcher))
-   texman.swap_simple ("wpnv\\addons\\march_tactical\\kross", tostring(tex_switcher))
-   
-   if tex_switcher == 0 then
-      tex_switcher = 1
-   elseif tex_switcher == 1 then
-      tex_switcher = 0
-	end
-
+  local actor = db.actor
+	local active_slot = actor:active_slot()
+	if not ( active_slot == 1 or active_slot == 2 )	then return end
+  for i = 1, 2 do
+    local w_obj = actor:item_in_slot( i )
+    if w_obj then
+      if strposx( w_obj:section(), "_cobra" ) then
+        texman.swap_simple( "wpnv\\addons\\cobra\\collimator", tostring( tex_sw ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 3 )
+      elseif strposx( w_obj:section(), "_acog" ) then
+        texman.swap_simple( "wpnv\\addons\\elcan\\cetka", tostring( tex_sw ) )
+        texman.swap_simple( "wpnv\\addons\\elcan\\setka", tostring( tex_sw ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 3 )
+      elseif strposx( w_obj:section(), "_1p78" ) then
+        texman.swap_simple( "wpnv\\addons\\1p78\\crosshair", tostring( tex_switcher ) )
+        texman.swap_simple( "wpnv\\addons\\1p78\\krosshair", tostring( tex_switcher ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 2 )
+      elseif strposx( w_obj:section(), "_1pso" ) then
+        texman.swap_simple( "wpnv\\addons\\pso1\\kross", tostring( tex_switcher ) )
+        texman.swap_simple( "wpnv\\addons\\pso1\\cross", tostring( tex_switcher ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 2 )
+      elseif strposx( w_obj:section(), "_eotech" ) then
+        texman.swap_simple( "wpnv\\addons\\eotech\\mark", tostring( tex_switcher ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 2 )
+      elseif strposx( w_obj:section(), "_mt" ) then
+        texman.swap_simple( "wpnv\\addons\\march_tactical\\cross", tostring( tex_switcher ) )
+        texman.swap_simple( "wpnv\\addons\\march_tactical\\kross", tostring( tex_switcher ) )
+        misc.easy_sound( "weapons\\light_on" )
+        tex_switch_num( 2 )
+      end
+    end
+  end
 end
 -- dsh_func
 -- ecolog_apparat
