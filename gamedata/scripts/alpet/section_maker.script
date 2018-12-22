@@ -100,9 +100,9 @@ function _G.create_ini_section(ini, name)
  end 
  
  
- if not strposx(qf_name, "script_sound:") then
-    wprintf("[~T].~C0C #WARN:~C0F section_maker.script black listed section~C0A %s~C07", qf_name)
- end   
+ -- if not strposx(qf_name, "script_sound:") then
+ --    wprintf("[~T].~C0C #WARN:~C0F section_maker.script black listed section~C0A %s~C07", qf_name)
+ -- end   
  black_list[qf_name] = true                                                     
  -- wprintf("[~T].~C0C #WARN:~C07 cannot handle section name~C0F %s~C07", name)
  return false
