@@ -60,8 +60,9 @@ function add_first_spawn()
 		)
 	end
 	sak_spawn.spawn_inventory_box()	
-	test.spawn_holod_radio()  				-- добавим радиоприёмник Холоду на Болотах
-	test.spawn_sultan_radio()				-- и Султану, а радио это уберём нафиг
+	test.spawn_holod_radio()  				-- добавим приёмник Холоду на Болотах
+	test.spawn_sultan_radio()				-- и Султану, а радистанцию эту уберём нафиг
+	test.on_new_game()						-- для ститистики, чтобы упорядочено было			
 end
 
 function trade_many_remove()

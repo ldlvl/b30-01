@@ -169,7 +169,7 @@ function add_pts( props, sect_name, count, pts )
     " points for~C0F %s ~C0A %s~C07 ~C0B x ~C0D %d~C0B =~C0D %.3f~C07 ",
     props, sect_name, count, pts
   )
-  if pts >= 1 then
+  if pts >= 1 and sect_name ~= game.translate_string( "st_pda_gg_deaths" ) then
      db.actor:set_character_rank( db.actor:character_rank() + pts )
   end
 end

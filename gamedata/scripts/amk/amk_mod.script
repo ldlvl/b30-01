@@ -1048,6 +1048,7 @@ function Blowout_pp(num)
   elseif phase==3 then
     amk_anoms.after_blow_on()
     sak.off_testobj()
+    if nlc_vars.tbl_bio_art then nlc_vars.tbl_bio_art = nil end    -- обновление таблицы id природных артов для статистики
     amk_vars.blowout = 3
     timers.start_timer("blowout",0,0,3,"amk_mod.Blowout_pp(4)")
   elseif phase==4 then
@@ -1089,6 +1090,8 @@ function Blowout_pp(num)
     amk_vars.blowout = nil
     db.blowout_active=false
     db.actor:give_info_portion("groza_info")
+    -- для статистики:
+    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num" ), 1, 0 )
     -- sleep_manager.change_sleepiness(25, true) -- увеличить сонливость, зачем?
   end
 end

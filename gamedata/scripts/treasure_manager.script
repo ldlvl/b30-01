@@ -173,6 +173,8 @@ function CTreasure:give_treasure(k)
 		end
 		self.treasure_info[k].active = true
 		self.treasure_info[k].done = true
+		-- для статистики:
+		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_treas_found" 		), 1, 0 )
 		local sim = alife()
 		if obj.online then
 			sim:set_switch_online(obj.id, false)

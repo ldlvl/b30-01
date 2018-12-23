@@ -185,7 +185,10 @@ function roll_dice_gg()
     local e=tonumber(die_e)
     local f=tonumber(die_f)
     if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then db.actor:give_info_portion("gg_winner")
+    elseif (a+b+e)<(c+d+f) then
+      db.actor:give_info_portion("gg_winner")
+      -- для статистики:
+      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
     elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
     end
   end
@@ -216,7 +219,10 @@ function roll_dice_mass_gg()
     local e=tonumber(die_e)
     local f=tonumber(die_f)
     if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then db.actor:give_info_portion("gg_winner")
+    elseif (a+b+e)<(c+d+f) then
+      db.actor:give_info_portion("gg_winner")
+      -- для статистики:
+      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
     elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
     end
   end
@@ -247,7 +253,10 @@ function roll_dice_o_mass_gg()
     local e=tonumber(die_e)
     local f=tonumber(die_f)
     if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then db.actor:give_info_portion("gg_winner")
+    elseif (a+b+e)<(c+d+f) then
+      db.actor:give_info_portion("gg_winner")
+      -- для статистики:
+      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
     elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
     end
   end
@@ -261,12 +270,16 @@ function new_game_ochko()
   db.actor:disable_info_portion("gg_winner")
   db.actor:disable_info_portion("gg_luser")
   db.actor:disable_info_portion("draw")
+  -- для статистики:
+  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0 )
 end
 function roll_dice_ochko_npc_for_gg()
   die_a=lua_random(1,6)
   if (die_a+gg_sum)==ochko then
   db.actor:give_talk_message("%c[255,216,186,140]Так..."..numer[die_a].."%c[255,216,186,140], а было "..summ_dises[gg_sum].."\\n%c[255,216,186,140]Всего одиннадцать! Очко! Повезло...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
   db.actor:give_info_portion("gg_winner")
+  -- для статистики:
+  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
   elseif (die_a+gg_sum)>ochko then
   db.actor:give_talk_message("%c[255,216,186,140]Ха! У тебя "..numer[die_a].."%c[255,216,186,140], а было "..summ_dises[gg_sum].."\\n%c[255,216,186,140]Перебор... Банк мой!", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
   db.actor:give_info_portion("gg_luser")
@@ -288,6 +301,8 @@ function roll_dice_ochko_npc()
   elseif (die_e+npc_sum)>ochko then
   db.actor:give_talk_message("%c[255,216,186,140]Блинн! "..numer[die_e].."%c[255,216,186,140], а было "..summ_dises[npc_sum].."\\n%c[255,216,186,140]Перебор... Банк твой...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
   db.actor:give_info_portion("gg_winner")
+  -- для статистики:
+  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
   elseif (die_e+npc_sum)<gg_sum then
     if npc_sum~=0 then
     db.actor:give_talk_message("%c[255,216,186,140]Так "..numer[die_e].."%c[255,216,186,140], да ещё до этого было "..summ_dises[npc_sum].."\\nВсего "..summ_dises[(npc_sum+die_e)].."\\n%c[255,216,186,140]Бросаю ещё! Не против?", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
@@ -434,6 +449,8 @@ function empty_thimbles()
   end
 end
 function create_thimbles()
+  -- для статистики:
+  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0 )
 local a=lua_random(1,3)
   for k=1,3 do
     if k==a then
@@ -460,38 +477,50 @@ local main_thimble=alife():object(main_thimble_id)
   local fills=alife():create(fill_item, main_thimble.position, main_thimble.m_level_vertex_id, main_thimble.m_game_vertex_id, main_thimble.id)
   end
 end
-function thimbles_explosion(box)
-local box_id = box:id()
-  for i=1,table.getn(blow_thimbles) do
-    local obj_id = blow_thimbles[i]
-    if box_id==obj_id then
-    close_window()
-    level.disable_input()
-    level.hide_indicators()
+
+function thimbles_explosion( box )
+  local box_id = box:id()
+  for i = 1, table.getn( blow_thimbles ) do
+    local obj_id = blow_thimbles[ i ]
+    if box_id == obj_id then
+      close_window()
+      level.disable_input()
+      level.hide_indicators()
       local h = hit()
       h.power = 0.2
       h.impulse = 50
-      h:bone("bip01_spine")
+      h:bone( "bip01_spine" )
       h.draftsman = db.actor
       local bpos = box:position()
-      amk_particle.amk_particle({particle=[[explosions\explosion_dynamite]], pos=bpos, sound=[[weapons\rpg7_explode]]})
-      level.add_cam_effector("camera_effects\\hit_front.anm", 150, false, "")
+      amk_particle.amk_particle(
+        { particle = [[explosions\explosion_dynamite]],
+        pos = bpos, sound = [[weapons\rpg7_explode]] }
+      )
+      level.add_cam_effector( "camera_effects\\hit_front.anm", 150, false, "" )
       local apos = db.actor:position()
-      local dist = bpos:distance_to(apos)
+      local dist = bpos:distance_to( apos )
       if dist > 0 then
-        h.direction = vector():set((apos.x - bpos.x)/dist,(apos.y - bpos.y)/dist,(apos.z - bpos.z)/dist)
+        h.direction = vector():set(
+          ( apos.x - bpos.x ) / dist,
+          ( apos.y - bpos.y ) / dist,
+          ( apos.z - bpos.z ) / dist
+        )
         h.type = hit.explosion
-        db.actor:hit(h)
+        db.actor:hit( h )
       end
       local active_item = db.actor:active_item()
-      if active_item and active_item:section()~= "bolt" and active_item:section()~= "wpn_knife" then
-      db.actor:drop_item(active_item)
+      if active_item and active_item:section() ~= "bolt" and active_item:section() ~= "wpn_knife" then
+        db.actor:drop_item( active_item )
       end
-      timers.start_timer("mil_minigame_effector",1,"sak_minigame.mil_minigame_effector()")
+      timers.start_timer( "mil_minigame_effector", 1, "sak_minigame.mil_minigame_effector()" )
       --set_inactivate_input_time(delta)
+    else
+      -- для статистики:
+      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
     end
   end
 end
+
 function mil_minigame_effector()
   level.add_pp_effector("deadcity_wake.ppe", 50, false)
   db.actor:set_actor_position(patrol("blow_thimbles"):point(0))

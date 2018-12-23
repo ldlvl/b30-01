@@ -684,6 +684,7 @@ function late_init_impl()
   level.set_load_title("#actor_binder:late_init")
   level.enable_input()
   escape_raid.dbg_clean()
+  test.on_late_init()
   allcore_mayatniks.on_late_init()
 end
 
@@ -882,6 +883,9 @@ function actor_binder:map_location_added_callback(spot_type_str, object_id)
   --'news_manager.send_task(db.actor, "new")
 end
 function actor_binder:death_callback(oVictim, oWho)
+  if oVictim:id() == 0 then
+    test.set_death_count( "d_stor", test.get_death_count( "d_stor" ) + 1 )
+  end
   --self.object:activate_slot(0)
   --m_call("on_actor_death", oWho) --/#+#
 end

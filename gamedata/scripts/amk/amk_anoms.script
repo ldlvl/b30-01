@@ -1208,6 +1208,8 @@ function spawn_art( section, pos, gv, lv )
   local sobj = amk.spawn_item( section, pos, gv, lv )
   if sobj then
     --amk.add_spot_on_map( sobj.id, 'red_location', section )
+    -- занесём для статистики id артов в nlc_vars, во время выброса будем чистить...
+    test.add_art_to_vars( sobj.id )
     return sobj 
   end
 end

@@ -237,7 +237,7 @@ end
 
 function add_bamazhka_to_vars( sect )
 	local tbl = xray_vars.load_table( nlc_vars, "tbl_pap", {} )
-	if tbl == nil then tbl = {} end
+	--if tbl == nil then tbl = {} end -- не нужно, выше есть
 	table.insert( tbl, sect )
 	nlc_vars.tbl_pap = tbl
 	misc.dump_table( tbl )
@@ -294,6 +294,17 @@ function close_inventory()
 end
 
 function anim_use_med( sect )
+	-- дл€ статистики -------------------------:
+	if 		sect == "medkit" then
+		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_1" ), 1, 0 )
+	elseif 	sect == "medkit_army" then
+		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_2" ), 1, 0 )
+	elseif 	sect == "medkit_scientic" then
+		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_3" ), 1, 0 )
+	elseif 	sect == "antirad" then
+		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used" ), 1, 0 )
+	end
+	-------------------------------------------
 	local med_pause = tbl_med[ sect ]
 	if med_pause then
 		schedule.add( "delay_close", "test.delay_close_inv()", 200 )
@@ -363,6 +374,8 @@ function anim_eat_middle()
 			end
 			sleep_manager.add_sleepiness( 25 )
 			sleep_manager.test_for_need_sleep_vodka()
+			-- дл€ статистики:
+			xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_vodka_drink" ), 1, 0 )
 			--level.add_pp_effector( "snd_shock.ppe", 7849, false )
 			--level.add_cam_effector( "camera_effects\\drunk.anm", 7850, false, "" )
 		elseif f_sect == "energy_drink" then
@@ -620,4 +633,128 @@ function firemode_switch_try()
     		end
     	end
     end
+end
+-- удалить
+function st_add( sect, amnt, pts )
+	xr_statistic.add_pts( "stalkerkills", sect, amnt, pts )
+end
+-- удалить
+function st()
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), 1000, 1 )
+end
+
+function on_late_init()
+ 	local d_saved = get_death_count( "d_stor" ) or 0
+ 	local d_pda   = actor_stats.get_points( "stalkerkills" ) or 0
+ 	local d_diff = d_saved - d_pda
+ 	if d_diff > 0 then
+ 		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), d_diff, 1 )
+ 	end
+ end
+
+function get_death_count( what )
+	local f = getFS()
+	local flist = f:file_list_open_ex(
+	    "$game_stats$", bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
+	    "*." .. what
+	)
+	if flist:Size() > 0 then
+		return tonumber( string.match( flist:GetAt( 0 ):NameFull(), "(%d)%." .. what ) )
+	else
+		local f1 = f:update_path( "$fs_root$", "fsgame.ltx" )
+		local f2 = f:update_path( "$game_stats$", "0." .. what )
+		f:file_copy( f1, f2 )
+		return 0
+	end
+end
+
+function set_death_count( what, value )
+	local f = getFS()
+	local fileName = f:file_list_open_ex(
+	    "$game_stats$", bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
+	    "*." .. what ):GetAt( 0 ):NameFull()
+	local fileNameNew = tostring( value ) .. "." .. what
+	if fileNameNew ~= fileName then
+		local f1 = f:update_path( "$game_stats$", fileName )
+		local f2 = f:update_path( "$game_stats$", fileNameNew )
+		f:file_rename( f1, f2, true )
+	end
+end
+
+function on_new_game()
+	get_death_count( "d_stor" )
+	set_death_count( "d_stor", 0 )
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_1" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_2" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_3" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_sem" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_uniq" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_treas_found" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_vodka_drink" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_1" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_2" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_3" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" 	), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" 			), 0, 0 )
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" 		), 0, 0 ) --
+end
+
+function add_art_to_vars( id )
+	if id ~= nil then
+		local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
+		table.insert( tbl, id )
+		nlc_vars.tbl_bio_art = tbl
+	end 
+end
+
+function art_is_bio_art( id )
+	local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
+	if tbl ~= nil then
+		misc.dump_table( tbl )
+		for k, v in ipairs( tbl ) do
+			if id == v then
+				table.remove( tbl, k )
+				nlc_vars.tbl_bio_art = tbl
+				misc.dump_table( tbl )
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function haldle_art_for_stats( sect, id )
+	if nlc_vars.semart_id and id == nlc_vars.semart_id	then 	-- арт —емецкого
+		xr_statistic.add_pts( "stalkerkills",
+							game.translate_string( "st_pda_arts_found_sem" ), 1, 0
+		)
+	end
+	if art_is_bio_art( id ) then      							-- арт природный, не сваренный
+		for k, v in pairs( tbl_arts ) do
+			for i = 1, #v do
+				if strposx( sect, v[ i ] ) then
+					if k == "lvl1" then  						-- арт 1 уровн€
+						xr_statistic.add_pts( "stalkerkills",
+							game.translate_string( "st_pda_arts_found_1" ), 1, 0
+						)
+					elseif k == "lvl2" then  					-- арт 2 уровн€
+						xr_statistic.add_pts( "stalkerkills",
+							game.translate_string( "st_pda_arts_found_2" ), 1, 0
+						)
+					elseif k == "lvl9" or k == "lvl10" then  	-- арт - капсула
+						xr_statistic.add_pts( "stalkerkills",
+							game.translate_string( "st_pda_arts_found_3" ), 1, 0
+						)
+					elseif k == "lvl11" then  					-- арт - уник
+						xr_statistic.add_pts( "stalkerkills",
+							game.translate_string( "st_pda_arts_found_uniq" ), 1, 0
+						)		
+					end
+				end
+			end
+		end
+	end
 end

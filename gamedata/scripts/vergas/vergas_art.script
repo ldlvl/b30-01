@@ -69,6 +69,8 @@ end
 function take_art( obj )
   local new_add_damage = 0.1
   local sect = obj:section()
+   -- для статистики:
+  test.haldle_art_for_stats( sect, obj:id() )
   if sect == "esc_af_medusa" then new_add_damage = 0 end  -- чтобы первой же медузой не убило при новых дамагах
   local actor = db.actor
   if ver_art ~= nil and table.getn( ver_art ) ~= 0 then
@@ -100,18 +102,16 @@ function take_art( obj )
       local xdelta    = math.sin( a.y )
       local zdelta    = math.cos( a.y )
       local pos_blast = sak.v3f(
-                          ( act_pos.x + xdelta ),
-                          ( act_pos.y + 0.6),
-                          ( act_pos.z + zdelta) 
-                        )
+        ( act_pos.x + xdelta ),
+        ( act_pos.y + 0.6),
+        ( act_pos.z + zdelta) 
+      )
       art_particle:play_at_pos( pos_blast ) 
       art_sound:play_at_pos( actor,pos_blast, 0 )
     end
     hit_tbl = vergas_lib.str_explode(
-                ",",
-                vergas_lib.set_pr_from_config_str( sect, "hit_type" ),
-                true
-              )
+      ",", vergas_lib.set_pr_from_config_str( sect, "hit_type" ), true
+    )
     unit_hit = vergas_lib.set_pr_from_config_str( sect, "unit_hit" ) or 0.02
     unit_hit = unit_hit + 0.01 * sak.dog_psy + new_add_damage
     if vergas_masks.get_flag_mask() then     --при надетой маске по 85% от каждого хита из конфига

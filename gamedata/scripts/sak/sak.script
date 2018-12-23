@@ -1857,7 +1857,7 @@ function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ
       zombieflag=false
     end 
   end
-      nlc_vars["artmod_activation_"..info_artmod] = s
+    nlc_vars["artmod_activation_"..info_artmod] = s
     if (s.i1t~=-1 and s.i2t~=-1 and s.i3t~=-1 and s.i4t~=-1) then
       misc.release_obj(s.i1t, 'sak.script:829')
       misc.release_obj(s.i2t, 'sak.script:830')
@@ -1865,20 +1865,16 @@ function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ
       misc.release_obj(s.i4t, 'sak.script:832')
       level.add_pp_effector("teleport.ppe", 1530, false)
       -- ¬арим арт определенного уровн€, в зависимости от времени, сложности  и опыта гг
-
       local dgc = 1+(3-level.get_game_difficulty())/5 -- коэффицент в зависимости от сложности игры
-
       local goods= nlc_vars.artmod_goods or 1
       if strpos(item_targ,"af_dummy_",1,true)==nil and strpos(item_targ,"af_dummy_simbion",1,true)==nil and strpos(item_targ,"_new",1,true)==nil then
         local rand_goods=math.floor(math.log(goods*dgc))+1
         if rand_goods>5 then rand_goods=5 end
-
-	    local rand_dyn = (math.abs(math.floor(level.get_time_minutes()/17)-level.get_time_hours()))%rand_goods+1 -- в определенный час и минуту - определенный арт
-	
-	    --ODS("”ровень арта: "..rand_dyn.." потолок: "..rand_goods.." количество варок: "..goods,'g')
-		xr_statistic.addCookingPoints(item_targ)
+        local rand_dyn = (math.abs(math.floor(level.get_time_minutes()/17)-level.get_time_hours()))%rand_goods+1 -- в определенный час и минуту - определенный арт
+		    --ODS("”ровень арта: "..rand_dyn.." потолок: "..rand_goods.." количество варок: "..goods,'g')
+		    xr_statistic.addCookingPoints(item_targ)
         item_targ=(item_targ.."_dyn"..rand_dyn.."d")
-        end
+      end
       amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,7+math.random(0,6)) -- варим 7-13 минут 
       --amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,1)     
       nlc_vars.artmod_goods = goods + 1       nlc_vars["artmod_activation_"..info_artmod] = nil
@@ -5301,6 +5297,8 @@ function add_tail()
         misc.release_obj(tonumber(obj_vis), 'sak.script:3380')
       end
     loks_count()
+    -- дл€ статистики:
+    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" ), 1, 0 )
     amk_vars.sak_teleport = nil
     amk_vars.sak_teleport_vis = nil
     sak_off_corpses.off_corpses(true)
@@ -8074,7 +8072,9 @@ function spawn_art_semeneckyi()
     local section = sak_dialog.rand_semart()
     local sobj = amk.spawn_item( section, pos, new_gw, new_lv )
     if sobj then
-      -- amk.add_spot_on_map( sobj.id, 'red_location', section )
+      nlc_vars.semart_id = sobj.id  -- дл€ статистики
+      test.add_art_to_vars( sobj.id ) -- дл€ статистики
+      --amk.add_spot_on_map( sobj.id, 'red_location', section )
       vergas_art.add_in_tbl( sobj )
     end
   end
