@@ -8194,7 +8194,7 @@ function vergas_rep_add()
 end
 
 function need_amk_kanistra()
-  if (nlc_vars.esc_kanistras_time == nil) or (game.time() >= nlc_vars.esc_kanistras_time) then
+  if not timers.check_timer( "esc_benzinopause" ) then
     return true
   else
     return false
@@ -8204,10 +8204,10 @@ function no_need_amk_kanistra()
   return not need_amk_kanistra()
 end
 function esc_kanistra_add()
-  nlc_vars.esc_kanistras_time = game.time()+24*60*60*1000
+  timers.start_timer( "esc_benzinopause", 0, lua_random( 18, 24 ), 0 ) -- пауза на приём бензина
 end
 function need_bar_kanistra()
-  if (nlc_vars.bar_kanistras_time == nil) or (game.time() >= nlc_vars.bar_kanistras_time) then
+  if not timers.check_timer( "bar_benzinopause" ) then
     return true
   else
     return false
@@ -8217,7 +8217,7 @@ function no_need_bar_kanistra()
   return not need_bar_kanistra()
 end
 function bar_kanistra_add()
-  nlc_vars.bar_kanistras_time = game.time()+24*60*60*1000
+  timers.start_timer( "bar_benzinopause", 0, lua_random( 16, 18 ), 0 ) -- в баре больше нужда в бензине
 end
 
 function kompass_have()
