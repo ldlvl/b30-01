@@ -10594,7 +10594,7 @@ function add_mosinka()
 end
 --приз от Лёхи
 function timer_junkman()
-  local rnd = lua_random(5,7)
+  local rnd = lua_random(1,2)   -- заменил награду и время соответственно.
   timers.start_timer("timer_junkman",rnd,0,30,"sak_dialog.timer_junkman_end()")
 end
 function timer_junkman_end()
