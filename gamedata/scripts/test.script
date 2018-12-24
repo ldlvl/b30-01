@@ -192,7 +192,7 @@ function spawn_holod_radio()
 		data.mass = 20
 		pk:set( data )
 	end
-end
+end 
 
 function spawn_sultan_radio()
     local obj1 = g_sim:object( "bar_transiver" )
@@ -704,22 +704,29 @@ end
 
 function add_art_to_vars( id )
 	if id ~= nil then
+		local lname = level.name()
 		local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
-		table.insert( tbl, id )
+		if tbl[ lname ] == nil then tbl[ lname ] = {} end
+		table.insert( tbl[ lname ], id )
 		nlc_vars.tbl_bio_art = tbl
 	end 
 end
 
 function art_is_bio_art( id )
+	local lname = level.name()
 	local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
 	if tbl ~= nil then
-		misc.dump_table( tbl )
-		for k, v in ipairs( tbl ) do
-			if id == v then
-				table.remove( tbl, k )
-				nlc_vars.tbl_bio_art = tbl
-				misc.dump_table( tbl )
-				return true
+		misc.dump_table( tbl )                         -- TODO выключить нах
+		for k, v in pairs( tbl ) do
+			if k == lname then
+				for i = 1, #v do
+					if id == v[ i ] then 
+						v[ i ] = -1
+						nlc_vars.tbl_bio_art = tbl
+						misc.dump_table( tbl )         -- TODO выключить нах
+						return true
+					end
+				end
 			end
 		end
 	end
