@@ -585,7 +585,7 @@ function fuckup_matches()
 		for sect, ids in pairs( sak_inventory.all_items ) do
 			if sect == "matches" then
 				for m = 1, #ids do
-					if lua_random() < lfactor then
+					if lua_random() < ( lfactor * 0.6 ) then
 						sak.send_tip(
 						    "От дождя спички отсырели. Вот спасибо тебе, Зона...", "Этого ещё не хватало",
 						    5, 15, "g_g", "sak", "red"
@@ -633,14 +633,6 @@ function firemode_switch_try()
     		end
     	end
     end
-end
--- удалить
-function st_add( sect, amnt, pts )
-	xr_statistic.add_pts( "stalkerkills", sect, amnt, pts )
-end
--- удалить
-function st()
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), 1000, 1 )
 end
 
 function on_late_init()
