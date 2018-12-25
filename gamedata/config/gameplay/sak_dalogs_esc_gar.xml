@@ -6381,7 +6381,7 @@
 		<phrase id="1">
 			<text>esc_green_dan_ammo_1</text>
 			<next>21</next>
-			<next>22</next>
+<!-- 			<next>22</next>
 			<next>211</next>
 			<next>212</next>
 			<next>213</next>
@@ -6394,14 +6394,15 @@
 			<next>29</next>
 			<next>291</next>
 			<next>292</next>
-			<next>293</next>
+			<next>293</next> -->
 			<next>2</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.have_1_mutant_dog_tail</precondition>
+		<!-- <precondition>sak_dialog.have_1_mutant_dog_tail</precondition> -->
 			<text>esc_green_dan_ammo_21</text>
-			<action>sak_dialog.give_1_mutant_dog_tail</action>
-			<next>31</next>
+			<action>ui_barter_new.barter_screen("dan")</action>
+			<action>dialogs.break_dialog</action>
+			<!-- <next>31</next> -->
 		</phrase>
 		<phrase id="22">
 		<precondition>sak_dialog.have_1_mutant_boar_leg</precondition>

@@ -25,7 +25,8 @@ local tbl_npc_name_koeff = {
 	[ "shinkar"  ] = { 8,	"У Шинкаря такое например:" 			},
 	[ "zhila" 	 ] = { 5,	"Папа Жила барыжит:" 					},
 	[ "vahtang"  ] = { 10,	"Вахтанг уважает тебя уапще:" 			},
-	[ "eger" 	 ] = { 11,	"Валера Егерь настрелял:" 				}
+	[ "eger" 	 ] = { 11,	"Валера Егерь настрелял:" 				},
+	[ "dan" 	 ] = { 17,	"Дэн меняет на части монстров:" 		}
 }
 
 local tbl_translate_price = {
@@ -43,6 +44,13 @@ local tbl_translate_price = {
 }
 
 local barter_tbl = {
+	[ "dan" ] = {
+		{ "ammo_12x70_buck",			10,	"mutant_dog_tail",			8  },
+		{ "ammo_12x70_buck",			8,	"mutant_boar_leg",			8  },
+		{ "ammo_12x76_dart",			3,	"mutant_flesh_eye",			3  },
+		{ "ammo_12x76_dart",			2,	"mutant_face_tushkano",		4  },
+		{ "ammo_12x76_zhekan",			3,	"mutant_psevdodog_tail",	3  }
+	},
 	[ "fuel_esc" ] = {
 		{ "ammo_9x18_pmm",				6,	"amk_kanistra",		1  },
 		{ "medkit",						4,	"amk_kanistra",		1  },
@@ -555,6 +563,7 @@ function make_list_by_trader( name )
 	local tbl_to_show = {}
 	local ttt
 	local ind = 0
+	local gdays = timers.Get_Game_Days() or 1
 	if name == "sultan" then
 		for k, v in pairs ( barter_tbl[ name ] )  do
 			ind = ind + 1
@@ -568,6 +577,20 @@ function make_list_by_trader( name )
 		local tbl__ = generate_rnd_list( tmptbl2, 16, 24, 4, 6 )
 		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
 		tbl_to_show = tbl_
+	elseif name == "dan" then
+		for k, v in pairs( barter_tbl[ name ] ) do
+			if v[ 3 ] == "mutant_dog_tail" then
+				v[ 4 ] = v[ 4 ] + math.floor( gdays / 10 ) 		-- инфляция: хвостов собак каждые 10 дней нужно на 1 больше
+				if v[ 4 ] > 13 then v[ 4 ] = 13 end 			-- но до разумных пределов
+			elseif v[ 3 ] == "mutant_psevdodog_tail" then
+				v[ 4 ] = v[ 4 ] + math.floor( gdays / 20 ) 		-- инфляция: хвостов псевд каждые 20 дней нужно на 1 больше
+				if v[ 4 ] > 6 then v[ 4 ] = 6 end
+			elseif v[ 3 ] == "mutant_face_tushkano" then
+				v[ 4 ] = v[ 4 ] + math.floor( gdays / 20 ) 		-- инфляция: бошек тушканов каждые 20 дней нужно на 1 больше
+				if v[ 4 ] > 6 then v[ 4 ] = 6 end
+			end
+		end
+		tbl_to_show = barter_tbl[ name ]
 	elseif name == "zub" then
 		for k, v in pairs( test.tbl_recipt ) do
 			ttt = k
