@@ -167,7 +167,7 @@ function rummaged:btn_quit(mode)
 	elseif mode == 4 then
 		--полное открытие рюкзака (долго ковыряется)
 		level.disable_input()	--обездвиживаю ГГ
-		level.add_cam_effector( "camera_effects\\item_use.anm", 9773, false, "" ) -- добавим анимку
+		level.add_cam_effector( "camera_effects\\item_use_slow.anm", 9773, false, "" ) -- добавим анимку
 		vergas_lib.s_play(vergas_lib.set_pr_from_config_str("rykzack","snd_select_long"),1)        
 		schedule.add("show_full_rucksack", "inv_buttons_use.open_inventory(4)", 4000)
         razgruzka.open_inventory() -- подготовить инвентарь с скрытием избыточных предметов
