@@ -5577,7 +5577,8 @@
 			<action>sak_dialog.add_point_2_scaner</action>
 			<give_info>serafim_scaner_2_start</give_info>
 			<action>sak_dialog.clear_ready_time_serafm_1_scaner</action>
-			<action>sak_dialog.add_voron_find_item_3_done</action>
+			<action>test.add_to_actor("ammo_vog-25",8)</action>
+			<!-- <action>sak_dialog.add_voron_find_item_3_done</action> -->
 			<action>sak_dialog.serafm_1_scaner_time</action>
 			<next>2042</next>
 			<next>20421</next>
@@ -5585,7 +5586,8 @@
 		<phrase id="20322">
 		<precondition>sak_dialog.is_ready_time_serafm_1_scaner</precondition>
 			<text>serafim_dialog_start_20322</text>
-			<action>sak_dialog.add_voron_find_item_3_done</action>
+			<action>test.add_to_actor("ammo_vog-25",4)</action>
+			<!-- <action>sak_dialog.add_voron_find_item_3_done</action> -->
 			<give_info>serafim_scaner_done</give_info>
 			<next>1122</next>
 		</phrase>
@@ -5624,14 +5626,17 @@
 			<action>sak_dialog.add_point_3_scaner</action>
 			<give_info>serafim_scaner_3_start</give_info>
 			<action>sak_dialog.clear_ready_time_serafm_1_scaner</action>
-			<action>sak_dialog.add_voron_find_item_4_done</action>
+			<!-- <action>sak_dialog.add_voron_find_item_4_done</action> -->
+			<action>test.add_to_actor("ammo_vog-25",8)</action>
+			<action>test.add_to_actor("grenade_f1",3)</action>
 			<action>sak_dialog.serafm_1_scaner_time</action>
 			<next>2043</next>
 		</phrase>
 		<phrase id="20332">
 		<precondition>sak_dialog.is_ready_time_serafm_1_scaner</precondition>
 			<text>serafim_dialog_start_20332</text>
-			<action>sak_dialog.add_voron_find_item_4_done</action>
+			<action>test.add_to_actor("ammo_vog-25",8)</action>
+			<!-- <action>sak_dialog.add_voron_find_item_4_done</action> -->
 			<give_info>serafim_scaner_done</give_info>
 			<next>1122</next>
 		</phrase>
@@ -5662,7 +5667,8 @@
 			<text>serafim_dialog_start_3031</text>
 			<action>sak_dialog.add_uncoder</action>
 			<give_info>serafim_scaner_done</give_info>
-			<action>sak_dialog.add_voron_find_item_5_done</action>
+			<!-- <action>sak_dialog.add_voron_find_item_5_done</action> -->
+			<action>test.add_to_actor("ammo_vog-25",10)</action>
 			<action>sak_dialog.clear_ready_time_serafm_1_scaner</action>
 			<next>3041</next>
 		</phrase>
@@ -5670,7 +5676,8 @@
 		<precondition>sak_dialog.rand_game_2</precondition>
 			<text>serafim_dialog_start_3032</text>
 			<give_info>serafim_scaner_done</give_info>
-			<action>sak_dialog.add_voron_find_item_5_done</action>
+			<action>test.add_to_actor("ammo_vog-25",12)</action>
+			<!-- <action>sak_dialog.add_voron_find_item_5_done</action> -->
 			<action>sak_dialog.clear_ready_time_serafm_1_scaner</action>
 			<next>3042</next>
 		</phrase>
@@ -5678,7 +5685,8 @@
 		<precondition>sak_dialog.rand_game_3</precondition>
 			<text>serafim_dialog_start_3033</text>
 			<give_info>serafim_scaner_done</give_info>
-			<action>sak_dialog.add_voron_find_item_5_done</action>
+			<action>test.add_to_actor("ammo_vog-25",12)</action>
+			<!-- <action>sak_dialog.add_voron_find_item_5_done</action> -->
 			<action>sak_dialog.clear_ready_time_serafm_1_scaner</action>
 			<next>3043</next>
 		</phrase>
@@ -5688,8 +5696,9 @@
 		</phrase>
 		<phrase id="30411">
 			<text>serafim_dialog_start_30411</text>
-			<give_info>info_artmod_glassbeads_ice</give_info>
-			<action>sak.info_amk_received</action>
+			<!-- <give_info>info_artmod_glassbeads_ice</give_info> -->
+			<!-- <action>sak.info_amk_received</action> -->
+			<action>test.give_rnd_recipt(6)</action>
 			<next>30412</next>
 		</phrase>
 		<phrase id="30412">
@@ -5702,8 +5711,9 @@
 		</phrase>
 		<phrase id="30421">
 			<text>serafim_dialog_start_30421</text>
-			<give_info>info_artmod_glassbeads_ice</give_info>
-			<action>sak.info_amk_received</action>
+			<!-- <give_info>info_artmod_glassbeads_ice</give_info>
+			<action>sak.info_amk_received</action> -->
+			<action>test.give_rnd_recipt(7)</action>
 			<next>30422</next>
 		</phrase>
 		<phrase id="30422">
@@ -5716,8 +5726,9 @@
 		</phrase>
 		<phrase id="305">
 			<text>serafim_dialog_start_305</text>
-			<give_info>info_artmod_glassbeads_ice</give_info>
-			<action>sak.info_amk_received</action>
+			<!-- <give_info>info_artmod_glassbeads_ice</give_info>
+			<action>sak.info_amk_received</action> -->
+			<action>test.give_rnd_recipt(6)</action>
 			<next>306</next>
 		</phrase>
 		<phrase id="306">
