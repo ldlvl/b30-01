@@ -1456,20 +1456,12 @@ function fill_lost_treasure1(obj)
     amk.convert_npc[obj1.id]=1
   end
 end
+
 function add_nagrad_pahon()
-  local nagrad_pahon={
-  "conserva",
-  "medkit_scientic",
-  "antirad",
-  "bread"  
-  }
-  local item = ""
-  local count = lua_random(3,5)
-  for i=1,count do
-  item = nagrad_pahon[lua_random(table.getn(nagrad_pahon))]
-    sak.create_items(db.actor,item,1)
-  end
+  sak.create_items( db.actor, "antirad",  3 + math.fmod( ( amk_vars.r_treas_items + timers.Get_Game_Days() ), 3 ) )
+  sak.create_items( db.actor, "conserva", 4 + math.fmod( ( amk_vars.r_task_reward + timers.Get_Game_Days() ), 7 ) )
 end
+
 function add_bridge_leader_art()
   sak.create_items(db.actor, "af_dummy_dummy_new",1)
 end
