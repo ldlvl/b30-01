@@ -309,23 +309,25 @@ function zero(z)
   return z
 end
 
-function main_menu:OnKeyboard(dik, keyboard_action)
-  CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-  local bind = dik_to_bind(dik)
+function main_menu:OnKeyboard( dik, keyboard_action )
+  CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+  local bind = dik_to_bind( dik )
   local console = get_console()
-  if keyboard_action==ui_events.WINDOW_KEY_PRESSED then
-    if dik==DIK_keys.DIK_ESCAPE then
-      if level.present() and(db.actor~=nil) and db.actor:alive() then
-         console:execute("main_menu off")
+  if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+    if dik == DIK_keys.DIK_ESCAPE then
+      if level.present() and( db.actor ~= nil ) and db.actor:alive() then
+        console:execute( "main_menu off" )
       end
-    end
-	if dik == DIK_keys.DIK_T then
-			self:OnButton_load_teleport()
-		end										  
-    if  dik==DIK_keys.DIK_F4 then
+    elseif dik == DIK_keys.DIK_T then
+      self:OnButton_load_teleport()
+    elseif dik == DIK_keys.DIK_F4 then
       self:show_position_informer_window()
-    elseif   dik==DIK_keys.DIK_F3 then
-      self:ppe_menu_show()
+    elseif dik == DIK_keys.DIK_F3 then
+      if level.present() and( db.actor ~= nil ) and db.actor:alive() then
+        console:execute( "main_menu off" )
+      end
+      --self:ppe_menu_show()
+      test2.test_sms()
     end
   end
   return true
