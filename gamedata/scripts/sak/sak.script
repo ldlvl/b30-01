@@ -9642,41 +9642,37 @@ function tex_switch_num( max )
 end
 
 function sak_key()
-  local actor = db.actor
-	local active_slot = actor:active_slot()
-	if not ( active_slot == 1 or active_slot == 2 )	then return end
-  for i = 1, 2 do
-    local w_obj = actor:item_in_slot( i )
-    if w_obj then
-      if strposx( w_obj:section(), "_cobra" ) then
+  local active_item = db.actor:active_item()
+  if active_item then
+    local active_sect = active_item:section()
+    if strposx( active_sect, "_cobra" ) then
         texman.swap_simple( "wpnv\\addons\\cobra\\collimator", tostring( tex_sw ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 3 )
-      elseif strposx( w_obj:section(), "_acog" ) then
+    elseif strposx( active_sect, "_acog" ) then
         texman.swap_simple( "wpnv\\addons\\elcan\\cetka", tostring( tex_sw ) )
         texman.swap_simple( "wpnv\\addons\\elcan\\setka", tostring( tex_sw ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 3 )
-      elseif strposx( w_obj:section(), "_1p78" ) then
+    elseif strposx( active_sect, "_1p78" ) then
         texman.swap_simple( "wpnv\\addons\\1p78\\crosshair", tostring( tex_switcher ) )
         texman.swap_simple( "wpnv\\addons\\1p78\\krosshair", tostring( tex_switcher ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 2 )
-      elseif strposx( w_obj:section(), "_1pso" ) then
+    elseif strposx( active_sect, "_1pso" ) then
         texman.swap_simple( "wpnv\\addons\\pso1\\kross", tostring( tex_switcher ) )
         texman.swap_simple( "wpnv\\addons\\pso1\\cross", tostring( tex_switcher ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 2 )
-      elseif strposx( w_obj:section(), "_eotech" ) then
+    elseif strposx( active_sect, "_eotech" ) then
         texman.swap_simple( "wpnv\\addons\\eotech\\mark", tostring( tex_switcher ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 2 )
-      elseif strposx( w_obj:section(), "_mt" ) then
+    elseif strposx( active_sect, "_mt" ) then
         texman.swap_simple( "wpnv\\addons\\march_tactical\\cross", tostring( tex_switcher ) )
         texman.swap_simple( "wpnv\\addons\\march_tactical\\kross", tostring( tex_switcher ) )
         misc.easy_sound( "weapons\\light_on" )
         tex_switch_num( 2 )
-      end
     end
   end
 end
