@@ -9,6 +9,7 @@ allowed_sections =  {
   "ammo_",
   "grenade",
   "medkit",
+  "medkit_army",
   "bandage",
   "antirad",
   "energy",
@@ -1103,7 +1104,7 @@ function get_capacity_pouch( section )
   elseif is_medical( section ) then
     if section == "bandage" then
       max_mag = info_capacity[ 3 ]
-    elseif section == "medkit" then
+    elseif section == "medkit" or section == "medkit_army" then
       max_mag = info_capacity[ 2 ]
     end
   elseif is_grenade( section ) then
