@@ -7028,29 +7028,26 @@ function give_bar_water_money(t1,t2)
   local cost1=(600+day_money*100) if cost1>2500 then cost1=2500 end
   relocate_money(npc,cost1,1)
 end
-
-
+-- воробей даст по дням 2000-4000 тыс или 2-4 гранаты
 function text_vorobey_gift()
-  local day=sak.day_money-30 if day<0 then day=0 end
-  local day_money = math.ceil(day/2)
-  local cost1=(3000+day_money*400)
-day_money = math.ceil(day/7)
-  local gr=(3+day_money)
-  db.actor:give_talk_message("%c[255,216,186,140]Могу деньгами насыпать "..cost1.." рубликов, неплохо а?\\nИли вот есть гранаты к подствольнику "..gr.." штучек. Соглашайся, ну!","ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
+  local cost1 = 2000 + math.fmod( ( timers.Get_Game_Days() + 5) , 2 )
+  local gr = 2 + math.fmod( timers.Get_Game_Days(), 2 )
+  db.actor:give_talk_message(
+    "%c[255,216,186,140]Могу деньгами насыпать " .. cost1 ..
+    " рубликов, неплохо а?\\nИли вот есть гранаты к подствольнику, " .. gr ..
+    " шт. Соглашайся, ну!", "ui\\ui_iconsTotal",
+    Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
+  )
 end
 
 function add_vorobey1_gift()
-  local day=sak.day_money-30 if day<0 then day=0 end
-  local day_money = math.ceil(day/2)
-  local cost1=(3000+day_money*400)
-  dialogs.relocate_money(db.actor,cost1,"in")
+  local cost1 = 2000 + math.fmod( ( timers.Get_Game_Days() + 5) , 2 )
+  dialogs.relocate_money( db.actor, cost1, "in" )
 end
 
 function add_vorobey2_gift()
-  local day=sak.day_money-30 if day<0 then day=0 end
-  local day_money = math.ceil(day/7)
-  local gr=(3+day_money)
-  sak.create_items(db.actor,"ammo_vog-25",gr)
+  local gr = 2 + math.fmod( timers.Get_Game_Days(), 2 )
+  sak.create_items( db.actor, "ammo_vog-25", gr )
 end
 
 function osvedomitel_artmods_yes()
