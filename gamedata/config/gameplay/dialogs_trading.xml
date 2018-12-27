@@ -2652,8 +2652,11 @@
 		</phrase>
 		<phrase id="1041">
 			<text>dolgovazyi_repair_1041</text>
-			<action>sak_dialog.repair_costs</action>
-			<next>4</next>
+			<action>sak_dialog.uniform_repair_cost(6,r_dolgovjaz)</action>
+			<!-- <next>4</next> -->
+			<next>4001</next>
+			<next>4002</next>
+			<next>4003</next>
 			<next>5</next>
 		</phrase>
 		<phrase id="1032">
@@ -2688,6 +2691,30 @@
 			<text>dolgovazyi_repair_3</text>
 			<action>escape_dialog.trader_repair_weapon_s2</action>
 			<next>6</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_dolgovjaz,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>dolgovazyi_repair_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.sak_repair_armor_s6</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_dolgovjaz,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>dolgovazyi_repair_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.sak_repair_armor_s6</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_dolgovjaz,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>dolgovazyi_repair_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.sak_repair_armor_s6</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.sak_check_money_s6</precondition>

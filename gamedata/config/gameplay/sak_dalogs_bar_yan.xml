@@ -8172,9 +8172,36 @@
 		</phrase>
 		<phrase id="1031">
 			<text>bar_lisaped_repair_wpn1_dialog_1031</text>
-			<action>sak_dialog.lisaped_repair_costs_s1</action>
-			<next>4</next>
+			<action>sak_dialog.uniform_repair_cost(1,r_lisaped)</action>
+			<!-- <next>4</next> -->
+			<next>4001</next>
+			<next>4002</next>
+			<next>4003</next>
 			<next>5</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_lisaped,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>bar_lisaped_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s1</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_lisaped,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>bar_lisaped_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s1</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_lisaped,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>bar_lisaped_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s1</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.lisaped_check_money_s1</precondition>
@@ -8263,9 +8290,36 @@
 		</phrase>
 		<phrase id="1031">
 			<text>bar_lisaped_repair_wpn2_dialog_1031</text>
-			<action>sak_dialog.lisaped_repair_costs_s2</action>
-			<next>4</next>
+			<action>sak_dialog.uniform_repair_cost(2,r_lisaped)</action>
+			<!-- <next>4</next> -->
+			<next>4001</next>
+			<next>4002</next>
+			<next>4003</next>
 			<next>5</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(2,r_lisaped,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>bar_lisaped_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s2</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(2,r_lisaped,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>bar_lisaped_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s2</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(2,r_lisaped,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>bar_lisaped_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.lisaped_repair_weapon_s2</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.lisaped_check_money_s2</precondition>

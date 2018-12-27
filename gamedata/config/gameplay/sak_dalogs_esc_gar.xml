@@ -8747,8 +8747,35 @@
 		<phrase id="1031">
 			<text>esc_vergas_repair_bronik_dialog_1031</text>
 			<action>sak_dialog.uniform_repair_cost(6, r_vergas)</action>
-			<next>4</next>
+		<!--<next>4</next>-->
+			<next>4001</next>   <!-- need art 1 lvl -->
+			<next>4002</next> 	<!-- need art 2 lvl -->
+			<next>4003</next>  	<!-- need art 3 lvl -->
 			<next>5</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_vergas,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>esc_vergas_repair_bronik_dialog_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.uniform_repair_start(6, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_vergas,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>esc_vergas_repair_bronik_dialog_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.uniform_repair_start(6, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_vergas,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>esc_vergas_repair_bronik_dialog_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.uniform_repair_start(6, r_vergas)</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.uniform_check_money(6, r_vergas)</precondition>
@@ -8874,8 +8901,35 @@
 		<phrase id="1031">
 			<text>esc_vergas_repair_wpn1_dialog_1031</text>
 			<action>sak_dialog.uniform_repair_cost(1, r_vergas)</action>
-			<next>4</next>
+			<!-- <next>4</next> -->
+			<next>4001</next>
+			<next>4002</next>
+			<next>4003</next>
 			<next>5</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_vergas,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>esc_vergas_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.uniform_repair_start(1, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_vergas,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>esc_vergas_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.uniform_repair_start(1, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(1,r_vergas,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>esc_vergas_repair_wpn1_dialog_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.uniform_repair_start(1, r_vergas)</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.uniform_check_money(1, r_vergas)</precondition>
@@ -8969,8 +9023,35 @@
 		<phrase id="1031">
 			<text>esc_vergas_repair_wpn2_dialog_1031</text>
 			<action>sak_dialog.uniform_repair_cost(2, r_vergas)</action>
-			<next>4</next>
+			<!-- <next>4</next> -->
+			<next>4001</next>
+			<next>4002</next>
+			<next>4003</next>
 			<next>5</next>
+		</phrase>
+		<phrase id="4001">
+			<precondition>sak_dialog.uniform_check_art_cost(2, r_vergas,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>esc_vergas_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.uniform_repair_start(2, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4002">
+			<precondition>sak_dialog.uniform_check_art_cost(2, r_vergas,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<text>esc_vergas_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.uniform_repair_start(2, r_vergas)</action>
+			<next>7</next>
+		</phrase>
+		<phrase id="4003">
+			<precondition>sak_dialog.uniform_check_art_cost(2, r_vergas,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<text>esc_vergas_repair_wpn2_dialog_4</text>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.uniform_repair_start(2, r_vergas)</action>
+			<next>7</next>
 		</phrase>
 		<phrase id="4">
 			<precondition>sak_dialog.uniform_check_money(2, r_vergas)</precondition>
