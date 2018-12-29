@@ -219,7 +219,7 @@ function file_data_loka( fname )
 	if f_cnt > 0 then
 		local file = flist:GetAt( 0 )
 		local sg 	 = CSavedGameWrapper( fname )
-		local health = string.format( "\\n%s %d%s", game.translate_string( "ui_inv_health" ), sg:actor_health()*100, "%" )
+		local health = string.format( "\\n%s %d%s", game.translate_string( "ui_inv_health2" ), sg:actor_health()*100, "%" )
 		return game.translate_string( sg:level_name() ) .. "\\n" .. health
 	else
 		return "no file data"
