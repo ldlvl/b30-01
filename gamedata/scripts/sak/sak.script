@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------
--- Привет от Сяка 
+-- Привет от Сяка
 ---------------------------------------------------------------------
 af_count     = 0
 arts_operate = false
@@ -349,7 +349,7 @@ function add_doktor_attantion()
     if not has_alife_info("esc_find_doctor_start3") then
     misc.spawn_by_name("doktor_attantion")
     db.actor:give_info_portion("esc_find_doctor_start3")
-    timers.start_timer("doktor_wait",9,1,33,"sak.doktor_wait_done()") 
+    timers.start_timer("doktor_wait",9,1,33,"sak.doktor_wait_done()")
       if not has_alife_info("info_way151a") then
       add_new_aver_gar_135()
       add_new_gar_aver_151()
@@ -366,12 +366,12 @@ function add_new_military_false()
   db.actor:give_info_portion("info_way_false")
   info_received()
   end
-  
+
 function out_new_lc(sid,info)
   if not db.actor:has_info(info) then
     local objt= g_sim:story_object(sid)
     if objt then
-       wprintf("[~T].~C0C #WARN:~C07 actor not have info ~C0A %s~C07, level changer~C0D %d~C07 will be destroyed", info, sid) 
+       wprintf("[~T].~C0C #WARN:~C07 actor not have info ~C0A %s~C07, level changer~C0D %d~C07 will be destroyed", info, sid)
        misc.release_obj(objt, 'sak.script:183')
     end
   end
@@ -391,7 +391,7 @@ function add_scaner_1()
 end
 function add_new_item_in(item,sidlh)
   local nps=sidlh.id
-amk.spawn_item_in_inv(item,nps) 
+amk.spawn_item_in_inv(item,nps)
 end
 
 
@@ -1035,7 +1035,7 @@ function add_new_lcitem()
   for n = 1,cnt do
     local id = ids[n]
     local obj= g_sim:object(id)
-    if obj then 
+    if obj then
     local onm = obj:name()
       if (strpos(onm,"doktor_attantion",1,true)
         or strpos(onm,"dv_box_bes_",1,true)
@@ -1114,7 +1114,7 @@ function add_x8_docs()
   {-116.30258178711,-27.583765029907,80.952507019043,28,3582},
   {-115.65514373779,-28.445192337036,70.558486938477,13,3582}
   }
-  local i=true	
+  local i=true
   for n = 1,#war_docs do
     if lua_random()>0.85 then
       local rand=lua_random(2,9)
@@ -1129,7 +1129,7 @@ function add_x8_docs()
     i=false
   end
  end
-  if i==true then  
+  if i==true then
       local rand=lua_random(2,9)
       local obj=amk.spawn_item("x8_document",v3f(war_docs[1][1],war_docs[1][2],war_docs[1][3]),war_docs[1][5],war_docs[1][4])
       if obj then
@@ -1143,57 +1143,69 @@ function add_x8_docs()
 end
 
 function add_docs_X18()
-  local war_docs={
-  {29.375196456909,-13.533881187439,40.21166229248,3320,1158},
-  {22.589498519897,-14.826943397522,77.195014953613,3320,1158},
-  {17.93267250061,-16.409547805786,29.559535980225,5580,1159},
-  {3.4916789531708,-10.813512802124,27.932222366333,3315,1158},
-  {-2.0975592136383,-10.814540863037,25.899175643921,2459,1145},
-  {-32.248611450195,-10.814558029175,7.5913920402527,471,1147},
-  {-40.481513977051,-10.818881988525,7.8685126304626,219,1148},
-  {-40.481513977051,-10.818881988525,7.8685126304626,219,1148},
-  {-27.001190185547,-10.813380241394,-14.08543586731,644,1154},
-  {-15.263740539551,-10.714294433594,-22.070484161377,1124,1151},
-  {-44.442459106445,-12.944392204285,-21.629943847656,123,1153},
-  {-36.24047088623,-13.007162094116,-16.390144348145,334,1153},
-  {16.849252700806,-10.815569877625,-1.9368379116058,5346,1135},
-  {28.388679504395,-10.815103530884,3.7722778320313,6853,1136},
-  {34.256034851074,-10.817984580994,-7.1270346641541,7175,1137},
-  {27.344202041626,-10.816309928894,-16.473928451538,6668,1138},
-  {15.481623649597,-10.814817428589,-16.985813140869,5104,1139},
-  {29.545036315918,-5.0249938964844,-14.154643058777,6819,1140},
-  {29.490291595459,-5.0188407897949,-15.180458068848,6815,1140},
-  {29.586784362793,-5.5068454742432,-16.712614059448,6811,1140},
-  {29.466293334961,-5.0602669715881,-17.359975814819,6809,1140},
-  {29.626182556152,-5.1726231575012,-18.266500473022,6807,1140},
-  {28.75732421875,-6.6202926635742,-16.390943527222,6813,1140}
-  } --23 >10
-  local i=true	  
-  for n = 1,#war_docs do
-    if lua_random()>0.85 then
-      local rand=lua_random(2,9)
-      local obj=amk.spawn_item("x18_document",v3f(war_docs[n][1],war_docs[n][2],war_docs[n][3]),war_docs[n][5],war_docs[n][4])
-      if obj then
-      local pk = get_netpk(obj,1)
-      local data = pk:get()
-      data.visual_name = "new_item\\documents_"..rand
-      data.physic_type=3
-      pk:set(data)
-      end
-    i=false
+	local war_docs = {
+		{ 29.37519645690, -13.533881187439, 40.21166229248, 3320, 1158 },
+		{ 22.58949851989, -14.826943397522, 77.19501495361, 3320, 1158 },
+		{ 17.93267250061, -16.409547805786, 29.55953598022, 5580, 1159 },
+		{ 3.491678953170, -10.813512802124, 27.93222236633, 3315, 1158 },
+		{ -2.09755921363, -10.814540863037, 25.89917564392, 2459, 1145 },
+		{ -32.2486114501, -10.814558029175, 7.591392040252, 471,  1147 },
+		{ -40.4815139770, -10.818881988525, 7.868512630462, 219,  1148 },
+		{ -40.4815139770, -10.818881988525, 7.868512630462, 219,  1148 },
+		{ -27.0011901855, -10.813380241394, -14.0854358673, 644,  1154 },
+		{ -15.2637405395, -10.714294433594, -22.0704841613, 1124, 1151 },
+		{ -44.4424591064, -12.944392204285, -21.6299438476, 123,  1153 },
+		{ -36.2404708862, -13.007162094116, -16.3901443481, 334,  1153 },
+		{ 16.84925270080, -10.815569877625, -1.93683791160, 5346, 1135 },
+		{ 28.38867950439, -10.815103530884,  3.77227783203, 6853, 1136 },
+		{ 34.25603485107, -10.817984580994, -7.12703466415, 7175, 1137 },
+		{ 27.34420204162, -10.816309928894, -16.4739284515, 6668, 1138 },
+		{ 15.48162364959, -10.814817428589, -16.9858131408, 5104, 1139 },
+		{ 29.54503631591, -5.0249938964844, -14.1546430587, 6819, 1140 },
+		{ 29.49029159545, -5.0188407897949, -15.1804580688, 6815, 1140 },
+		{ 29.58678436279, -5.5068454742432, -16.7126140594, 6811, 1140 },
+		{ 29.46629333496, -5.0602669715881, -17.3599758148, 6809, 1140 },
+		{ 29.62618255615, -5.1726231575012, -18.2665004730, 6807, 1140 },
+		{ 28.75732421875, -6.6202926635742, -16.3909435272, 6813, 1140 }
+	} --23 >10
+	local i = true
+	local count = 0
+	for n = 1, #war_docs do
+		if lua_random() > 0.5 then           -- как на релизе
+			local rand = lua_random( 2, 9 )
+			local obj = amk.spawn_item(
+			    "x18_document",
+			    v3f( war_docs[ n ][ 1 ], war_docs[ n ][ 2 ], war_docs[ n ][ 3 ] ),
+			    war_docs[ n ][ 5 ], war_docs[ n ][ 4 ]
+			)
+			if obj then
+				local pk = get_netpk( obj, 1 )
+				local data = pk:get()
+				data.visual_name = "new_item\\documents_" .. rand
+				data.physic_type = 3  -- чтобы полтеры не швырялись??????????
+				pk:set( data )
+				count = count + 1
+			end
+			i = false
+		end
 	end
-  end
-  if i==true then  
-      local rand=lua_random(2,9)
-      local obj=amk.spawn_item("x18_document",v3f(war_docs[1][1],war_docs[1][2],war_docs[1][3]),war_docs[1][5],war_docs[1][4])
-      if obj then
-      local pk = get_netpk(obj,1)
-      local data = pk:get()
-      data.visual_name = "new_item\\documents_"..rand
-      data.physic_type=3
-      pk:set(data)
-      end
-  end
+	if i == true then
+		local rand = lua_random( 2, 9 )
+		local obj = amk.spawn_item(
+		    "x18_document",
+		    v3f( war_docs[ 1 ][ 1 ], war_docs[ 1 ][ 2 ], war_docs[ 1 ][ 3 ] ),
+		    war_docs[ 1 ][ 5 ], war_docs[ 1 ][ 4 ]
+		)
+		if obj then
+			local pk = get_netpk( obj, 1 )
+			local data = pk:get()
+			data.visual_name = "new_item\\documents_" .. rand
+			data.physic_type = 3
+			pk:set( data )
+			count = count + 1
+		end
+	end
+	nlc_vars.x18_docs_spawned = count
 end
 
 function add_outfit_bandit_m1()
@@ -1213,7 +1225,7 @@ function add_kluch_x10()
 end
 
 function add_kont_leshyi()
-  if not has_alife_info("leshyi_umer2") then 
+  if not has_alife_info("leshyi_umer2") then
   sak_dialog.added_kont_leshyi()
   send_tip("Напали собаки с тушканами, еле убежал! Пришлось бросить контейнер. Место запомнил - не доходя до свинофермы, справа от дороги, возле приметного пня","Записка Лешего",11,20,"death","sak","red")
   db.actor:give_info_portion("leshyi_umer2") end end
@@ -1237,21 +1249,21 @@ function add_box_bes() local objt= g_sim:story_object(story_ids.dv_box_bes_02) i
 function add_klyk_body() local objt= g_sim:story_object(story_ids.yan_klyk_body) if not objt then misc.spawn_by_name("yan_klyk_body")end end -- story_object(9559)
 function add_sanek_tomb() misc.spawn_by_name("esc_mogila_05") end
 function add_bun_ognetushitel() misc.spawn_by_name("bun_ognetushitel_2") end
-function out_bun_ognetushitel() 
-misc.release_by_name("bun_ognetushitel_2") 
-misc.release_by_name("bun_space_restrictor_ognetushitel_2") 
+function out_bun_ognetushitel()
+misc.release_by_name("bun_ognetushitel_2")
+misc.release_by_name("bun_space_restrictor_ognetushitel_2")
 end
 function add_ammo_bes() local obj= g_sim:story_object(story_ids.dv_box_bes_02)  -- story_object(9114)
- if obj then 
+ if obj then
    misc.spawn_multi('ammo_5.45x39_fmj', obj.position, obj.id, 3)
- end  
+ end
    if obj.online then
   sim:set_switch_online(obj.id, false)
   sim:set_switch_offline(obj.id, true)
   amk.convert_npc[obj.id]=1
-   end 
+   end
 end
-function add_document_wolf() amk.spawn_item("sak_document2",v3f(-80,-1.28,153),163,187916) amk.spawn_item("wpn_pb",v3f(-80,-1.20,153),163,187916) 
+function add_document_wolf() amk.spawn_item("sak_document2",v3f(-80,-1.28,153),163,187916) amk.spawn_item("wpn_pb",v3f(-80,-1.20,153),163,187916)
   local obj1 = g_sim:story_object(story_ids.esc_inventory_box_0010)
   local obj
   for a=1,2 do
@@ -1269,10 +1281,10 @@ function add_document_wolf() amk.spawn_item("sak_document2",v3f(-80,-1.28,153),1
   sim:set_switch_online(obj1.id, false)
   sim:set_switch_offline(obj1.id, true)
   amk.convert_npc[obj1.id]=1
-   end 
+   end
 end
 function add_postmens_bag() amk.spawn_item("postmens_bag",v3f(269.293823,-7.944348,0.794339),390,376745) end
-function add_dsc_gigant() 
+function add_dsc_gigant()
   local obj=amk.spawn_item("marsh_gigant",v3f(239.132904,-2.481397,655.872864),4084,680450)
     local pk = get_netpk(obj)
     local data = pk:get()
@@ -1296,7 +1308,7 @@ function add_dsc_container()
     pk:set(tbl)
   --end
 end
-function add_scarman_pda() 
+function add_scarman_pda()
   local points = {
    62.94,  11.36,  52.87,  3336,  32520,  "на Забытом хуторе, сарай там ещё какой-то прямо над оврагом.",
    -94.02, -2.18, -230.80,  271, 115646,  "где-то на свалке заброшенной техники.",
@@ -1324,7 +1336,7 @@ function add_seif () amk.spawn_item("inventory_sakbox_03",v3f(15.52,-12.43,8.59)
 function give_seif (obj)
 amk.remove_item_from_inventory_by_name(obj,db.actor)
 amk.spawn_item("m_inventory_seif",v3f(34.37,-3.37,-37.29),1997,21736) end
-function add_decoder() 
+function add_decoder()
   local rand=(amk_vars.r_task_reward or 1)*5
   local points={
 -120.773430,21.564411,-22.930630,68,1529,
@@ -1355,7 +1367,7 @@ function add_order()
     end end
 function add_weapon_folls()
   local obj= g_sim:story_object(story_ids.agr_und_inventory_box)
-  misc.spawn_objects("ammo_5.45x39_fmj,vodka,ammo_5.45x39_fmj,medkit_army,wpn_ak74u_old", obj.position, obj.id) 
+  misc.spawn_objects("ammo_5.45x39_fmj,vodka,ammo_5.45x39_fmj,medkit_army,wpn_ak74u_old", obj.position, obj.id)
          if obj.online then
       sim:set_switch_online(obj.id, false)
       sim:set_switch_offline(obj.id, true)
@@ -1366,7 +1378,7 @@ function add_yan_matveev2()
   local obj= g_sim:story_object(story_ids.assistant2)
   if not obj then
     obj=misc.spawn_by_name("assistant2")
-  end 
+  end
   misc.spawn_objects("wpn_winchester_m1,ammo_12x76_dart,ammo_12x76_dart,medkit_army", obj.position, obj.id)
   db.actor:give_info_portion("matveev_vasilev_start")
 end
@@ -1397,7 +1409,7 @@ function create_vasilev_suit()
   end
 end
 function vasilev_suit_closed()
-  local objid=nlc_vars.vas_suit_id or 0 
+  local objid=nlc_vars.vas_suit_id or 0
   if objid==0 then return end
   local robjd= g_sim:object(objid)
   local pos=robjd.position
@@ -1433,7 +1445,7 @@ function create_corpse(section, pos, gvid, lvid, story_id, custom_data) -- созда
   data.health     = 0
   data.upd.health = 0
   if custom_data then data.custom_data = custom_data end
-  pk:set(data)   
+  pk:set(data)
   return obj
 end
 
@@ -1455,11 +1467,11 @@ function add_mil_kurjer_corps()
   local spawn=mil_kurjer[coord]
   local spawn2=mil_kurjer[coord+1]
   local obj=create_corpse ("mil_stalker_respawn_2",
-                           v3f(spawn[1],spawn[2],spawn[3]),spawn[5],spawn[4], 
+                           v3f(spawn[1],spawn[2],spawn[3]),spawn[5],spawn[4],
                            9492,
                            "[known_info]\nmil_kurjer_dead")
     g_sim:create("mil_kurjer_pda",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
-    g_sim:create("belt_2_art",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)	
+    g_sim:create("belt_2_art",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
   amk.spawn_item("quest_manycase_01_mil_kurjer",v3f(spawn2[1],spawn2[2],spawn2[3]),spawn2[5],spawn2[4])
 	item1 = g_sim:create("af_full_akkum",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)--misc.spawn_to("af_full_akkum", obj)
 	item2 = g_sim:create("af_baloon",obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
@@ -1472,7 +1484,7 @@ function add_mil_kurjer_corps()
 	local data = pk:get()
 	data.condition = 0.05
 	pk:set(data)
-	pk,data = nil,nil 
+	pk,data = nil,nil
 	pk = get_netpk(item2)
 	data = pk:get()
 	data.condition = 0.80
@@ -1481,17 +1493,17 @@ end
 function add_two_corpses()
     local obj=create_corpse ("yan_ecolog_respawn_2",
                              v3f(181.03,6.6,-375.92),938,381590,
-                             9497)                             
-    misc.spawn_to("scaintist_docs", obj)    
+                             9497)
+    misc.spawn_to("scaintist_docs", obj)
     obj=create_corpse       ("yan_ecolog_respawn_2",
                               v3f(184.60,6.0,-378.50),938,384388,
-                              9496) -- (9496)                
+                              9496) -- (9496)
     sak_dialog.borov_kont()
 end
 function add_scaintist_body()
   local obj=create_corpse("yan_ecolog_respawn_2",
                           v3f(-46.53,-2.2,-98.36),2258,53082,
-                          9498) -- 9498    
+                          9498) -- 9498
   misc.spawn_to("scaintist_pda",obj)
 end
 local point_dsc_mon={
@@ -1525,7 +1537,7 @@ function add_monster_body()
   timers.start_timer("save_shustr",0,6,28,"sak.time_shustr("..obj.id..")")
 end
 function time_shustr(id)
-  if not has_alife_info("atp_bandit_pda_done") then 
+  if not has_alife_info("atp_bandit_pda_done") then
   db.actor:give_info_portion("atp_bandits_open_fire")
   db.actor:give_info_portion("esc_assault_start")
   end
@@ -1552,7 +1564,7 @@ function muller_time_start()
   timers.start_timer("save_muller",2,7,28,"sak.time_muller()")
 end
 function time_muller()
-  if not has_alife_info("bar_korovan_done") then 
+  if not has_alife_info("bar_korovan_done") then
     if level.name()~="l03u_agr_underground" then
     local obj= g_sim:story_object(story_ids.agr_muller)
       if obj then
@@ -1574,29 +1586,29 @@ function add_agroprom_box()
   local obj= g_sim:story_object(story_ids.agr_quest_case_02)
   if obj then
        misc.release_obj(obj, 'add_agroprom_box')
-  end  
+  end
   create_items(db.actor, "quest_case_02",1)
   agroprom_tasks.agr_trader_documents()
 end
 function blockpost_case_clear()
-  local obj= g_sim:story_object(story_ids.esc_quest_case_01) -- 0 
+  local obj= g_sim:story_object(story_ids.esc_quest_case_01) -- 0
     if (obj) then
         misc.release_obj(obj, 'blockpost_case_clear')
-    end  
+    end
 end
 function add_kontainer() sak_dialog.add_rad_kontainer() end
 function agroprom_wpm()
   local obj= g_sim:story_object(story_ids.agr_inventory_box_sak)
-      misc.spawn_to("wpn_vintorez_m1", obj) 
+      misc.spawn_to("wpn_vintorez_m1", obj)
     if obj.online then
       sim:set_switch_online(obj.id, false)
       sim:set_switch_offline(obj.id, true)
       amk.convert_npc[obj.id]=1
     end end
 function add_books()
- amk.spawn_item("sak_book1",v3f(28.11,-12.07,38.93),1161,6530) 
- amk.spawn_item("sak_book2",v3f(-120.27,21.56,-32.65),1529,165) 
- amk.spawn_item("sak_book3",v3f(0.77,-19.45,24.89),2768,6203) 
+ amk.spawn_item("sak_book1",v3f(28.11,-12.07,38.93),1161,6530)
+ amk.spawn_item("sak_book2",v3f(-120.27,21.56,-32.65),1529,165)
+ amk.spawn_item("sak_book3",v3f(0.77,-19.45,24.89),2768,6203)
 end
 function add_new_111item() amk.spawn_item("dynamite",v3f(-213.57,-23.19,-127.39),59,39928) end
 function add_new_109item()
@@ -1625,7 +1637,7 @@ function add_strelok_pda() amk.spawn_item("strelok_pda",v3f(42.95,61.56,-26.25),
 function add_esc_bandit_letter()
   local obj=create_corpse("yan_ecolog_respawn_2",
                            v3f(188.23,-0.14,-184.93),402,335280,
-                           9499)   
+                           9499)
   misc.spawn_to("scaintist_pda", obj)
 end
 function info_strelok_pda() send_tip("В ПДА Стрелка предупреждение о фальшивости МОНОЛИТА","Остановись",2,20,"g_g","pda_news", "red") end
@@ -1633,7 +1645,7 @@ function info_artmod() send_tip("Найден рецепт преобразования артефакта!","Новый
 function info_code() send_tip("Обнаружена кодовая комбинация блокированной двери!","Получен код",2,10,"code","pda_news", "pink") end
 --function info_doktor() send_tip("В записной книжке есть совсем свежие записи Доктора!","Болотный Доктор жив",0,10,"doctor","pda_news", "sky_blue") end
 function info_doktor() send_tip("Странные записи, странного человека. Харон. Кто это?","Записная книжка Харона",0,10,"teleport","pda_news", "sky_blue") end
-function info_klava() if db.actor:has_info("global_dialogs") and not has_alife_info("klava_feik_found1") then send_tip("Странная вещица. Похожа на ПДА, только не работает, сзади на корпусе гравировка - {Вергас-08}","Сломанная клавиатура",2,10,"g_g","pda_news", "sky_blue") db.actor:give_info_portion("klava_feik_found1") db.actor:disable_info_portion("klava_feik_found") end end 
+function info_klava() if db.actor:has_info("global_dialogs") and not has_alife_info("klava_feik_found1") then send_tip("Странная вещица. Похожа на ПДА, только не работает, сзади на корпусе гравировка - {Вергас-08}","Сломанная клавиатура",2,10,"g_g","pda_news", "sky_blue") db.actor:give_info_portion("klava_feik_found1") db.actor:disable_info_portion("klava_feik_found") end end
 function info_teleport() send_tip("Телепорт настроен и активирован!","Телепорт готов",2,10,"teleport","sak", "sky_blue") end
 function mar_zone_tips() send_tip("Сталкер! Стой и не двигайся! Сейчас к тебе подойдут...","Внимание!",0,10,"default","sak", "red") end
 function gar_zone_tips() send_tip("Э! Подойди к знаку и не махай стволом, побазарим...","Внимание!",0,10,"default","sak", "red") end
@@ -1647,26 +1659,26 @@ function info_not_ready() send_tip("Идёт обработка данных, ждите...","Измеритель
 function info_rep_box() send_tip("Нечем ремонтировать! Нет подготовленных ремкомплектов","Ремонт",0,5,"g_g","pda_news", "red") end
 
 function calc_items_count(section, flt)
-  if flt == nil then 
+  if flt == nil then
      flt = function () return true end
   end
-  local result = 0  
+  local result = 0
   for sect,ids in pairs(sak_inventory.rucksack) do
      if strposx(sect, section) and flt(sect) then
         result = result + #ids
-     end 
+     end
   end
   for sect,ids in pairs(sak_inventory.eatable) do
      if strposx(sect, section) and flt(sect) then
         result = result + #ids
-     end 
+     end
   end
   return result
 end
 
 function have_items_count(itm, items_count, af_flag, capsule_flag)
-  if type(itm) == "table" then -- для проверки группы элементов, используется синтаксис: have_items_count({ bread = 3, conserva = 3}) 
-     
+  if type(itm) == "table" then -- для проверки группы элементов, используется синтаксис: have_items_count({ bread = 3, conserva = 3})
+
      for sect, count in pairs(itm) do
        if not have_items_count (sect, count) then
           return false
@@ -1684,7 +1696,7 @@ function have_items_count(itm, items_count, af_flag, capsule_flag)
     --return amk_utils.inventory_search(itm, items_count)
   --else
     local flt = nil
-  
+
     if capsule_flag then
        flt = function (section) return not strposx(section, "_capsule") end -- простой колбек фильтра
     end
@@ -1707,13 +1719,13 @@ function spawn_items (npc, section, number)
   if npc == nil then return end
 
   if npc:id() == db.actor:id() then
-    if razgruzka.test_item_type(section, "ammo,medical,grenade") then  
+    if razgruzka.test_item_type(section, "ammo,medical,grenade") then
       razgruzka.spawn_to_inv(section, number)
       relocate_item(npc, "in", section, number)
       return
     end
   end
-  misc.spawn_multi(section, npc:position(), npc:id(), number)    
+  misc.spawn_multi(section, npc:position(), npc:id(), number)
   relocate_item(npc, "in", section, number)
 end
 
@@ -1724,10 +1736,10 @@ function create_items (npc, sect_list, number)
  elseif ts == "table" then
    for k, v in pairs(sect_list) do
     if type(v) == "number" then -- { bandage = 1, medkit = 3 }
-       spawn_items(npc, k, v)   
+       spawn_items(npc, k, v)
     elseif type(v) == "string" then -- { "bandage", "medkit" }
        spawn_items(npc, v, number)
-    end       
+    end
    end
  end
 end
@@ -1736,20 +1748,20 @@ function artmodscheck(anom,af,anom_sect)
   local af_sect=af:section()
   local aid="artmod_"
   local at=sak_artmods.artmod_resiepts
-	if strpos(anom_sect,"_zharka",1,true) then 
+	if strpos(anom_sect,"_zharka",1,true) then
 	  for i=1,6 do
 	  artmod(anom,af,at[aid..i.."5"][1],at[aid..i.."5"][2],at[aid..i.."5"][3],at[aid..i.."5"][4],at[aid..i.."5"][5],at[aid..i.."5"][6])
 	  end
 	end
-	if strpos(anom_sect,"_galant",1,true) then 
+	if strpos(anom_sect,"_galant",1,true) then
 	  if af_sect=="af_red_dummy_battery" then af_zone_off(af)  end
 	  for i=1,7 do
 	  artmod(anom,af,at[aid..i.."6"][1],at[aid..i.."6"][2],at[aid..i.."6"][3],at[aid..i.."6"][4],at[aid..i.."6"][5],at[aid..i.."6"][6])
 	  end
 	  if level.name()~="generators" then return end
-	  artmod01(af,"af_dummy_dummy_new","af_dummy_buliz","akk_is_ready",0,1,10) 
+	  artmod01(af,"af_dummy_dummy_new","af_dummy_buliz","akk_is_ready",0,1,10)
 	end
-	if strpos(anom_sect,"_buzz",1,true) then 
+	if strpos(anom_sect,"_buzz",1,true) then
 	  for i=1,8 do
 	  artmod(anom,af,at[aid..i.."4"][1],at[aid..i.."4"][2],at[aid..i.."4"][3],at[aid..i.."4"][4],at[aid..i.."4"][5],at[aid..i.."4"][6])
 	  end
@@ -1757,14 +1769,14 @@ function artmodscheck(anom,af,anom_sect)
 	  artmod01(af,"af_blood_dyn5d","af_dummy_green_blood","info_green_blood",1,1,50)
 	  artmod01(af,"af_medusa_dyn5d","af_dummy_green_medusa","info_green_medusa",1,0,50)
 	  artmod01(af,"af_vyvert_dyn5d","af_dummy_green_vyvert","info_green_vyvert",1,2,50)
-	end 
-	if strpos(anom_sect,"_mincer",1,true) then 
+	end
+	if strpos(anom_sect,"_mincer",1,true) then
 	  for i=1,6 do
 	  artmod(anom,af,at[aid..i.."3"][1],at[aid..i.."3"][2],at[aid..i.."3"][3],at[aid..i.."3"][4],at[aid..i.."3"][5],at[aid..i.."3"][6])
 	  end
 	  if af_sect=="af_red_dummy_spring" then af_zone_off(af) end
 	end
-	if strpos(anom_sect,"_mosquito_bald",1,true) then 
+	if strpos(anom_sect,"_mosquito_bald",1,true) then
 	  for i=1,6 do
 	  artmod(anom,af,at[aid..i.."1"][1],at[aid..i.."1"][2],at[aid..i.."1"][3],at[aid..i.."1"][4],at[aid..i.."1"][5],at[aid..i.."1"][6])
 	  end
@@ -1786,10 +1798,10 @@ function artmodscheck(anom,af,anom_sect)
 	  artmod01(af,"af_dummy_pellicle","af_red_dummy_pellicle","info_red_pellicle",0,2,0)
 	  artmod01(af,"af_electra_sparkler_dyn5d","af_dummy_sparkler","info_artmod_activ_anom",0,0,20)
 	  artmod01(af,"af_dummy_dummy","af_dummy_dummy_new","info_dummy_dummy_new",0,2,0)
-	end 
-	if strpos(anom_sect,"_sakbuzz",1,true) then 
+	end
+	if strpos(anom_sect,"_sakbuzz",1,true) then
 	  artmod(anom,af,at[aid.."81"][1],at[aid.."81"][2],at[aid.."81"][3],at[aid.."81"][4],at[aid.."81"][5],at[aid.."81"][6])
-	end 
+	end
 end
 
 function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ)
@@ -1801,19 +1813,19 @@ function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ
   if g_sim:object(af:id())==nil then return end
   if (strpos(af_sect,item1,1,true) or strpos(af_sect,item2,1,true) or strpos(af_sect,item3,1,true) or strpos(af_sect,item4,1,true)) and db.actor:has_info(info_artmod) then
       local s={}
-      s.i0t=-1 
-      s.i1t=-1 
-      s.i2t=-1 
-      s.i3t=-1 
+      s.i0t=-1
+      s.i1t=-1
+      s.i2t=-1
+      s.i3t=-1
       s.i4t=-1
       s.ams=0
       s.ami=-1
       s=nlc_vars["artmod_activation_"..info_artmod] or s
-      if s.i0t~=nearest_anomaly then 
+      if s.i0t~=nearest_anomaly then
         s.i0t=nearest_anomaly
-        s.i1t=-1 
-        s.i2t=-1 
-        s.i3t=-1 
+        s.i1t=-1
+        s.i2t=-1
+        s.i3t=-1
         s.i4t=-1
         s.ams=0
         s.ami=-1
@@ -1844,18 +1856,18 @@ function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ
     s.ams=1
     s.ami=info_artmod
     startflag=false
-  end        
+  end
   if ((s.i1t~=-1) and(sim:object(s.i1t)==nil)) then s.i1t=-1 zombieflag=true end
   if ((s.i2t~=-1) and(sim:object(s.i2t)==nil)) then s.i2t=-1 zombieflag=true end
   if ((s.i3t~=-1) and(sim:object(s.i3t)==nil)) then s.i3t=-1 zombieflag=true end
   if ((s.i4t~=-1) and(sim:object(s.i4t)==nil)) then s.i4t=-1 zombieflag=true end
   if zombieflag then
     if (s.i1t==-1 and s.i2t==-1 and s.i3t==-1 and s.i4t==-1) then
-      s.i0t=-1 
+      s.i0t=-1
       s.ams=0
       s.ami=-1
       zombieflag=false
-    end 
+    end
   end
     nlc_vars["artmod_activation_"..info_artmod] = s
     if (s.i1t~=-1 and s.i2t~=-1 and s.i3t~=-1 and s.i4t~=-1) then
@@ -1875,12 +1887,12 @@ function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ
 		    xr_statistic.addCookingPoints(item_targ)
         item_targ=(item_targ.."_dyn"..rand_dyn.."d")
       end
-      amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,7+math.random(0,6)) -- варим 7-13 минут 
-      --amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,1)     
+      amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,7+math.random(0,6)) -- варим 7-13 минут
+      --amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,1)
       nlc_vars.artmod_goods = goods + 1       nlc_vars["artmod_activation_"..info_artmod] = nil
       return
     end
-    
+
   end
 end
 
@@ -1893,7 +1905,7 @@ function artmod01(af,item,item_targ,info_zone_off,d,h,m)
     amk_mod.af_start_transform_timer(amk_mod.af_start_transform(90,10,af_sect,item_targ),pos,d,h,m)
   end
 end
-function make_kill_task_failed(actor,npc,p1,p2) 
+function make_kill_task_failed(actor,npc,p1,p2)
   local nid=npc:id()
   if nid==db.actor:id() then
     nid=db.actor:id()
@@ -1903,7 +1915,7 @@ function make_kill_task_failed(actor,npc,p1,p2)
     if v.id==nid then
       task_manager.make_task_failed(v.task_id)
     end
-  end  
+  end
 end
   local checks_items_do={
 
@@ -1933,15 +1945,15 @@ end
 }
 function check_used_item(obj)
 
-  gps_habar.on_item_take(obj)  
-  
+  gps_habar.on_item_take(obj)
+
   local info=nil
   local sect=obj:section()
   local lvl=level.name()
   local act=db.actor
-  
-  -- wprintf(" check_used_item~C0A %s~C07 ", sect) 
-  
+
+  -- wprintf(" check_used_item~C0A %s~C07 ", sect)
+
   local rand=(amk_vars.x18_iq_check or 2)
   if strpos(sect, "ammo_") then return end
   if     sect=="dollars1" then add_money(1) misc.release_obj(obj, 'sak.script:check_used_item_release')
@@ -1956,22 +1968,22 @@ function check_used_item(obj)
   elseif sect=="resiept_activ_anom" then info="info_artmod_activ_anom"
   elseif sect == "drunk_dolg_letter" and test.gg_have_this_bamazhka( sect ) == false then    -- Бром?
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 5 )   
+    info = test.rnd_rec_art_info( test.tbl_recipt, 5 )
   elseif sect == "sak_document2" and test.gg_have_this_bamazhka( sect ) == false then        -- тоннель с электрами
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 2 )  
+    info = test.rnd_rec_art_info( test.tbl_recipt, 2 )
   elseif sect=="klava_feik" then info="klava_feik_found"
   elseif sect=="art_fly" then fly_up_flag=true misc.release_obj(obj, 'sak.script:check_used_item_release')
   --elseif sect=="rad_pda" then info="info_artmod_ameba_mica_galant"
   elseif sect == "sak_document3" and test.gg_have_this_bamazhka( sect ) == false then        -- Радар, Сахар, учёные??
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 5 )  
+    info = test.rnd_rec_art_info( test.tbl_recipt, 5 )
   elseif sect == "sak_document4" and test.gg_have_this_bamazhka( sect ) == false then        -- Танк в РЛ?
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 8 )  
+    info = test.rnd_rec_art_info( test.tbl_recipt, 8 )
   elseif sect == "aver_bandit_letter" and test.gg_have_this_bamazhka( sect ) == false then   -- труп в ТЧ
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 3 )   
+    info = test.rnd_rec_art_info( test.tbl_recipt, 3 )
   elseif sect == "volkodav_pda" and test.gg_have_this_bamazhka( sect ) == false then         -- с трупа Волкодава?
     test.add_bamazhka_to_vars( sect )
     info = test.rnd_rec_art_info( test.tbl_recipt, 2 )
@@ -1980,8 +1992,8 @@ function check_used_item(obj)
   elseif sect=="x8_botan_book" and not act:has_info("add_new_warlab_info") then info="add_new_warlab_info"
   elseif sect=="x18_door3_code" and not act:has_info("x18_codelock3_info") then info="x18_codelock3_info" info_code()
   elseif sect=="inventory_sakbox_gar_flame" then info="gar_flame_1have"
-  elseif sect=="yan_pda" then info="yan_find_vasilyev_end" vasilev_suit_closed() if not act:has_info("vasiljev_letter_have") then 
-   act:give_info_portion("vasiljev_letter_have") 
+  elseif sect=="yan_pda" then info="yan_find_vasilyev_end" vasilev_suit_closed() if not act:has_info("vasiljev_letter_have") then
+   act:give_info_portion("vasiljev_letter_have")
    misc.spawn_to ("vasiljev_letter", act) end
   elseif sect=="leshyi_letter" then misc.release_obj(obj, 'sak.script:check_used_item_release') add_kont_leshyi()
   elseif sect=="zapiska_volk" then misc.release_obj(obj,'sak.script:check_used_item_release') add_vil_ranger_treasure()
@@ -2000,16 +2012,16 @@ function check_used_item(obj)
   elseif sect=="closer_inv" then sak_box_move.treasurebox_close(obj)
   elseif sect=="harmonica_b" and not act:has_info("borov_31_have") then info="borov_31_have" add_garmonika_letter()
   elseif sect=="quest_case_02" and not act:has_info("agroprom_military_case_have") then info="agroprom_military_case_have" agroprom_tasks.agr_trader_documents()
-  elseif sect=="strelok_pda" then info="strelok_pda_have" 
-  elseif sect=="bar_lucky_pda" then info="volk_prisoner_start" 
-  elseif sect=="redcatcher_albom" then info="redcatcher_albom_have" 
-  elseif sect=="af_dummy_green_medusa" and act:has_info("strelok_pda2_start") then info="strelok_pda2_have" 
+  elseif sect=="strelok_pda" then info="strelok_pda_have"
+  elseif sect=="bar_lucky_pda" then info="volk_prisoner_start"
+  elseif sect=="redcatcher_albom" then info="redcatcher_albom_have"
+  elseif sect=="af_dummy_green_medusa" and act:has_info("strelok_pda2_start") then info="strelok_pda2_have"
   elseif sect=="dar_document4" and not act:has_info("dar_document5") then info="bar_darklab_document_gain" act:give_info_portion("dar_document5") act:give_info_portion("val_raid_start") x_spawn_actions.x18_dor_open_spawn()
-  elseif sect=="lab_x16_documents" then info="yan_x16_documents_gain" 
+  elseif sect=="lab_x16_documents" then info="yan_x16_documents_gain"
   act:give_info_portion("bandit_pda_trading")
   act:give_info_portion("yantar_find_ghost_task_end")
-  elseif sect=="radar_docs" then info="radar_docs_info" 
-  elseif sect=="wpn_gauss_auto" or sect=="wpn_gauss_auto_model" or sect=="wpn_gauss_model" or sect=="wpn_gauss" then 
+  elseif sect=="radar_docs" then info="radar_docs_info"
+  elseif sect=="wpn_gauss_auto" or sect=="wpn_gauss_auto_model" or sect=="wpn_gauss_model" or sect=="wpn_gauss" then
     local particle=particles_object("anomaly2\\group_items\\anomaly_greedy_dust")
     local sound=sound_object("anomaly\\greedy_idle_1")
       particle:play_at_pos(act:position())
@@ -2054,7 +2066,7 @@ function check_used_item(obj)
   --elseif sect=="rad_document8" and not act:has_info("info_way106a") then add_new_radar_106() add_new_red_yan_173()
   elseif sect == "gar_bandit_letter" and test.gg_have_this_bamazhka( sect ) == false then       -- у Кабана на Свалке
     test.add_bamazhka_to_vars( sect )
-    info = test.rnd_rec_art_info( test.tbl_recipt, 1 )      
+    info = test.rnd_rec_art_info( test.tbl_recipt, 1 )
   --elseif sect=="closer_artbox"  then art_box_close(obj)
   elseif lvl=="l03u_agr_underground" and sect=="gunslinger_flash" and not act:has_info("agr_find_gunslinger_cache_final") then info="agr_find_gunslinger_cache_final" agroprom_tasks.ghost_tips()
   elseif (lvl=="l03_agroprom" or lvl=="l08_yantar") and sect=="decoder2" and statys_psy==1 then statys_psy=0 send_tip("Цикл измерения прерван! Повторите измерение!","Статус измерителя",1,10,"pribor","pda_news", "red")
@@ -2089,7 +2101,7 @@ function check_used_item(obj)
   elseif lvl=="labx10" and sect=="x10_document1" and not act:has_info("labx10_docs1"..rand.."_info") then info="labx10_docs1"..rand.."_info" send_tip("Приказы, хм... Какие-то коды... Посмотрим.","Документы",2,10,"g_g","no", "sky_blue")
   --elseif lvl=="l10_radar" and sect=="rad_document6" then add_new_darkvalley_107() misc.release_obj(obj, 'sak.script:check_used_item_release')
   --elseif lvl=="l10_radar" and sect=="sak_document" then add_new_radar_106() misc.release_obj(obj, 'sak.script:check_used_item_release')
-  end 
+  end
   if act==nil or info==nil or act:has_info(info) then
     return
   end
@@ -2100,7 +2112,7 @@ function check_used_item(obj)
   end
   act:give_info_portion( info )
   --razgruzka.open_inv_raz_pod=false
-  
+
 end
 
 sak.check_used_item = check_used_item
@@ -2127,7 +2139,7 @@ function marsh_zapiska()
       end
     end
   end
-  mike.add_strelok_spots_info()  
+  mike.add_strelok_spots_info()
 end
   local point_off_drop={
 l01_escape={
@@ -2212,8 +2224,8 @@ l10u_bunker={
   {x=-352, y=-27, z=159}, --51
   {x=332, y=-22, z=179}, --52
   {x=20, y=1, z=365}, --53
-  {x=40, y=3, z=345} --54  
-  } 
+  {x=40, y=3, z=345} --54
+  }
 function check_droped_items(obj_id)
   local lvl=level.name()
   local obj=client_obj(obj_id)
@@ -2223,20 +2235,20 @@ function check_droped_items(obj_id)
   for i=1,#point_off_drop[lvl] do
     local info=point_off_drop[lvl][i].info[1]
     local point=v3f(point_off_drop[lvl][i].pos[1],point_off_drop[lvl][i].pos[2],point_off_drop[lvl][i].pos[3])
-    if not actr:has_info(info) and act_pos:distance_to(point)<2 then 
+    if not actr:has_info(info) and act_pos:distance_to(point)<2 then
       return misc.release_obj(obj, 'val_dinamit_podval')
     end
   end
 end
 function check_droped_item(obj)
   sak_inventory.inventory_control()
-  local info=nil 
+  local info=nil
   local window=0
   local lvl=level.name()
   local actr=db.actor
   local act_pos=actr:position()
   if point_off_drop[lvl] and (not bind_stalker.self_weapon_hide) and get_clsid(obj)<=CLID_WPN_WALTHER and get_clsid(obj)>=CLID_WPN_AK74 then
-    schedule.add("check_drop", "sak.check_droped_items("..obj:id()..")", 250) 
+    schedule.add("check_drop", "sak.check_droped_items("..obj:id()..")", 250)
   end
   local self=level.main_input_receiver()
   if self then
@@ -2258,28 +2270,28 @@ function check_droped_item(obj)
 	elseif lvl=="aver" and obj:section()=="marsh_pribor" then
 	  if amk.check_npc_in_box(actr, point_drop[49],point_drop[50])~=false and not has_alife_info("marsh_pribor_aver_done") then mike.marsh_pribor_aver_on(obj:id()) window=1 end
 	elseif lvl=="aver" and (strpos(obj:section(),"af_unknown_",1,true) or strpos(obj:section(),"af_dummy_buliz",1,true)) then
-	  if amk.check_npc_in_box(actr, point_drop[49],point_drop[50])~=false and has_alife_info("mdata_yes_resept_info") and not has_alife_info("mayatnik_aver_ready_info") then mike.mayatnik_aver_will_be(obj:id()) window=1 end	  
+	  if amk.check_npc_in_box(actr, point_drop[49],point_drop[50])~=false and has_alife_info("mdata_yes_resept_info") and not has_alife_info("mayatnik_aver_ready_info") then mike.mayatnik_aver_will_be(obj:id()) window=1 end
 	elseif lvl=="aver" and obj:section()=="item_kamaz_accum" then
-	  if amk.check_npc_in_box(actr, point_drop[51],point_drop[52])~=false and not has_alife_info("akk_aver_done") then mike.akk_aver_on(obj:id()) window=1 end 	
+	  if amk.check_npc_in_box(actr, point_drop[51],point_drop[52])~=false and not has_alife_info("akk_aver_done") then mike.akk_aver_on(obj:id()) window=1 end
 	elseif lvl=="l11_pripyat" and (strpos(obj:section(),"af_unknown_",1,true) or strpos(obj:section(),"af_dummy_buliz",1,true)) then
 	  if amk.check_npc_in_box(actr, point_drop[53],point_drop[54])~=false and has_alife_info("mdata_yes_resept_info") and not has_alife_info("mayatnik_prip_ready_info") then mike.mayatnik_prip_will_be(obj:id()) window=1 end
     elseif lvl=="red_forest" and obj:section()=="scanner_anomaly" and amk.check_npc_in_box(actr, point_drop[25],point_drop[26])~=false then out_point_1_scaner() info="serafim_scaner_1_done" schedule.add("check_drop", "misc.release_obj("..obj:id()..")", 50) window=1
     elseif lvl=="generators" and obj:section()=="scanner_anomaly" and amk.check_npc_in_box(actr, point_drop[27],point_drop[28])~=false then out_point_2_scaner() info="serafim_scaner_2_done" schedule.add("check_drop", "misc.release_obj("..obj:id()..")", 50) window=1
     elseif lvl=="l10_radar" and obj:section()=="scanner_anomaly" and amk.check_npc_in_box(actr, point_drop[29],point_drop[30])~=false then out_point_3_scaner() info="serafim_scaner_3_done" schedule.add("check_drop", "misc.release_obj("..obj:id()..")", 50) timers.start_timer("serafim_out",1,1,0,"sak.serafim_out_end()") window=1
-    elseif lvl=="l04_darkvalley" and actr:has_info("val_dolg_commander_dinamit_info") and obj:section()=="dynamite" and amk.check_npc_in_box(actr, point_drop[45],point_drop[46])~=false then 
+    elseif lvl=="l04_darkvalley" and actr:has_info("val_dolg_commander_dinamit_info") and obj:section()=="dynamite" and amk.check_npc_in_box(actr, point_drop[45],point_drop[46])~=false then
       local objx= g_sim:story_object(story_ids.val_stena_podval) -- story_object(440)
       local objt= g_sim:story_object(story_ids.val_dinamit_podval) -- story_object(441)
       if objx and not objt then
         --amk.remove_item(obj)
-    schedule.add("check_drop", "misc.release_obj("..obj:id()..")", 50) 
+    schedule.add("check_drop", "misc.release_obj("..obj:id()..")", 50)
         misc.spawn_by_name("val_dinamit_podval")
         info="val_dinamit_podval_ok"
         window=1
-      end  
+      end
     elseif black_tip.check_dropped(obj) then
       window=0
     end
-    if window==1 then 
+    if window==1 then
   local self=level.main_input_receiver()
     if self then self:GetHolder():start_stop_menu(self,true) end
   window=0
@@ -2393,7 +2405,7 @@ function val_stena_podval_explode()
   for n=1,cnt do
     local id = ids[n]
     local obj=client_obj(id)
-    if obj:alive() then 
+    if obj:alive() then
       local pos=obj:position()
       if pos.y<0 and pos.x<48 and pos.x>32 and pos.z<-24 and pos.z>-60 then
       misc.release_obj (obj, 'sak.script:3675')
@@ -2446,7 +2458,7 @@ function x12_beton_add()
       data.physic_type=3
       data.mass=25
       pk:set(data)
-      schedule.add("hit_bet"..a..n, "sak.hit_bet("..obj.id..")", 500) 
+      schedule.add("hit_bet"..a..n, "sak.hit_bet("..obj.id..")", 500)
       end
     end
   end
@@ -2472,7 +2484,7 @@ function serafim_out_end()
   db.actor:give_info_portion("serafim_red_out")
 end
 function yan_izm_psy1(obj_id)
-  schedule.add("check_drop", "sak.yan_izm_psy1_start("..obj_id..")", 200) 
+  schedule.add("check_drop", "sak.yan_izm_psy1_start("..obj_id..")", 200)
 end
 function yan_izm_psy1_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2491,7 +2503,7 @@ function yan_izm_psy1_end()
   end
 end
 function yan_izm_psy2(obj_id)
-  schedule.add("check_drop", "sak.yan_izm_psy2_start("..obj_id..")", 250) 
+  schedule.add("check_drop", "sak.yan_izm_psy2_start("..obj_id..")", 250)
 end
 function yan_izm_psy2_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2507,10 +2519,10 @@ function yan_izm_psy2_end()
   db.actor:give_info_portion("yan_izm_2faze")
   db.actor:give_info_portion("remove_yan_izm_spot2")
   statys_psy=0
-  end  
+  end
 end
 function yan_izm_psy3(obj_id)
-  schedule.add("check_drop", "sak.yan_izm_psy3_start("..obj_id..")", 250) 
+  schedule.add("check_drop", "sak.yan_izm_psy3_start("..obj_id..")", 250)
 end
 function yan_izm_psy3_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2554,7 +2566,7 @@ function rad_izm_psy2_end()
   db.actor:give_info_portion("rad_izm_2faze")
   db.actor:give_info_portion("remove_rad_izm_spot2")
   statys_psy=0
-  end  
+  end
 end
 function rad_izm_psy3()
   timers.start_timer("rad_izm_psy3",lua_random(60,120),"sak.rad_izm_psy3_end()")
@@ -2630,7 +2642,7 @@ local loka_on=1
 local tmr_discharge_akb = misc.game_timer()
 
 function get_accum()
- return db.actor:item_in_slot(11) 
+ return db.actor:item_in_slot(11)
 end
 
 function sak.discharge_accum(flag, quiet)
@@ -2640,59 +2652,59 @@ function sak.discharge_accum(flag, quiet)
     nvd_params.disable_NVD()
     arts_operate = false
     return
-  end 
+  end
 
   local accum_id = obj:id()
   local accum    = g_sim:object(accum_id)
   local ctime = game.get_game_time()
-  
+
   if accum then
     local diff_t = tmr_discharge_akb:elapsed(true)
-    local coef = loka_on * balance.devices.accum_discharge / 100.0 or 0.001    
-    diff_t = math.abs ( diff_t ) / 60.0   -- сколько прошло времени в игровых минутах       
+    local coef = loka_on * balance.devices.accum_discharge / 100.0 or 0.001
+    diff_t = math.abs ( diff_t ) / 60.0   -- сколько прошло времени в игровых минутах
     nv_on = 0 -- потребление ПНВ
     if nvd_params.get_NVD_powered () then nv_on = 1 end
-    
-    -- если одна минута прошла (diff_t = 1.0), потребление составит coef * число потребителей    
+
+    -- если одна минута прошла (diff_t = 1.0), потребление составит coef * число потребителей
     -- ПНВ эквивалентен одному артефакту по потреблению
-    local consumption = (af_count + nv_on) * coef      
+    local consumption = (af_count + nv_on) * coef
     consumption = consumption * diff_t                           -- с учетом текущей скорости времени
-    -- CHEAT: наэлектризованная локация, там разряд меньше       -- 18.11.2018 
+    -- CHEAT: наэлектризованная локация, там разряд меньше       -- 18.11.2018
     if level.name() == "generators" then                         -- UPD: никто за 4 года про это не узнал, и как-то особо погоды оно
-       consumption = consumption * 2    -- было 0.5              -- не делает, потому сделаем лучше наоборот, в 2 раза больше разряд         
+       consumption = consumption * 2    -- было 0.5              -- не делает, потому сделаем лучше наоборот, в 2 раза больше разряд
     end
 
     consumption = consumption + coef * diff_t * 0.01             -- плюс разряд светодиодами пояса
-    
-    local cond = params.get_condition(accum_id, 0.9999) + (0.5 - lua_random()) * coef * diff_t -- погрешность измерения заряда 
+
+    local cond = params.get_condition(accum_id, 0.9999) + (0.5 - lua_random()) * coef * diff_t -- погрешность измерения заряда
     -- wprintf("[~T].C0F #DBG: accum power =~C0D %.5f~C07, consumption =~C0D %.5f~C0F, diff_t =~C0D %.3f~C0F, nvd power =~C0F %d~C07~C07", cond, consumption, diff_t, nv_on)
     -- wprintf("~C0A %s~C07", lua_traceback('    '));
-    
+
     if (cond <= 0.13) and (diff_t >= 1.0) then
       local act = db.actor
-      local sound=sound_object("ambient\\special\\marsh_beep_1")      
-      sound:play_at_pos(act, act:position(),0)    
+      local sound=sound_object("ambient\\special\\marsh_beep_1")
+      sound:play_at_pos(act, act:position(),0)
     end
-    
-    
+
+
     if cond >= 0.07 then
       arts_operate = true
       local new_cond = cond - consumption                       -- разряд батареи текущим током
       params.upd_condition (accum_id, new_cond)
       arts_operate=true
-      nvd_params.enable_NVD() -- есть заряд, можно включать    
+      nvd_params.enable_NVD() -- есть заряд, можно включать
     else
       if arts_operate==true then
-        send_tip("Аккумуляторная батарея разряжена", "Аккумулятор", 2, 10, "pribor", "pda_news", "red")          
+        send_tip("Аккумуляторная батарея разряжена", "Аккумулятор", 2, 10, "pribor", "pda_news", "red")
         nvd_params.disable_NVD()
         arts_operate = false
         razgruzka.open_inv_raz_pod = false
       end
-    end -- if cond 
+    end -- if cond
     sak_inventory.update_accum_leds()
-  else  
+  else
    wprintf("[~T].~C0C #FATAL:~C07 bad object in slot 11 = %d ", accum_id)
-   nvd_params.disable_NVD() 
+   nvd_params.disable_NVD()
   end -- если есть аккумулятор
 end
 
@@ -2704,20 +2716,20 @@ sak.empted_accum = sak.discharge_accum -- alias
 local tmr_art_discharge = misc.game_timer()
 
 function discharge_tasks()
-  if db.init_stage < 500 then return end 
+  if db.init_stage < 500 then return end
 
   discharge_accum()
 
   local coef = balance.artefacts.time_damage_coef * tmr_art_discharge:elapsed(true) / 60.0 -- коэффициент зависимости от времени
   if coef < 0.00001 then return end -- не зачем и ЦП мучать
-  
-  if get_accum() then    
-   arc_arts.discharge_artefacts(coef)
-  else  
-   arts_operate=false   
-  end  
 
-  if sleep_manager.sleeping then return end   
+  if get_accum() then
+   arc_arts.discharge_artefacts(coef)
+  else
+   arts_operate=false
+  end
+
+  if sleep_manager.sleeping then return end
   black_tip.discharge(coef)
 end
 
@@ -2726,21 +2738,21 @@ function new_art_cond(obj_id,cnd,sect)
  local objg = client_obj(obj_id)
  local cond = cnd or 0.25
  if objg then objg:set_condition(cond) end
- arc_arts.check_artefact() 
+ arc_arts.check_artefact()
 end
 
 function sleep_discharge_accum(hour)
-  sleep_discharge_torch(hour)  
+  sleep_discharge_torch(hour)
 end
 
 function info_days(hour)
   local info=""
   if hour>=21 or hour<6 then info="time_night"
   elseif hour>=6 and hour<11 then info="time_morning"
-  elseif hour>=11 and hour<17 then info="time_day" 
+  elseif hour>=11 and hour<17 then info="time_day"
   elseif hour>=17 and hour<21 then info="time_evening"
   end
-  if not has_alife_info(info) then db.actor:give_info_portion(info) vodka_stas_new(info) lysyi_art_new(info) hellcar_attack(info) 
+  if not has_alife_info(info) then db.actor:give_info_portion(info) vodka_stas_new(info) lysyi_art_new(info) hellcar_attack(info)
      sleep_manager.clear_need_sleep_nrg(info)
   end
   local lname=level.name()
@@ -2756,7 +2768,7 @@ function hellcar_attack(info)
   elseif info=="time_morning" and has_alife_info("gar_start_quest") and not has_alife_info("hellcar_raid_start") then
     act:give_info_portion("hellcar_today")
   end
-  if info=="time_morning" then 
+  if info=="time_morning" then
     if has_alife_info("mil_find_prizrak_start") and not has_alife_info("gen_mil_group_info") then
       if not has_alife_info("mil_find_prizrak_today") and not has_alife_info("esc_blockpost_commander_gg_know") then
         act:give_info_portion("mil_find_prizrak_today")
@@ -2882,19 +2894,19 @@ function af_flash(af)
 end
 
 function actor_pickup(id, on_fail)
- local obj = client_obj(tonumber(id)) 
- 
+ local obj = client_obj(tonumber(id))
+
  if obj and not arc_arts.is_actor_item(id) then
-    local parent = obj:parent() 
+    local parent = obj:parent()
     if parent then
        parent:transfer_item(obj, db.actor)
     else
       obj:transfer_item(db.actor)
-    end   
+    end
     sak_inventory.need_update_inventory()
  elseif obj == nil then
    wprintf("[~T].~C0C #WARN:~C07 actor cannot pickup non existent~C0D %d~C07", DumpVar(id))
-   if on_fail then on_fail() end     
+   if on_fail then on_fail() end
  end
 end
 
@@ -2911,7 +2923,7 @@ function end_cat_eyes()
 end
 
 function klyk_med_psy1(obj_id)
-  schedule.add("check_drop", "sak.klyk_med_psy1_start("..obj_id..")", 200) 
+  schedule.add("check_drop", "sak.klyk_med_psy1_start("..obj_id..")", 200)
 end
 function klyk_med_psy1_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2930,7 +2942,7 @@ function klyk_med_psy1_end()
   end
 end
 function klyk_med_psy2(obj_id)
-  schedule.add("check_drop", "sak.klyk_med_psy2_start("..obj_id..")", 200) 
+  schedule.add("check_drop", "sak.klyk_med_psy2_start("..obj_id..")", 200)
 end
 function klyk_med_psy2_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2946,10 +2958,10 @@ function klyk_med_psy2_end()
   db.actor:give_info_portion("agr_klyk_2faze")
   db.actor:give_info_portion("agr_remove_klyk_med_spot2")
   statys_psy=0
-  end  
+  end
 end
 function klyk_med_psy3(obj_id)
-  schedule.add("check_drop", "sak.klyk_med_psy3_start("..obj_id..")", 200) 
+  schedule.add("check_drop", "sak.klyk_med_psy3_start("..obj_id..")", 200)
 end
 function klyk_med_psy3_start(obj_id)
   local obj=client_obj(obj_id)
@@ -2979,8 +2991,8 @@ function dezombified(art)
     if objg then
       if objg and IsStalker(objg) and objg:alive() and objg:position():distance_to(db.actor:position())<2 then
       break
-      end 
-    end 
+      end
+    end
   end
   if objg then
     local pk = get_netpk(objg)
@@ -2988,13 +3000,13 @@ function dezombified(art)
     data.character_profile=string.gsub(data.character_profile,"(.*)_zombi","%1")
     pk:set(data)
     amk_mod.af_flash(art)
-  end    
+  end
 end
 function esc_shustryi_stalker()
   local npc=level_object_by_sid(4)
   if npc and npc:alive() and npc.online then
   npc:set_character_community("stalker",0,0)
-  else 
+  else
   local obj= g_sim:story_object(story_ids.esc_shustryi)
     if obj then
       local pk = get_netpk(obj)
@@ -3010,7 +3022,7 @@ function trup1_sanek_near()
   if (obj1 and IsStalker(obj1) and not obj1:alive()) then
     local posobj1=obj1.position
     local actorpos=db.actor:position()
-    if (posobj1:distance_to(actorpos)<2) then 
+    if (posobj1:distance_to(actorpos)<2) then
     return true
     else return false
     end
@@ -3025,7 +3037,7 @@ function trup1_sanek_level_changer()
   local lvid=db.actor:level_vertex_id()
   local gvid=db.actor:game_vertex_id()
   obj1= g_sim:create("level_changer",v3f(act_pos.x,act_pos.y,act_pos.z), lvid, gvid)
-  if obj1 then 
+  if obj1 then
    local obj2= g_sim:story_object(story_ids.lost_village_level_changer)  -- story_object(9166)
    local pk = get_netpk(obj2)
    local data2 = pk:get()
@@ -3045,7 +3057,7 @@ function trup2_sanek_near()
     if (posobj2:distance_to(actorpos)<3) then return true
     else return false
     end
-  else return false  
+  else return false
   end
 end
 function trup2_sanek_has()
@@ -3064,8 +3076,8 @@ end
 fly_up_flag = false
 local fly_tics=0
 local fly_tic_max=20
-  
-  
+
+
 function fly_up()
     --show_coordinates()
     if not fly_up_flag then return end
@@ -3099,37 +3111,37 @@ function inv_item_cond(item,val)
   end
 end
   local points_kordon={
-  {position={x=-244.69,y=-14.27,z=-16.33},gv=67,lv=12579}, 
-  {position={x=107.54,y=-7.14,z=1.09},gv=119,lv=408816}, 
-  {position={x=71.48,y=1.92,z=158.79},gv=96,lv=362726}, 
-  {position={x=33.69,y=5.02,z=407.89},gv=246,lv=565356}, 
-  {position={x=220.57,y=7.62,z=100.55},gv=152,lv=511605} 
+  {position={x=-244.69,y=-14.27,z=-16.33},gv=67,lv=12579},
+  {position={x=107.54,y=-7.14,z=1.09},gv=119,lv=408816},
+  {position={x=71.48,y=1.92,z=158.79},gv=96,lv=362726},
+  {position={x=33.69,y=5.02,z=407.89},gv=246,lv=565356},
+  {position={x=220.57,y=7.62,z=100.55},gv=152,lv=511605}
 }
   local points_yantar={
-  {position={x=165.06,y=-8.19,z=-103.95},gv=1442,lv=131181}, 
+  {position={x=165.06,y=-8.19,z=-103.95},gv=1442,lv=131181},
   {position={x=92.58,y=0.02,z=-39.23},gv=1515,lv=87813},
   {position={x=34.48,y=0.04,z=18.19},gv=1445,lv=56341},
-  {position={x=24.61,y=0.02,z=-62.60},gv=1505,lv=51069}, 
-  {position={x=-60.17,y=-10.21,z=-202.66},gv=1447,lv=17529} 
+  {position={x=24.61,y=0.02,z=-62.60},gv=1505,lv=51069},
+  {position={x=-60.17,y=-10.21,z=-202.66},gv=1447,lv=17529}
 }
   local points_pripat={
-  {position={x=49.78,y=-3.6,z=120.99},gv=2166,lv=161768}, 
-  {position={x=191.20,y=-2.0,z=219.52},gv=2219,lv=260280}, 
-  {position={x=164.51,y=-3.89,z=80.83},gv=2145,lv=250751}, 
-  {position={x=-97.65,y=-2.4,z=71.81},gv=2140,lv=18233}, 
-  {position={x=116.64,y=-0.61,z=216.98},gv=2163,lv=226288} 
+  {position={x=49.78,y=-3.6,z=120.99},gv=2166,lv=161768},
+  {position={x=191.20,y=-2.0,z=219.52},gv=2219,lv=260280},
+  {position={x=164.51,y=-3.89,z=80.83},gv=2145,lv=250751},
+  {position={x=-97.65,y=-2.4,z=71.81},gv=2140,lv=18233},
+  {position={x=116.64,y=-0.61,z=216.98},gv=2163,lv=226288}
 }
   local points_military={
   {position={x=-93.83,y=-20.47,z=228.28},gv=1734,lv=220728},
-  {position={x=-35.96,y=-21.29,z=375.80},gv=1821,lv=272475}, 
+  {position={x=-35.96,y=-21.29,z=375.80},gv=1821,lv=272475},
   {position={x=-264.86,y=-22.6,z=275.85},gv=1797,lv=72698},
   {position={x=-340.59,y=-13.62,z=388.84},gv=1847,lv=12469}
 }
   local points_marsh={{position={x=0,y=2,z=0},gv=3407,lv=98161}}
-  local points_aver={{position={x=0,y=2,z=0},gv=2886,lv=174696}} 
-  local points_limansk={{position={x=21,y=-4,z=-81},gv=2988,lv=339}} 
-  local points_red_forest={{position={x=27,y=4.5,z=25},gv=3263,lv=82470}}    
-  local points_generators={{position={x=15,y=38,z=-231},gv=3110,lv=353867}}    
+  local points_aver={{position={x=0,y=2,z=0},gv=2886,lv=174696}}
+  local points_limansk={{position={x=21,y=-4,z=-81},gv=2988,lv=339}}
+  local points_red_forest={{position={x=27,y=4.5,z=25},gv=3263,lv=82470}}
+  local points_generators={{position={x=15,y=38,z=-231},gv=3110,lv=353867}}
   local points_stancia={{position={x=374.82,y=0,z=33.345},gv=2384,lv=161393}}
   local out_points_kordon_sak={{position={x=-210,y=-20.53,z=-145.78},gv=61,lv=43273}}
   local out_points_kordon={{position={x=301.11,y=13.31,z=276.43},gv=246,lv=565356}}
@@ -3137,8 +3149,8 @@ end
   local out_points_pripat={{position={x=52.17,y=-3.5,z=120.94},gv=2166,lv=164012}}
   local out_points_military={{position={x=-94.71,y=-20.55,z=229.54},gv=1734,lv=220072}}
   local out_points_sarcofag={{position={x=23.58,y=56,z=25.68},gv=2417,lv=5160}}
- 
-      
+
+
 function get_kordon_military() get_teleport("kordon","military",1,9121) end
 function get_kordon_yantar() get_teleport("kordon","yantar",1,9121) end
 function get_kordon_pripyat() get_teleport("kordon","pripat",1,9121) end
@@ -3166,28 +3178,28 @@ function get_yantar_pripyatr() get_teleport("yantar","pripat",0,9124) end
 function get_sarcofag_stancia() get_teleport("sarcofag","stancia",1,9125) end
 
 
-function get_teleport (pos_out, pos_in, made, sidlc) 
-  local obj1, name_level, obj_tport 
+function get_teleport (pos_out, pos_in, made, sidlc)
+  local obj1, name_level, obj_tport
   local a, b
-  
+
   name_level = pos_in
-   
+
   if  pos_out=="kordon"    then  a = out_points_kordon[1]
    elseif pos_out=="pripat"   then   a = out_points_pripat[1]
    elseif pos_out=="military"   then   a = out_points_military[1]
    elseif pos_out=="yantar"   then   a = out_points_yantar[1]
    elseif pos_out=="sarcofag"   then   a = out_points_sarcofag[1]
   end
-  
-  if made == 0 then 
+
+  if made == 0 then
    -- destination point selection?
-   if  pos_in=="kordon"    then  name_level="l01_escape" 
+   if  pos_in=="kordon"    then  name_level="l01_escape"
      b=points_kordon[lua_random(table.getn(points_kordon))]
-     elseif pos_in=="pripat"   then   name_level="l11_pripyat" 
+     elseif pos_in=="pripat"   then   name_level="l11_pripyat"
      b=points_pripat[lua_random(table.getn(points_pripat))]
-     elseif pos_in=="military"   then   name_level="l07_military" 
+     elseif pos_in=="military"   then   name_level="l07_military"
      b=points_military[lua_random(table.getn(points_military))]
-     elseif pos_in=="yantar"   then   name_level="l08_yantar" 
+     elseif pos_in=="yantar"   then   name_level="l08_yantar"
      b=points_yantar[lua_random(table.getn(points_yantar))] end
      elseif made==1 then
      if  pos_in=="kordon"     then  name_level="l01_escape"   b = points_kordon[1]
@@ -3196,25 +3208,25 @@ function get_teleport (pos_out, pos_in, made, sidlc)
      elseif pos_in=="yantar"    then   name_level="l08_yantar"    b = points_yantar[1]
      elseif pos_in=="stancia"    then   name_level="l12_stancia_new"   b = points_stancia[1]
      elseif pos_in=="marsh"    then   b = points_marsh[1]
-     elseif pos_in=="aver"        then   b = points_aver[1]          
+     elseif pos_in=="aver"        then   b = points_aver[1]
      elseif pos_in=="limansk"    then   b = points_limansk[1]
      elseif pos_in=="red_forest" then   b = points_red_forest[1]
-     elseif pos_in=="generators" then   b = points_generators[1]  
+     elseif pos_in=="generators" then   b = points_generators[1]
    end
   end
   obj1 = g_sim:create("level_changer",v3f(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
   obj_tp = g_sim:create("amk_zone_sphere",v3f(a.position.x,a.position.y,a.position.z), a.lv, a.gv)
-  
+
   obj_tport = obj_tp.id
-  
+
   amk_vars.sak_teleport_vis = obj_tport
-    
+
   if obj1 then
   local rand_direction = lua_random(0,6)
   local pk = get_netpk(obj1)
   local data = pk:get()
   data.object_flags = bit_not(193)
-  data.shapes:addSphere(1,v3f(0,0.5,0)) 
+  data.shapes:addSphere(1,v3f(0,0.5,0))
   data.story_id = sidlc
   data.restrictor_type = 3
   data.dest_position  = v3f(b.position.x,b.position.y,b.position.z)
@@ -3373,7 +3385,7 @@ function health_handle()
   local n_healh=npc.health
   local r_healh=npc.power
   local p_healh=params.actor_psy_health()
-  local s_healh=params.actor_satiety_health() 
+  local s_healh=params.actor_satiety_health()
   local b_healh=params.actor_bleeding()
   local x_healh=npc.radiation
   if n_healh < 0.92 then hud_params.set_icon_color(1,argb32((n_healh*1.08),1)) else hud_params.set_icon_color(1,0) end
@@ -3403,35 +3415,35 @@ function health_handle()
     if x_healh>0.05 then
       if params.actor_alcohol_health()>0.01 then npc.radiation = -0.05 end
     end
-    
+
     if p_healh < 0.95 then
       -- восстановление пси-здоровья рядом с костром
       if params.actor_alcohol_health()>0.05 then params.psy_health_add(0.12) end
       local npos = device().cam_pos
       local cdir = get_actor_obj().orientation
       local vd   = device().cam_dir --  cdir:get_dir() -- actor direction as vector
-      local objs, cnt = registry.sc_objects("zone_flame_*", true, 7, client_obj)      
+      local objs, cnt = registry.sc_objects("zone_flame_*", true, 7, client_obj)
       for n, objg in ipairs(objs) do
         local op = objg:position()
         if op:distance_to(npos) < 3   then
-          local diff = vector():sub(op, npos):normalize()                         
+          local diff = vector():sub(op, npos):normalize()
           local cp = vector():crossproduct(vd, diff)
-          local dp = vd:dotproduct(diff)      
-          local angle = math.atan2( cp:magnitude(), dp )           
+          local dp = vd:dotproduct(diff)
+          local angle = math.atan2( cp:magnitude(), dp )
           if math.abs(angle) < 0.75 then
              -- params.psy_health_add(0.05)
              params.psy_health_add(0.1)      -- увеличим в 2 раза на пробу
           else
-                
-          end 
-          
+
+          end
+
           wprintf("[~T].~C0F #DBG(camp_heal_psy): angle =~C0D %.3f~C0F, dp =~C0F %.3f~C07 ", angle, dp)
         end -- if distance
       end -- for
-      
+
     end -- if psy_health
-    
-    black_tip.health_handle()    
+
+    black_tip.health_handle()
   end
 end
 
@@ -3440,12 +3452,12 @@ function breath_poison() -- реализация астмы с учетом противогаза
   if mask_poison >= 0 then return end
   local npc=db.actor
   local act_pos=npc:position()
-  local cond = vergas_masks.mask_condition() 
-  
+  local cond = vergas_masks.mask_condition()
+
   if amk_anoms.check_coordinates(act_pos) and
-     (vergas_masks.get_flag_mask() == false or cond < 0.85 or 
+     (vergas_masks.get_flag_mask() == false or cond < 0.85 or
       vergas_masks.mask_definition() == "?") then
-      
+
     local r_h = npc.power
     if r_h >= 0.79 then
      vergas_lib.s_play(breath_sound[lua_random(1,3)],1)
@@ -3454,7 +3466,7 @@ function breath_poison() -- реализация астмы с учетом противогаза
     end
     local add = mask_poison * 1.5
     params.health_add(add)
-    
+
     if npc:item_in_slot(6) == nil then
       local h = hit()
       h.draftsman = npc
@@ -3552,13 +3564,13 @@ function repair_box_close(obj, attempt)
   local self=level.main_input_receiver()
   if self then
      self:GetHolder():start_stop_menu(self,true)
-  end  
-  misc.process_spawn() 
+  end
+  misc.process_spawn()
   -- UpdateRegistry(false)
   sak.self_rep_boxes = xray_vars.load_table(nlc_vars, "self_rep_boxes", {})
   local c_box_id=obj:id()
   local rbox = sak.self_rep_boxes[c_box_id]
-  
+
   local objd_id,objr_id,dirs = rbox["treas"], rbox["phis"], rbox["direct"]
   local out_object,outr_object = client_obj(objd_id),client_obj(objr_id)
   local repiout=0
@@ -3570,15 +3582,15 @@ function repair_box_close(obj, attempt)
     for n = 1,cnt do
        local id = ids[n]
        local item = client_obj(id)
-       if item then 
+       if item then
 		local sect=item:section()
         if     strposx(sect, "repair_itemoutfit")  then repiout  = repiout  + 1
         elseif strposx(sect, "repair_item_weapon") then repiweap = repiweap + 1
-        else   
-          --wprintf(" non expected item %s in repair box", item:name())     
-          out_object:transfer_item(item, db.actor) 
+        else
+          --wprintf(" non expected item %s in repair box", item:name())
+          out_object:transfer_item(item, db.actor)
         end
-      end 
+      end
     end -- for
     --send_tip("В ремонтном ящике:\\nОружейных ремкомплектов - "..repiweap.." шт.\\nКомплектов для брони - "..repiout.." шт.",nil,2,5,"g_g","no", "green")
     misc.release_obj(obj)
@@ -3586,7 +3598,7 @@ function repair_box_close(obj, attempt)
     nlc_vars.self_rep_boxes[c_box_id]=nil
     db.actor:give_info_portion("rem_close")
     schedule.add("cl_rep", "sak.repair_box_closed("..objr_id..","..repiout..","..repiweap..","..dirs..")", 2500)
-  end--]] 
+  end--]]
 end
 
 function repair_box_closed(obj_id,repiout,repiweap,dirs)
@@ -4016,7 +4028,7 @@ function repair_box_repair(obj)
       else
        send_tip("Оружие не нуждается в починке!",nil,2,5,"g_g","no", "green")
        misc.spawn_to(obj:section().."_feik", actor)
-      end 
+      end
     elseif obj and obj:section()=="repair_itemoutfit" then
       if armor then
         if strpos(armor:section(), "bandit_veteran_",1,true) or strpos(armor:section(), "bandit_master_",1,true) then
@@ -4042,8 +4054,8 @@ function repair_box_repair(obj)
             send_tip("Броня не нуждается в починке!",nil,2,5,"g_g","no", "green")
             misc.spawn_to(obj:section().."_feik", actor)
           end
-        end  
-      else 
+        end
+      else
         send_tip("А что же ремонтировать то? Нечего!",nil,2,5,"g_g","no", "yellow")
         misc.spawn_to(obj:section().."_feik", actor)
       end
@@ -4140,8 +4152,8 @@ function repair_on()
       sound=repair_sound[3]..sounds
       snd_obj=xr_sound.get_safe_sound_object(sound)
       snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
-      slot_obj=armor:id()  
-      vergas_masks.set_flag_minimap(false)      
+      slot_obj=armor:id()
+      vergas_masks.set_flag_minimap(false)
       schedule.add("tm_rep", "sak.repair_tiski_do("..slot..","..slot_obj..","..r_box_id..","..repiout..","..repiweap..")", 12500)
     else
       send_tip("Нечего ремонтировать...",nil,2,5,"g_g","no", "sky_blue")
@@ -4329,7 +4341,7 @@ function create_physic_object(p_visual,p_position,p_lvertex_id,p_gvertex_id)
     local data = pk:get()
     data.visual_name = p_visual
     data.physic_type=3
-    pk:set(data)    
+    pk:set(data)
   end
   rep_armor=obj.id
 end
@@ -4429,7 +4441,7 @@ function give_n_repair_item_weapon(n)
       if repiwp==0 then break end
     end
     sak_inventory.need_update_inventory()
-    if repiwp==0 then 
+    if repiwp==0 then
     relocate_item(db.actor, "out", "repair_item_weapon", n)
     return
     end
@@ -4523,7 +4535,7 @@ function give_n_repair_itemoutfit(n)
       if repiwp==0 then break end
     end
     sak_inventory.need_update_inventory()
-    if repiwp==0 then 
+    if repiwp==0 then
     relocate_item(db.actor, "out", "repair_itemoutfit", n)
     return
     end
@@ -4568,9 +4580,9 @@ matches_delays = { 3500, 4000, 4600 }
 
 function scratch_match_sound(sidx)
  -- воспроизвести звук чирканья спичкой о коробок и вернуть задержку времени зажигания спички
- if sidx == nil then 
+ if sidx == nil then
     sidx = lua_random(1, 3)
- end    
+ end
  misc.easy_sound (koster_sound[1]..sidx)
  return matches_delays[sidx]
 end
@@ -4579,32 +4591,32 @@ end
 function koster_on()
  local itm = bag_on_belt_use.get_matches() or bag_on_belt_use.load_matches()
  -- попытка запалить кострище
- if params.matches_flame > 0 then return end 
+ if params.matches_flame > 0 then return end
  if not itm then return end
  wprintf(" matches exists, trying ignite!")
- db.actor:eat (itm) 
+ db.actor:eat (itm)
  bag_on_belt_use.unload_matches()
- local delay = scratch_match_sound()    
- actor_hide_weapon() 
- schedule.add ("ignite_campfire", "campmgr.try_ignite()", delay)    
+ local delay = scratch_match_sound()
+ actor_hide_weapon()
+ schedule.add ("ignite_campfire", "campmgr.try_ignite()", delay)
 end
 
-function koster_yes() 
- 
+function koster_yes()
+
 end
 
 function candle_on()
- -- попытка засветить лампаду 
+ -- попытка засветить лампаду
  if (params.matches_flame > 0) or (savemgmt.candle_id > 0) then return end
  local itm = bag_on_belt_use.get_matches() or bag_on_belt_use.load_matches()
- if not itm then return end  
- db.actor:eat (itm)    
+ if not itm then return end
+ db.actor:eat (itm)
  bag_on_belt_use.unload_matches()
- 
+
  actor_hide_weapon()
  local delay = scratch_match_sound()
- schedule.add ("ignite_candle", "sak.ignite_candle()", delay)   
- schedule.add ("restor_wpn",    "sak.restore_weap()", delay + 2500)           
+ schedule.add ("ignite_candle", "sak.ignite_candle()", delay)
+ schedule.add ("restor_wpn",    "sak.restore_weap()", delay + 2500)
 end
 
 sak.candle_on = candle_on
@@ -4617,13 +4629,13 @@ function ignite_candle()
   local rend = lua_random(2)
   if rend == 1 then
        schedule.add ("matches_flame", "params.spawn_matches_flame(1000)", 50)
-               
+
        local apos = db.actor:position()
     for a,i in pairs(db.storage) do
-      local candle = client_obj(a)            
+      local candle = client_obj(a)
       if candle then
                 local pos = candle:position()
-        if strpos(candle:name(), "_candle_", 1, true) and (pos:distance_to(apos) < 2.3) then                    
+        if strpos(candle:name(), "_candle_", 1, true) and (pos:distance_to(apos) < 2.3) then
             savemgmt.candle_id = candle:id()
                     schedule.add ("candle_flame", "savemgmt.enable_candle_flame()", 200)
             break
@@ -4633,9 +4645,9 @@ function ignite_candle()
   else
         savemgmt.candle_id = -1
         schedule.add ("matches_flame", "params.spawn_matches_flame(500)", 50)
-        schedule.add ("actor_grumble", "sak.actor_grumble()", 1000)        
+        schedule.add ("actor_grumble", "sak.actor_grumble()", 1000)
   end
-  
+
 end
 
 function actor_grumble()
@@ -4643,7 +4655,7 @@ function actor_grumble()
   if sidx <= 3 then
     local snd_name = sprintf ('%s%d', sak.koster_sound[2], sidx)
     misc.easy_sound (snd_name)
-  end  
+  end
 end
 
 sak.actor_grumble = actor_grumble
@@ -4671,7 +4683,7 @@ function labx8_pribor_on()
    misc.release_obj(modul:id(), 'sak.script:3518')
    actor_hide_weapon()
   end
-  
+
 end
 function labx8_pribor1_yes()
   restore_weap()
@@ -4748,8 +4760,8 @@ function rad_pribor3_yes()
   db.actor:give_info_portion("radar_pribor3_on")
   timers.start_timer("rad_pribor3_on",0,0,28,"sak.rad_pribor3_ready()")
   restore_weap()
-  if lua_random()>0.75 then 
-     return 
+  if lua_random()>0.75 then
+     return
   end
 local table_monsters={
 "rad_zombied_respawn_1",
@@ -4777,7 +4789,7 @@ local table_spawn={
 		local pk = get_netpk(obj)
 		local data = pk:get()
 		data.custom_data = "[smart_terrains]\nnone = true"
-		pk:set(data)	
+		pk:set(data)
 		if obj.online then
 			sim:set_switch_online(obj.id, false)
 			sim:set_switch_offline(obj.id, true)
@@ -4888,7 +4900,7 @@ function have_trasure(first_speaker, second_speaker)
   local rand=randh+randd
   while rand>23 do rand=rand-24 end
   for  i=0,1 do
-    if (rand==(i*12+rand_tres)) and randm>randh then return db.actor:give_info_portion("have_sak_treasure")  end 
+    if (rand==(i*12+rand_tres)) and randm>randh then return db.actor:give_info_portion("have_sak_treasure")  end
   end
   return db.actor:give_info_portion("havent_sak_treasure")
 end
@@ -4938,7 +4950,7 @@ function eff_vodka()
     h.impulse=0.2
     db.actor:hit(h)
   end
-  
+
 end
 function add_spot_of_docent(a)
   local old_spot=nlc_vars.spot_of_nps or 0
@@ -5063,11 +5075,11 @@ function compile_rules(rules)
  for key, val in pairs(rules) do
       local t = type(val)
       local code = "" -- function body
-      if t == "boolean" then 
-        code = "return "..tostring(val).." end"  
+      if t == "boolean" then
+        code = "return "..tostring(val).." end"
       elseif t == "string" then
-        code = "return "..val.." end"      
-      end  
+        code = "return "..val.." end"
+      end
       local f = loadstring("return function(obj, actor) "..code)() -- компиляция функции в чанк
       result[key] = f
  end -- for
@@ -5077,15 +5089,15 @@ end
 function check_rules(rules, obj, actor, nname)
  for key, func in pairs(rules) do
    if strposx(nname, key) then
-      return func(obj, actor)         
+      return func(obj, actor)
    end -- if strposx
- end -- for                
+ end -- for
  -- universal rule test
  local func = rules['any_name']
  if func then
     return func(obj, actor)
  end
- 
+
  return false
 end
 
@@ -5094,22 +5106,22 @@ function add_tail()
   local actor=db.actor
   local lname=level.name()
   local tip=level_trees[lname]
-  
+
   local sname=(amk_vars.level_on_save or "")
-    
+
   nlc_vars.prev_level   = sname -- для дополнительного детектирования переходов
-  nlc_vars.curr_level   = lname  
-    
+  nlc_vars.curr_level   = lname
+
   if tip~=0 then
-     texman.swap_trees(tip) 
+     texman.swap_trees(tip)
   end
-  
+
   tip = level_stons[lname]
-  if tip~=0 then 
-     texman.swap_stons(tip) 
+  if tip~=0 then
+     texman.swap_stons(tip)
   end
   if lname=="l01_escape" then
-     texman.swap_briks("esc_") 
+     texman.swap_briks("esc_")
     local day=level.get_time_days()
     if math.fmod(day,8)==0 then
       texman.swap_sid_plakat("s")
@@ -5117,7 +5129,7 @@ function add_tail()
       texman.swap_sid_plakat("k")
     end
   end
-  
+
   local gg_community=(amk_vars.gg_community or "actor")
   torch_id_norm()
   if lname=="l04_darkvalley" then
@@ -5133,18 +5145,18 @@ function add_tail()
   elseif lname~="red_forest" then
     actor:set_character_community(gg_community, 0, 0)
   end
- 
+
   local drawn_thing = "obj.parent_id and obj.parent_id==0"
   local remove_rules = {
                            minigame_thimble = true, fear_sound_item = true, fall_object = true,
-                           --exit_mil_to_radar_01 = true, --agr_sak_teleport_0003 = true, 
+                           --exit_mil_to_radar_01 = true, --agr_sak_teleport_0003 = true,
                            -- test_code = "obj.m_game_vertex_id > 0 and db.actor:has_info('escape_lager_volk_document_done')",
                            dollars = drawn_thing, ammo_flame = drawn_thing, soldier_letter_ = drawn_thing,
                            closer_                              = "obj.parent_id==nil or obj.parent_id==BAD_OBJ_ID",
                            yan_zone_zharka_static_average_01    = "actor:has_info('yan_labx16_switcher_primary_off')",
-                           sak_document2                        = "actor:has_info('escape_lager_volk_document_done')",     
-                           esc_suicidal_flash_restrictor        = "actor:has_info('escape_lager_volk_document_done')",                
-                           space_restrictor_vagonchik           = "actor:has_info('esc_killers_raid')",     
+                           sak_document2                        = "actor:has_info('escape_lager_volk_document_done')",
+                           esc_suicidal_flash_restrictor        = "actor:has_info('escape_lager_volk_document_done')",
+                           space_restrictor_vagonchik           = "actor:has_info('esc_killers_raid')",
                            gar_bandits_fire                     = "actor:has_info('gar_counter_fire')",
 						   esc_exit_bandit_                     = "actor:has_info('gar_start_quest')",
                            bar_ambush_killer_                   = "actor:has_info('sak_ros_merk_out')",
@@ -5156,7 +5168,7 @@ function add_tail()
   local sl=1
   for a=1,BAD_OBJ_ID,1 do
     local obj= g_sim:object(a)
-    if obj then    
+    if obj then
       local nname=obj:name()
       --[[ODS("[~T]. #DBG: удаляем объект000 ~C0A"..nname.."  "..obj:clsid().. "~C07")
 	  local objc=client_obj(a)
@@ -5171,10 +5183,10 @@ function add_tail()
       elseif strpos(nname,"amk_zone_teleport_aver_labirint",1,true) then
              aver_teleport=1
       elseif strpos(nname,"amk_zone_teleport_prip_labirint",1,true) then
-             prip_teleport=1			 
+             prip_teleport=1
       elseif strpos(nname,"flask_army",1,true) then
         vergas_flask.take_flask_army(obj,a)
-      --elseif nname=="val_prisoner_captive" or  nname=="val_escort_captive" then 
+      --elseif nname=="val_prisoner_captive" or  nname=="val_escort_captive" then
       --amk.add_spot_on_map(a,'red_location',obj:name())
         --[[local pk = get_netpk(obj)
         local data = pk:get()
@@ -5193,20 +5205,20 @@ function add_tail()
           data.custom_data = sak_off_corpses.off_logic_npc[nname][2]
           pk:set(data)
         end
-      elseif (check_rules(remove_rules, obj, actor, nname)                     
+      elseif (check_rules(remove_rules, obj, actor, nname)
         or (strpos(obj:section_name(),"^rat_") and not obj:alive())
-        or (actor:has_info("deactivate_radar_fall") 
+        or (actor:has_info("deactivate_radar_fall")
         and str_in_tab(lname, { "l05_bar", "labx8", "warlab", "l10_radar" }) == nil
         and str_in_tab(nname, { "bar_stalker_off_", "gar_dolg_blokpost_", "_tramplin_", "val_lager_bandit", "val_bandit_", "val_sacrifice_guard2", "val_lager_bodyguard1", "bar_flame_off_", "bar_bar_visitor_hunter", "bar_bar_guard", "square_1_guard","bar_dolg_bunker_" })
         )
         or ((obj.level_id ~= nil) and (lname == obj._level_name) and const.ground_levels[lname] and obj.m_level_vertex_id > const.level_vertices[lname] and not strposx(nname, "single_player"))
         or (nname=="device_pda" and obj.parent_id~=0)
-      ) 
+      )
       then
           --ODS("[~T]. #DBG: удаляем объект ~C0A"..nname.."  "..a.. "~C07")
         misc.release_obj(obj, 'sak.script->add_tail')
       elseif IsStalker(obj) and obj.alive and obj:alive() and obj.m_game_vertex_id and (lname~="l02_garbage" or (lname=="l02_garbage" and obj:community()~="bandit")) and obj:community()~="zombied" and (o_sid==NONE_SID or o_sid==NONE_CL_SID or o_sid==9503 or o_sid==424 or o_sid==9541 or o_sid==3 or o_sid==9543 or o_sid==902 or lname=="l05_bar" or (lname=="l07_military" and not o_sid==509) or (actor:has_info("volk_prisoner_start") and not actor:has_info("atp_bandit_leader_ok") and (o_sid==4 or o_sid==9) and lname=="l01_escape"))
-      then 
+      then
         if game_graph():valid_vertex_id(obj.m_game_vertex_id) then
           local map= obj.level_name -- g_sim:level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
           if map==lname then
@@ -5252,37 +5264,37 @@ function add_tail()
   local objt= g_sim:story_object(levch_lab[d])
     if objt then misc.release_obj(objt, 'sak.script:3339') end
   end
-  
+
   if actor:has_info("trup_sanek_out") then actor:give_info_portion("sanek_out")
     local sanek= g_sim:story_object(story_ids.sanek)
     if sanek then
        misc.release_obj(sanek, 'remove sanek')
     end
   end
- 
-   
+
+
   local amb_cfg=FindConfigStr("r2_sun_lumscale_amb")
   WriteIni(db.stor_ltx, "stor", "lumscale_amb", "\""..amb_cfg.."\"")
   local amb=ReadIni(db.stor_ltx,"stor","lumscale_amb")
   if (strpos(amb,"r2_sun_lumscale_amb ",1,true) and tonumber(string.sub(amb,-3))<0.2) or amb=="" then amb="r2_sun_lumscale_amb 0.5" end
   if const.ground_levels[lname] then
-       get_command(amb)     
+       get_command(amb)
   else
-     get_command("r2_sun_lumscale_amb 0.1") 
+     get_command("r2_sun_lumscale_amb 0.1")
   end
-  
+
   if lname~=sname and sname~="" then
-    wprintf("sak.add_tail: level change detected from~C0E %s~C07 to~C0F %s~C07", sname, lname)    
+    wprintf("sak.add_tail: level change detected from~C0E %s~C07 to~C0F %s~C07", sname, lname)
     local obj
-    if lname~="l05_bar" and not has_alife_info("minigame_stas_start") then  actor:give_info_portion("minigame_stas_start") end 
+    if lname~="l05_bar" and not has_alife_info("minigame_stas_start") then  actor:give_info_portion("minigame_stas_start") end
     if (not has_alife_info("bar_heli_scene_professor_die")) and (not has_alife_info("kruglov_is_fly")) and (actor:has_info("kruglov_way_2_end") or actor:has_info("kruglov_flash_done") or actor:has_info("kruglov_resiever_done") or actor:has_info("kruglov_weapon_done") or actor:has_info("kruglov_letter_done") or actor:has_info("kruglov_follow_done") or actor:has_info("krugl_end_time")) then
       actor:give_info_portion("kruglov1_is_fly")
       actor:give_info_portion("kruglov2_is_fly")
       actor:give_info_portion("kruglov3_is_fly")
       actor:give_info_portion("kruglov_is_fly")
       --obj= g_sim:story_object(story_ids.bar_ecolog_professor)
-      for a=0,2 do misc.release_by_name("ros_zone_flame_000"..a,'sak.script:4680') end 
-      for a=0,4 do misc.release_by_name("ros_zone_flame_small_000"..a,'sak.script:4681') end 
+      for a=0,2 do misc.release_by_name("ros_zone_flame_000"..a,'sak.script:4680') end
+      for a=0,4 do misc.release_by_name("ros_zone_flame_small_000"..a,'sak.script:4681') end
       obj= g_sim:story_object(story_ids.bar_ecolog_crush_1)
       if obj then misc.release_obj(obj, 'sak.script:3371') end
       obj= g_sim:story_object(story_ids.bar_ecolog_crush_3)
@@ -5303,7 +5315,7 @@ function add_tail()
     amk_vars.sak_teleport_vis = nil
     sak_off_corpses.off_corpses(true)
     if actor:has_info("bar_deactivate_radar_done") and actor:has_info("klyk_out") and not actor:has_info("klyk_saved_info") then
-       add_klyk_body()	   
+       add_klyk_body()
     end
     if not actor:has_info("marsh_leader_found_corps") and actor:has_info("mar_leader_job_done") then
     actor:give_info_portion("marsh_leader_found_corps")
@@ -5321,7 +5333,7 @@ function add_tail()
       x_spawn_actions.x18_dor_open_spawn()
       end
     end
-    if lname=="l08u_brainlab" and not actor:has_info("yan_find_laboratory_end") then 
+    if lname=="l08u_brainlab" and not actor:has_info("yan_find_laboratory_end") then
     actor:give_info_portion("yan_find_laboratory_end")
     actor:give_info_portion("yantar_vasilyev_info")
     end
@@ -5354,19 +5366,19 @@ function add_tail()
     actor:disable_info_portion("x10_switch_on_rats")
     end
     if actor:has_info("art_exchanger_umer") and not actor:has_info("art_exchanger_out") then
-      actor:give_info_portion("art_exchanger_out") 
+      actor:give_info_portion("art_exchanger_out")
     end
     if actor:has_info("esc_vlad_new_gg") and not actor:has_info("vlad_oksana_out") then
-      actor:give_info_portion("vlad_oksana_out") 
+      actor:give_info_portion("vlad_oksana_out")
     end
     if lname~="l06_rostok" and lname~="l08_yantar" and actor:has_info("kruglov_is_fly") and not actor:has_info("sak_ros_merk_out") then
-      actor:give_info_portion("sak_ros_merk_out") 
+      actor:give_info_portion("sak_ros_merk_out")
       vokodav_vis_new()
     end
     if sname=="l03_agroprom" and lname=="l03u_agr_underground" and not actor:has_info("agr_find_rygyi_done") then
       actor:give_info_portion("agr_find_rygyi_done")
       local obj = g_sim:story_object(story_ids.rygyi)
-      if obj then 
+      if obj then
         if obj:alive() then
           local pk = get_netpk(obj)
           local data = pk:get()
@@ -5375,7 +5387,7 @@ function add_tail()
           pk:set(data)
           local sobj=alife():object(obj.id)
           sobj.wounded=false
-          actor:give_info_portion("self_medkit_rygyi_done") 
+          actor:give_info_portion("self_medkit_rygyi_done")
         else
           misc.release_by_name("rygyi")
           actor:give_info_portion("rygyi_umer")
@@ -5400,14 +5412,14 @@ function add_tail()
       misc.release_by_name("kat_soldier_0012")
       misc.release_by_name("kat_soldier_0013")
       misc.release_by_name("kat_soldier_0014")
-      actor:give_info_portion("kat_soldier_end") 
+      actor:give_info_portion("kat_soldier_end")
     end
-    if sname=="marsh" then 
+    if sname=="marsh" then
       if actor:has_info("oksana_go_to_kordon_end") and not actor:has_info("oksana_umer") and not actor:has_info("oksana_kordon_out") then
-      actor:give_info_portion("oksana_kordon_out") 
+      actor:give_info_portion("oksana_kordon_out")
       end
       if actor:has_info("info_way181b") and actor:has_info("info_way178a") and not actor:has_info("mar_stepanych_umer") and not actor:has_info("mar_stepanych_out") then
-      actor:give_info_portion("mar_stepanych_out") 
+      actor:give_info_portion("mar_stepanych_out")
       end
       if actor:has_info("marsh_botan_new_gg") and not actor:has_info("marsh_botan_to_gigant_end") then
       actor:give_info_portion("marsh_botan_to_gigant_end")
@@ -5425,38 +5437,38 @@ function add_tail()
         misc.release_by_name("dsk_sanek")
       end
     end
-    if actor:has_info("esc_petruha_toz_done") and not actor:has_info("lost_vil_stalker_dom_go") then actor:give_info_portion("lost_vil_stalker_dom_go") 
+    if actor:has_info("esc_petruha_toz_done") and not actor:has_info("lost_vil_stalker_dom_go") then actor:give_info_portion("lost_vil_stalker_dom_go")
     end
     if lname=="generators" and gen_teleport==0 then spawn_teleports(v3f(-20.4,34.8,-223.8),311873,3106,5,20,"amk_zone_teleport_labirint",20) actor:give_info_portion("tesla_in") end
     if lname=="aver" and aver_teleport==0 then spawn_teleports(v3f(350.91,-6.01,-21.23),1492916,2902,5,30,"amk_zone_teleport_aver_labirint",40) end
-    if lname=="l11_pripyat" and prip_teleport==0 then spawn_teleports(v3f(29.7,1.8,355.8),139177,2260,5,30,"amk_zone_teleport_prip_labirint",40) end	
+    if lname=="l11_pripyat" and prip_teleport==0 then spawn_teleports(v3f(29.7,1.8,355.8),139177,2260,5,30,"amk_zone_teleport_prip_labirint",40) end
     if lname~="l01_escape" and actor:has_info("gar_dm_bandits_done") and actor:has_info("info_way178a") then actor:give_info_portion("ivan_go_limansk") end
-    if lname~="l03_agroprom" and actor:has_info("ratcatcher_order_done") and not actor:has_info("ratcatcher_out") then actor:give_info_portion("ratcatcher_out") 
+    if lname~="l03_agroprom" and actor:has_info("ratcatcher_order_done") and not actor:has_info("ratcatcher_out") then actor:give_info_portion("ratcatcher_out")
     obj= g_sim:story_object(story_ids.agr_ratcatcher)
     if obj then misc.release_obj(obj, 'sak.script:3471') end end
-    if lname~="l05_bar" and actor:has_info("info_way_false") and not actor:has_info("informer_out") then actor:give_info_portion("informer_out") 
+    if lname~="l05_bar" and actor:has_info("info_way_false") and not actor:has_info("informer_out") then actor:give_info_portion("informer_out")
     obj= g_sim:story_object(story_ids.bar_bar_osvedomitel)
     if obj then misc.release_obj(obj, 'sak.script:3474') end end
-    if lname~="l02_garbage" and actor:has_info("gar_stalker_info2") then 
+    if lname~="l02_garbage" and actor:has_info("gar_stalker_info2") then
     obj= g_sim:story_object(story_ids.gar_stalker)
     if obj then misc.release_obj(obj, 'sak.script:3477') end end
-    if lname~="l01_escape" and actor:has_info("gar_flame_done") then 
+    if lname~="l01_escape" and actor:has_info("gar_flame_done") then
     obj= g_sim:story_object(story_ids.leshyi)
     if obj then misc.release_obj (obj, 'sak.script:3480') end end
     if lname=="l01_escape" then
-      if actor:has_info("tutorial_end") and not actor:has_info("tutorial_wounded_give_info") then 
+      if actor:has_info("tutorial_end") and not actor:has_info("tutorial_wounded_give_info") then
     esc_shustryi_stalker() actor:give_info_portion("tutorial_wounded_give_info") actor:give_info_portion("esc_shustryi_outfit_start") end
       if sname=="l02_garbage" and not actor:has_info("esc_serious_talk") then
       esc_trader_start_quest()
       end
     end
-    if lname~="l01_escape" then 
-    actor:give_info_portion("esc_lamp_1_off") 
+    if lname~="l01_escape" then
+    actor:give_info_portion("esc_lamp_1_off")
 	end
-    if lname~="l02_garbage" and actor:has_info("borov_31_have") then 
+    if lname~="l02_garbage" and actor:has_info("borov_31_have") then
     obj= g_sim:story_object(9495) -- story_object(9495)
     if obj then misc.release_obj (obj, 'sak.script:3488') end end
-    if lname~="l04_darkvalley" and actor:has_info("val_escort_scene_add_end") and not actor:has_info("val_escort_scene_end") then actor:give_info_portion("val_escort_scene_end") 
+    if lname~="l04_darkvalley" and actor:has_info("val_escort_scene_add_end") and not actor:has_info("val_escort_scene_end") then actor:give_info_portion("val_escort_scene_end")
     obj= g_sim:story_object(story_ids.val_escort_guard1)
     if obj then misc.release_obj (obj, 'sak.script:3491') end
     obj= g_sim:story_object(story_ids.val_escort_guard3)
@@ -5469,13 +5481,13 @@ function add_tail()
     if lname~="l07_military" and (actor:has_info("mil_freedom_under_attack") or actor:has_info("mil_lukash_dolg_task_complete"))then mil_mines_add() end
     if lname=="l05_bar" and (actor:has_info("burer_hos_dead") or actor:has_info("burer_hos_off")) and not actor:has_info("add_hos_junkman") then actor:give_info_portion("add_hos_junkman") end
     if lname=="l02_garbage" and actor:has_info("hellcar_raid_start") and not actor:has_info("gar_hellcar_thanks") and not actor:has_info("gar_open_fire") then
-      actor:give_info_portion("gar_bandits_raid")  
-      actor:give_info_portion("gar_open_fire")  
+      actor:give_info_portion("gar_bandits_raid")
+      actor:give_info_portion("gar_open_fire")
       obj= g_sim:story_object(story_ids.gar_hellcar)
       if obj and obj:alive() and obj.online then
         obj = client_obj(obj.id)
         obj:kill(obj)
-      end 
+      end
     end
     if lname~="l06_rostok" and actor:has_info("ivancov_val_business_done") and not actor:has_info("actor_has_fraer") then actor:give_info_portion("actor_has_fraer") end
     if lname=="l06_rostok" and actor:has_info("yan_kill_brain_done") and not actor:has_info("assistant_out") then actor:give_info_portion("assistant_out") misc.release_by_name("yan_helicopter_1") misc.release_by_name("yan_helicopter_2") end
@@ -5493,8 +5505,8 @@ function add_tail()
 		end
 	end
     if lname=="l05_bar" then
-      if not actor:has_info("bar_seif_prot_out") then 
-        obj=level_object_by_sid(31) grabb_bar_seif (obj:id(),actor) 
+      if not actor:has_info("bar_seif_prot_out") then
+        obj=level_object_by_sid(31) grabb_bar_seif (obj:id(),actor)
       end
       local day=timers.Get_Game_Days()+1
       local rand=(amk_vars.r_treas_items or 1)+4
@@ -5515,7 +5527,7 @@ function add_tail()
     end
   end
 
-  if lname=="aver" then 
+  if lname=="aver" then
    level.set_time_factor(system_ini():r_float("alife","time_factor")*5)
    t_s_1=45150
   elseif const.ground_levels[lname] then
@@ -5537,7 +5549,7 @@ function add_tail()
   --misc.spawn_by_name("exit_mil_to_radar_01")
   sak_off_corpses.off_corpses()
   razgruzka.end_use_info()
-  sak.reset_actor_bio()   
+  sak.reset_actor_bio()
   wprintf('~CF0[~T/~U/~B]. #PERF: sak.add_tail end~C07');
 end
 
@@ -5545,7 +5557,7 @@ function sak.actor_bio()
  params.tiredness_add(0)
 end
 
-function sak.reset_actor_bio() 
+function sak.reset_actor_bio()
  params.health_v_add  (1, level_difficulty[level.name()]) -- восстановление здоровья во время бодрствования
  params.satiety_v_add (1, 1)  -- нарастание голода по умолчанию
  actor_bio()
@@ -5563,10 +5575,10 @@ function grabb_seif (obj_id,lname,actor)
       if (strpos(nname, "af_",1,true) and not strposx(nname, "af_full_akkum") and not strposx(nname, black_tip.section)) or (strposx(nname, "arc_art_box_"))then
         add_price_arts(sobj)
       end
-    end 
+    end
   end
-  
-  if (have_many > 1390000) and not actor:has_info(lname.."_prot_out") then 
+
+  if (have_many > 1390000) and not actor:has_info(lname.."_prot_out") then
     actor:give_info_portion(lname.."_prot_out")
     for n = 1,cnt do
       local id = ids[n]
@@ -5597,10 +5609,10 @@ function grabb_bar_seif (obj_id,actor)
       if strpos(nname, "af_",1,true) or strpos(nname, "arc_art_box_",1,true) then
         add_price_arts(sobj)
       end
-    end 
+    end
   end
   if (have_many>350000 or actor:has_info("deactivate_radar_fall")) and not actor:has_info("bar_seif_prot_out") then actor:give_info_portion("bar_seif_prot_out")
-  local name,sname = amk_names_lists.get_strings()    
+  local name,sname = amk_names_lists.get_strings()
   send_tip("Слыхали? Сталкера в баре отключили! Спит сутки без просыпу!",name.." "..sname,20,15,"uniq","news","gray")
     for n = 1,cnt do
       local id = ids[n]
@@ -5618,11 +5630,11 @@ function voronin_seif_out()
     misc.release_obj(id, 'sak.script:3599')
   end
 end
--- наполнение хабаром НПС??? 
+-- наполнение хабаром НПС???
 function habar_by_nps( lid )
   local npc = client_obj( lid )
   if not npc then return end
-  -- удаление из инвентаря по таблицам еды и артов 
+  -- удаление из инвентаря по таблицам еды и артов
   local ids, cnt = registry.inv_objects( npc:id(), true )
     for n = 1, cnt do
      local id = ids[ n ]
@@ -5632,8 +5644,8 @@ function habar_by_nps( lid )
          misc.release_obj( id )
        end
      end
-    end       
-  -- собственно спавн жратвы и порча её  
+    end
+  -- собственно спавн жратвы и порча её
   for k, v in pairs( table_food ) do
     if k ~= "energy_drink" and k ~= "conserva" and lua_random() < 0.09 then
       local obj = misc.spawn_to( k, npc )
@@ -5641,8 +5653,8 @@ function habar_by_nps( lid )
          k == "kolbasa" or
          k == "green_kolbasa" then
          misc.process_spawn()
-         local rand = lua_random( 30, 80 ) / 100                
-         params.upd_condition( obj, rand )        
+         local rand = lua_random( 30, 80 ) / 100
+         params.upd_condition( obj, rand )
       end
     end
   end
@@ -5654,7 +5666,7 @@ function habar_by_nps( lid )
         local obj = misc.spawn_to(art, npc)
         misc.process_spawn()
         local rand = lua_random( 30, 80 ) / 100
-        local pk = get_netpk( obj, 1 )     -- зачем?????        
+        local pk = get_netpk( obj, 1 )     -- зачем?????
         params.upd_condition( obj, rand )
         break
       end
@@ -5691,11 +5703,11 @@ function off_red_mines()
   if not obj then return end
   for n = 524,527 do
      local obj = g_sim:story_object(n)
-     if obj then   
+     if obj then
         misc.release_obj(obj, 'sak.script:3628')
      else
-        wprintf("[~T].~C0C #WARN(off_red_mines):~C07 not found story-object~C0D %d~C07 ", n)    
-     end   
+        wprintf("[~T].~C0C #WARN(off_red_mines):~C07 not found story-object~C0D %d~C07 ", n)
+     end
   end
 end
 
@@ -5796,7 +5808,7 @@ function rad_zomb_off()
   for n=1,cnt do
     local id = ids[n]
     local obj= g_sim:object(id)
-    if not obj:alive() and strpos(obj:profile_name(),"rad_zombied",1,true) then 
+    if not obj:alive() and strpos(obj:profile_name(),"rad_zombied",1,true) then
       misc.release_obj (obj, 'sak.script:3687')
     end
   end
@@ -6056,13 +6068,13 @@ function detectors_fake(flag)
     WriteIni(db.stor_ltx, "stor", "r_treas_items", r_treasur)
     get_command("g_game_difficulty "..game_difficulty_by_num[g_dif])
   if lname~=sname and sname~="" then
-    if sname=="marsh" and lname=="l03_agroprom" and npc:has_info("mar_leader_job_folls") and not npc:has_info("agr_mil_job_go") then 
+    if sname=="marsh" and lname=="l03_agroprom" and npc:has_info("mar_leader_job_folls") and not npc:has_info("agr_mil_job_go") then
     agr_mil_teleport()
     end
 -- добавлено mike для info - первое посещение Радара
     if lname=="l10_radar" and not npc:has_info("info_way306a") then
 	    mike.add_spots_mil_rad()
-	end	
+	end
 -- добавлено mike для спавна мерков
     if lname=="l07_military" and npc:has_info("lim_zub_last_info") and not npc:has_info("gross_merc_spawned") then
 		mike.spawn_gross_merc()
@@ -6079,28 +6091,28 @@ function detectors_fake(flag)
     if lname=="l10u_bunker" and npc:has_info("mercs_gun_1_info") and not npc:has_info("x12_mercs_spawned") and not npc:has_info("mil_mercs_fire") then
 		mike.spawn_x12_mercs()
 	    npc:give_info_portion("x12_mercs_spawned")
-	end	
+	end
 -- добавлено mike для Матвеева
     if lname=="l05_bar" and npc:has_info("assistant_go_to_mil") and not npc:has_info("assistant_bar") and not npc:has_info("assistant2_umer") then
 	   npc:give_info_portion("assistant_bar")
 	   misc.release_by_name("assistant2")
-	end	
+	end
 -- добавлено mike для исправления вкл. насоса
     if lname=="labx8" and npc:has_info("x12_pump_info3") then
 	    npc:give_info_portion("x12_pump_off")
 	end
     if lname=="warlab" and npc:has_info("x12_pump_info3") then
 	    npc:give_info_portion("x12_pump_off")
-	end	
+	end
 -- добавлено mike для спавна в саркофаге
     if lname=="l12u_sarcofag" then
 	    mike.spawn_in_sarcofag()
 	end
 -- добавлено mike для спавна в х12
     if lname=="l10u_bunker" and not npc:has_info("x12_gift_info") then
-	    mike.spawn_in_x12() 
+	    mike.spawn_in_x12()
 		npc:give_info_portion("x12_gift_info")
-	end	
+	end
 -- добавлено mike для спавна в Тесле
     if lname=="generators" and not npc:has_info("tesla_gift_info") then
 	    mike.spawn_in_generators()
@@ -6115,7 +6127,7 @@ function detectors_fake(flag)
     if lname=="l10_radar" and not npc:has_info("radar_gift_info") then
 	    mike.add_radar_habar()
 		npc:give_info_portion("radar_gift_info")
-	end	
+	end
 -- добавлено mike для спавна маятника в ТЧ или Припяти
     if lname=="aver" and npc:has_info("mayatnik_aver_ready_info") and not npc:has_info("mayatnik_aver_info") then
 	    mike.add_mayatnik_aver()
@@ -6124,30 +6136,30 @@ function detectors_fake(flag)
     if lname=="l11_pripyat" and npc:has_info("mayatnik_prip_ready_info") and not npc:has_info("mayatnik_prip_info") then
 	    mike.add_mayatnik_prip()
 		npc:give_info_portion("mayatnik_prip_info")
-	end	
+	end
 -- добавлено mike для зарядки аккумулятора в Тесле
     --[[if lname=="generators" and npc:has_info("petrenko_tesla_job_info") and not npc:has_info("petrenko_tesla_job_done") then
 	    mike.charge_akk_in_tesla()
-    end	
+    end
     if lname~="generators" and sak.have_items_count("item_kamaz_accum",1)~=false and npc:has_info("akk_is_ready") then
 	    npc:disable_info_portion("akk_is_ready")
 	end--]]
 	if lname=="generators" and npc:has_info("petrenko_tesla_job_info") and not npc:has_info("petrenko_tesla_job_done") then
-	db.actor:give_info_portion("akk_is_ready")		
+	db.actor:give_info_portion("akk_is_ready")
     end
 -- добавлено mike для спавна в Припяти
     if lname=="l11_pripyat" then
 		g_sim:create("amk_zone_sphere",vector():set(29.7,10,355.8), 139177, 2260)
-	end	
+	end
 -- добавлено mike для задания Воронина
     if lname=="l08_yantar" and npc:has_info("voronin_killzombi_start") and not npc:has_info("voronin_killzombi_info") then
 		npc:give_info_portion("voronin_killzombi_info")
-	end		
+	end
 -- убираем Искателя и его друга с Теслы
     if lname~="generators" and npc:has_info("gen_iskatel_akkum_info") and not npc:has_info("gen_iskatel_akkum_done") then
-		npc:give_info_portion("gen_iskatel_akkum_done")	
+		npc:give_info_portion("gen_iskatel_akkum_done")
 	    misc.release_by_name("gen_iskatel_drug")
-	end	
+	end
 -- для спавна ecolog_outfit_m1
     if lname=="l10_radar" and npc:has_info("barmen_find_item_2_start") and not npc:has_info("barmen_find_item_2_done") then
 	   sak_dialog.spawn_barmen_find_item()
@@ -6159,44 +6171,44 @@ function detectors_fake(flag)
 -- для ecolog_apparat_rf
     if lname=="red_forest" and npc:has_info("info_ecolog_apparat_aver_done") and not npc:has_info("info_kruglov_message_rf") then
 	    sak_dialog.timer_kruglov_rf()
-	end	
+	end
 -- убираем Небова из Лиманска
-    if lname~="limansk" and npc:has_info("gen_iskatel_akkum_done") and not npc:has_info("ivan_umer") then	
-	    misc.release_by_name("ivan")  
+    if lname~="limansk" and npc:has_info("gen_iskatel_akkum_done") and not npc:has_info("ivan_umer") then
+	    misc.release_by_name("ivan")
 	end
 -- убираем Фраера из ДТ
     if lname~="l06_rostok" and npc:has_info("dt_fraer_dialog_done") and not npc:has_info("dt_fraer_pda_know") then
-        npc:give_info_portion("dt_fraer_pda_know")	
+        npc:give_info_portion("dt_fraer_pda_know")
 	end
 -- убираем Кочергу из ДТ
-    if lname~="l06_rostok" and npc:has_info("dt_kocherga_secret_done") and not npc:has_info("kocherga_umer") then	
+    if lname~="l06_rostok" and npc:has_info("dt_kocherga_secret_done") and not npc:has_info("kocherga_umer") then
 	    misc.release_by_name("td_kocherga")
 	end
 -- убираем Искателя из Лиманска
-    if lname=="l05_bar" and npc:has_info("bar_tonnel_info") and npc:has_info("gen_iskatel_akkum_done") then	
+    if lname=="l05_bar" and npc:has_info("bar_tonnel_info") and npc:has_info("gen_iskatel_akkum_done") then
 	    misc.release_by_name("gen_iskatel")
 	end
 -- убираем Фраера из Лиманска
-    if lname~="limansk" and npc:has_info("info_fraer_pripyat_done") and not npc:has_info("fraer_umer") then	
+    if lname~="limansk" and npc:has_info("info_fraer_pripyat_done") and not npc:has_info("fraer_umer") then
 	    misc.release_by_name("td_stalker_fraer")
-	end	
+	end
 -- спавним бромовский Spas-12 при заходе на локацию
     if lname=="l07_military" and npc:has_info("drunk_dolg_story_start") and not npc:has_info("drunk_dolg_story_done") then
-	    sak_dialog.spawn_drunk_dolg_spas()	
-	end	
------------------	
+	    sak_dialog.spawn_drunk_dolg_spas()
+	end
+-----------------
     if lname=="l07_military" and sname=="aver" then npc:give_info_portion("mil_zoneguard_test1_passed") end
     if lname=="red_forest" and sname=="l08u_brainlab" then local obj= g_sim:story_object(story_ids.x16_beton_block_7) if obj then misc.release_obj(obj, 'sak.script:3975') end end
     -- if lname=="l11_pripyat" then sak_dialog.fill_food_prip() end
     if lname=="l11_pripyat" then mike.fill_food_prip() end
--- выдаём поршень для диалога с Фраером в Лиманске	
+-- выдаём поршень для диалога с Фраером в Лиманске
     if lname=="l11_pripyat" and npc:has_info("lim_fraer_gg_know") and not npc:has_info("lim_fraer_pripyat_info") then
-        npc:give_info_portion("lim_fraer_pripyat_info") 
+        npc:give_info_portion("lim_fraer_pripyat_info")
 	end
     if lname=="l07_military" and not npc:has_info("mil_dolg_auto_attack") then
 		local name, delay = timers.check_timer("mil_attack")
 		if not name then
-		timers.start_timer("mil_attack",0,3,33,"sak.mil_dolg_attacking()") timers.start_timer("max_things",0,0,13,"sak.max_things_attantion()") 
+		timers.start_timer("mil_attack",0,3,33,"sak.mil_dolg_attacking()") timers.start_timer("max_things",0,0,13,"sak.max_things_attantion()")
 		end
 	end
     if lname~="l07_military" and npc:has_info("ivancov_return_cherep_have") then
@@ -6212,14 +6224,14 @@ function detectors_fake(flag)
 	misc.release_by_name("mil_scull_message1_restrictor")
 	misc.release_by_name("mil_scull_message1_restrictor")
 	misc.release_by_name("mil_scull_message1_restrictor")
-	
+
     npc:give_info_portion("mil_dolg_gulag_return") npc:give_info_portion("mil_lukash_dolg_task_complete") end
-    
+
     if sname=="l04_darkvalley" and npc:has_info("val_escort_new_begin") then
     npc:give_info_portion("val_prisoner_scene_end") npc:give_info_portion("val_escort_guards_free") end
-	
-    for k, v in pairs(sak_artmods.artmod_resiepts) do 
-           nlc_vars["artmod_activation_"..v[5]] = nil 
+
+    for k, v in pairs(sak_artmods.artmod_resiepts) do
+           nlc_vars["artmod_activation_"..v[5]] = nil
         end
     npc:disable_info_portion("dead_vergas_actor_hangry_info")
     npc:give_info_portion("gar_bandit_blokpost_pass_off")
@@ -6248,7 +6260,7 @@ function detectors_fake(flag)
     for n=1,cnt do
       local id = ids[n]
       local obj=client_obj(id)
-      if obj then 
+      if obj then
         if (obj:parent()==nil or obj:parent():id()==nil or obj:parent():id()==BAD_OBJ_ID) then
           misc.release_obj(id, 'kolbasa_off')
         end
@@ -6267,7 +6279,7 @@ function detectors_fake(flag)
       for n=1,cnt do
         local id = ids[n]
         local obj=client_obj(id)
-        if obj and obj:position():distance_to(act_pos)>20 then 
+        if obj and obj:position():distance_to(act_pos)>20 then
           misc.release_obj(id, 'm_inventory_box_off')
         end
       end
@@ -6277,7 +6289,7 @@ function detectors_fake(flag)
       for n=1,cnt do
         local id = ids[n]
         local obj=client_obj(id)
-        if obj and obj:position():distance_to(act_pos)>20 then 
+        if obj and obj:position():distance_to(act_pos)>20 then
           misc.release_obj(id, 'rucksack_off')
         end
       end
@@ -6312,7 +6324,7 @@ function detectors_fake(flag)
         data.custom_data = "[logic]\nactive = ph_idle@enable\n[ph_idle@enable]\nnonscript_usable = false\n[collide]\nignore_static"
         pk:set(data)
       end
-    end 
+    end
   else
     sak_dialog.start_time("start_antichit_time")
     sak_dialog.start_time("start_treasure_time")
@@ -6344,7 +6356,7 @@ function detectors_fake(flag)
   --registry.test()
   --npc:give_info_portion("botan_need_harddisc")
   --sak_dialog.add_habar_for_borov()
-  --npc:give_info_portion("pda_is_broken") 
+  --npc:give_info_portion("pda_is_broken")
     --local sobj= g_sim:story_object(story_ids.esc_vagon_wounded)
     --if sobj then
     --amk.add_spot_on_map(sobj.id,'red_location',sobj:name())
@@ -6353,8 +6365,8 @@ function detectors_fake(flag)
     --tbl.custom="[logic]\ncfg = scripts\\agr\\agr_krot.ltx"
     --xrs_utils.write_stalker_params(tbl, sobj)
     --end
-    
-    
+
+
   --if not npc:has_info("new_patch_01") then
       --create_items(npc, "wpn_sknife",1)
 	  --create_items(npc, "wpn_sak74",1)
@@ -6391,7 +6403,7 @@ function detectors_fake(flag)
   --misc.spawn_by_name("x16_locked_door_x18_1")
   --misc.spawn_by_name("x16_locked_door_x18_2")
   --misc.spawn_by_name("x18_X16_lev_chang_door")
-  
+
   --create_items(npc, "wpn_wincheaster1300",1)
   --create_items(npc, "wpn_spas12",1)
   --create_items(npc, "wpn_lr300",1)
@@ -6423,9 +6435,9 @@ function detectors_fake(flag)
   --create_items(npc, "wpn_famas_f1_vgrip",1)
   --create_items(npc, "wpn_colt1911",1)
   --create_items(npc, "wpn_colt_m1",1)
-  
+
   --create_items(npc, "wpn_pkm",1)
-  
+
   --create_items(npc, "wpn_aks74pn_1pso",1)
   --create_items(npc, "wpn_aks74n_1pso",1)
   --create_items(npc, "wpn_aks74n_1p78",1)
@@ -6438,10 +6450,10 @@ function detectors_fake(flag)
 
   --create_items(npc, "wpn_ak108",1)
   --create_items(npc, "wpn_m16a3_sk1",1)
-  
+
   --create_items(npc, "wpn_ak107",1)
   --create_items(npc, "wpn_ak108",1)
-  
+
   --create_items(npc, "wpn_ak104_klm",1)
   --create_items(npc, "wpn_ak107_1p78",1)
   --create_items(npc, "wpn_ak108_1p78",1)
@@ -6451,7 +6463,7 @@ function detectors_fake(flag)
   --create_items(npc, "wpn_awm",1)
   --create_items(npc, "wpn_fort",1)
 
-  
+
   --create_items(npc, "ammo_5.56x45_ap",50)
   --create_items(npc, "ammo_11.43x23_fmj",5)
   --create_items(npc, "ammo_7.62x39_fmj",5)
@@ -6460,7 +6472,7 @@ function detectors_fake(flag)
   --create_items(npc, "ammo_9x19_fmj",5)
   --create_items(npc, "ammo_vog-25p",5)
   --create_items(npc, "wpn_addon_1pso",1)
-  
+
   --consum_artefact()
   --create_items(npc, "neytral_novice_gaz_outfit_m1",1)
   --create_items(npc, "af_full_akkum",50)
@@ -6472,21 +6484,21 @@ function detectors_fake(flag)
   --create_items(npc, "repair_itemoutfit_feik",5)
   --create_items(npc, "repair_item_weapon_feik",6)
   --create_items(npc, "arc_art_box_8basic",3)
-    
+
   --create_items(npc, "kolbasa",5)
   --create_items(npc, "vodka",5)
   --create_items(npc, "timer",1)
   --create_items(npc, "detector_elite_sak",1)
   --create_items(npc, "shadow_inventory",1)
   --create_items(npc, "sleeping_bag",1)
-  
+
   --local npc= g_sim:story_object(story_ids.rygyi)
   --local obj= g_sim:story_object(story_ids.dsc_inventory_box_09)
   --amk.add_spot_on_map(obj.id,'red_location',obj:name())
-    --if obj then misc.release_obj (obj) 
+    --if obj then misc.release_obj (obj)
   --  else sim:create(9788)
     --end
-  
+
   --add_mil_kurjer_corps()
   --sak_spawn.spawn_items_on_levels("l07_military")
   --local gulag = xr_gulag.get_gulag_by_name("esc_bridge")
@@ -6589,7 +6601,7 @@ function kolb_baded()
   if kolb then return end
   for a=1,MAX_OBJ_ID do
   local obj= g_sim:object(a)
-    if obj then 
+    if obj then
         local p_obj=obj.parent_id
         local nname = obj:name()
       if (string.sub(nname,1,7)=="mutant_" or strpos(nname,"bread") or strpos(nname,"kolbasa")) and (p_obj==nil or p_obj==BAD_OBJ_ID or p_obj==0 or g_sim:object(p_obj):section_name()=="rucksack" or g_sim:object(p_obj):section_name()=="inventory_box" or g_sim:object(p_obj):section_name()=="m_inventory_box" or IsStalker(sim:object(p_obj))) then
@@ -6612,9 +6624,9 @@ function kolb_baded()
 		elseif strpos(nname,"mutant_psevdogigant_hand") then
 			new_cond=0.06
 		elseif strpos(nname,"mutant_e_chimera_kidney") then
-			new_cond=0.05			
+			new_cond=0.05
 		elseif strpos(nname,"mutant_zombie_hand") then
-			new_cond=0.15	
+			new_cond=0.15
 		end
 		if cond and cond>0.15 then
 			data.condition=cond-new_cond
@@ -6627,14 +6639,14 @@ function kolb_baded()
 				pk:set(data)
 			end
 		else
-			misc.release_obj(obj, 'sak.script:4160')           
+			misc.release_obj(obj, 'sak.script:4160')
 		end
       end
     end
   end
   kolb=true
 end
--- обработка всякого при Выбросе, насколько я понял      
+-- обработка всякого при Выбросе, насколько я понял
 function off_testobj()
   local h=hit()
   local lname=level.name()
@@ -6643,12 +6655,12 @@ function off_testobj()
     h.impulse=1000
   for a=1,MAX_OBJ_ID do
   local obj= g_sim:object(a)
-    if obj then 
+    if obj then
     local p_obj=obj.parent_id
     local nname=obj:name()
-      if strpos(nname,"testsak_",1,true) 
-      or strpos(nname,"amk_zone_teleport_",1,true) 
-      or strpos(nname,"sak_skelet",1,true) 
+      if strpos(nname,"testsak_",1,true)
+      or strpos(nname,"amk_zone_teleport_",1,true)
+      or strpos(nname,"sak_skelet",1,true)
       or strpos(nname,"_surprise_box",1,true)
       or (obj.m_game_vertex_id~=BAD_OBJ_ID and const.ground_levels[obj.level_id] and (obj:clsid()==88 or (obj:clsid()==87 and nname=="")))
       or strpos(nname,"amk_zone_greedy_",1,true) then
@@ -6664,10 +6676,10 @@ function off_testobj()
           misc.release_obj (obj, 'sak.script:5633')
         end
       elseif strpos(nname,"^af_") and not strpos(nname,"^af_full") then
-        if (not strpos(nname,"af_mayatnik_",1,true) 
-        and not strpos(nname,"af_compass",1,true) 
-        and not strpos(nname,"af_red_",1,true) 
-        and not strpos(nname,"af_dummy_green",1,true) 
+        if (not strpos(nname,"af_mayatnik_",1,true)
+        and not strpos(nname,"af_compass",1,true)
+        and not strpos(nname,"af_red_",1,true)
+        and not strpos(nname,"af_dummy_green",1,true)
 		and not strpos(nname,"af_unknown_",1,true)
         and (p_obj==nil or p_obj==BAD_OBJ_ID)) then
           --if lname=="aver" and obj.position:distance_to(v3f(350.91,-6.01,-21.23))<30 then
@@ -6693,23 +6705,23 @@ function off_testobj()
   end
   if has_alife_info("akk_aver_start") then
 	mike.akk_aver_end()
-  end  
+  end
   if has_alife_info("mayatnik_aver_start_info") then
 	mike.mayatnik_aver_ready()
-  end  
+  end
   if has_alife_info("mayatnik_prip_start_info") then
 	mike.mayatnik_prip_ready()
-  end   
+  end
   if db.actor:has_info("pda_will_be_broken") then
     pda_will_brock()
     db.actor:disable_info_portion("pda_will_be_broken")
     return
   end
   ------ Смотрим, не сломать ли нам пда ----
-  local brock_flag=nlc_vars.brocked_flag or math.random(10,35)   -- первая поломка случайна	
+  local brock_flag=nlc_vars.brocked_flag or math.random(10,35)   -- первая поломка случайна
   if db.actor:has_info("agroprom_military_case_have") and not db.actor:has_info("radar_on") then -- если закрыли Агро, не раньше
 	if brock_flag > 1 then nlc_vars.brocked_flag = brock_flag-1 -- на выброс ближе к поломке
-    else 	
+    else
       db.actor:give_info_portion("pda_will_be_broken")
       nlc_vars.brocked_flag = 4 + math.random(10,35)  - tonumber(level.get_game_difficulty()) -- следующая как минимум через выброс или больше
     end
@@ -6764,7 +6776,7 @@ function harddisc_off()
   local rnd=lua_random(1,5)
   schedule.add ("t_paus", "sak.harddisc_off_done()", 6000)
   local sound=sound_object("scripts\\hdd_out_"..rnd)
-  sound:play_at_pos(db.actor, db.actor:position(), 0) 
+  sound:play_at_pos(db.actor, db.actor:position(), 0)
   level.disable_input()
   bind_stalker.hide_weapon()
 end
@@ -6915,29 +6927,29 @@ function get_inv_name(section)
 end
 
 function relocate_item(actor, type, item, amount, is_ammo_count)
-    
+
   if actor==nil then return false end
   if not amount then amount=1 end
-  
+
   if razgruzka.is_ammo(item) and not is_ammo_count then
-     amount = amount * vergas_lib.get_box_size(item) 
+     amount = amount * vergas_lib.get_box_size(item)
   end
-  
+
   local icon = "ui_iconsTotal_found_thing"
   local msg  = "%c[255,1,255,1]"..game.translate_string("general_in_item")
-  if type=="out" then    
-    icon = "ui_iconsTotal_lost_thing"         
+  if type=="out" then
+    icon = "ui_iconsTotal_lost_thing"
     msg  = "%c[255,255,1,1]"..game.translate_string("general_out_item")
-  end  
-  local task_texture, task_rect=get_texture_info(icon)    
-    
+  end
+  local task_texture, task_rect=get_texture_info(icon)
+
   local news_text = msg.."\\n".."%c[default]"..game.translate_string(get_inv_name(item)).." - "..amount.." шт."
   if actor:is_talking() then
      actor:give_talk_message(news_text, task_texture, task_rect,"iconed_answer_item")
   else
      actor:give_game_news(news_text, task_texture, task_rect, 0, 3000)
-  end      
-  
+  end
+
 end
 function send_treasure(name)
   local level_name={}
@@ -6978,7 +6990,7 @@ function send_treasure(name)
     db.actor:give_talk_message(news_text, task_texture, task_rect,"iconed_answer_item")
   else
     db.actor:give_game_news(news_text, task_texture, task_rect, 2000, 25000)
-  end  
+  end
 end
 function u_agr_tele_in()
 sak_tele_klyk("in")
@@ -6991,7 +7003,7 @@ function sak_tele_klyk(path)
   local obj_id,obj=-1,nil
   for i,k in pairs(sak_inventory.belt_items) do
     local kolvo=table.getn(k)
-    if strpos(i,"af_electra_sparkler",1,true) and not strpos(i,"_dyn6d",1,true) then 
+    if strpos(i,"af_electra_sparkler",1,true) and not strpos(i,"_dyn6d",1,true) then
       obj_id=k[1]
       obj= g_sim:object(obj_id)
       start_tele=true
@@ -7060,7 +7072,7 @@ function agru_add_compass()
   data.custom_data = "agru_tele_aver"
   pk:set(data)
   end
-  db.actor:give_info_portion("doctor_said_all_info")   
+  db.actor:give_info_portion("doctor_said_all_info")
 end
 
 function sak_tele_art(path)
@@ -7070,7 +7082,7 @@ function sak_tele_art(path)
   local pk
   local data
   for i,k in pairs(sak_inventory.belt_items) do
-    if strpos(i,"af_compass",1,true) then 
+    if strpos(i,"af_compass",1,true) then
     obj_id=k[1]
     obj= g_sim:object(obj_id)
     pk = get_netpk(obj,1)
@@ -7103,7 +7115,7 @@ function add_bandit_body()
   local obj= create_corpse ("ros_bandit_respawn_3",
                                             v3f(-292.71,-3.0,-195.81),260,797,
                                             9495,
-                                            "[dont_spawn_character_supplies]\n[known_info]\nagr_bandit_name")                                                      
+                                            "[dont_spawn_character_supplies]\n[known_info]\nagr_bandit_name")
   misc.spawn_to("harmonica_b", obj)
 end
 function borov_11_have_info()
@@ -7175,7 +7187,7 @@ function fox_timer_start()
 end
 function fox_timer_start_end()
   if not has_alife_info("escape_fox_heal") then
-    local npc = db.actor 
+    local npc = db.actor
     npc:give_info_portion("esc_fox_thanks")
     npc:give_info_portion("esc_fox_umer")
     npc:give_info_portion("escape_stalker_done")
@@ -7217,7 +7229,7 @@ function timer_quick_shustr_of_wolf_end()
   db.actor:give_info_portion("esc_bandits_start")
   end
 end
-      
+
 function max_things_attantion()
   if not has_alife_info("max_good_start") then
   send_tip("Мужики, если кто собирается на Кордон - подходите, дело есть...","Макс",11,20,"freedom","sak", "green")
@@ -7249,7 +7261,7 @@ end
 function info_borov_11()
   if not has_alife_info("esc_bridge_pass_fire") then
   send_tip("Меченный, мне сообщили, что тебя видели в Тёмной долине. На меня Сахаров вышел - говорит, там какая-то их экспедиция пропала, а ему нужны результаты той экспедиции. Так что, если найдёшь там что, - тащи Сахарову!","Сообщение от Сидоровича",11,20,"trader","sak", "red")
-  end 
+  end
   db.actor:give_info_portion("borov_11_saharov_start")
 end
 function add_sidor_info_kuzn()
@@ -7265,15 +7277,15 @@ function timer_timer_kuzn_end()
 end
 function info_borov_entres()
   send_tip("Это Пахан. В общем, сделано всё, можешь двигать...","Сообщение для Меченного",11,20,"death","sak", "red")
-  val_beton_block_off()  
+  val_beton_block_off()
 end
 function info_barman_entres()
   send_tip("Здесь Бармен. В общем, сделано всё, можешь двигать...","Сообщение для Меченного",11,20,"barman","sak", "red")
-  val_beton_block_off()  
+  val_beton_block_off()
 end
 function info_kulinar_entres()
   send_tip("Это Кулинар. В общем, сделано всё, можешь двигать...","Сообщение для Меченного",11,20,"stalker","sak", "red")
-  val_beton_block_off()  
+  val_beton_block_off()
 end
 function info_voron_entres()
   send_tip("Это Ворон. В общем, сделано всё, можешь двигать...","Сообщение для Меченного",11,20,"stalker","sak", "red")
@@ -7287,7 +7299,7 @@ function val_beton_block_off()
         misc.release_obj(art, 'sak.script:4749')
       end
     end
-  end  
+  end
 end
 function val_konteyner_off()
   for d=100,25000,1 do
@@ -7297,7 +7309,7 @@ function val_konteyner_off()
         misc.release_obj(art, 'sak.script:4749')
       end
     end
-  end  
+  end
 end
 function esc_trader_start_timer()
   timers.start_timer("dymon_quest",17,"sak.send_dymon_start_quest()")
@@ -7347,7 +7359,7 @@ function esc_trader_start_quest()
   npc:give_info_portion("tutorial_wounded_start")
   npc:give_info_portion("tutorial_wounded_start_new")
   npc:give_info_portion("tutorial_end")
-  npc:give_info_portion("kvest_art_done")    
+  npc:give_info_portion("kvest_art_done")
   if not has_alife_info("gar_dm_bandits_change_st") then
   npc:give_info_portion("gar_dm_bandits_change_st")
   npc:give_info_portion("gar_dram_novice_burer_hand_done")
@@ -7404,7 +7416,7 @@ function send_tip(news_text, header, timeout, showtime, sender, sound, colour, d
   if showtime==nil then showtime=5 end
   if colour==nil then colour="gray" end
   if dlg==nil then dlg=true end
-  local player 
+  local player
   if sound=="news" then
     player=amk.pda_news
   elseif sound=="task" then
@@ -7425,7 +7437,7 @@ function send_tip(news_text, header, timeout, showtime, sender, sound, colour, d
     sender="default"
   end
   local x=amk.tips_icons[sender][1]
-  local y=amk.tips_icons[sender][2]  
+  local y=amk.tips_icons[sender][2]
   local news_text=colours[colour]..header.."\\n".."%c[default]"..news_text
   if db.actor:is_talking() and dlg then
     db.actor:give_talk_message(news_text, "ui\\ui_iconsTotal", Frect():set(x,y,83,47),"iconed_answer_item")
@@ -7445,7 +7457,7 @@ function show_coordinates()
     local dir=device().cam_dir
     local a=vector()
     a.x=math.atan2(-dir.y,dir.z)
-    a.y=math.atan2(-dir.x,dir.z)  
+    a.y=math.atan2(-dir.x,dir.z)
     a.z=math.atan2(-dir.y,dir.x)
   local lvid, gvid=db.actor:level_vertex_id(), db.actor:game_vertex_id()
   local pos, dir=db.actor:position(), db.actor:direction()
@@ -7568,8 +7580,8 @@ function marsh_tuzla(tips)
   end
   local obj=create_corpse ("trup_marsh_tuzla",
                            v3f(-181.44,2.11,534.19),3393,119948,
-                           9494) -- (9494)    
-  misc.spawn_to("resiept_activ_anom", obj)                          
+                           9494) -- (9494)
+  misc.spawn_to("resiept_activ_anom", obj)
   --[[spawn={
     {-137.0350189209,-0.00013071298599243,121.91954803467,66344,1413},
     {-188.79943847656,-0.01469749212265,145.61920166016,66349,1413},
@@ -7582,7 +7594,7 @@ function marsh_tuzla(tips)
   local ps=lua_random(1,#spawn)
   local obj=create_corpse ("trup_stalker",
                            v3f(spawn[ps][1],spawn[ps][2],spawn[ps][3]),spawn[ps][5],spawn[ps][4],
-                           1111) -- (1111)  
+                           1111) -- (1111)
   misc.spawn_to("flamethrower_bad", obj)--]]
 end
 function add_gen_mil_items()
@@ -7772,18 +7784,18 @@ l12u_sarcofag="Stancia"
 }
 function add_sak_skelets(lname)
   local aaa=0
-  local count=2  
+  local count=2
   if lname=="hospital" then count=1 end
   local pl = nlc_vars.prev_level or "?"
   if pl == lname then -- на текущем уровне уже спавнилось
-     wprintf("[~T]. #DBG: add_sak_skelets уже вызывалась на локации~C0A %s~C07", lname) 
+     wprintf("[~T]. #DBG: add_sak_skelets уже вызывалась на локации~C0A %s~C07", lname)
      return
   end
-  
+
   --wprintf("[~T]. #DBG(add_sak_skelets): level = ~C0A %s~C07, prev_level =~C0E %s~C07", lname, pl)
-  
+
   while aaa<count do
-  local new_lv, pos = const.random_level_point()    
+  local new_lv, pos = const.random_level_point()
     if new_lv and amk_anoms.check_coordinates(pos) then
     local obj = misc.spawn_obj("sak_skelet", pos)
     local rand_vis=table_skelets[lua_random(1,#table_skelets)]
@@ -7799,25 +7811,25 @@ function add_sak_skelets(lname)
       end
     end
   end
-  
+
   local block_spawn = xray_vars.load_table(nlc_vars, "block_spawn", {})
   for i = #block_spawn, 1, -1 do
     v = v - 1
-    if v <= 0 then 
-       block_spawn[i] = nil 
-    end 
-  end  
+    if v <= 0 then
+       block_spawn[i] = nil
+    end
+  end
 
   local idl = FindSpawnIDS(lname.."_surprise_box*", 'by_name', false, true)
   local err = 0
-  for k,v in pairs(idl) do            
+  for k,v in pairs(idl) do
     if ( lua_random() < 0.15 ) and not block_spawn[v] then
        if nil == misc.spawn_by_index(v) then err = err + 1 end
-       block_spawn[v] = 15       
+       block_spawn[v] = 15
     end
   end
-  nlc_vars.block_spawn = block_spawn  
-  
+  nlc_vars.block_spawn = block_spawn
+
   if err > 0 then
      wprintf(" errors = %d, idl: ", err)
      dump_table(idl)
@@ -7881,12 +7893,12 @@ function fear_sounds()
         local rand_vis=visual_eff[lua_random(1,#visual_eff)]
         local particle = particles_object(vergas_art.visual_effect[rand_vis][1])
         local sound = sound_object(vergas_art.visual_effect[rand_vis][2])
-        particle:play_at_pos(pos) 
+        particle:play_at_pos(pos)
         sound:play_at_pos(actor,pos, 0)
       end
     else
-		if not (act_pos.y>-24 and act_pos.y<-21) then 	
-      if rands==1 then	  
+		if not (act_pos.y>-24 and act_pos.y<-21) then
+      if rands==1 then
       local obj = misc.spawn_obj("fall_object", v3f(act_pos.x, act_pos.y+5, act_pos.z))
       local rand_vis=fall_objects[lua_random(1,#fall_objects)]
         if obj then
@@ -7894,7 +7906,7 @@ function fear_sounds()
           local data = pk:get()
           data.visual_name=rand_vis
           data.mass=20
-          pk:set(data)          
+          pk:set(data)
           schedule.add ("hit_obj","sak.hit_item("..obj.id..")",500)
         end
       elseif rands==2 then
@@ -8017,11 +8029,11 @@ end
 function safety_way()
   local radius,rast,point=5,0,2
   local pos=db.actor:position()
-  local mindist=1000 
+  local mindist=1000
   local dist
   for id,o in pairs(safety_tesla_points) do
     dist=pos:distance_to(v3f(o[1],o[2],o[3]))
-    if dist<mindist then mindist=dist point=id end 
+    if dist<mindist then mindist=dist point=id end
   end
   local p1,p2,p3=safety_tesla_points[point],safety_tesla_points[point+1],safety_tesla_points[point-1]
 if pos:distance_to(v3f(p3[1],p3[2],p3[3]))<pos:distance_to(v3f(p2[1],p2[2],p2[3])) then p2=p3 end
@@ -8038,7 +8050,7 @@ function hit_item(id)
   h.draftsman = db.actor
   h.impulse = 500
   h.type = hit.wound
-  obj1:hit(h)  
+  obj1:hit(h)
   end
 end
 function off_monster(id)
@@ -8081,7 +8093,7 @@ function spawn_art_semeneckyi()
 end
 
 function kick_zombi()
-trup:set_const_force(v3f(0,1,0):normalize(), 50000, 2) 
+trup:set_const_force(v3f(0,1,0):normalize(), 50000, 2)
   local phe=trup:get_physics_shell():get_element_by_bone_name("bip01_head")
 if phe then phe:apply_force(0, 80000, 0) end
 end
@@ -8098,7 +8110,7 @@ function empty_banka_fill()
   local id,pos,radius,dist = amk_anoms.get_nearest_anomaly_for_pos(act_pos)
   if id and dist-radius<-0.5 and level.name() == "aver" then             -- только в ТЧ будем холодец набирать
     local anom_sect=client_obj(id):section()
-    if strpos(anom_sect,"_buzz",1,true)~=nil then 
+    if strpos(anom_sect,"_buzz",1,true)~=nil then
       local self=level.main_input_receiver()
       if self then
       self:GetHolder():start_stop_menu(self,true)
@@ -8151,12 +8163,12 @@ function add_rad()
   local lvid=actor:level_vertex_id()
   local gvid=actor:game_vertex_id()
   local rds=math.ceil(6*loka_on)
-  local sobj 
+  local sobj
   sobj=amk.spawn_item("zone_radioactive_weak", act_pos, gvid, lvid)
   if sobj then
   local pk = get_netpk(sobj)
   local data = pk:get()
-  data.shapes:addSphere(rds,sak.v3f(0,1,0)) 
+  data.shapes:addSphere(rds,sak.v3f(0,1,0))
   pk:set(data)
   timers.start_timer("off_obj",rds,"sak.off_rad("..sobj.id..")")
   end
@@ -8217,7 +8229,7 @@ function marsh_radiation()
    -- добавлено для саркофага
   if l_name=="l12u_sarcofag" then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
     if time_delta >= time_step_water then
       if step==5 then
 		if (act_pos.y>18.0 and act_pos.y<53.5) or act_pos.y>58.0 then
@@ -8266,7 +8278,7 @@ function marsh_radiation()
   -- добавлено для Туманной чащи (mike 7.53)
   if l_name=="aver" then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
     if time_delta >= 3*time_step_water then
     local point=v3f(-343,-30,167)
     local dist=(point:distance_to(act_pos))
@@ -8288,7 +8300,7 @@ function marsh_radiation()
   if l_name=="marsh" then
     if act_pos.y<-0.01 then
     time_current=time_global()
-    time_delta=time_current - time_previous_water  
+    time_delta=time_current - time_previous_water
       if time_delta >= time_step_water then
       snd_rand=lua_random(1,4)
       delta_radiation=-0.02*act_pos.y*(snd_rand)
@@ -8307,7 +8319,7 @@ function marsh_radiation()
   end
   if l_name=="generators" then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
     if time_delta >= time_step_water then
       if act_pos.y<24.58 and not (act_pos.x<250 and act_pos.x>215 and act_pos.z<-90 and act_pos.z>-115) then
       snd_rand=lua_random(1,4)
@@ -8318,9 +8330,9 @@ function marsh_radiation()
         end
       end
       if step==5 then
-		if not (act_pos.y<37.0 and act_pos.x<-121 and act_pos.x>-127 and act_pos.z<-476 and act_pos.z>-482) 
-			and not (act_pos.y<29.2 and act_pos.x<155 and act_pos.x>89 and act_pos.z<-500 and act_pos.z>-508) 
-			and not (act_pos.y<30.8 and act_pos.x<174 and act_pos.x>169 and act_pos.z<-483 and act_pos.z>-495) 
+		if not (act_pos.y<37.0 and act_pos.x<-121 and act_pos.x>-127 and act_pos.z<-476 and act_pos.z>-482)
+			and not (act_pos.y<29.2 and act_pos.x<155 and act_pos.x>89 and act_pos.z<-500 and act_pos.z>-508)
+			and not (act_pos.y<30.8 and act_pos.x<174 and act_pos.x>169 and act_pos.z<-483 and act_pos.z>-495)
 			and not (act_pos.x<250 and act_pos.x>215 and act_pos.z<-90 and act_pos.z>-115)
 			and safety_way() then
 			local dir=device().cam_dir
@@ -8359,7 +8371,7 @@ function marsh_radiation()
             --send_tip( "VVVVVVVVVVV", "", 2, 20, "uniq", "sak", "green" )
           end
         end
-			end	
+			end
 		end
       end
       if step<=10 then
@@ -8373,7 +8385,7 @@ function marsh_radiation()
   end
   if l_name=="l11_pripyat" then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
     if time_delta >= time_step_water then
       if amk_anoms.check_coordinates(act_pos) then
       snd_rand=lua_random(1,4)
@@ -8382,7 +8394,7 @@ function marsh_radiation()
       snd_rand_geiger()
       end
       --local tired=-(math.log10(75/(v3f(30,0,420):distance_to(act_pos))))
-	  local tired=-(math.log10(55/(v3f(31,0,483):distance_to(act_pos))))	  
+	  local tired=-(math.log10(55/(v3f(31,0,483):distance_to(act_pos))))
       if tired<0.01 then tired=0 elseif tired>1 then tired=0.9 end
       local r_healh=actor.power+tired
       params.power_max_out(tired)
@@ -8394,7 +8406,7 @@ function marsh_radiation()
   if l_name=="labx8" then
 	if ((act_pos.y<-32.0 and act_pos.x<-90 and act_pos.x>-112 and act_pos.z<92 and act_pos.z>72) or (act_pos.y<-36.0 and act_pos.x<-73 and act_pos.x>-87 and act_pos.z<95 and act_pos.z>79)) then
 	  time_current=time_global()
-	  time_delta=time_current - time_previous_water  
+	  time_delta=time_current - time_previous_water
 		if time_delta >= time_step_water then
 		snd_rand=lua_random(1,3)
 		delta_radiation=0.007*(snd_rand)
@@ -8408,7 +8420,7 @@ function marsh_radiation()
   if l_name=="l03_agroprom" then
 	if (act_pos.y<1.7 and act_pos.x<-150 and act_pos.x>-220 and act_pos.z<150 and act_pos.z>0) then
 	  time_current=time_global()
-	  time_delta=time_current - time_previous_water  
+	  time_delta=time_current - time_previous_water
 		if time_delta >= time_step_water then
 		snd_rand=lua_random(1,3)
 		delta_radiation=0.01*(snd_rand*2)*(1.7-act_pos.y)
@@ -8419,10 +8431,10 @@ function marsh_radiation()
 	end
     return
   end
-  if l_name=="red_forest" then 
+  if l_name=="red_forest" then
 	if (act_pos.y>8 and act_pos.x<245 and act_pos.x>135 and act_pos.z<110 and act_pos.z>-185) then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
 		if time_delta >= time_step_water then
 		  local dir=device().cam_dir
 		  local a=vector() a.y=math.atan2(dir.x,dir.z)
@@ -8448,7 +8460,7 @@ function marsh_radiation()
   if l_name=="k01_darkscape" then
 	  if act_pos.y>30.5 then
 	  time_current=time_global()
-	  time_delta=time_current - time_previous_water  
+	  time_delta=time_current - time_previous_water
 		if time_delta >= time_step_water then
 		  local dir=device().cam_dir
 		  local a=vector() a.y=math.atan2(dir.x,dir.z)
@@ -8474,7 +8486,7 @@ function marsh_radiation()
   if l_name=="l08_yantar" then
 	if act_pos.z>102 then
 	  time_current=time_global()
-	  time_delta=time_current - time_previous_water  
+	  time_delta=time_current - time_previous_water
 		if time_delta >= time_step_water then
 		  local dir=device().cam_dir
 		  local a=vector() a.y=math.atan2(dir.x,dir.z)
@@ -8499,7 +8511,7 @@ function marsh_radiation()
   end
   if l_name=="labx10" and has_alife_info("labx10_lamp_14_on") then
   time_current=time_global()
-  time_delta=time_current - time_previous_water  
+  time_delta=time_current - time_previous_water
     if time_delta >= 3*time_step_water then
     local point=v3f(62,-20,41)
     local dist=(point:distance_to(act_pos))
@@ -8521,7 +8533,7 @@ function marsh_radiation()
   time_delta=time_current - time_previous_water
     for a=0,2 do
     local rnd=lua_random(1,9)
-    local obj= g_sim:story_object(tonumber("75"..a..rnd)) 
+    local obj= g_sim:story_object(tonumber("75"..a..rnd))
       if obj then
         if lua_random()>0.25 then
         sim:set_switch_online (obj.id, true)
@@ -8557,7 +8569,7 @@ function marsh_radiation()
   time_delta=time_current - time_previous_water
     for a=3,5 do
     local rnd=lua_random(1,9)
-    local obj=sim:story_object(tonumber("75"..a..rnd)) 
+    local obj=sim:story_object(tonumber("75"..a..rnd))
       if obj then
         if lua_random()>0.25 then
         sim:set_switch_online (obj.id, true)
@@ -8603,12 +8615,12 @@ function dead_prip_kill_zone()
   local act_pos=actor:position()
   local point_zero=v3f(122,3,22)
   local dist=point_zero:distance_to(act_pos)
-  if dist<8 then 
-    if actor.health > 0 then 
+  if dist<8 then
+    if actor.health > 0 then
       return actor:kill(actor)
     else
       return
-    end 
+    end
   end
   snd_rand_geiger()
   local psy_reduse=(-25/(dist^2))
@@ -8641,7 +8653,7 @@ trade_flag=false
 function cant_trade(obj,sect,id,flag)
   if flag==1 or flag==2 then
     params.cant_trade_add(id)
-  else 
+  else
     if strpos(sect,"wpn_",1,true) or strpos(sect,"_outfit",1,true) then
     local cond=obj:condition()
       if (cond<0.65 and trade_flag==false) then
@@ -8820,7 +8832,7 @@ function spawn_teleports(pos,lv,gv,r1,r2,section,num)
     shape={shtype=0,radius=4,center={0,0,0}}
     amk_anoms.spawn_anomaly(section,v3f(new_pos.x,new_pos.y+1,new_pos.z),gv,new_lv,shape,"on")
     cnt=cnt+1
-  end  
+  end
 end
 function read_comp_news()
   local spwn=ui_hud_attention_comp.attention_comp(get_hud())
@@ -8874,10 +8886,10 @@ function read_doktor_news()
 ui_hud_attention_blank.this_text="content_doktor_text"
   local spwn=ui_hud_attention_blank.attention_univers_blank(get_hud())
 level.start_stop_menu(spwn,true)
-  db.actor:give_info_portion("doctor_attention_read") 
+  db.actor:give_info_portion("doctor_attention_read")
 end
 function doktor_wait_done()
-db.actor:give_info_portion("esc_find_doctor_start2") 
+db.actor:give_info_portion("esc_find_doctor_start2")
 end
 function read_warlab_exit_news()
   local rand=(amk_vars.r_task_reward or 1)
@@ -8916,27 +8928,27 @@ function precondition_percent(perc)
   end
 end
 function timer2_volkodav_start()
---timers.start_timer("volkodav_2wait",0,0,30,"sak.volkodav_2wait_done()") 
+--timers.start_timer("volkodav_2wait",0,0,30,"sak.volkodav_2wait_done()")
 end
 function volkodav_2wait_done()
---db.actor:give_info_portion("volkodav_radar_on") 
+--db.actor:give_info_portion("volkodav_radar_on")
 end
 function timer_volkodav_start()
---timers.start_timer("volkodav_wait",6,1,33,"sak.volkodav_wait_done()") 
+--timers.start_timer("volkodav_wait",6,1,33,"sak.volkodav_wait_done()")
 end
 function start_cook_dream()
-timers.start_timer("cook_dream",0,10,17,"sak.cook_dream_done()") 
+timers.start_timer("cook_dream",0,10,17,"sak.cook_dream_done()")
 end
 function cook_dream_done()
-db.actor:give_info_portion("mil_freedom_cook_wakeup") 
+db.actor:give_info_portion("mil_freedom_cook_wakeup")
 end
 function volkodav_wait_done()
---db.actor:disable_info_portion("volkodav_rad_wait") 
+--db.actor:disable_info_portion("volkodav_rad_wait")
 end
 function atp_bomb_explode(actor, npc)
   local source=nil
   if sim then
-    local se_obj= g_sim:story_object(story_ids.esc_physic_destroyable_object_0034)  
+    local se_obj= g_sim:story_object(story_ids.esc_physic_destroyable_object_0034)
     if se_obj then
       source=client_obj(se_obj.id)
     end
@@ -8957,7 +8969,7 @@ function atp_bomb_explode(actor, npc)
   end
 end
 
-local antirobbing_item = nlc_container.important_items 
+local antirobbing_item = nlc_container.important_items
 
 antirobbing_item.klava=true
 antirobbing_item.quest_case_01=true
@@ -8979,9 +8991,9 @@ antirobbing_item.dar_document3=true
 antirobbing_item.dar_document4=true
 antirobbing_item.dar_document5=true
 antirobbing_item.x10_document1=true
-antirobbing_item.x10_document2=true  
+antirobbing_item.x10_document2=true
 antirobbing_item.marsh_pribor=true
-antirobbing_item.uncoder=true  
+antirobbing_item.uncoder=true
 
 function sleep_robbing()
   for i,k in pairs(sak_inventory.rucksack) do
@@ -9022,17 +9034,17 @@ function sleep_hits_treasure_robbing()
     if obj then
 	  local nname=obj:name()
       local lname= g_sim:level_name(game_graph():vertex(obj.m_game_vertex_id):level_id())
-      if (const.ground_levels[lname] and obj.parent_id 
-      and obj.parent_id~=0 
-	  and obj.parent_id~=BAD_OBJ_ID 
+      if (const.ground_levels[lname] and obj.parent_id
+      and obj.parent_id~=0
+	  and obj.parent_id~=BAD_OBJ_ID
 	  and g_sim:object(obj.parent_id)
-      and (sim:object(obj.parent_id):section_name()=="inventory_box" 
+      and (sim:object(obj.parent_id):section_name()=="inventory_box"
 	  or g_sim:object(obj.parent_id):section_name()=="rucksack"
       or g_sim:object(obj.parent_id):section_name()=="m_inventory_box")
-      and not strpos(sim:object(obj.parent_id):name(),"hran") 
-      and not strpos(sim:object(obj.parent_id):name(),"_sak_box_")) or 
-	  string.sub(nname,1,7)=="mutant_" or 
-      strpos(nname,"^bread") or 
+      and not strpos(sim:object(obj.parent_id):name(),"hran")
+      and not strpos(sim:object(obj.parent_id):name(),"_sak_box_")) or
+	  string.sub(nname,1,7)=="mutant_" or
+      strpos(nname,"^bread") or
       strpos(nname,"kolbasa") then
       misc.release_obj(obj, 'sak.sleep_hits_treasure_robbing')
       end
@@ -9076,7 +9088,7 @@ function add_price_arts(obj)
   end
 
   -- считает тупо сальдо цены новых артефактов
-  if strposx(art_sect, "arc_art_box_") then    
+  if strposx(art_sect, "arc_art_box_") then
     local arts = arc_containers.get_inv_container_arts(obj:id())
     local saldo = 0
     if arts then
@@ -9103,36 +9115,36 @@ function damage_first_outfit()
  local npc = db.actor
  local armor = npc:object("stalker_outfit") or npc:item_in_slot(6)
  if armor then
-   wprintf("[~T]. #FIRST_RUN: initial damaging~C0A %s~C07", armor:name()) 
+   wprintf("[~T]. #FIRST_RUN: initial damaging~C0A %s~C07", armor:name())
    params.upd_condition(armor, 0.18)
- else   
+ else
    ODS("~C0C[~T]. #ERROR:~C07 not found outfit in actor inventory")
-   schedule("dmg_first_outfit", "sak.damage_first_outfit()", 2500)      
- end                                   
+   schedule("dmg_first_outfit", "sak.damage_first_outfit()", 2500)
+ end
 end
 
 local outfit_id=0
 function start_progress()
   local npc = db.actor
-  local frun  = ( nlc_vars.first_run == nil )  
+  local frun  = ( nlc_vars.first_run == nil )
   local lname = level.name()
-  
+
   if frun then
     level.add_pp_effector("agr_u_fade.ppe", 3121, false)
-    sak_inventory.inventory_control()    
-    local nvo = sak_inventory.rucksack["novice_outfit"]    
+    sak_inventory.inventory_control()
+    local nvo = sak_inventory.rucksack["novice_outfit"]
     local armor = nil
-    if nvo then       
-      misc.release_obj(nvo[1])    
-    
-      local armor = misc.spawn_to("stalker_outfit", 0)                             
+    if nvo then
+      misc.release_obj(nvo[1])
+
+      local armor = misc.spawn_to("stalker_outfit", 0)
       if armor then
          params.upd_condition(armor, 0.18)
-         schedule.add("dmg_first_outfit", "sak.damage_first_outfit()", 500)         
+         schedule.add("dmg_first_outfit", "sak.damage_first_outfit()", 500)
          -- actor_params.toggle_slot(armor.id, true)
       end
     else
-      ODS("~C0C[~T]. #ERROR:~C07 not found novice outfit in actor inventory")  
+      ODS("~C0C[~T]. #ERROR:~C07 not found novice outfit in actor inventory")
     end
     -- bind_stalker.hide_weapon() -- из-за этого вызова случается жопа с инвентарем, временно отключил
     nlc_vars.first_run = false
@@ -9148,14 +9160,14 @@ function start_progress()
     npc:give_info_portion("esc_lamp_1_on")
     --if get_shadow_inv():update_storage() then
 	   --npc:give_info_portion("new_patch_01")
-    -- end  
+    -- end
     game_began=true
   else
-    schedule.add ("paused_game", "sak.paused_game()", 500)  
+    schedule.add ("paused_game", "sak.paused_game()", 500)
     local rand=lua_random(1,4)
-    npc:give_info_portion(mus_bar[rand]) 
+    npc:give_info_portion(mus_bar[rand])
     npc:give_info_portion("ui_inventory") -- может здесь оно сбоить не будет?
-           
+
     local obj = level_object_by_sid(lev_prot[lname])
     if obj then
       local list = registry.local_objects(false, nil, 7) -- slow update, online only from current level
@@ -9164,41 +9176,41 @@ function start_progress()
         local objg = client_obj(iter)
         if objg then
           local nname = objg:name()
-          if ( obj:id() ~= objg:id() and not strpos(nname,"door") and not strpos(nname,"work") and 
+          if ( obj:id() ~= objg:id() and not strpos(nname,"door") and not strpos(nname,"work") and
                (objg:parent() == nil or objg:parent() == BAD_OBJ_ID) and
                (objg:position():distance_to(obj:position()) < 1.5) ) then
-                misc.release_obj(iter, 'sak.script:6109') -- удаление рядом лежащего объекта.. хм 
+                misc.release_obj(iter, 'sak.script:6109') -- удаление рядом лежащего объекта.. хм
           end -- if
         end -- if objg
-      end -- for      
+      end -- for
     end -- if obj
   end -- if frun
-  
+
   --[[if has_alife_info("new_patch_01") then
      ODS("#DBG: has info new_patch_01")
-  else 	 
+  else
      ODS("#DBG: not has info new_patch_01")
      if not get_shadow_inv():update_storage() then
        ODS("#DBG: adding new shadow_inventory")
-  	   create_items(npc, "shadow_inventory", 1)         
+  	   create_items(npc, "shadow_inventory", 1)
        npc:give_info_portion("new_patch_01")
-     end    
+     end
   end--]]
-  
+
   day_shmoney        = timers.Get_Game_Days()+1
   day_money        = day_shmoney / 2
   mass_add         = math.floor(day_shmoney / 7)
   mask_poison      = (1.1 - balance.level_poisoned[lname]) * 0.2
   dog_psy          = level_difficulty[lname] - 0.79
   loka_on          = 1 + math.max (0, level_difficulty[lname]-1.3)
-  
+
   if lname=="aver" then loka_on=5 end
   params.offs_huds()
   amk_mod.sync_done = true
   params.cond_old   = vergas_masks.mask_condition()
   amk_mod.last_condition = 0
   params.cond_wpn_old    = {0, 0, 0, 0, 0, 0}
-  amk_mod.check_armor()  
+  amk_mod.check_armor()
 end
 function end_hellcar()
  db.actor:give_info_portion("gar_hellcar_dialog_end")
@@ -9207,7 +9219,7 @@ end
 function paused_game()
   level.set_load_title( sprintf("#sak.paused_game binder_ticks = %d ", bind_stalker.binder_ticks) )
   local npc=db.actor
-  sak_inventory.need_update_inventory()  
+  sak_inventory.need_update_inventory()
   local razgruzka_weight = razgruzka.weight_variable_hran()
   params.mem_weight_add (razgruzka_weight)
   discharge_tasks(true)
@@ -9216,21 +9228,21 @@ function paused_game()
   razgruzka.end_gun_reload()
   npc:give_info_portion("ui_inventory_hide")
   breath_poison ()
-  if _G.sak_repair_dialog and sak_dialog.update_margin then  
+  if _G.sak_repair_dialog and sak_dialog.update_margin then
      sak_dialog.update_margin()
-  end   
+  end
   black_bonus = nlc_vars.black_off or 1
   game_began = true
   --[[local obj=alife():create("neytral_novice_outfit_m1",npc:position(),npc:level_vertex_id(),npc:game_vertex_id(),npc:id())
   misc.process_spawn()
   obj = client_obj(obj.id)
   obj:set_condition(0.2)--]]
-  db.shadow_inv:hide_content(0)  
-  schedule.add("syn_mon", "amk_anoms.sync_mon()", 4000)    
-  if not KeyPressed(19) then  
+  db.shadow_inv:hide_content(0)
+  schedule.add("syn_mon", "amk_anoms.sync_mon()", 4000)
+  if not KeyPressed(19) then
      schedule.add("pause", "sak.on_load_complete()", 1000)
   end
-  actor_bio()  
+  actor_bio()
 end
 
 function on_load_complete()
@@ -9273,7 +9285,7 @@ local line
 	  line=0.35
 	else
 	  line=0.1
-	end  
+	end
 	  if lua_random()>line then return end
 	  local obj=sim:object(obj_id)
 	  if obj then
@@ -9312,7 +9324,7 @@ function gg_not_have_weapon()
 			for n = 1,cnt do
 				local id = ids[n]
 				local item = client_obj(id)
-				if item then 
+				if item then
 				local sect=item:section()
 					if (strpos(sect, "wpn_",1,true) and not strpos(sect, "wpn_addon_",1,true) and (sect~="wpn_binoc") and (sect~="wpn_knife")) or strpos(sect, "_outfit",1,true) then
 						return false
@@ -9350,7 +9362,7 @@ function have_actor_any_wpn()
 			for n = 1,cnt do
 				local id = ids[n]
 				local item = client_obj(id)
-				if item then 
+				if item then
 				local sect=item:section()
 					if strpos(sect, "wpn_",1,true) and not strpos(sect, "wpn_addon_",1,true) and (sect~="wpn_binoc") and (sect~="wpn_knife") then
 						return true
@@ -9413,7 +9425,7 @@ end
 function new_batt_torch()
   local self = level.main_input_receiver()
   if self then self:GetHolder():start_stop_menu( self, true ) end
-  local sound = xr_sound.get_safe_sound_object( "device\\alkseur\\use_battery" )      
+  local sound = xr_sound.get_safe_sound_object( "device\\alkseur\\use_battery" )
   sound:play_at_pos( db.actor, vector(), 0, sound_object.s2d )
   schedule.add( "batter_change", "sak.batt_torch_switch_end()", 6000 )
   level.disable_input()
@@ -9428,7 +9440,7 @@ function batt_torch_switch_end()
 end
 
 function torch_npc_brock(id)
-  if torch_id then 
+  if torch_id then
   local rnd_r=0.65-(lua_random()/2)
   local r_new,g_new=rnd_r,(rnd_r-0.05)
   params.set_torch_param(id,r_new,g_new,g_new)
@@ -9444,7 +9456,7 @@ function sleep_discharge_torch(hour)
   end
 end
 --[[function weapon_slots()
-  schedule.add ("wpn_slots", "sak.weapons_slots()", 300) 
+  schedule.add ("wpn_slots", "sak.weapons_slots()", 300)
 end
 function weapons_slots()
   local slot_1=db.actor:item_in_slot(1)
@@ -9460,22 +9472,22 @@ function start_fire()
   local slot_1=db.actor:item_in_slot(1)
   wpn_params.start_fire(slot_1:id())
   local fire=lua_random(1000,5000)
-  schedule.add ("wpn_fire","sak.stop_fire("..slot_1:id()..")", fire) 
-  elseif db.actor:active_slot()==2 then 
+  schedule.add ("wpn_fire","sak.stop_fire("..slot_1:id()..")", fire)
+  elseif db.actor:active_slot()==2 then
   local slot_2=db.actor:item_in_slot(2)
   wpn_params.start_fire(slot_2:id())
   local fire=lua_random(1000,5000)
-  schedule.add ("wpn_fire","sak.stop_fire("..slot_2:id()..")", fire) 
+  schedule.add ("wpn_fire","sak.stop_fire("..slot_2:id()..")", fire)
   end
 end
 function stop_fire(id)
   wpn_params.end_fire(id)
 end
 function drop_weapon()
-  if xr_build_id > 5670 then 
+  if xr_build_id > 5670 then
     return
   end
-                          
+
   local slot_1=db.actor:item_in_slot(1)
   local slot_2=db.actor:item_in_slot(2)
   if slot_1~=nil and slot_2~=nil then
@@ -9486,7 +9498,7 @@ function drop_weapon()
     if sys_slot1~=fact_slot1 or sys_slot2~=fact_slot2  then
        actor_params.toggle_slot(slot_1:id(), false)
        local flag=1
-       schedule.add("wpn_return", "wpn_params.toggle_slot("..slot_1:id()..","..flag..")", 300) 
+       schedule.add("wpn_return", "wpn_params.toggle_slot("..slot_1:id()..","..flag..")", 300)
        timers.start_timer("weap_return",3,"sak.return_weapon("..slot_1:id()..")")
     end
   end
@@ -9502,7 +9514,7 @@ wpn_params.wpn_set_int_prop(id, "dest_slot_byte", 1)
 wpn_params.toggle_slot(id,true)
 end
 function assistant_kill()
-  if not has_alife_info("assistant_2_go") then 
+  if not has_alife_info("assistant_2_go") then
   local obj= g_sim:story_object(story_ids.assistant)
     if obj and obj:alive() and obj.online then
     obj = client_obj(obj.id)
@@ -9530,7 +9542,7 @@ function cats_near()
   for n=1,cnt do
     local id = ids[n]
     local obj=client_obj(id)
-    if obj and obj:alive() then 
+    if obj and obj:alive() then
       local act_pos=db.actor:position()
       local pos=obj:position()
       local dist=pos:distance_to(act_pos)
@@ -9583,13 +9595,13 @@ function set_obj_section()
 	--db.actor:give_info_portion("voron_monster_part_1_info")
     coord_params.set_obj_section(obj_id, new_art)
 end
---функция для спавна тайника Волка 
+--функция для спавна тайника Волка
 function add_vil_ranger_treasure()
-  if not has_alife_info("petruha_info_treasure") then 
+  if not has_alife_info("petruha_info_treasure") then
    sak_dialog.added_vil_ranger_treasure()
    send_tip("Ну ищи, щенок, если такой настырный. Может где-то рядом, а может и нет...","Из записки Волка",5,15,"g_g","sak","yellow")
-   db.actor:give_info_portion("petruha_info_treasure") 
-  end 
+   db.actor:give_info_portion("petruha_info_treasure")
+  end
 end
 --при взятии содержимого тайника Волка получим смс
 function info_volk_pda()
@@ -9601,7 +9613,7 @@ function add_muller_treasure2()
   local sid=lua_random(1,#treases)
   local obj= g_sim:story_object(treases[sid])
   if obj then
-  misc.spawn_to("af_rusty_kristall_dyn5d", obj)  
+  misc.spawn_to("af_rusty_kristall_dyn5d", obj)
   local rand = lua_random(4,6)
     for a=1,rand do
       misc.spawn_to("antirad", obj)
@@ -9682,16 +9694,16 @@ function given_spots_on_map_marsh()
 		for i=1,4 do
 			local sobj = alife():object( "ecolog_apparat_0"..i )
 			--ODS( string.format( "dsh: found %s", sobj:name() ) )
-				if sobj then 
+				if sobj then
 					amk.add_spot_on_map(sobj.id,"crlc_big_treasure3", "ecolog_apparat_spot")
 				end
 		end
 end
-function given_spots_on_map_aver()	
+function given_spots_on_map_aver()
 		for i=7,9 do
 			local sobj = alife():object( "ecolog_apparat_0"..i )
 			--ODS( string.format( "dsh: found %s", sobj:name() ) )
-				if sobj then 
+				if sobj then
 					amk.add_spot_on_map(sobj.id, "crlc_big_treasure3", "ecolog_apparat_spot")
 				end
 		end
@@ -9700,7 +9712,7 @@ function given_spots_on_map_rf()
 		for i=5,6 do
 			local sobj = alife():object( "ecolog_apparat_0"..i )
 			--ODS( string.format( "dsh: found %s", sobj:name() ) )
-				if sobj then 
+				if sobj then
 					amk.add_spot_on_map(sobj.id, "crlc_big_treasure3", "ecolog_apparat_spot")
 				end
 		end
@@ -9712,8 +9724,8 @@ end
 --отпускаем непися в свободное плавание
 function make_any_npc_free()
 -- ; story_id нужного непися
-  local i = story_ids.gar_stalker_flame_quest23  
-  
+  local i = story_ids.gar_stalker_flame_quest23
+
     local sobj = alife():story_object(i)
 			if sobj and sobj:alive()  then
 			    loc_tbl = {}
@@ -9758,10 +9770,10 @@ function spawn_flamethrower_bad()
   local ps=lua_random(1,#spawn)
   local obj=create_corpse ("trup_stalker",
                            v3f(spawn[ps][1],spawn[ps][2],spawn[ps][3]),spawn[ps][5],spawn[ps][4],
-                           1111) -- (1111)  
+                           1111) -- (1111)
   misc.spawn_to("flamethrower_bad", obj)
 end
-			
+
 function timer_exo_charge_half_start()
   timers.start_timer( "t_upgrade_start", 0, 2, 5, "sak.timer_exo_charge_half_end()")
 end
@@ -9780,7 +9792,7 @@ function timer_exo_charge_half_end()
 end
 
 function timer_exo_charge_full_end()
-  send_tip( 
+  send_tip(
             "Твой экзоскелет заряжен, подходи забирай.",
             "Это Долговязый",
             11, 20, "ecolog", "sak", "green"

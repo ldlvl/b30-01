@@ -6395,29 +6395,43 @@ function sak_have_have()
 end
 
 function docs_X18_have()
-  return sak.have_items_count("x18_document",1)~=false
+	return (
+		sak.have_items_count( "x18_document", 1 ) ~= false
+		and nlc_vars.x18_docs_spawned ~= nil
+	)
 end
-  local kol_x18=0
+
+local kol_x18 = 0
+
 function give_docs_X18()
-  for kk,k in pairs(sak_inventory.rucksack) do
-    if strpos(kk, "x18_document",1,true) then
-      kol_x18=#k
-        sak_inventory.release_actor_items("x18_document", kol_x18)
-    end
-  end
+	for kk, k in pairs( sak_inventory.rucksack ) do
+		if strpos( kk, "x18_document", 1, true ) then
+			kol_x18 = #k
+			sak_inventory.release_actor_items( "x18_document", kol_x18 )
+		end
+	end
 end
+
 function docs_X18_nagrad()
-  local i=lua_random(1,4)
-  if i==1 then
-  db.actor:give_talk_message("Так... Что это? Бухгалтерские документы... Мда. Ничего интересного. Жаль. Мы надеялись на большее... Тогда может и награда была бы дополнительно.","ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
-  elseif i==2 then
-  db.actor:give_talk_message("Так... Что это? Постовая ведомость. Бухгалтерские документы... Наряды на работы... Мда. Ничего интересного. Жаль. Мы надеялись на большее... Тогда может и награда была бы существеннее. А пока вот, возьмите...","ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
-  elseif i==3 then
-  db.actor:give_talk_message("Так... Что это? Постовая ведомость. Бухгалтерские документы... Наряды на работы... О! Отчеты о проведённых экспериментах! Интересно, очень интересно! Думаю, мы можем отблагодарить Вас вот этим.","ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
-  else
-  db.actor:give_talk_message("Так... Что это? Отчеты о проведенных экспериментах! Бухгалтерские документы... Описание практических шагов по получению наблюдаемых эффектов! Ого! Не ожидали, честно скажу, не ожидали! Вы безусловно заслужили большую награду! Жаль, наши стесненные фонды не позволяют по настоящему Вас отблагодарить... Примите эти вещи, и, может быть, мы сумеем в будущем быть более щедрыми.","ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
-  end
-  sak.info_artmod()
+	local spawned = nlc_vars.x18_docs_spawned
+	if spawned then
+		if kol_x18 >= spawned then
+			db.actor:give_talk_message(
+				"Так... Что это? Отчеты о проведенных экспериментах! Бухгалтерские документы... Описание практических шагов по получению наблюдаемых эффектов! Ого! Не ожидали, честно скажу, не ожидали! Вы безусловно заслужили большую награду! Жаль, наши стесненные фонды не позволяют по настоящему Вас отблагодарить... Примите эти вещи и информацию, и, может быть, мы сумеем в будущем быть более щедрыми.",
+				"ui\\ui_iconsTotal", Frect():set(0,0,0,0), "simple_answer_item"
+			)
+			test.give_rnd_recipt( 4 )
+			test.add_to_actor( "medkit_scientic", 3 )
+		elseif kol_x18 < spawned and kol_x18 > 0 then
+			db.actor:give_talk_message(
+				"Так... Что это? Постовая ведомость. Бухгалтерские документы... Наряды на работы... Мда. Ничего интересного. Жаль. Мы надеялись на большее... Тогда может и награда была бы существеннее. А пока вот, возьмите...",
+				"ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
+			)
+			test.add_to_actor( "medkit_scientic", 1 )
+			test.add_to_actor( "antirad", 3 )
+		end
+	end
+	nlc_vars.x18_docs_spawned = nil
 end
 
 function yan_scientist_books_have()
