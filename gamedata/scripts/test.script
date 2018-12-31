@@ -657,9 +657,13 @@ end
 function on_late_init()
  	local d_saved = get_death_count( "d_stor" ) or 0
  	local d_pda   = actor_stats.get_points( "stalkerkills" ) or 0
- 	local d_diff = d_saved - d_pda
+ 	local d_diff  = d_saved - d_pda
+ 	local p_diff  = get_death_count( "p_stor" ) - get_death_count( "p_help" )
  	if d_diff > 0 then
  		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), d_diff, 1 )
+ 	end
+ 	if p_diff > 0 then
+ 		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used" ), p_diff, 0 )
  	end
  end
 
@@ -695,6 +699,10 @@ end
 function on_new_game()
 	get_death_count( "d_stor" )
 	set_death_count( "d_stor", 0 )
+	get_death_count( "p_stor" )
+	set_death_count( "p_stor", 0 )
+	get_death_count( "p_help" )
+	set_death_count( "p_help", 0 )
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num" 		), 0, 0 ) --
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_1" 		), 0, 0 ) --
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_2" 		), 0, 0 ) --
@@ -709,7 +717,8 @@ function on_new_game()
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used" 		), 0, 0 ) --
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" 	), 0, 0 ) --
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" 			), 0, 0 )
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" 			), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used"	), 0, 0 )
 	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" 		), 0, 0 ) --
 end
 

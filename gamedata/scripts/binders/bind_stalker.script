@@ -701,6 +701,10 @@ function actor_binder:test_method(param)
 end
 function actor_binder:net_destroy()
  ODS('[~T].~CF0 #DBG: actor_binder:net_destroy() processing ...~C07')
+ local sname = (amk_vars.level_on_save or "")
+  if ( level.name() == sname or sname == "" ) and time_global() > 300000 and db.actor:alive() then
+    test.set_death_count( "p_stor", test.get_death_count( "p_stor" ) + 1 )
+  end
  modmgmt.stop_modules() 
  xr_s.on_event("net_destroy")
  SetVerbosity(1)
@@ -805,8 +809,6 @@ function actor_binder:article_callback(npc, group, name)
   amk.on_info(npc,info_id)
 end
 
-
-
 function actor_binder:on_before_save()
     wprintf(" Подготовка к сохранению объектов...")
     modmgmt.on_before_save_game()
@@ -829,6 +831,10 @@ function actor_binder:on_before_save()
     end
     reset_interactive(1)
 	if rx_ai then rx_ai.actor_save() end
+  local sname = (amk_vars.level_on_save or "")
+  if ( level.name() == sname or sname == "" ) and time_global() > 300000 then
+    test.set_death_count( "p_help", test.get_death_count( "p_stor" ) )
+  end
   allcore_mayatniks.on_before_actor_save()
 end
 
