@@ -1,5 +1,3 @@
-
-
 class "main_menu"(CUIScriptWnd)
 
 function main_menu:__init() super()
@@ -17,11 +15,9 @@ function main_menu:__init() super()
        local inv_hide = yn [db.actor:has_info("ui_inventory_hide")] or 'nil'
        local gadget   = yn [used_items.can_use_gadget()] or 'nil'
        local wpn_hide = yn [bind_stalker.self_weapon_hide] or 'nil'
-
        wprintf("[~T]. #DBG: last binder update =~C0F %s~C07, inventory { show = %s, hide = %s }, can use gadget = %s, weapon hide = %s ",
                        last_upd_time or 'nil', inv_show, inv_hide, gadget, wpn_hide)
     end
-
 end
 
 function main_menu:MakeBG()
@@ -58,9 +54,7 @@ function main_menu:MakeBG()
     end
 end
 
-function main_menu:__finalize()
-
-end
+function main_menu:__finalize() end
 
 function main_menu:InitControls()
   self:Init(0,0,1024,768)  
@@ -105,14 +99,9 @@ function main_menu:InitCallBacks()
   self:AddCallback("btn_quit",  ui_events.BUTTON_CLICKED,  self.OnButton_quit_clicked,  self)
   self:AddCallback("btn_quit_to_mm",  ui_events.BUTTON_CLICKED,  self.OnButton_disconnect_clicked,  self)
   if not self.err_mod then
-    --self:AddCallback("btn_novice",  ui_events.BUTTON_CLICKED,  self.OnButton_new_novice_game,  self)
-    --self:AddCallback("btn_stalker",  ui_events.BUTTON_CLICKED,  self.OnButton_new_stalker_game,  self)
-    --self:AddCallback("btn_veteran",  ui_events.BUTTON_CLICKED,  self.OnButton_new_veteran_game,  self)
     self:AddCallback("btn_master",  ui_events.BUTTON_CLICKED,  self.OnButton_new_master_game,  self)
     self:AddCallback("btn_spawn",  ui_events.BUTTON_CLICKED,  self.OnButton_load_spawn,  self)
 	self:AddCallback("btn_tele",  ui_events.BUTTON_CLICKED,  self.OnButton_load_teleport,  self)
-    self:AddCallback("btn_load",  ui_events.BUTTON_CLICKED,  self.OnButton_load_clicked,  self)
-            
     self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,  self.OnButton_multiplayer_clicked,  self)
     self:AddCallback("btn_ret",  ui_events.BUTTON_CLICKED,  self.OnButton_return_game,  self)
   end
@@ -126,11 +115,9 @@ function main_menu:OnMsgCancel()
 end
 
 function main_menu:OnMsgYes()
-  
   if   self.mbox_mode==1 then
   self:LoadLastSave()
   end
-
   self.mbox_mode = 0
 end
 
@@ -139,7 +126,7 @@ function main_menu:OnMsgNo()
 end
 
 function main_menu:LoadLastSave()
-  local    console = get_console()
+  local console = get_console()
   console:execute  ("main_menu off")
   console:execute  ("load_last_save")
 end
@@ -158,16 +145,6 @@ function main_menu:OnButton_credits_clicked()
   game.start_tutorial("credits_seq")
 end
 
-function main_menu:OnButton_load_teleport()
-  if self.teleport_dlg==nil then
-    self.teleport_dlg = ui_mm_teleportator.teleportator_menu()
-    self.teleport_dlg.owner = self
-  end
-  
-  self:GetHolder():start_stop_menu(self.teleport_dlg, true)
-  self:GetHolder():start_stop_menu(self, true)
-  self:Show(false)
-end										   
 function main_menu:OnButton_quit_clicked()
   self.message_box:Init("message_box_quit_windows")
   self:GetHolder():start_stop_menu(self.message_box, true)
@@ -318,16 +295,12 @@ function main_menu:OnKeyboard( dik, keyboard_action )
       if level.present() and( db.actor ~= nil ) and db.actor:alive() then
         console:execute( "main_menu off" )
       end
-    elseif dik == DIK_keys.DIK_T then
-      self:OnButton_load_teleport()
     elseif dik == DIK_keys.DIK_F4 then
       self:show_position_informer_window()
     elseif dik == DIK_keys.DIK_F3 then
       if level.present() and( db.actor ~= nil ) and db.actor:alive() then
         console:execute( "main_menu off" )
       end
-      --self:ppe_menu_show()
-      test2.test_sms()
     end
   end
   return true

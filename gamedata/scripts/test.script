@@ -685,10 +685,12 @@ end
 
 function set_death_count( what, value )
 	local f = getFS()
-	local fileName = f:file_list_open_ex(
-	    "$game_stats$", bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
+	local fileName = (
+	    f:file_list_open_ex( "$game_stats$",
+	    bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
 	    "*." .. what ):GetAt( 0 ):NameFull()
-	local fileNameNew = tostring( value ) .. "." .. what
+	    ) or ""
+	local fileNameNew = ( tostring( value ) .. "." .. what ) or ""
 	if fileNameNew ~= fileName then
 		local f1 = f:update_path( "$game_stats$", fileName )
 		local f2 = f:update_path( "$game_stats$", fileNameNew )
