@@ -1350,27 +1350,36 @@
 		</phrase>
 		<phrase id="123">
 			<text>lukash_dialog_2_123</text>
-			<next>2</next>
+<!-- 			<next>2</next>
 			<next>3</next>
 			<next>4</next>
 			<next>7</next>
 			<next>8</next>
 			<next>9</next>
-			<next>10</next>
+			<next>10</next> -->
+			<next>1011</next>
 			<next>5</next>
 		</phrase>
 		<phrase id="1">
 		<precondition>sak_dialog.treasure_time_over("t_lukash",5)</precondition>
 			<text>lukash_dialog_2_1</text>
-			<next>2</next>
+<!-- 			<next>2</next>
 			<next>3</next>
 			<next>4</next>
 			<next>7</next>
 			<next>8</next>
 			<next>9</next>
-			<next>10</next>
+			<next>10</next> -->
+			<next>1011</next>
 			<next>20</next>
 			<next>5</next>
+		</phrase>
+		<phrase id="1011">
+		<precondition>sak_dialog.have_any_capsule</precondition>
+			<text>lukash_dialog_2_1011</text>
+			<action>sak_dialog.transfer_any_capsule_simple</action>
+			<action>sak_dialog.start_time("t_lukash")</action>
+			<next>6</next>
 		</phrase>
 		<phrase id="2">
 		<precondition>sak_dialog.cristall_flower_have</precondition>
