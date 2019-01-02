@@ -1738,7 +1738,7 @@
 			<next>2022</next>
 			<next>300</next>
 			<next>400</next>
-			<!-- <next>500</next> -->			
+			<next>500</next>			
 		</phrase>
 		<phrase id="2022">
 			<text>mil_mercs_ara_dialog_start_2022</text>
@@ -2169,16 +2169,27 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>	
 <!-- ka-bar	 -->
-<!-- 		<phrase id="500">
+		<phrase id="500">
 			<has_info>volkodav_dt_art_done</has_info>
-			<dont_has_info></dont_has_info>
 			<text>mil_mercs_ara_dialog_start_500</text>
 			<next>501</next>
 		</phrase>
 		<phrase id="501">
 			<text>mil_mercs_ara_dialog_start_501</text>
 			<next>502</next>
-		</phrase>	 -->
+			<next>503</next>
+		</phrase>
+		<phrase id="502">
+			<precondition>sak.have_items_count("device_pda_npc",10)</precondition>
+			<text>mil_mercs_ara_dialog_start_502</text>
+			<action>sak_inventory.release_actor_items("device_pda_npc",10)</action>
+			<action>test.add_to_actor("wpn_knife_m1",1)</action>
+			<next>201</next>
+		</phrase>
+		<phrase id="503">
+			<text>mil_mercs_ara_dialog_start_503</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>	
 	</phrase_list>
 </dialog>
 
