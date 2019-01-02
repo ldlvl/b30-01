@@ -144,7 +144,7 @@ end
 
 function prize_weapons()	--определяю приз из группы "оружие"
 	local m
-	local tbl_weapons = {"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_bm16_full","wpn_mp5"}
+	local tbl_weapons = {"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_toz34","wpn_mp5"}
 	
 	m = lua_random(1,complexity)
 	
@@ -798,7 +798,7 @@ function vergas_prizes_2()    			--замена одного приза на другой
 	end
 
 	local tbl_tmp = {
-					"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_bm16_full","wpn_mp5",
+					"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_toz34","wpn_mp5",
 					"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","stalker_guard_outfit",
 					"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic","timer","skiing"
 					}
@@ -865,7 +865,7 @@ function vergas_prizes_2_1(tbl_custom)		--Выбор приза для замены
 			table.insert( tbl_wpn,"killer_outfit")
 			table.insert( tbl_wpn,"outfit_soldier_m1")
 		elseif complexity == 5 then
-			tbl_wpn = {"wpn_walther","wpn_pb","wpn_ak74u","wpn_wincheaster1300","wpn_bm16_full","wpn_mp5"}
+			tbl_wpn = {"wpn_walther","wpn_pb","wpn_ak74u","wpn_wincheaster1300","wpn_toz34","wpn_mp5"}
 			table.insert( tbl_wpn,"neytral_novice_gaz_outfit_m1")
 			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
 			table.insert( tbl_wpn,"killer_outfit")
