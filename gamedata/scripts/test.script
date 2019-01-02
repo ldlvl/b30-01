@@ -787,3 +787,27 @@ function haldle_art_for_stats( sect, id )
 		end
 	end
 end
+
+function count_actor_ammo( section )
+	-- local count_inv  = 0
+	-- for i = 0, db.actor:object_count() - 1 do
+	-- 	local obj = db.actor:object( i )    
+	-- 	if razgruzka.check_obj( obj ) then
+	-- 		local sect = obj:section() 
+	-- 		local add  = 0
+	-- 		if strposx( sect, section ) then add = 1 end
+	-- 		if razgruzka.is_ammo( sect ) then
+	-- 			count_inv = count_inv + nlc_container.amount_in_batch( obj ) * add
+	-- 		else
+	-- 			count_inv = count_inv + add
+	-- 		end
+	-- 	end
+	-- end
+	local count = 0
+	local rukzak = get_shadow_inv():hidden_items( true )
+    for sect, cnt in rukzak:pairs() do
+        if strposx( sect, section ) then count = count + cnt end
+    end
+	wprintf( "++++++++++++++++++++++++++++++++++" .. count )
+	return count
+end
