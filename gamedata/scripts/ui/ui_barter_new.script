@@ -109,7 +109,8 @@ local barter_tbl = {
 	[ "sidor" ] = {
 		{ "ammo_12x70_buck",			3,	"lvl1",				1  },
 		{ "ammo_12x76_dart",			2,	"lvl1",				1  },
-		{ "wpn_toz34",					1,	"lvl2",				1  },
+		{ "wpn_bm16",					1,	"lvl2",				1  },
+		{ "wpn_toz34",					1,	"lvl2",				2  },
 		{ "medkit",						7,	"lvl2",				1  },
 		{ "medkit",						3,	"lvl1",				1  },
 		{ "vodka",						3,	"lvl1",				1  },
@@ -122,8 +123,9 @@ local barter_tbl = {
 		{ "ammo_12x76_dart",			3,	"lvl2",				1  },
 		{ "wpn_glock",					1,	"lvl2",				3  },
 		{ "wpn_wincheaster1300",		1,	"lvl2",				5  },
+		{ "medkit",						5,	"lvl2",				1  },
 		{ "vodka",						7,	"lvl2",				1  },
-		{ "antirad",					5,	"lvl2",				1  },
+		{ "antirad",					2,	"lvl2",				1  },
 		{ "repair_item_weapon_feik",	3,	"lvl2",				1  },
 		{ "repair_itemoutfit_feik",		3,	"lvl2",				1  },
 		{ "repair_boxoutfit",			1,	"lvl2",				1  }
@@ -134,17 +136,16 @@ local barter_tbl = {
 		{ "ammo_9x39_sp5",				2,	"lvl2",				1  },
 		{ "dolg_scientific_outfit",		1,	"lvl3",				4  },
 		{ "wpn_aps",					1,	"lvl3",				2  },
-		{ "wpn_svu",					1,	"lvl3",				4  },
-		{ "wpn_val",					1,	"lvl3",				3  },
-		{ "medkit_army",				3,	"lvl2",				1  }
+		{ "wpn_vintorez",				1,	"lvl4",				2  },
+		{ "wpn_val",					1,	"lvl4",				2  }
 	},
 	[ "mihalych" ] = {
 		{ "ammo_m209",					6,	"lvl3",				1  },
 		{ "ammo_7.62x54_7h14",			3,	"lvl3",				1  },
-		{ "medkit_scientic",			6,	"lvl3",				1  },
-		{ "antirad",					6,	"lvl2",				1  },
-		{ "repair_item_weapon_feik",	3,	"lvl2",				1  },
-		{ "repair_itemoutfit_feik",		3,	"lvl2",				1  }
+		{ "medkit_scientic",			4,	"lvl3",				1  },
+		{ "antirad",					3,	"lvl2",				1  },
+		{ "repair_item_weapon_feik",	1,	"lvl1",				1  },
+		{ "repair_itemoutfit_feik",		1,	"lvl1",				1  }
 	},
 	[ "shinkar" ] = {
 		{ "ammo_5.56x45_ss190",			5,	"lvl2",				1  },
@@ -152,24 +153,25 @@ local barter_tbl = {
 		{ "ammo_12x76_zhekan",			2,	"lvl2",				1  },
 		{ "wpn_sig550",					1,	"lvl3",				2  },
 		{ "wpn_spas12",					1,	"lvl3",				2  },
-		{ "repair_item_weapon_feik",	9,	"lvl3",				1  },
-		{ "repair_itemoutfit_feik",		9,	"lvl3",				1  }
+		{ "repair_item_weapon_feik",	5,	"lvl3",				1  },
+		{ "repair_itemoutfit_feik",		5,	"lvl3",				1  }
 	},
 	[ "kuzya" ] = {
-		{ "ammo_5.45x39_fmj",			5,	"vodka",			5  },
+		{ "ammo_5.45x39_fmj",			4,	"vodka",			5  },
 		{ "grenade_rgd5",				1,	"vodka",			2  },
 		{ "razgruzka",					1,	"vodka",			5  },
+		{ "wpn_ak74u",					1,	"vodka",			10 },
 		{ "wpn_ak74",					1,	"vodka",			15 },
 		{ "medkit_army",				1,	"vodka",			2  }
 	},
 	[ "sherstuk" ] = {
-		{ "ammo_5.45x39_ap",			2,	"vodka",			3  },
-		{ "grenade_f1",					1,	"vodka",			3  },
+		{ "ammo_5.45x39_ap",			2,	"vodka",			4  },
+		{ "grenade_f1",					1,	"vodka",			4  },
 		{ "specops_outfit",				1,	"vodka",			20 },
 		{ "wpn_abakan",					1,	"vodka",			20 },
 		{ "wpn_fort",					1,	"vodka",			12 },
 		{ "medkit_army",				2,	"vodka",			3  },
-		{ "suhpay",						1,	"vodka",			2  }
+		{ "suhpay",						1,	"vodka",			4  }
 	},
 	[ "zhila" ] = {
 		{ "ammo_7.62x39_fmj",			3,	"conserva",			6  },
@@ -193,14 +195,11 @@ local barter_tbl = {
 	},
 	[ "eger" ] = {
 		{ "mutant_psevdodog_tail",		1,	"ammo_12x76_dart",	 2 },
-		{ "mutant_psevdodog_tail",		1,	"vodka",			 3 },
 		{ "mutant_snork_leg",			1,	"ammo_12x76_dart",	 4 },
-		{ "mutant_snork_leg",			1,	"vodka",			 5 },
-		{ "mutant_krovosos_jaw",		1,	"ammo_12x76_zhekan", 3 },
-		{ "mutant_krovosos_jaw",		1,	"vodka",			10 },
-		{ "mutant_poltergeist_glas",	1,	"vodka",			20 },
-		{ "mutant_hand_kontroler",		1,	"vodka",			20 },
-		{ "mutant_psevdogigant_hand",	1,	"vodka",			30 }
+		{ "mutant_krovosos_jaw",		1,	"ammo_12x76_zhekan", 6 },
+		{ "mutant_poltergeist_glas",	1,	"ammo_12x76_zhekan",10 },
+		{ "mutant_hand_kontroler",		1,	"ammo_12x76_zhekan",15 },
+		{ "mutant_psevdogigant_hand",	1,	"ammo_12x76_zhekan",20 }
 	}
 }
 
@@ -211,6 +210,7 @@ local sultan_treasure = {
 }
 
 local ini = system_ini()
+local actor = db.actor
 local zub_price_sect, zub_price_amnt
 local clr_green	 = { 255, 166, 226, 46  }
 local clr_red	 = { 255, 249, 138, 114 }
@@ -305,7 +305,7 @@ function barter_screen_ui:OnMsgYes()
 			if sect == v[ 1 ] then tip = k end
 		end
 		nlc_vars.sultan_weapon = tip
-		db.actor:give_info_portion( "sultan_weapon_starting" )
+		actor:give_info_portion( "sultan_weapon_starting" )
 	end
 	self.msgbox_id = 0
 	self:on_quit()
@@ -349,6 +349,9 @@ function barter_screen_ui:OnListItemClicked()
 	end
 	self.price_tbl   = self.work_tbl[ itm_index + 1 ][ 3 ]
 	self.price_amnt  = self.work_tbl[ itm_index + 1 ][ 4 ]
+	if strposx( self.price_tbl, "ammo_" ) then
+		self.price_amnt  = self.price_amnt * utils.cfg_get_number( ini, self.price_tbl, "box_size", nil, false, 1 )
+	end
 	if self.b_name ~= "zub" then
 		local sizes  = give_icon_params( self.work_tbl[ itm_index + 1 ][ 1 ] )
 		local px     = 440 + ( 182 - ( sizes.width  * 0.26 * 1.2 ) ) 						-- 0.26 הכÿ 1:1 םא 1920
@@ -377,8 +380,8 @@ function barter_screen_ui:OnListItemClicked()
 end
 
 function barter_screen_ui:UpdatePriceStatic()
-	self.have_amount = 0
-	self.price_color = clr_red
+	local have_amount = 0
+	local price_color = clr_red
 	if self.price then self:DetachChild( self.price ) end
 	if self.price_have then self:DetachChild( self.price_have ) end
 	local price_text = ""
@@ -395,8 +398,8 @@ function barter_screen_ui:UpdatePriceStatic()
 			zub_price_sect = "lvl4" zub_price_amnt = 1
 		end
 		price_text = tbl_translate_price[ zub_price_sect ] .. ", " .. tostring( zub_price_amnt ) .. " רע."
-		self.have_amount = gg_n_artof_m_have( self.price_amnt, tbl_translate_arts[ zub_price_sect ], true )
-		if self.have_amount >= zub_price_amnt then self.price_color = clr_green end
+		have_amount = gg_n_artof_m_have( self.price_amnt, tbl_translate_arts[ zub_price_sect ], true )
+		if have_amount >= zub_price_amnt then price_color = clr_green end
 	else
 		if strposx( self.price_tbl, "lvl" ) then
 			price_text = tbl_translate_price[ self.price_tbl ]
@@ -405,17 +408,19 @@ function barter_screen_ui:UpdatePriceStatic()
 		end
 		price_text = price_text .. ", " .. tostring( self.price_amnt ) .. " רע."
 		if strposx( self.price_tbl, "lvl" ) then
-			self.have_amount = gg_n_artof_m_have( self.price_amnt, tbl_translate_arts[ self.price_tbl ], true )
+			have_amount = gg_n_artof_m_have( self.price_amnt, tbl_translate_arts[ self.price_tbl ], true )
+		elseif strposx( self.price_tbl, "ammo_" ) then
+			have_amount = test.count_actor_ammo( self.price_tbl )
 		else
-			self.have_amount = sak.calc_items_count( self.price_tbl, nil )
+			have_amount = sak.calc_items_count( self.price_tbl, nil )
 		end
-		if self.have_amount >= self.price_amnt then self.price_color = clr_green end
+		if have_amount >= self.price_amnt then price_color = clr_green end
 	end
-	if self.b_name == "sultan" then self.price_color = clr_white end
+	if self.b_name == "sultan" then price_color = clr_white end
 	self.price = make_static( "price", self, tostring( price_text ), 252, 456, 170, 82 )
-	self.price:SetTextColor( unpack( self.price_color ) )
-	self.price_have = make_static( "price_have", self, "( " .. tostring( self.have_amount ) .. " )", 425, 456, 30, 82 )
-	self.price_have:SetTextColor( unpack( self.price_color ) )
+	self.price:SetTextColor( unpack( price_color ) )
+	self.price_have = make_static( "price_have", self, "( " .. tostring( have_amount ) .. " )", 425, 456, 40, 82 )
+	self.price_have:SetTextColor( unpack( price_color ) )
 end
 
 function barter_screen_ui:AddItemToList( item_name, item_amount )
@@ -470,11 +475,17 @@ function barter_screen_ui:DoBarter( ind )
 			give_n_artof_m( need_amount, tbl_translate_arts[ need_sect ] )
 			if self.b_name == "zub"	then
 				test.sms_recipt_found( tovar )
-				db.actor:give_info_portion( tovar )
+				actor:give_info_portion( tovar )
 			else
-				sak.create_items( db.actor, tovar, tovar_amnt )
+				sak.create_items( actor, tovar, tovar_amnt )
 				misc.process_spawn()
 			end
+		end
+	elseif strposx( need_sect, "ammo_" ) then
+		if vergas_lib.search_items( need_sect, self.price_amnt, 1 ) ~= false then
+			vergas_lib.search_items( need_sect, self.price_amnt, 2 )
+			sak.create_items( actor, tovar, tovar_amnt )
+			misc.process_spawn()
 		end
 	else
 		if sak.have_items_count( need_sect , need_amount ) then
@@ -484,7 +495,7 @@ function barter_screen_ui:DoBarter( ind )
 					mike.add_1_pda_npc()
 				end
 			else
-				sak.create_items( db.actor, tovar, tovar_amnt )
+				sak.create_items( actor, tovar, tovar_amnt )
 			end
 			misc.process_spawn()
 			if self.b_name == "fuel_bar" then
@@ -560,11 +571,12 @@ function barter_screen( name )
 end
 
 function make_list_by_trader( name )
-	local tmptbl1, tmptbl2  = {}, {}
+	local tmptbl1, tmptbl2, tbl_, tbl__ = {}, {}, {}, {}
 	local tbl_to_show = {}
-	local ttt
+	local ttt = 1
 	local ind = 0
 	local gdays = timers.Get_Game_Days() or 1
+
 	if name == "sultan" then
 		for k, v in pairs ( barter_tbl[ name ] )  do
 			ind = ind + 1
@@ -574,10 +586,11 @@ function make_list_by_trader( name )
 				table.insert( tmptbl2, v )
 			end
 		end
-		local tbl_  = generate_rnd_list( tmptbl1, 13, 24, 3, 7 )
-		local tbl__ = generate_rnd_list( tmptbl2, 16, 24, 4, 6 )
+		tbl_  = generate_rnd_list( tmptbl1, 13, 24, 3, 7 )
+		tbl__ = generate_rnd_list( tmptbl2, 16, 24, 4, 6 )
 		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
 		tbl_to_show = tbl_
+
 	elseif name == "dan" then
 		for k, v in pairs( barter_tbl[ name ] ) do
 			if v[ 3 ] == "mutant_dog_tail" then
@@ -592,6 +605,7 @@ function make_list_by_trader( name )
 			end
 		end
 		tbl_to_show = barter_tbl[ name ]
+
 	elseif name == "zub" then
 		for k, v in pairs( test.tbl_recipt ) do
 			ttt = k
@@ -606,32 +620,35 @@ function make_list_by_trader( name )
 				end
 			end
 		end
-		local tbl_  = generate_rnd_list( tmptbl1, 12, 14, 3 )
-		local tbl__ = generate_rnd_list( tmptbl2, 12, 14, 2 )
+		tbl_  = generate_rnd_list( tmptbl1, 12, 14, 3 )
+		tbl__ = generate_rnd_list( tmptbl2, 12, 14, 2 )
 		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
 		tbl_to_show = tbl_
+
 	elseif name == "fuel_esc" or name == "fuel_bar" then
 		tbl_to_show = generate_rnd_list(
 		    barter_tbl[ name ], tbl_npc_name_koeff[ name ][ 1 ], 24, 3, 6
 		)
+
 	else
 		tbl_to_show = barter_tbl[ name ]
 	end
+
 	return tbl_to_show
+
 end
 
 function generate_rnd_list( table_in, npc_koeff, r_update, min, max )
 	local t, table_out = {}, {}
 	local day = timers.Get_Game_Days() or 1
 	local day_time = 0
-	local npc = db.actor
-	if  npc:has_info( "time_morning" ) then day_time = 0
+	if  actor:has_info( "time_morning" ) then day_time = 0
 	elseif
-		npc:has_info( "time_evening" ) then	day_time = 2
+		actor:has_info( "time_evening" ) then	day_time = 2
 	elseif
-		npc:has_info( "time_night"   ) then day_time = 3
+		actor:has_info( "time_night"   ) then day_time = 3
 	elseif
-		npc:has_info( "time_day" 	 ) then day_time = 1
+		actor:has_info( "time_day" 	 ) then day_time = 1
 	end
 	if r_update == 12 then
 		day = day + math.floor( day_time / 2 )
@@ -688,12 +705,11 @@ end
 function load_sultan_weapon_treasure()
 	local tip = nlc_vars.sultan_weapon or 0
 	local rand_treasure
-	local npc = db.actor
-	if     npc:has_info( "time_morning" ) or npc:has_info( "time_evening" ) then
+	if     actor:has_info( "time_morning" ) or npc:has_info( "time_evening" ) then
 		rand_treasure = 1
-	elseif npc:has_info( "time_night" ) then
+	elseif actor:has_info( "time_night" ) then
 		rand_treasure = 2
-	elseif npc:has_info( "time_day" ) then
+	elseif actor:has_info( "time_day" ) then
 		rand_treasure = 3
 	end
 	local obj = alife():story_object( sultan_treasure[ rand_treasure * 2 - 1 ] )
@@ -721,7 +737,7 @@ end
 function load_sultan_weapon_story()
 	local tip = nlc_vars.sultan_weapon or 0
 	if tip ~= 0 then
-		db.actor:give_talk_message(
+		actor:give_talk_message(
 		  "%c[255,216,186,140]" .. game.translate_string( tbl_translate_price[ barter_tbl.sultan[ tip ][ 3 ] ] ),
 		  "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
 		)
@@ -783,7 +799,7 @@ function give_n_artof_m( n, table )
 			end
 		end
 		if amount ~= 0 then
-			sak.relocate_item( db.actor, "out", table[ a ], amount )
+			sak.relocate_item( actor, "out", table[ a ], amount )
 		end
 	end
 end
