@@ -7,51 +7,51 @@ function main_menu:__init() super()
 	self:MakeBG()		   
 	wprintf("[~T].~CF0 #DBG: main_menu created, namespace =~CF2 %s~C07", script_namespace or 'nil')
 	self:InitCallBacks()
-    local yn = {}
-    yn[false] = "~C0C No~C07"
-    yn[true]  = "~C0A Yes~C07"
-    if db.actor then
-       local inv_show = yn [db.actor:has_info("ui_inventory")] or 'nil'
-       local inv_hide = yn [db.actor:has_info("ui_inventory_hide")] or 'nil'
-       local gadget   = yn [used_items.can_use_gadget()] or 'nil'
-       local wpn_hide = yn [bind_stalker.self_weapon_hide] or 'nil'
-       wprintf("[~T]. #DBG: last binder update =~C0F %s~C07, inventory { show = %s, hide = %s }, can use gadget = %s, weapon hide = %s ",
-                       last_upd_time or 'nil', inv_show, inv_hide, gadget, wpn_hide)
-    end
+	local yn = {}
+	yn[false] = "~C0C No~C07"
+	yn[true]  = "~C0A Yes~C07"
+	if db.actor then
+	   local inv_show = yn [db.actor:has_info("ui_inventory")] or 'nil'
+	   local inv_hide = yn [db.actor:has_info("ui_inventory_hide")] or 'nil'
+	   local gadget   = yn [used_items.can_use_gadget()] or 'nil'
+	   local wpn_hide = yn [bind_stalker.self_weapon_hide] or 'nil'
+	   wprintf("[~T]. #DBG: last binder update =~C0F %s~C07, inventory { show = %s, hide = %s }, can use gadget = %s, weapon hide = %s ",
+					   last_upd_time or 'nil', inv_show, inv_hide, gadget, wpn_hide)
+	end
 end
 
 function main_menu:MakeBG()
-    local f = getFS()
-    local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*.sav")
-    local f_cnt = flist:Size()
-    local picture = self:GetStatic("static_background")
-    local ratio = vergas_pda.set_ratio_mode() or 3
-    if f_cnt > 0 then 
-        flist:Sort(FS.FS_sort_by_modif_down)
-        local file = flist:GetAt(0)
-        local fname = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
-        local sg = CSavedGameWrapper(fname) 
-        local y,m,d,h,min,sec,ms = 0,0,0,0,0,0,0
-              y,m,d,h,min,sec,ms = sg:game_time():get(y,m,d,h,min,sec,ms)
-        local start_month = 5
-        local days_in_game = ui_load_dialog.GetDaysByMonth(m) - ui_load_dialog.GetDaysByMonth(start_month) + d
-        local bg_num = 1
-        if     days_in_game >= 15 and days_in_game < 30 then bg_num = 2
-        elseif days_in_game >= 30 and days_in_game < 45 then bg_num = 3
-        elseif days_in_game >= 45                       then bg_num = 4
-        end
-        if  ratio >= 3 then
-            picture:InitTexture("ui\\ui_mainmenu_" .. bg_num)
-        else
-            picture:InitTexture("ui\\ui_mainmenu_16_" .. bg_num)
-        end
-    else
-        if  ratio >= 3 then
-            picture:InitTexture("ui\\ui_mainmenu_1")
-        else
-            picture:InitTexture("ui\\ui_mainmenu_16_1")
-        end
-    end
+	local f = getFS()
+	local flist = f:file_list_open_ex("$game_saves$",bit_or(FS.FS_ListFiles,FS.FS_RootOnly),"*.sav")
+	local f_cnt = flist:Size()
+	local picture = self:GetStatic("static_background")
+	local ratio = vergas_pda.set_ratio_mode() or 3
+	if f_cnt > 0 then 
+		flist:Sort(FS.FS_sort_by_modif_down)
+		local file = flist:GetAt(0)
+		local fname = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
+		local sg = CSavedGameWrapper(fname) 
+		local y,m,d,h,min,sec,ms = 0,0,0,0,0,0,0
+			  y,m,d,h,min,sec,ms = sg:game_time():get(y,m,d,h,min,sec,ms)
+		local start_month = 5
+		local days_in_game = ui_load_dialog.GetDaysByMonth(m) - ui_load_dialog.GetDaysByMonth(start_month) + d
+		local bg_num = 1
+		if     days_in_game >= 15 and days_in_game < 30 then bg_num = 2
+		elseif days_in_game >= 30 and days_in_game < 45 then bg_num = 3
+		elseif days_in_game >= 45                       then bg_num = 4
+		end
+		if  ratio >= 3 then
+			picture:InitTexture("ui\\ui_mainmenu_" .. bg_num)
+		else
+			picture:InitTexture("ui\\ui_mainmenu_16_" .. bg_num)
+		end
+	else
+		if  ratio >= 3 then
+			picture:InitTexture("ui\\ui_mainmenu_1")
+		else
+			picture:InitTexture("ui\\ui_mainmenu_16_1")
+		end
+	end
 end
 
 function main_menu:__finalize() end
@@ -74,11 +74,12 @@ function main_menu:InitControls()
   
   self.message_box = CUIMessageBoxEx()
   self:Register(self.message_box, "msg_box")  
-  local sak_title   = game.translate_string("st_mp_voting_failed")
-  local sak_version  = ""
-  if xr_build_id then sak_version = tostring(xr_build_id) end
-  local mod_ver   = xml:InitStatic("mod_version",self)
-  mod_ver:SetText  (sak_title .. " (build " .. sak_version .. ")")
+  local engine_version = ""
+  if xr_build_id then engine_version = tostring( xr_build_id ) end
+  local mod_ver = xml:InitStatic( "mod_version", self )
+  mod_ver:SetText( sak_ver.sak_version .. " (" .. sak_ver.update ..")" )
+  local eng_ver = xml:InitStatic( "static_version", self )
+  eng_ver:SetText( "engine build: " .. engine_version )
 end
 
 function main_menu:Show(f)
@@ -87,7 +88,7 @@ end
 
 
 function main_menu:InitCallBacks()
-              
+			  
   self:AddCallback("btn_options",  ui_events.BUTTON_CLICKED,  self.OnButton_options_clicked,  self)
   self:AddCallback("msg_box",  ui_events.MESSAGE_BOX_OK_CLICKED,  self.OnMsgOk,    self)
   self:AddCallback("msg_box",  ui_events.MESSAGE_BOX_CANCEL_CLICKED,  self.OnMsgCancel,    self)
@@ -99,11 +100,11 @@ function main_menu:InitCallBacks()
   self:AddCallback("btn_quit",  ui_events.BUTTON_CLICKED,  self.OnButton_quit_clicked,  self)
   self:AddCallback("btn_quit_to_mm",  ui_events.BUTTON_CLICKED,  self.OnButton_disconnect_clicked,  self)
   if not self.err_mod then
-    self:AddCallback("btn_master",  ui_events.BUTTON_CLICKED,  self.OnButton_new_master_game,  self)
-    self:AddCallback("btn_spawn",  ui_events.BUTTON_CLICKED,  self.OnButton_load_spawn,  self)
+	self:AddCallback("btn_master",  ui_events.BUTTON_CLICKED,  self.OnButton_new_master_game,  self)
+	self:AddCallback("btn_spawn",  ui_events.BUTTON_CLICKED,  self.OnButton_load_spawn,  self)
 	self:AddCallback("btn_tele",  ui_events.BUTTON_CLICKED,  self.OnButton_load_teleport,  self)
-    self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,  self.OnButton_multiplayer_clicked,  self)
-    self:AddCallback("btn_ret",  ui_events.BUTTON_CLICKED,  self.OnButton_return_game,  self)
+	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,  self.OnButton_multiplayer_clicked,  self)
+	self:AddCallback("btn_ret",  ui_events.BUTTON_CLICKED,  self.OnButton_return_game,  self)
   end
 end
 function main_menu:OnMsgOk()
@@ -133,8 +134,8 @@ end
 
 function main_menu:OnButton_last_save()
   if (alife()==nil) then
-    self:LoadLastSave  ()
-    return
+	self:LoadLastSave  ()
+	return
   end
   self.mbox_mode      = 1
   self.message_box:Init  ("message_box_confirm_load_save")
@@ -183,16 +184,16 @@ function main_menu:StartGame()
   local console = get_console()
 
   if (alife()~=nil) then
-    console:execute  ("disconnect")
+	console:execute  ("disconnect")
   end
 
-    SetGlobalVar("new_game", "now") -- in session var
+	SetGlobalVar("new_game", "now") -- in session var
   console:execute("start server(all/single/alife/new) client(localhost)")
   console:execute("main_menu off")
 end
 
 function main_menu:NewGameStart(hard_level)
-    local console = get_console()
+	local console = get_console()
   console:execute("g_game_difficulty "..hard_level)
   self:StartGame()
 end
@@ -215,8 +216,8 @@ end
 
 function main_menu:OnButton_load_spawn()
   if self.spawn_dlg==nil then
-    self.spawn_dlg = ui_spawn_dialog.spawn_dialog()
-    self.spawn_dlg.owner = self
+	self.spawn_dlg = ui_spawn_dialog.spawn_dialog()
+	self.spawn_dlg.owner = self
   end
   
   self:GetHolder():start_stop_menu(self.spawn_dlg, true)
@@ -226,8 +227,8 @@ end
 
 function main_menu:OnButton_save_clicked()
   if self.save_dlg==nil then
-     self.save_dlg = ui_save_dialog.save_dialog()
-     self.save_dlg.owner = self
+	 self.save_dlg = ui_save_dialog.save_dialog()
+	 self.save_dlg.owner = self
   end
   
   self:GetHolder():start_stop_menu(self.save_dlg, true)
@@ -291,17 +292,17 @@ function main_menu:OnKeyboard( dik, keyboard_action )
   local bind = dik_to_bind( dik )
   local console = get_console()
   if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-    if dik == DIK_keys.DIK_ESCAPE then
-      if level.present() and( db.actor ~= nil ) and db.actor:alive() then
-        console:execute( "main_menu off" )
-      end
-    elseif dik == DIK_keys.DIK_F4 then
-      self:show_position_informer_window()
-    elseif dik == DIK_keys.DIK_F3 then
-      if level.present() and( db.actor ~= nil ) and db.actor:alive() then
-        console:execute( "main_menu off" )
-      end
-    end
+	if dik == DIK_keys.DIK_ESCAPE then
+	  if level.present() and( db.actor ~= nil ) and db.actor:alive() then
+		console:execute( "main_menu off" )
+	  end
+	elseif dik == DIK_keys.DIK_F4 then
+	  self:show_position_informer_window()
+	elseif dik == DIK_keys.DIK_F3 then
+	  if level.present() and( db.actor ~= nil ) and db.actor:alive() then
+		console:execute( "main_menu off" )
+	  end
+	end
   end
   return true
 end
@@ -334,18 +335,18 @@ function main_menu:Get_Adaptation_SSVersion()
   local sFileOld = sFileMask..".bak"
   local sFileVer = "template_script_"..tostring(self.iGSVer)..".src"
   if f:exist(sConfigDir, sFileVer) then
-    local sFullNameFileVer = f:update_path(sConfigDir, sFileVer)
-    local sFullNameFileSys = f:update_path(sConfigDir, sFileSys)
-    local sFullNameFileOld = f:update_path(sConfigDir, sFileOld)
-    if f:exist(sConfigDir, sFileSys) then
-      if f:exist(sConfigDir, sFileOld) then
-        f:file_delete(sFullNameFileOld)
-      end
-      f:file_rename(sFullNameFileSys, sFullNameFileOld, true)
-    end
-    f:file_copy(sFullNameFileVer, sFullNameFileSys)
-    local iVerLtx = utils.cfg_get_number(ini_file(sFileSys), "script", "current_server_entity_version", false, -1)
-    return iVerLtx==self.iGSVer
+	local sFullNameFileVer = f:update_path(sConfigDir, sFileVer)
+	local sFullNameFileSys = f:update_path(sConfigDir, sFileSys)
+	local sFullNameFileOld = f:update_path(sConfigDir, sFileOld)
+	if f:exist(sConfigDir, sFileSys) then
+	  if f:exist(sConfigDir, sFileOld) then
+		f:file_delete(sFullNameFileOld)
+	  end
+	  f:file_rename(sFullNameFileSys, sFullNameFileOld, true)
+	end
+	f:file_copy(sFullNameFileVer, sFullNameFileSys)
+	local iVerLtx = utils.cfg_get_number(ini_file(sFileSys), "script", "current_server_entity_version", false, -1)
+	return iVerLtx==self.iGSVer
   else
   end
   return false
@@ -353,10 +354,10 @@ end
 
   xray_dma.init()                            
   if _g.lua_random then
-     ui_load_tex.RandomUILoadTex()
+	 ui_load_tex.RandomUILoadTex()
   end   
   mp_ranks.do_get_rank_patch()
 
   if list_tools.record_list and windows.CUIScriptDialog then
-     wprintf("~CA0[~T]. #OK: class extensions found ~C07")
+	 wprintf("~CA0[~T]. #OK: class extensions found ~C07")
   end
