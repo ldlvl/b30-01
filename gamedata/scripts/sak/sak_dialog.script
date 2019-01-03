@@ -11100,16 +11100,22 @@ end
 function take_sakharov_mil_kurjer_3nagrad()
   sak.create_items(db.actor, "ammo_12x70_buck",5)
 end
+
 -- mil_kurjer_pda
 function add_mil_kurjer_treasure()
-  local treases={5203,5208,5209,5210,5212}
-  local sid=lua_random(1,#treases)
-  local obj= g_sim:story_object(treases[sid])
+  local treases = { 5202, 5207, 5211, 5212, 5214, 5200, 5217, 5228 }
+  local sid = lua_random( 1, #treases )
+  local obj = g_sim:story_object( treases[ sid ] )
   if obj then
-     misc.spawn_to("af_dummy_simbion", obj)
-     misc.spawn_to("af_armor_3", obj)
+    for k, v in ipairs( { "af_dummy_simbion", "af_dummy_buliz", "af_dummy_dummy" } ) do
+      if k == amk_vars.r_treas_items then
+        misc.spawn_to( v, obj )
+      end
+    end
+    misc.spawn_to( "bearer_cheque", obj )
   end
 end
+
 function info_kurjer_treasure()
   sak.send_tip("Может действително стоит поискать на складах. Чем он там расплачиваться собирался?..","Надо запомнить",5,15,"g_g","sak","yellow")
 end
