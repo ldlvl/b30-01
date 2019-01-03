@@ -4227,12 +4227,14 @@
 </dialog>
 
 <dialog id="doktor_dialog_artchanger2">
-<precondition>sak_dialog.have_bart</precondition>
+<!-- <precondition>sak_dialog.have_bart</precondition> -->
 <has_info>doktor_info_artchanger</has_info>
 	<phrase_list>
 		<phrase id="0">
 			<text>doktor_dialog_artchanger2_0</text>
-			<next>1</next>
+			<action>ui_barter_new.barter_screen("doctor")</action>
+			<action>dialogs.break_dialog</action>
+			<!-- <next>1</next> -->
 		</phrase>
 		<phrase id="1">
 			<text>doktor_dialog_artchanger2_1</text>
