@@ -278,7 +278,7 @@ end
 
 function prize_armor()		--определяю приз_1 из группы "броня"
 
-	local tbl_armor = {"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","stalker_guard_outfit"}
+	local tbl_armor = {"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","killer_outfit"}
 	
 	return tbl_armor[lua_random(1,complexity)]
 end
@@ -799,7 +799,7 @@ function vergas_prizes_2()    			--замена одного приза на другой
 
 	local tbl_tmp = {
 					"wpn_walther","wpn_pb","wpn_ak74u","wincheaster1300","wpn_toz34","wpn_mp5",
-					"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","stalker_guard_outfit",
+					"neytral_novice_gaz_outfit_m1","bandit_gaz_outfit_m1","killer_outfit","outfit_soldier_m1","killer_outfit",
 					"sleeping_bag","wpn_binoc","af_full_akkum","belt_3_art","arc_art_box_8basic","timer","skiing"
 					}
 	local flag = false
@@ -870,7 +870,7 @@ function vergas_prizes_2_1(tbl_custom)		--Выбор приза для замены
 			table.insert( tbl_wpn,"bandit_gaz_outfit_m1")
 			table.insert( tbl_wpn,"killer_outfit")
 			table.insert( tbl_wpn,"outfit_soldier_m1")
-			table.insert( tbl_wpn,"stalker_guard_outfit")
+			table.insert( tbl_wpn,"killer_outfit")
 		end
 		table.insert( tbl_wpn,"sleeping_bag")
 		table.insert( tbl_wpn,"wpn_binoc")
