@@ -295,7 +295,7 @@ function check_artefact()
     if class == CLID_ART then
       local scobj = ini_obj[ sect ]            
       if apply_arts and scobj then
-        jump_speed   = jump_speed + scobj.add_jump_speed      or 0  
+        -- jump_speed   = jump_speed + scobj.add_jump_speed      or 0  
         pwr_rst      = pwr_rst    + scobj.power_restore_speed or 0            
         add_sat      = add_sat    + scobj.add_satiety         or 0            
         reduce_sat   = reduce_sat + scobj.reduce_satiety      or 0            
@@ -305,6 +305,7 @@ function check_artefact()
     end -- if class  
   end -- for id, rec
   if apply_arts then
+    jump_speed  = 0
     add_dog_psy = 1
     for i, k in pairs( sak_inventory.belt_items ) do
       local ini = system_ini()
@@ -313,8 +314,12 @@ function check_artefact()
         if class == CLID_ART then
           for m = 1, table.getn( k ) do
             local dog_psy = ini:r_float( i, "add_dog_psy" )
+            local jmp_add = ini:r_float( i, "add_jump_speed" )
             if dog_psy ~= 1 then  
               add_dog_psy = add_dog_psy * dog_psy
+            end
+            if jmp_add > 0 then  
+              jump_speed = jump_speed + jmp_add
             end
           end
         end
