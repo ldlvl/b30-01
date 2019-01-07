@@ -565,12 +565,14 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 			--end
 		--end
 	end
+	local t_used = 0
+	local t_, ind_
 	for j = 1, i do
 		local cnt     = 0
 		local spawn   = {}
-		spawn.section = items[
-			dsh.get_next_random( "treasure_manager.rnd", table.getn( items ) )
-		]
+		t_used =  t_used + 1
+		ind_ = dsh.get_next_random( "treasure_manager.rnd", t_used, table.getn( items ) )
+		spawn.section = items[ ind_ ]
 		-- установка кол-ва предметов в зависимости от секции
 		local s   = tostring( spawn.section )
 		--local cls = get_string( s, "class" )
@@ -605,8 +607,11 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 		-- сохраняем инфу о текущем предмете
 		spawn.prob = cnt
 		table.insert( tabla, spawn )
+		t_ = table.remove( items, ind_ )
+		table.insert( items, 1, t_ )
+		--misc.dump_table( items )
 	end
-	misc.dump_table( tabla )
+	--misc.dump_table( tabla )
 	return tabla
 end
 
