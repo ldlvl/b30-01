@@ -3444,6 +3444,7 @@ function return_upgrade_outfit( first_speaker, second_speaker )
     end
   end
   nlc_vars.upgrade_item = nil
+  timers.start_timer( "bron_safe_rel", 10 )
 end
 
 function downgrade_item(id)

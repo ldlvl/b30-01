@@ -870,6 +870,7 @@ function init()
 end
 
 function randomize_arts()
+  if timers.check_timer( "bron_safe_rel" ) then return end
   local rnd_chanse = 0.75
   local bino = db.actor:item_in_slot( 4 )
   if bino ~= nil then 
