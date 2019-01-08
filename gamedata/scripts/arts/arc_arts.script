@@ -331,12 +331,10 @@ function check_artefact()
      params.max_item_mass_add( 0 )
      params.psy_restore_speed_add( add_psy )
      params.jump_speed_add( jump_speed )
-     wprintf("zzzzzzzzzzzzzzzzzzzzzzzzzzz   ADD_JUMP_SPEED: " .. jump_speed .. "   zzzzzzzzzzzzzzzzzzzzzzzzzzz")
      params.satiety_v_add( add_sat, reduce_sat )
      params.pwr_restore = ( pwr_rst * 1000 )    
   end
   bind_monster.dog_shield = add_dog_psy
-  --wprintf("zzzzzzzzzzzzzzzzzzzzzzzzzzz   ADD_DOG_PSY IS: " .. add_dog_psy .. "   zzzzzzzzzzzzzzzzzzzzzzzzzzz")
   arc_containers.check_container()
   if db.actor:has_info( "pda_is_broken" ) and sak.flag_sah == false then
     sak.out_many_pda_broken()
