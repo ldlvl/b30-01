@@ -20,3 +20,31 @@ function get_next_random( vname, ... )
 	end
 	return cur_num
 end
+
+function create_candle( pos, lvid, gvid, vis )
+	-- газовая горелка
+	if vis then
+		local sobj = alife():create( "my_candle_custom", pos, lvid, gvid )
+		local pk   = get_netpk( sobj, 1 )
+		ASSERT( pk and pk:isOk(), "can't read netpacket of %s", sobj:name() )
+		local data = pk:get()
+		data.visual_name = vis
+		data.custom_data = "[logic]\nactive = ph_idle@idle\n[ph_idle@idle]\ntips = candle\non_use = {=actor_has_matches()} %=sak.candle_on()% ph_idle@idle2, ph_idle@idle3 %=sak.info_no_matches()\n[ph_idle@idle2]\non_timer = 7000| %=sak.candle_yes()% ph_idle@idle\n[ph_idle@idle3]\non_timer = 10000|ph_idle@idle\n[collide]\nignore_static\n"
+		data.physic_type = 3
+		data.mass        = 10
+		data.fixed_bones = "link"
+		pk:set( data )
+		--sobj = alife():object( sobj.id )
+		--sobj:used_ai_locations( false )
+	end
+	-- аномалия
+	-- local sobj = amk_anoms.spawn_anomaly(
+	-- 		"zone_flame_candle_self",
+	-- 		vector():set( pos.x, pos.y + 0.15, pos.z ), gvid, lvid, 
+	-- 		{ shtype = 0, radius = 0.1, center = { 0, 0, 0 } }
+	-- 	)
+
+	--sobj     = alife():object( sobj.id )
+	--local sr = sobj:get_space_restrictor()
+	--sr.restrictor_type = global_flags.eRestrictorTypeNone
+end

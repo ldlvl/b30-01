@@ -811,3 +811,7 @@ function count_actor_ammo( section )
 	wprintf( "++++++++++++++++++++++++++++++++++" .. count )
 	return count
 end
+
+function spawn_docent_lampada()
+	dsh.create_candle( vector():set( 120.674, -4.398, 12.6 ), 34637, 1239, "new_item\\gas_burner" )
+end

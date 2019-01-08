@@ -1,0 +1,14 @@
+[logic]
+active = ph_idle@idle
+
+[ph_idle@idle]
+tips = candle
+on_use = {=actor_has_matches()} %=sak.candle_on()% ph_idle@idle2, ph_idle@idle3 %=sak.info_no_matches()%
+
+[ph_idle@idle2]
+on_timer = 7000| %=sak.candle_yes()% ph_idle@idle
+
+[ph_idle@idle3]
+on_timer = 10000|ph_idle@idle
+[collide]
+ignore_static

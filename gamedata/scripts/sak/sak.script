@@ -4628,24 +4628,23 @@ end
 function ignite_candle()
   local rend = lua_random(2)
   if rend == 1 then
-       schedule.add ("matches_flame", "params.spawn_matches_flame(1000)", 50)
-
-       local apos = db.actor:position()
+    schedule.add ("matches_flame", "params.spawn_matches_flame(1000)", 50)
+    local apos = db.actor:position()
     for a,i in pairs(db.storage) do
       local candle = client_obj(a)
       if candle then
-                local pos = candle:position()
+        local pos = candle:position()
         if strpos(candle:name(), "_candle_", 1, true) and (pos:distance_to(apos) < 2.3) then
-            savemgmt.candle_id = candle:id()
-                    schedule.add ("candle_flame", "savemgmt.enable_candle_flame()", 200)
-            break
+          savemgmt.candle_id = candle:id()
+          schedule.add ("candle_flame", "savemgmt.enable_candle_flame()", 200)
+          break
         end
       end
     end
   else
-        savemgmt.candle_id = -1
-        schedule.add ("matches_flame", "params.spawn_matches_flame(500)", 50)
-        schedule.add ("actor_grumble", "sak.actor_grumble()", 1000)
+    savemgmt.candle_id = -1
+    schedule.add ("matches_flame", "params.spawn_matches_flame(500)", 50)
+    schedule.add ("actor_grumble", "sak.actor_grumble()", 1000)
   end
 
 end
