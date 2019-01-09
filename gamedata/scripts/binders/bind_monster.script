@@ -237,7 +237,7 @@ function generic_object_binder:update( delta )
 		and lua_random() < bconf.psevdodog_divert_prob
 		and wpn_params.get_zie_obj()
 		and actor:see( sfobj )
-		and not nlc_vars.vodka_psi_block     -- если бахнул водки, то не сбивает прицел, ТАК КАК НАМ ПОХУЙ!!
+		and not nlc_vars.vodka_psi_block     -- если бахнул водки, то не сбивает прицел!!
 	  then
 		level.add_pp_effector( "zevok.ppe", 2021, false )
 		local dir    = device().cam_dir
@@ -425,7 +425,7 @@ function generic_object_binder:update( delta )
 			wpn_params.get_zie_obj()
 			and actor:see( sfobj )
 			and lua_random() < 0.6
-			and not nlc_vars.vodka_psi_block     -- если бахнул водки, то не сбивает прицел, ТАК КАК НАМ ПОХУЙ!!
+			and not nlc_vars.vodka_psi_block     -- если бахнул водки, то не сбивает прицел
 		then
 			--level.add_pp_effector( "zevok.ppe", 2021, false )
 			local dir    = device().cam_dir
