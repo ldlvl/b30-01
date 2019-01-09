@@ -285,19 +285,20 @@ end
 ---------------------------------------------------------------------------------
 
 class "CTreasure"
+
 function CTreasure:__init()
 	self.ini = g_ini_file 
 	if not self.ini:section_exist( "list" ) then
 		abort( "There is no section [list] in treasure_manager.ltx" )
 	end
-	local n = self.ini:line_count( "list" )
-	local id, value = "",""
-	local r_trs_item = ReadIni( db.stor_ltx, "stor", "r_treas_items" ) or "1"
+	local n            = self.ini:line_count( "list" )
+	local id, value    = "", ""
+	local r_trs_item   = ReadIni( db.stor_ltx, "stor", "r_treas_items" ) or "1"
 	self.treasure_info = {}
 	for i = 0, n - 1 do
-		result, id, value = self.ini:r_line( "list", i, "", "" )
-		self.treasure_info[ id ] = {}
-		self.treasure_info[ id ].target	= utils.cfg_get_number(
+		result, id, value               = self.ini:r_line( "list", i, "", "" )
+		self.treasure_info[ id ]        = {}
+		self.treasure_info[ id ].target = utils.cfg_get_number(
 											self.ini, id, "target", nil, true
 										)
 		self.treasure_info[ id ].name = utils.cfg_get_string(
@@ -374,12 +375,12 @@ function CTreasure:use( npc, community, rang_n )
 		n_rank = rang_n or 0
 		comm   = community
 	end
-	local avail = {}
+	local avail  = {}
 	local tr_sum = 0
 	for k, v in pairs( self.treasure_info ) do
 		if
-			v.done == false
-			and v.active == false
+			v.done                  == false
+			and v.active            == false
 			and v.community[ comm ] == true
 		then
 			local treasure_prob = xr_logic.pick_section_from_condlist(
@@ -390,8 +391,8 @@ function CTreasure:use( npc, community, rang_n )
 			end
 			if
 				tonumber( treasure_prob ) >= 0
-				and	v.community[ comm ] == true
-				and	v.active == false
+				and	v.community[ comm ]   == true
+				and	v.active              == false
 			then
 				if tonumber( treasure_prob ) == 100 then
 					shron = k
@@ -528,13 +529,7 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 	-- определим ранг непися
 	if n_rank == nil then
 		n_rank = dsh.get_next_random( "treasure_manager.rnd", 1, 12 ) * 100
-		wprintf( "@==================  NPC_RANK WAS NIL, NOW IT IS: " .. n_rank )
 	end
-	-- if 	  n_rank <= 300 then rank = 1
-	-- elseif n_rank <= 600 then rank = 2
-	-- elseif n_rank <= 900 then rank = 3
-	-- else   rank = 4
-	-- end
 	for k, v in pairs( shron_level ) do
 		for vv = 1, #v do
 			if v[ vv ] == level_name then rank = k end
@@ -546,10 +541,9 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 	end
 	-- если не нашли уровень в таблице, то тайник "мастерский"
 	if rank == -1 then rank = 4 end
-	wprintf( "@===================================   RANK: " .. rank )
 	-- определим, из какой секции брать предметы, и какие именно
 	local sect
-	if rank == 1 then
+	if rank     == 1 then
 		sect = rare_list.novice_section
 	elseif rank == 2 then
 		sect = rare_list.experienced_section
@@ -581,7 +575,6 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 		spawn.section = items[ ind_ ]
 		-- установка кол-ва предметов в зависимости от секции
 		local s   = tostring( spawn.section )
-		--local cls = get_string( s, "class" )
 		--if get_string( s, "treasure_manager.item_is", "" ) == "onetime" then
 			--cnt = 1
 			--remember_given_onetime( s )
@@ -615,9 +608,7 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 		table.insert( tabla, spawn )
 		t_ = table.remove( items, ind_ )
 		table.insert( items, 1, t_ )
-		--misc.dump_table( items )
 	end
-	--misc.dump_table( tabla )
 	return tabla
 end
 
