@@ -6646,69 +6646,79 @@ function kolb_baded()
 end
 -- обработка всякого при Выбросе, насколько я понял
 function off_testobj()
-  local h=hit()
-  local lname=level.name()
-    h.type=hit.strike
-    h.power=1000
-    h.impulse=1000
-  for a=1,MAX_OBJ_ID do
-  local obj= g_sim:object(a)
+  local h       = hit()
+  local lname   = level.name()
+  h.type        = hit.strike
+  h.power       = 1000
+  h.impulse     = 1000
+  local artz_up = false 
+  for a = 1, MAX_OBJ_ID do
+    local obj = g_sim:object( a )
     if obj then
-    local p_obj=obj.parent_id
-    local nname=obj:name()
-      if strpos(nname,"testsak_",1,true)
-      or strpos(nname,"amk_zone_teleport_",1,true)
-      or strpos(nname,"sak_skelet",1,true)
-      or strpos(nname,"_surprise_box",1,true)
-      or (obj.m_game_vertex_id~=BAD_OBJ_ID and const.ground_levels[obj.level_id] and (obj:clsid()==88 or (obj:clsid()==87 and nname=="")))
-      or strpos(nname,"amk_zone_greedy_",1,true) then
-      misc.release_obj (obj, 'sak.script:4182')
-      elseif strpos(nname,"banka_full") then
-        if p_obj and p_obj~=0 then
-          local par= g_sim:object(p_obj)
-          misc.release_obj (obj, 'sak.script:5626')
-          if par then
-            misc.spawn_to("banka", par)
-          end
-        elseif (p_obj==nil or p_obj==BAD_OBJ_ID) then
-          misc.release_obj (obj, 'sak.script:5633')
+      local p_obj = obj.parent_id
+      local nname = obj:name()
+      if
+           strpos( nname, "testsak_",           1, true )
+        or strpos( nname, "amk_zone_teleport_", 1, true )
+        or strpos( nname, "sak_skelet",         1, true )
+        or strpos( nname, "_surprise_box",      1, true )
+        or (
+                  obj.m_game_vertex_id ~= BAD_OBJ_ID
+              and const.ground_levels[obj.level_id]
+              and ( obj:clsid() == 88 or ( obj:clsid() == 87 and nname == "" ) )
+            )
+        or strpos( nname, "amk_zone_greedy_",   1, true )
+      then
+        misc.release_obj( obj, 'sak.script:4182' )
+      elseif strpos( nname, "banka_full" ) then
+        if p_obj and p_obj ~= 0 then
+          local par = g_sim:object( p_obj )
+          misc.release_obj( obj, 'sak.script:5626' )
+          if par then misc.spawn_to( "banka", par ) end
+        elseif ( p_obj == nil or p_obj == BAD_OBJ_ID ) then
+          misc.release_obj( obj, 'sak.script:5633' )
         end
-      elseif strpos(nname,"^af_") and not strpos(nname,"^af_full") then
-        if (not strpos(nname,"af_mayatnik_",1,true)
-        and not strpos(nname,"af_compass",1,true)
-        and not strpos(nname,"af_red_",1,true)
-        and not strpos(nname,"af_dummy_green",1,true)
-		and not strpos(nname,"af_unknown_",1,true)
-        and (p_obj==nil or p_obj==BAD_OBJ_ID)) then
+      elseif strpos( nname, "^af_" ) and not strpos( nname, "^af_full" ) then
+        if    ( not strpos( nname, "af_mayatnik_",    1, true )
+          and not strpos( nname, "af_compass",      1, true )
+          and not strpos( nname, "af_red_",         1, true )
+          and not strpos( nname, "af_dummy_green",  1, true )
+          and not strpos( nname, "af_unknown_",     1, true )
+          and ( p_obj == nil or p_obj == BAD_OBJ_ID ) )
+        then
           --if lname=="aver" and obj.position:distance_to(v3f(350.91,-6.01,-21.23))<30 then
-          if obj.position:distance_to(v3f(350.91,-6.01,-21.23))<30 then
-            changed_art_class(a)
+          if
+            obj.position:distance_to( v3f( 350.91, -6.01, -21.23 ) ) < 30
+            and not artz_up
+          then
+            changed_art_class( a )
+            artz_up = true
           else
-            misc.release_obj (obj, 'sak.script:4193')
+            misc.release_obj( obj, 'sak.script:4193' )
           end
         else
-        changes_art_class(a)
+          changes_art_class( a )
         end
       end
     end
-    local cr=client_obj(a)
-    if cr and cr:section()=="m_crow" and lua_random()<0.01 then
-      h.draftsman=cr
-      h.direction=cr:direction()
-      cr:hit(h)
+    local cr = client_obj( a )
+    if cr and cr:section() == "m_crow" and lua_random() < 0.01 then
+      h.draftsman = cr
+      h.direction = cr:direction()
+      cr:hit( h )
     end
   end
   if has_alife_info("marsh_pribor_aver_start") then
-	mike.marsh_pribor_aver_end()
+    mike.marsh_pribor_aver_end()
   end
   if has_alife_info("akk_aver_start") then
-	mike.akk_aver_end()
+    mike.akk_aver_end()
   end
   if has_alife_info("mayatnik_aver_start_info") then
-	mike.mayatnik_aver_ready()
+    mike.mayatnik_aver_ready()
   end
   if has_alife_info("mayatnik_prip_start_info") then
-	mike.mayatnik_prip_ready()
+    mike.mayatnik_prip_ready()
   end
   if db.actor:has_info("pda_will_be_broken") then
     pda_will_brock()
@@ -6718,13 +6728,14 @@ function off_testobj()
   ------ Смотрим, не сломать ли нам пда ----
   local brock_flag=nlc_vars.brocked_flag or math.random(10,35)   -- первая поломка случайна
   if db.actor:has_info("agroprom_military_case_have") and not db.actor:has_info("radar_on") then -- если закрыли Агро, не раньше
-	if brock_flag > 1 then nlc_vars.brocked_flag = brock_flag-1 -- на выброс ближе к поломке
+    if brock_flag > 1 then nlc_vars.brocked_flag = brock_flag-1 -- на выброс ближе к поломке
     else
       db.actor:give_info_portion("pda_will_be_broken")
       nlc_vars.brocked_flag = 4 + math.random(10,35)  - tonumber(level.get_game_difficulty()) -- следующая как минимум через выброс или больше
     end
   end
 end
+
 function pda_will_brock()
   db.actor:give_info_portion("pda_is_broken")
   params.command_unbind("map")
@@ -9253,7 +9264,7 @@ end
 function paused_game_began()
  game_began=true
 end
-
+-- даунгрейд артефактов при выбросе
 function changes_art_class(obj_id)
 if lua_random()>0.15 then return end
   local obj=sim:object(obj_id)
@@ -9277,35 +9288,39 @@ if lua_random()>0.15 then return end
     end
   end
 end
-function changed_art_class(obj_id)
-local line
-	if db.actor:has_info("marsh_new_theme_done") then
-	  line=0.35
-	else
-	  line=0.1
-	end
-	  if lua_random()>line then return end
-	  local obj=sim:object(obj_id)
-	  if obj then
-		local section=obj:section_name()
-		local new_art
-		if strpos(section,"_dyn",-6,true) and not strpos(section,"capsule",1,true) then
-			local num=tonumber(string.sub(section,-2,-2))
-			local pk = get_netpk(obj,1)
-			local data = pk:get()
-			local cond=data.condition+0.0004
-			if cond>=1 then cond=0.9999 end
-			local cond1=math.floor(cond*100)
-			if cond1<10 then cond1="0"..cond end
-			--arc_arts.register_artefact(section.."_"..cond1, -1)
-			if num==6 then misc.release_obj (obj, 'sak.script:6182') return  end
-			num=num+1
-			if num>=6 then num=5 end
-			new_art=string.sub(section,1,-7).."_dyn"..num.."d"
-			coord_params.set_obj_section(obj_id, new_art)
-		end
-	end
+
+-- апгрейд артефактов при выбросе ( ТЧ )
+function changed_art_class( obj_id )
+  if not db.actor:has_info( "marsh_new_theme_done" ) then return end
+  if dsh.get_next_random( "sak.changed_art_class" ) > 0.75 then return end 
+  local obj = sim:object( obj_id )
+  if obj then
+    local section = obj:section_name()
+    local new_art
+    if
+              strpos( section, "_dyn",   -6, true )
+      and not strpos( section, "capsule", 1, true )
+    then
+      local num   = tonumber( string.sub( section, -2, -2 ) )
+      local pk    = get_netpk( obj, 1 )
+      local data  = pk:get()
+      local cond  = data.condition + 0.0004
+      if cond >= 1 then cond = 0.9999 end
+      local cond1 = math.floor( cond * 100 )
+      if cond1 < 10 then cond1 = "0" .. cond end
+      --arc_arts.register_artefact(section.."_"..cond1, -1)
+      if num == 6 then
+        misc.release_obj( obj, 'sak.script:6182' )
+        return
+      end
+      num = num + 1
+      if num >= 6 then num = 5 end
+      new_art = string.sub( section, 1, -7 ) .. "_dyn" .. num .. "d"
+      coord_params.set_obj_section( obj_id, new_art )
+    end
+  end
 end
+
 function gg_not_have_weapon()
   for i,k in pairs(sak_inventory.slots) do
     if (strpos(i, "wpn_",1,true) and (i~="wpn_knife") and (i~="wpn_binoc") and (i~="bolt")) or strpos(i, "_outfit",1,true) then

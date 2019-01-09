@@ -11053,12 +11053,16 @@ end
 function add_marsh_soul()
   sak.create_items(db.actor,"af_soul_dyn5d",1)
 end
-function marsh_soul_have(first_speaker, second_speaker)
-	return first_speaker:object("af_soul_dyn5d")~=nil
+
+local gluzoff_art = ( tostring( nlc_vars.gluzov_art_given ) .. "_dyn5d" ) or "af_soul_dyn5d"
+
+function marsh_soul_have( first_speaker, second_speaker )
+	return first_speaker:object( gluzoff_art ) ~= nil
 end
 
-function give_marsh_soul(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "af_soul_dyn5d", "out")
+function give_marsh_soul( first_speaker, second_speaker )
+	dialogs.relocate_item_section( second_speaker, gluzoff_art, "out" )
+  nlc_vars.gluzov_art_given = nil
 end
 -- part_exchanger
 function add_hand_kontroler(first_speaker, second_speaker)   

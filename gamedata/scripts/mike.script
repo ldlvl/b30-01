@@ -1374,7 +1374,11 @@ function timer_new_theme_end()
 end
 
 function add_soul()
-    sak.create_items(db.actor,"af_soul_dyn4d",1)
+  local sect = test.add_rnd_art_to_actor( 3, 4 ) 
+  --local sect = "af_kristall_dyn5d"
+  nlc_vars.gluzov_art_given = sect:gsub('_dyn[1-5]d', '')
+  wprintf( "-----------------------------------------------------------------------"..nlc_vars.gluzov_art_given )
+    --sak.create_items(db.actor,"af_soul_dyn4d",1)
 end
 
 function add_antitush()
