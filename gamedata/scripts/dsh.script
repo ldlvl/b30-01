@@ -21,6 +21,29 @@ function get_next_random( vname, ... )
 	return cur_num
 end
 
+function get_fixed_random( vname, pos, ... )
+	while pos > 99 do pos = pos - 99 end
+	local args = { ... }
+	local min, max
+	if table.getn( args ) == 1 then
+		min, max = 1, args[ 1 ]
+	elseif table.getn( args ) > 1 then
+		min, max = unpack( args )
+	end
+	if min and max and min == max then return min end
+	local nums = xray_vars.load_table( nlc_vars, vname, {} )
+	while table.getn( nums ) < 100 do
+		table.insert( nums, math.random() )
+	end
+	local cur_num = tonumber( nums[ pos ] )
+	nlc_vars[ vname ] = nums
+	--xray_vars.save_table( nlc_vars, vname )
+	if table.getn( args ) > 0 then
+		cur_num = min + round( cur_num * ( max - min ) )
+	end
+	return cur_num
+end
+
 function create_candle( pos, lvid, gvid, vis )
 	-- газовая горелка
 	if vis then
