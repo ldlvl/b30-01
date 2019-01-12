@@ -1092,12 +1092,10 @@ function generate_arts()
   then
     return true
   end
-  --local difficult=tonumber(level.get_game_difficulty())
   generate_test( lname )
   local v = level_arts[ lname ]
   if v then
-    --local cnt, mxx=0,lua_random(v[1],(v[2]+(3-difficult)))
-    local cnt, mxx = 0, lua_random( v[ 1 ],( v[ 2 ] ) )	
+    local cnt, mxx = 0, dsh.get_next_random( "amk_anoms.generate_arts", v[ 1 ],( v[ 2 ] ) )	
     while cnt < mxx do
       if generate_art( lname ) then 
          cnt = cnt + 1
@@ -1171,13 +1169,13 @@ local new_arts = {
 }
 
 function spawn_rand_arts( pos, gv, lv, lname )
-  local rnd = lua_random( 100 )
+  local rnd = dsh.get_next_random("amk_anoms.spawn_rand_arts", 100 )
   for k, v in pairs( level_arts[ lname ][ 3 ] ) do
     if rnd <= v then
       if not strpos( arts_sections[ k ],      "_new", 1, true ) and 
          not strpos( arts_sections[ k ], "af_dummy_", 1, true ) then
-         local arts_dyn = lua_random( 21 )
-         if   strpos( arts_sections[ k ], "_capsule", 1, true ) then arts_dyn = lua_random( 15, 21 ) end
+         local arts_dyn = dsh.get_next_random("amk_anoms.spawn_rand_arts", 21 )
+         if   strpos( arts_sections[ k ], "_capsule", 1, true ) then arts_dyn = dsh.get_next_random("amk_anoms.spawn_rand_arts", 15, 21 ) end
          if     arts_dyn >= 1  and arts_dyn <= 3  then section = ( arts_sections[ k ].."_dyn1d" ) break
          elseif arts_dyn >= 4  and arts_dyn <= 9  then section = ( arts_sections[ k ].."_dyn2d" ) break
          elseif arts_dyn >= 10 and arts_dyn <= 16 then section = ( arts_sections[ k ].."_dyn3d" ) break
@@ -1185,10 +1183,10 @@ function spawn_rand_arts( pos, gv, lv, lname )
          elseif arts_dyn == 21 then                    section = ( arts_sections[ k ].."_dyn5d" ) break
          end
       elseif strpos( arts_sections[ k ], "_new", 1, true ) then
-        if lua_random() > 0.5 then
-          section = new_arts[ lua_random( #new_arts ) ] break
+        if dsh.get_next_random( "amk_anoms.spawn_rand_arts" ) > 0.5 then
+          section = new_arts[ dsh.get_next_random( "amk_anoms.spawn_rand_arts", #new_arts ) ] break
         else
-          section = "af_unknown_" .. lua_random( 1, 31 ) .. "_new" break
+          section = "af_unknown_" .. dsh.get_next_random( "amk_anoms.spawn_rand_arts", 1, 31 ) .. "_new" break
         end
       else
         section = ( arts_sections[ k ] ) break

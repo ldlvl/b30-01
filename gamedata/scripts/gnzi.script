@@ -42,7 +42,7 @@ function add_first_spawn()
 		{ "amk_zone_sakbuzz_strong",	74.84,	 0.86,  -136.71,	397,	244678 }, --Свалка, бетон, псевды, круг
 		{ "amk_zone_sakbuzz_strong",	32.95,	 4.00, 	 146.22,	1412,	67411  }, --ДТ трубы у перехода на Бар
 		{ "amk_zone_sakbuzz_strong",	116.99,	 20.13,	 160.00,	240,	419813 }, --Кордон??
-		{ "amk_zone_sakbuzz_strong",   -100.73, -8.99,  -134.49,	1437,	45041  }, --ДТ на выходе из тонеля справа?
+		{ "amk_zone_sakbuzz_strong",   -100.73, -8.99,  -134.49,	1437,	45041  }, --ДТ на выходе из тоннеля справа?
 		{ "amk_zone_sakbuzz_strong",   -201.20,	 5.00,   119.06,	1402,	26434  }, --ДТ верх лестницы у вагонов между домами
 		{ "amk_zone_sakbuzz_strong",   -197.81,	 5.00, 	 136.00,	1369,	26481  }, --ДТ верх лестницы сбоку ангара
 		{ "amk_zone_sakbuzz_strong",   -147.66,	 7.50, 	 156.50,	1327,	39387  }, --ДТ верх лестницы на вышку
@@ -62,8 +62,9 @@ function add_first_spawn()
 	sak_spawn.spawn_inventory_box()	
 	test.spawn_docent_lampada() 			-- лампадка на столе по пути к Доцентам-Долговязым
 	test.spawn_holod_radio()  				-- добавим приёмник Холоду на Болотах
-	test.spawn_sultan_radio()				-- и Султану, а радистанцию эту уберём нафиг
-	test.on_new_game()						-- для ститистики, чтобы упорядочено было			
+	test.spawn_sultan_radio()				-- и Султану, а радиостанцию эту уберём нафиг
+	test.on_new_game()						-- для статистики, чтобы упорядочено было	
+	start_randoms()		
 end
 
 function trade_many_remove()
@@ -82,5 +83,19 @@ function trade_many_add()
 	if sum > 0 then
 		db.actor:give_money( sum )
 		nlc_vars.trade_me_re = nil
+	end
+end
+
+function start_randoms()
+	for _, v in ipairs ( 
+	                    	{ 
+	                    		"treasure_manager.rnd",
+	                    		"sak.changed_art_class",
+	                    		"amk_anoms.generate_arts",
+	                    		"test.rec_art_info"
+	                    	}
+	 					)
+	do
+		dsh.get_next_random( v )
 	end
 end

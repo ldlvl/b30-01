@@ -431,25 +431,17 @@ function sms_recipt_found( info )
 end
 
 function rnd_rec_art_info( tbl, lvl, dyn )
-	if nlc_vars.randomizer_k == nil then nlc_vars.randomizer_k = 1 end
-	local unique_k = ( k1 + k2 ) * k1 * k2 + lvl + nlc_vars.randomizer_k
-	local lname = "lvl" .. tostring( lvl )
-	local tbl1 = tbl[ lname ]
-	math.randomseed( unique_k )
-	math.random()
-	math.random()
-	math.random()
-	local info = tbl1[ math.random( 1, #tbl1 ) ] or ""
+	local tbl1 = tbl[ ( "lvl" .. tostring( lvl ) ) ]
+	local info = tbl1[ dsh.get_next_random( "test.rec_art_info", 1, #tbl1 ) ] or ""
 	if strposx( info, "af_" ) then
-		if lvl == 1 or lvl == 2 or lvl == 3 or lvl == 9 then
+		if lvl <= 3 or lvl == 9 then
 			if dyn == nil then
-				info = info .. "_dyn" .. tostring( math.random( 1, 4 ) ) .. "d"  -- без зелени
+				info = info .. "_dyn" .. tostring( dsh.get_next_random( "test.rec_art_info", 1, 4 ) ) .. "d"  -- без зелени
 			else
 				info = info .. "_dyn" .. dyn .. "d"
 			end
 		end
 	end
-	nlc_vars.randomizer_k = nlc_vars.randomizer_k + 1
 	return info
 end
 
@@ -820,4 +812,17 @@ end
 function add_soul()
   local sect = test.add_rnd_art_to_actor( 3, 4 ) 
   nlc_vars.gluzov_art_given = sect:gsub('_dyn[1-5]d', '')
+end
+
+function isBarterAvailable( treshold, npc_koeff )
+	local day = timers.Get_Game_Days() or 1
+	if day > 45 then day = 45 end
+	local chance = dsh.get_fixed_random( "test.isBarterAvailable." .. npc_koeff, day, ( 80 - day ), 100 )
+	wprintf( "----------CHANSE: "..chance.." --------- TRESHOLD: "..treshold.. " -------- DAY: "..day.." ------ npc_koeff: ".. npc_koeff )
+	if chance >= treshold then return true end
+    return false
+end
+
+function noBarterAvailable( treshold, npc_koeff )
+  return not isBarterAvailable( treshold, npc_koeff )
 end

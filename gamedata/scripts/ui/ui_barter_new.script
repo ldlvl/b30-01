@@ -596,9 +596,9 @@ function make_list_by_trader( name )
 				table.insert( tmptbl2, v )
 			end
 		end
-		tbl_  = generate_rnd_list( tmptbl1, 13, 24, 3, 7 )
-		tbl__ = generate_rnd_list( tmptbl2, 16, 24, 4, 6 )
-		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
+		tbl_  = generate_rnd_list( tmptbl1, 97, 24, 3, 6 )
+		tbl__ = generate_rnd_list( tmptbl2, 96, 24, 4, 6 )
+		for k, v in pairs( tbl__ ) do table.insert( tbl_, v ) end
 		tbl_to_show = tbl_
 
 	elseif name == "dan" then
@@ -630,8 +630,8 @@ function make_list_by_trader( name )
 				end
 			end
 		end
-		tbl_  = generate_rnd_list( tmptbl1, 12, 14, 3 )
-		tbl__ = generate_rnd_list( tmptbl2, 12, 14, 2 )
+		tbl_  = generate_rnd_list( tmptbl1, 98, 6, 3 )
+		tbl__ = generate_rnd_list( tmptbl2, 99, 6, 2 )
 		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
 		tbl_to_show = tbl_
 
@@ -666,22 +666,23 @@ function generate_rnd_list( table_in, npc_koeff, r_update, min, max )
 		day = day + day_time
 	end
 	for k, v in pairs( table_in ) do table.insert( t, v[ 1 ] ) end
-	local unique_koeff = ( amk_vars.r_task_reward + amk_vars.r_treas_items ) or 1
+	--local unique_koeff = ( amk_vars.r_task_reward + amk_vars.r_treas_items ) or 1
 	local t_out  = {}
 	local t_used = 0
 	local t_max
-	math.randomseed( day + npc_koeff + unique_koeff )
-	math.random()
-	math.random()
---	t_max = math.random( min, max ) or min
+	--math.randomseed( day + npc_koeff + unique_koeff )
+	--math.random()
+	--math.random()
 	if max == nil then
 		t_max = min
 	else
-		t_max = math.random( min, max )
+		--t_max = math.random( min, max )
+		t_max = dsh.get_fixed_random( "ui_barter_new.generate_rnd_list."..npc_koeff, day, min, max )
 	end
+	wprintf( "@-----------------------       DAY: " .. day )
 	for i = 1, t_max do
 		t_used = ( t_used == t_max and 0 or t_used ) + 1
-		local index = math.random( t_used, #t )
+		local index = dsh.get_fixed_random( "ui_barter_new.generate_rnd_list."..npc_koeff, day + i, t_used, #t )
 		wprintf( "@-----------------------       T_USED =  " .. t_used )
 		wprintf( "@-----------------------       INDEX =  " .. index )
 		local value = t[ index ]
