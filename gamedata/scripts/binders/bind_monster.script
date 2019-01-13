@@ -694,7 +694,11 @@ function generic_object_binder:hit_callback( obj, amount, local_direction, who, 
 	)
   end
   ----------------- Убиваем гиганта из РПГ ---------------
-  if string.find( obj:section(), "gigant", 1, true ) and obj:alive() then
+  if
+  	string.find( obj:section(), "gigant", 1, true )
+  	and not strposx( obj:section(), "marsh" )
+  	and obj:alive()
+  then
 	--wprintf( "BOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMMM: " .. amount )
 	if actor then
 		local active_item = actor:active_item()
