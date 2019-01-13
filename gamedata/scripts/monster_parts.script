@@ -32,7 +32,7 @@ function on_part_take( obj )
 	level.start_stop_menu( level.main_input_receiver(), true )
 	sak.actor_hide_weapon()
 	level.add_cam_effector( "camera_effects\\item_use_slow.anm", 8553, false, "" )
-	if  lua_random() > koeff_by_monster*knf_time_k then
+	if  dsh.get_next_random( "monster_parts.on_part_take" ) > koeff_by_monster * knf_time_k then
 		schedule.add( "loot_monster_snd", "monster_parts.loot_monster_sound()", 600 )
 		-- sak.send_tip(
 		--              "Отрезаем: " ..
@@ -44,7 +44,7 @@ function on_part_take( obj )
 		--              2, 20,	"uniq", "sak", "red" )
 	else
 		schedule.add( "knife_break_snd", "monster_parts.knife_break()", 1000 )
-		if lua_random() > 0.65 then misc.release_obj( obj ) end
+		if dsh.get_next_random( "monster_parts.on_part_take" ) > 0.65 then misc.release_obj( obj ) end
 	end
 	schedule.add( "loot_monster_finish", "monster_parts.stop_loot_already()", knf_time_k * ( 2500 + ( 10000 * koeff_by_monster ) ) )
 end
