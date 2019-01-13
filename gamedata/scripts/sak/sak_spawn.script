@@ -256,33 +256,58 @@ local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]
 end
 
 function marsh_monster_botans()
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",9},
-{"dog_normal",6},
-{"boar_normal",4}
-}
-local table_spawn={
-{position={x=-70.377578735352,y=0.97067296504974,z=283.99374389648},gv=3388,lv=102412},
-{position={x=-149.92785644531,y=0.50965797901154,z=332.53909301758},gv=3378,lv=70881},
-{position={x=-115.08837127686,y=0.88691937923431,z=139.29194641113},gv=3383,lv=86145}
-}
-
-local rand_point
-	for rand_point=1,#table_spawn do
-	local rand_monstr=table_monsters[lua_random(#table_monsters)]
-	local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_botans"..rand_point.."\nhome_min_radius = 15\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-		for i=1,rand_monstr[2] do
-			local a=table_spawn[rand_point]
-			local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-			local pk = get_netpk(obj)
-			local data = pk:get()
+	local table_monsters = {
+		{ "pseudodog_normal",3 },
+		{ "tushkano_normal", 9 },
+		{ "dog_normal", 6      },
+		{ "boar_normal", 4     }
+	}
+	local table_spawn = {
+		{
+			position = {
+				x = -70.377578735352,
+				y = 0.97067296504974,
+				z = 283.99374389648
+			},
+			gv = 3388,
+			lv = 102412
+		},
+		{
+			position = {
+				x = -149.92785644531,
+				y = 0.50965797901154,
+				z = 332.53909301758
+			},
+			gv = 3378,
+			lv = 70881
+		},
+		{
+			position = {
+				x = -115.08837127686,
+				y = 0.88691937923431,
+				z = 139.29194641113
+			},
+			gv = 3383,
+			lv = 86145}
+	}
+	local rand_point
+	for rand_point = 1, #table_spawn do
+		local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+		local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_botans"..rand_point.."\nhome_min_radius = 15\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+		for i = 1, rand_monstr[ 2 ] do
+			local a   = table_spawn[ rand_point ]
+			local obj = alife():create(
+			                rand_monstr[ 1 ],
+			                sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+			            )
+			local pk         = get_netpk( obj )
+			local data       = pk:get()
 			data.custom_data = logic
-			pk:set(data)	
+			pk:set( data )	
 			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
+				sim:set_switch_online( obj.id, false )
+				sim:set_switch_offline( obj.id, true )
+				amk.convert_npc[ obj.id ] = 1
 			end
 		end
 	end
