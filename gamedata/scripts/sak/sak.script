@@ -6679,7 +6679,7 @@ function off_testobj()
           misc.release_obj( obj, 'sak.script:5633' )
         end
       elseif strpos( nname, "^af_" ) and not strpos( nname, "^af_full" ) then
-        if    ( not strpos( nname, "af_mayatnik_",    1, true )
+        if  ( not strpos( nname, "af_mayatnik_",    1, true )
           and not strpos( nname, "af_compass",      1, true )
           and not strpos( nname, "af_red_",         1, true )
           and not strpos( nname, "af_dummy_green",  1, true )
@@ -9292,7 +9292,7 @@ end
 -- апгрейд артефактов при выбросе ( ТЧ )
 function changed_art_class( obj_id )
   if not db.actor:has_info( "marsh_new_theme_done" ) then return end
-  if dsh.get_next_random( "sak.changed_art_class" ) > 0.75 then return end 
+  if dsh.get_next_random( "sak.changed_art_class" ) > 0.8 then return end 
   local obj = sim:object( obj_id )
   if obj then
     local section = obj:section_name()
@@ -9309,7 +9309,7 @@ function changed_art_class( obj_id )
       local cond1 = math.floor( cond * 100 )
       if cond1 < 10 then cond1 = "0" .. cond end
       --arc_arts.register_artefact(section.."_"..cond1, -1)
-      if num == 6 then
+      if num == 6 or num == 5 then
         misc.release_obj( obj, 'sak.script:6182' )
         return
       end
