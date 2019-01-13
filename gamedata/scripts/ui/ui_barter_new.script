@@ -731,7 +731,12 @@ function load_sultan_weapon_treasure()
 		local ammo_tbl = se_respawn.parse_names( utils.cfg_get_string( ini, sect, "ammo_class", false, false, false, "" ) )
 		if ammo_tbl ~= nil then
 			for i = 1, #ammo_tbl do
-				misc.spawn_to( ammo_tbl[ i ], obj )
+				if
+					not strposx( ammo_tbl[ i ], "_merc" )
+					and ammo_tbl[ i ] ~= "ammo_ak"
+				then 
+					misc.spawn_to( ammo_tbl[ i ], obj )
+				end
 			end
 		end
 		-----------------------------------------------------------------------
