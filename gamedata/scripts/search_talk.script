@@ -22,7 +22,8 @@ function CommandBackSpace() Command("BackSpace") end
 function CommandCaps() Command("CapsLock") end
 
 function CommandWork(t1,t2)
-	local rezult = "Надиктовал ты мне >"..State.CurString.."<.\n"
+	State.CurString = ui_find_by_name.fbname or State.CurString
+	local rezult = "Написал ты мне '"..State.CurString.."'\n"
 	db.actor:give_talk_message(rezult,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
 	local isntFind = true
 	for i = 1,MAX_OBJ_ID do
@@ -37,29 +38,30 @@ function CommandWork(t1,t2)
 					m_level=m_level..", по моим данным,"
 				end
 				local pos = ""
-				if sak_dialog.docent_npc_money_have() then
+				if sak_dialog.have_any_aart() then
 					if obj.alive and obj:alive() and obj.health and obj:health()>0 then 
-						pos = "Да есть такой в базе. "..m_level.." "..name.." находится. Гони деньги за работу."
+						pos = "Да есть такой в базе. "..m_level.." "..name.." находится. Гони арт за работу."
 						db.actor:give_talk_message(pos,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
-						sak_dialog.give_docent_npc_money(t1,t2)
+						sak_dialog.transfer_any_aart()
 						return
 					else
 						pos = "Был такой сталкер, мда... "..name.." ушел в мир иной. "..m_level.." труп видели. Вот такие вот дела..."
 						db.actor:give_talk_message(pos,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
-						sak_dialog.give_docent_npc_money(t1,t2)
+						sak_dialog.transfer_any_aart()
 						return
 					end
 				else
-					db.actor:give_talk_message("Блин, да я вижу, у тебя деньги кончились... Извини, Потом подходи.","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+					db.actor:give_talk_message("Блин, да я вижу, у тебя с оплатой не ахти... Извини, Потом подходи.","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
 					return
 				end
 			end
 		end
 	end
 	if isntFind then 
-		rezult = "Мне ничего не известно про такого. Извини. На нет и суда нет. Денег не возьму."
+		rezult = "Мне ничего не известно про такого. Извини. На нет и суда нет. Платы не возьму."
 		db.actor:give_talk_message(rezult,"ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
 	end
+	fbname = ""
 end
 
 function new_npc()

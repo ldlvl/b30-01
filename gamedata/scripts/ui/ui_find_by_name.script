@@ -1,0 +1,114 @@
+--- Ì‡ ÓÒÌÓ‚Â Ì‡‡·ÓÚÓÍ naxac
+_dialog = level.main_input_receiver()
+fbname  = ""
+
+function init_module()
+	_dialog = nil
+end
+
+function start_find()
+	level.start_stop_menu( find_by_name( get_hud() ), true )
+end
+
+function name_entered()
+	if fbname ~= "" then return true end
+	return false
+end
+
+function name_not_entered()
+	return not name_entered()
+end
+
+class "find_by_name"( CUIScriptWnd )
+
+function find_by_name:__init( owner ) super()
+	local eng = [[qwertyuiop[]asdfghjkl;'zxcvbnm,./QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?!@#$%^&*()-_+=\| 0123456789]]
+	local rus = [[ÈˆÛÍÂÌ„¯˘Áı˙Ù˚‚‡ÔÓÎ‰Ê˝ˇ˜ÒÏËÚ¸·˛∏…÷” ≈Õ√ÿŸ«’⁄‘€¬¿œ–ŒÀƒ∆›ﬂ◊—Ã»“‹¡ﬁ,!"π;%:?*()-_+=\/ 0123456789]]
+	self.translit = {}
+	for i = 1, string.len( rus ) do
+		self.translit[ string.sub( eng, i, i ) ] = string.sub( rus, i, i )
+	end
+	_dialog = self
+	self:InitControls()
+	self:InitCallBacks()
+	used_items.set_get_flag_use_gadget(1,false)
+end
+
+function find_by_name:__finalize()
+	used_items.set_get_flag_use_gadget(1,true)
+end
+
+function find_by_name:InitControls()
+	self:Init( 0, 0, 1024, 768 )
+	local xml = CScriptXmlInit()
+	local ctrl
+	xml:ParseFile( "ui_find_by_name.xml" )
+	self.dialog =  xml:InitStatic( "main_dialog:dialog", self )
+	self:Register( xml:Init3tButton( "btn_ok", self ), "btn_ok" )
+	self.edit_box = xml:InitEditBox( "main_dialog:frame_search", self.dialog )
+	self.search = CUIStatic()
+	self.search:SetWindowName( "search" )
+	self.search:SetAutoDelete( true )
+	self.search:SetText( "“ÛÚ Ú˚˜¸ Ë ÔË¯Ë ËÏˇ-Ù‡ÏËÎËÂ. ¬Á‡ÏÂÒÚ '∏' ‰‡‚Ë '/'" )
+	self.search:SetTextColor( 255, 150, 150, 150 )
+	self.search:SetFont( GetFontLetterica18Russian() )
+	self.search:Init( 430, 302, 250, 24 )
+	self:AttachChild( self.search )
+	self.text = ""
+end
+
+function find_by_name:InitCallBacks()
+	self:AddCallback("btn_ok", ui_events.BUTTON_CLICKED, self.OnBtnOk, self)
+end
+
+function find_by_name:SearchText( letter )
+	self.search:SetText( "" )
+	self.search:SetTextColor( 255, 240, 165, 25 )
+	local lett = letter and ( self.translit[ letter ] or letter ) or ""
+	self.text = self.text .. lett
+	self.search:SetText( self.text )
+end
+
+function find_by_name:OnQuit()
+	if self then
+		local holder = self:GetHolder()
+		if holder then holder:start_stop_dialog( self, true ) end
+		level.destroy_dialog( self )
+	end
+	_dialog = nil
+end
+
+function find_by_name:BackSpace()
+	if self.text ~= "" and string.len( self.text ) > 1 then
+		self.text = string.sub( self.text, 1, string.len( self.text ) - 1 )
+		self.search:SetText( self.text )
+	else
+		self.text = ""
+	end
+	self.search:SetText( self.text )
+end
+
+function find_by_name:OnBtnOk()
+	fbname = self.text or ""
+	self:OnQuit()
+end
+
+function find_by_name:OnKeyboard( dik, keyboard_action )
+	CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if
+			dik == DIK_keys.DIK_RETURN then self:OnBtnOk()
+		elseif
+			dik == DIK_keys.DIK_DELETE then self:BackSpace()
+		else
+			local letter = string.sub( self.edit_box:GetText(), -1 )
+			if letter and letter ~= "" then
+				self:SearchText( letter )
+				self.edit_box:SetText("")
+			end
+		end
+	end
+	return true
+end
+
+	

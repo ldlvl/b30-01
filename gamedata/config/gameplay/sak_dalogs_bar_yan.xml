@@ -15894,24 +15894,36 @@
 <dialog id="docent_npc_search">
 	<phrase_list>
 		<phrase id="0">
+			<!-- <precondition>ui_find_by_name.name_not_entered</precondition> -->
 			<text>docent_npc_search_0</text>
 			<next>1</next>
 		</phrase> 
 		<phrase id="1">
 			<text>docent_npc_search_1</text>
-			<action>sak_dialog.text_money_docent_npc_dialog</action>
-			<action>search_talk.new_npc</action>
+			<!-- <action>sak_dialog.text_money_docent_npc_dialog</action> -->
+			<!-- <action>search_talk.new_npc</action> -->
 			<next>2</next>
+			<next>99</next>
 			<next>3</next>
 		</phrase> 
 		<phrase id="2">
-			<precondition>sak_dialog.docent_npc_money_have</precondition> 
+			<precondition>ui_find_by_name.name_not_entered</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
 			<text>docent_npc_search_2</text>
-			<next>41</next>
+			<action>search_talk.new_npc</action>
+			<action>ui_find_by_name.start_find</action>
+			<action>dialogs.break_dialog</action>
+			<!-- <next>41</next> -->
 		</phrase> 
 		<phrase id="3">
 			<text>docent_npc_search_3</text>
 		</phrase> 
+		<phrase id="99">
+			<precondition>ui_find_by_name.name_entered</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<text>docent_npc_search_99</text>
+			<next>30</next>
+		</phrase>
 		<phrase id="41">
 			<text>docent_npc_search_4</text>
 			<action>search_talk.CommandPrint</action>
