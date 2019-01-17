@@ -475,6 +475,35 @@ function CTreasure:give_treasure( k )
 				            )
 				if vv.section == "arc_art_box_basic" then
 					sak_dialog.spawn_arts_cont(obj_sp)
+				elseif strposx( vv.section, "wpn_" ) then
+					if dsh.get_next_random( "treasure_manager.rnd" ) > 0.5 then
+						local ammo_tbl = se_respawn.parse_names(
+						    				utils.cfg_get_string(
+						    				    system_ini(), vv.section, "ammo_class",
+						    				    false, false, false, ""
+						    				)
+						    			)
+						if ammo_tbl ~= nil then
+							for k, v in ipairs( ammo_tbl ) do
+								if v == "ammo_ak" or strposx( v, "_merc" ) then
+									table.remove( ammo_tbl, k )
+								end
+							end
+						end
+						if ammo_tbl ~= nil then
+							local ammo_sect = dsh.get_next_random( "treasure_manager.rnd", table.getn( ammo_tbl ) )
+							local ammo_cnt  = dsh.get_next_random( "treasure_manager.rnd", 1, 3 )
+							for i = 1, ammo_cnt do
+								alife():create(
+								    ammo_tbl[ ammo_sect ],
+								    obj.position,
+			                		obj.m_level_vertex_id,
+			                		obj.m_game_vertex_id,
+			                		obj.id
+				            	)
+							end
+						end
+					end
 				end
 			end
 		end
@@ -568,40 +597,51 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 	end
 	local t_used = 0
 	local t_, ind_
-	for j = 1, i do
+	local j = 1
+	local wpn_have, outfit_have = false, false
+	while j <= i do
 		local cnt     = 0
 		local spawn   = {}
-		t_used =  t_used + 1
-		ind_ = dsh.get_next_random( "treasure_manager.rnd", t_used, table.getn( items ) )
+		t_used        = t_used + 1
+		ind_          = dsh.get_next_random( "treasure_manager.rnd", t_used, table.getn( items ) )
 		spawn.section = items[ ind_ ]
 		-- установка кол-ва предметов в зависимости от секции
 		local s   = tostring( spawn.section )
-		--if get_string( s, "treasure_manager.item_is", "" ) == "onetime" then
-			--cnt = 1
-			--remember_given_onetime( s )
-		--elseif get_string( s, "treasure_manager.item_is", "" ) == "unique" then
-			--cnt = 1
 		if
 			   strposx( s, "ammo_" )
 			or strposx( s, "suhpay" )
 			or s == "medkit_scientic"
 		then 
+			j = j + 1
 			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 3 ) 	-- патроны, сухпайки, научные аптеки
-		elseif
-			   strposx( s, "wpn_" )
-			or strposx( s, "outfit" )
-			or strposx( s, "exo" )
+		elseif strposx( s, "wpn_" )	then
+			if not wpn_have then
+				j = j + 1
+				cnt = 1
+				wpn_have = true
+			end
+		elseif strposx( s, "outfit" ) then
+			if not outfit_have then
+				j = j + 1
+				cnt = 1
+				outfit_have = true
+			end
+		elseif strposx( s, "exo" )
 			or strposx( s, "capsule" )
 		then
+			j = j + 1
 			cnt = 1														-- броники, оружие
 		elseif strposx( s, "af_" ) then
+			j = j + 1
 			cnt = 1														-- артефакты
 		elseif
 			   strposx( s, "playboy" )
 			or strposx( s, "flesh_leather" )
 		then
+			j = j + 1
 			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 2 )  	-- шкуры, плейбои
 		else
+			j = j + 1
 			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 5 ) 	-- остальное
 		end
 		-- сохраняем инфу о текущем предмете
