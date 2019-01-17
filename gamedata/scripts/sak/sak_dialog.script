@@ -6881,7 +6881,7 @@ function text_money_voronin_seif_dialog()
 end
 function voronin_seif_money_have()
   local day_money = math.ceil(math.sqrt(sak.day_money))
-  return db.actor:money()>=(4000+day_money*800) end
+  return db.actor:money()>=(3000+day_money*800) end
 
 function voronin_seif_money_not_have()
   return not voronin_seif_money_have() end
@@ -10062,7 +10062,7 @@ function fill_volk_prize_treasure1(obj)
   local obj1=g_sim:object(tonumber(obj))
   for a=1,1 do
     g_sim:create("af_dummy_pellicle_capsule",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-    g_sim:create("monolit_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
+    --g_sim:create("monolit_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
   end
   if obj1.online then
     g_sim:set_switch_online(obj1.id, false)
@@ -10084,7 +10084,7 @@ function fill_volk_prize_treasure2(obj)
   local obj1=g_sim:object(tonumber(obj))
   for a=1,1 do
     g_sim:create("af_dummy_glassbeads_capsule",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-    g_sim:create("freedom_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
+    --g_sim:create("freedom_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
   end
   if obj1.online then
     g_sim:set_switch_online(obj1.id, false)
@@ -10105,8 +10105,8 @@ end
 function fill_volk_prize_treasure3(obj)
   local obj1=g_sim:object(tonumber(obj))
   for a=1,1 do
-    g_sim:create("af_dummy_battery_capsule",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-    g_sim:create("merc_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
+    g_sim:create("af_dummy_kolobok_capsule",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
+    --g_sim:create("merc_scientific_outfit",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
   end
   if obj1.online then
     g_sim:set_switch_online(obj1.id, false)
