@@ -1056,19 +1056,19 @@ function clear_ready_time_sherstyk_shkura()
   clear_ready_time("sherstyk_shkura_time")
 end
 
-function give_vergas_uncharge_pda(first_speaker, second_speaker)
-  if not has_alife_info("vergas_charge_pda_not_ready") then
-  local ids,cnt = registry.inv_objects(second_speaker:id(), true)
-    for n = 1,cnt do
-    local id = ids[n]
-    local sobj = client_obj(id)
-    if sobj then
-      if sobj:section()=="device_pda_npc" then
-        misc.release_obj(id)
+function give_vergas_uncharge_pda( first_speaker, second_speaker )
+  if not has_alife_info( "vergas_charge_pda_not_ready" ) then
+    local ids, cnt = registry.inv_objects( second_speaker:id(), true)
+    for n = 1, cnt do
+      local id   = ids[ n ]
+      local sobj = client_obj( id )
+      if sobj then
+        if sobj:section() == "device_pda_npc" then
+          misc.release_obj( id )
+        end
       end
     end
-    end
-  dialogs.relocate_item_section(second_speaker, "device_pda_npc", "out")
+    dialogs.relocate_item_section( second_speaker, "device_pda_npc", "out" )
   end
 end
 function give_uncharge_pda(first_speaker, second_speaker)
@@ -1089,11 +1089,11 @@ function take_uncharge_pda(first_speaker, second_speaker)
   sak.relocate_item(second_speaker, "in", "device_pda_npc", 1)
 end
 function charging_pda(first_speaker, second_speaker)
-  local obj=first_speaker:object("device_pda_npc")
-  if obj then
-  local pda_id=obj:id()
-  vergas_pda.charge_pda(pda_id)
-  end
+  -- local obj=first_speaker:object("device_pda_npc")
+  -- if obj then
+  -- local pda_id=obj:id()
+  -- vergas_pda.charge_pda(pda_id)
+  -- end
 end
 function good_charge_pda(first_speaker, second_speaker)
   local obj=first_speaker:object("device_pda_npc")

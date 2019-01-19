@@ -952,21 +952,24 @@ function read_message(msg_id)
 	return text
 end
 
-function charge_pda(pda_id)
-	local good = false
-	local pk = get_pda_packet(pda_id)
-	local data = pk:get()
-	local cust = data.custom_data
+function charge_pda( pda_id )
+	local good   = false
+	local pk     = get_pda_packet( pda_id )
+	local data   = pk:get()
+	local cust   = data.custom_data
 	if cust == "" then return good end
-	local info = vergas_lib.str_explode("|",cust,true)
-	local status = string.sub(info[4],13,13) or "3"
+	local info   = vergas_lib.str_explode( "|", cust, true )
+	local status = string.sub( info[ 4 ], 13, 13 ) or "3"
 	if status == "3" then
 		good = false
 	elseif status == "2" then
-		info[4] = string.sub(info[4],1,12).."1"
-		data.custom_data = info[1].."|"..info[2].."|"..info[3].."|"..info[4].."|"..info[5].."|"..info[6].."|"..info[7]
-        wprintf("[~T].~C0F #CODE_OPT:~C07 compare it~C0E \n\t%s~C0F \n\t%s~C07", data.custom_data, table.concat(info, '|'))    
-		pk:set(data)
+		info[ 4 ] = string.sub( info[ 4 ], 1, 12 ) .. "1"
+		data.custom_data  = info[ 1 ] .. "|" .. info[ 2 ] .. "|" ..
+							info[ 3 ] .. "|" .. info[ 4 ] .. "|" ..
+							info[ 5 ] .. "|" .. info[ 6 ] .. "|" ..
+							info[ 7 ]
+        wprintf( "[~T].~C0F #CODE_OPT:~C07 compare it~C0E \n\t%s~C0F \n\t%s~C07", data.custom_data, table.concat( info, '|') )    
+		pk:set( data )
 		good = true
 	elseif status == "1" then	
 		good = true
@@ -974,7 +977,7 @@ function charge_pda(pda_id)
 	return good
 end
 
-function good_pda_have(pda_id)	 
+function good_pda_have( pda_id )	 
 	local info = vergas_lib.str_explode("|", get_pda_cdata (pda_id), true)
 	if not info or not info[4] then return end
 	local status = string.sub(info[4],13,13) or "3"
