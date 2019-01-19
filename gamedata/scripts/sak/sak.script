@@ -7407,15 +7407,16 @@ function agr_mil_teleport()
   --nlc_vars.raz_item = nil
   --nlc_vars.inv_hran = nil
 end
-  local colours={
-  red="%c[255,255,1,1]",
-  green="%c[255,1,255,1]",
-  blue="%c[255,1,1,255]",
-  sky_blue="%c[255,1,255,255]",
-  yellow="%c[255,255,255,1]",
-  pink="%c[255,255,1,255]",
-  gray="%c[255,160,160,160]"
-  }
+local colours = {
+  red      = "%c[ 255, 255, 106, 135 ]",
+  green    = "%c[ 255, 165, 255, 100 ]",
+  blue     = "%c[ 255, 95,  115, 255 ]",
+  sky_blue = "%c[ 255, 1,   255, 225 ]",
+  yellow   = "%c[ 255, 230, 255, 1   ]",
+  pink     = "%c[ 255, 255, 1,   205 ]",
+  gray     = "%c[ 255, 150, 160, 160 ]",
+  orange   = "%c[ 255, 238, 153, 26  ]"
+}
   pda_rem=xr_sound.get_safe_sound_object([[device\pda\accent_1]])
   pda_sos=xr_sound.get_safe_sound_object([[device\pda\pda_sos]])
 function send_tip(news_text, header, timeout, showtime, sender, sound, colour, dlg)
