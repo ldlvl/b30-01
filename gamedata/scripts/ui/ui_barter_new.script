@@ -488,8 +488,8 @@ function barter_screen_ui:DoBarter( ind )
 				actor:give_info_portion( tovar )
 			else
 				sak.create_items( actor, tovar, tovar_amnt )
-				misc.process_spawn()
 			end
+			misc.process_spawn()
 		end
 	elseif strposx( need_sect, "ammo_" ) then
 		if vergas_lib.search_items( need_sect, self.price_amnt, 1 ) ~= false then
