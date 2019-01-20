@@ -893,13 +893,15 @@ function randomize_arts()
 		if sc and sc == "wpn_binoc" then rnd_chanse = 0.63 end
 	end
 	-- здесь будет цикл по телепорту существующих артов
-	if dsh.get_next_random( "amk_anoms.randomize_arts" ) < rnd_chanse then     -- TODO: заменить на дш-рандом
+	if dsh.get_next_random( "amk_anoms.randomize_arts" ) < rnd_chanse then
 		local ids = registry.level_objects( "af_*", true )
 		local obj = registry.convert_ids( ids, server_obj )
 		for id, sobj in pairs( obj ) do
 			if
 				sobj.parent_id
 				and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID )
+				and not strposx( sobj:section_name(), "unknown" )
+				and not strposx( sobj:section_name(), "_full_akkum" )
 			then
 				misc.release_obj( sobj )
 				break
