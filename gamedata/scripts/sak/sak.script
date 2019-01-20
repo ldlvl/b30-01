@@ -8118,7 +8118,12 @@ function empty_banka_fill()
   local lvid=actor:level_vertex_id()
   local gvid=actor:game_vertex_id()
   local id,pos,radius,dist = amk_anoms.get_nearest_anomaly_for_pos(act_pos)
-  if id and dist-radius<-0.5 and level.name() == "aver" then             -- только в ТЧ будем холодец набирать
+  if
+    id
+    and dist - radius < -0.5
+    and level.name() == "aver"                                           -- только в ТЧ будем холодец набирать
+    and act_pos:distance_to( v3f( 64.61, -9.53, -182 ) ) < 70            -- в озере большом
+  then             
     local anom_sect=client_obj(id):section()
     if strpos(anom_sect,"_buzz",1,true)~=nil then
       local self=level.main_input_receiver()
@@ -8134,6 +8139,7 @@ function empty_banka_fill()
   self:GetHolder():start_stop_menu(self,true)
   end
 end
+
 function empty_banka_full()
 create_items(db.actor, "banka_full",1)
 end
