@@ -62,7 +62,19 @@ function made_used_notebook_of_artist()
   local spwn=ui_cheat_notebook.cheat(get_hud())
   level.start_stop_menu(spwn,true)
 end
-
+--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+function used_zagadka_agro()
+  local wnd = level.main_input_receiver()
+  level.start_stop_menu( wnd, false )
+  flag_use_gadget = false
+  schedule.add( "us_zag", "used_items.made_used_zagadka_agro()", 600 )
+end
+function made_used_zagadka_agro()
+  bind_stalker.hide_weapon()
+  local spwn = ui_cheat_zagadka_agro.cheat( get_hud() )
+  level.start_stop_menu( spwn, true )
+end
+--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 function used_self_made_decoder()
   local wnd = level.main_input_receiver()
   level.start_stop_menu(wnd, false)

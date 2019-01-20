@@ -8,10 +8,10 @@ init_xvars()
 function s_play(path, vol)
 -- path - путь на ogg-файл от папки sounds (она корневая), т.е device\pda\medik_2
 -- vol - уровень громкости. Пределы от 0 до 1
-  local fs = getFS()  
+  local fs = getFS()
   if not fs:exist("$game_sounds$", path..".ogg") then
      wprintf("~C0C #WARN:~C07 s_play cannot locate sound file~C0A %s~C07", path)
-  end 
+  end
 
   local snd_obj = xr_sound.get_safe_sound_object(path)
   snd_obj:play_at_pos(db.actor, vector ():set (0, 0, 0), 0, sound_object.s2d)
@@ -22,52 +22,52 @@ function s_play(path, vol)
   return snd_obj
 end
 
-function spawn_item_in_inv(spawn_item,param,npc) 
+function spawn_item_in_inv(spawn_item,param,npc)
 --spawn_item - имя предмета (например "medkit" - стандартная аптечка)
---param - (true - спавн для разгрузки. false - спавн без разгрузки) 
-  
-  if npc == nil then 
-     npc = db.actor 
+--param - (true - спавн для разгрузки. false - спавн без разгрузки)
+
+  if npc == nil then
+     npc = db.actor
   end
-  
+
     wprintf(" spawn~C0A %-25s~C07 into~C0F %s~C07 ", spawn_item, DumpVar(npc))
-  local l_obj = misc.spawn_to(spawn_item, npc)  
+  local l_obj = misc.spawn_to(spawn_item, npc)
   if param then
-       wprintf(" trying take spawned %d into razgruzka ", l_obj.id)  
+       wprintf(" trying take spawned %d into razgruzka ", l_obj.id)
      razgruzka.save_take_obj(l_obj.id)
   else
        wprintf(" dropping spawned %d ", l_obj.id)
      vergas_rucksack.set_fo_drop_items(l_obj.id)
   end
-  
+
   return l_obj
 end
 
 function spawn_ammo_into (section, total_ammo, param, target)
 --section - имя патрона
 --total_ammo - количество патронов
---param - (true - спавн для разгрузки. false - спавн без учета разгрузки) 
+--param - (true - спавн для разгрузки. false - спавн без учета разгрузки)
   local l_obj
 
   if (section ~= "?") and section and total_ammo and (total_ammo > 0) then
     local sim = alife()
-    local box_size = get_box_size(section)   
+    local box_size = get_box_size(section)
         local full_count = math.floor(total_ammo / box_size)
         local full_ammo = full_count * box_size
         local rest_ammo = total_ammo - full_ammo
         local spawned = {}
         wprintf(" spawn_ammo_into: total = %3d, box_size = %d, full_count = %2d, rest_ammo = %d",
-                                  total_ammo, box_size, full_count, rest_ammo)   
-        
-        if full_count > 0 then 
-           spawned = misc.spawn_multi (section, nil, target, full_count) -- create_ammo  
+                                  total_ammo, box_size, full_count, rest_ammo)
+
+        if full_count > 0 then
+           spawned = misc.spawn_multi (section, nil, target, full_count) -- create_ammo
         end
         if rest_ammo > 0 then
            l_obj = misc.spawn_to(section, target, rest_ammo)
            table.insert(spawned, l_obj)
-        end   
-        
-        for i, sobj in ipairs(spawned) do  
+        end
+
+        for i, sobj in ipairs(spawned) do
       if sobj ~= nil then
         if param then
           razgruzka.save_take_obj(sobj.id)
@@ -84,7 +84,7 @@ function spawn_ammo_into (section, total_ammo, param, target)
 end
 
 function spawn_ammo_in_inv(section, count, param)
-   spawn_ammo_into(section, count, param, client_obj(0)) 
+   spawn_ammo_into(section, count, param, client_obj(0))
 end
 
 function spawn_ammo_in_hran(hran, section, sum)
@@ -104,7 +104,7 @@ function add_items_vergas()
     for i = 1,table.getn(tbl_sec) do
       spawn_item_in_inv(tbl_sec[i],true)
       --local obj = alife():story_object(story_ids.esc_inventory_box_0016)
-      --alife():create(tbl_sec[i],obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id) 
+      --alife():create(tbl_sec[i],obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
     end
   end
 
@@ -160,7 +160,7 @@ function str_explode(div,str,clear) -- SpitStr but Lua implementation
       table.insert(t, trim(str))
     else
       table.insert(t, str)
-    end  
+    end
     return t
   end
 end
@@ -180,7 +180,7 @@ function StringSplit(sStr, Mode, sDiv, sPattern)
     --// если нет шаблона - используем универсальный
     sPatt = '[^%s%'..sDiv..']+'
 --// если сепаратор указан как nil, но указан  шаблон: используем его
-    elseif not sDiv and  sPattern then 
+    elseif not sDiv and  sPattern then
     sPatt=sPattern
     else--/ если сепаратор и шаблон  не указаны: разделяем слова
     sPatt = '[%w%_]+'
@@ -202,23 +202,23 @@ function StringSplit(sStr, Mode, sDiv, sPattern)
 end
 function get_ammo_size(obj)
   local size=1
-    if obj.get_ammo then -- если клиентский объект  
-      local ammo = obj:get_ammo() 
+    if obj.get_ammo then -- если клиентский объект
+      local ammo = obj:get_ammo()
       if ammo then
          return ammo.current
       else
          wprintf("~C0C #ERROR(get_ammo_size):~C07 used for non-ammo object %s from %s", obj:name(), lua_traceback(' '))
-         return 1    
+         return 1
       end
     end
- 
+
   --[[local id = obj:id() or obj.id
   local se_obj = g_sim:object(id)
   if se_obj == nil then
     --ODS( sprintf("[~T].~C0C #ERROR: Not found se_obj for #%d, name = %s ~C07", id, obj:name()) )
      return size
   end --]]
-     
+
   if obj then
       local pk = get_netpk(obj,1)
       if pk then
@@ -233,7 +233,7 @@ end
 function get_box_size(section)
   local ltx = system_ini()
   local box_size = ltx:r_float(section,"box_size")
-  
+
   if box_size == nil then
     box_size = 0
   end
@@ -243,15 +243,15 @@ end
 function set_pr_from_config(section,pr)
   local ltx = system_ini()
   local pr_s
-    SetDbgVar("set_pr_from_config", sprintf("%s.%s", section, pr), true)    
+    SetDbgVar("set_pr_from_config", sprintf("%s.%s", section, pr), true)
   if ltx:line_exist(section,pr) then
     pr_s = ltx:r_float(section,pr)
   else
     pr_s = 0
   end
-  
+
   return pr_s
-  
+
 end
 
 function set_pr_from_config_str(section,pr)
@@ -263,7 +263,7 @@ function set_pr_from_config_str(section,pr)
   else
     pr_s = "?"
   end
-  
+
   return pr_s
 end
 
@@ -271,10 +271,10 @@ function set_key(param,poz,mode)
   --param - имя параметра
   --poz  - начальная позиция считывания
   --mode   - 1-выводится 1 значение, 2-выводятся оба значения
-  
+
   local pr = FindConfigStr(param)
   pr = "key_"..string.sub(pr,poz,string.len (pr))
-  
+
   local tbl = str_explode("|",set_pr_from_config_str("list_hot_keys",pr),true)
   tbl[1] = tonumber(tbl[1])
   tbl[2] = tonumber(tbl[2])
@@ -288,6 +288,7 @@ end
 local verg_use = {
  klava               = used_items.used_klava,
  notebook_of_artist  = used_items.used_notebook_of_artist,
+ zagadka_agro        = used_items.used_zagadka_agro,
  device_pda_npc      = used_items.used_pda_npc,
  repair_boxoutfit    = used_items.used_repair_boxoutfit,
  arc_art_box_1basic  = arc_containers.show_dialog,
@@ -298,11 +299,11 @@ local verg_use = {
 }
 
 
--- alpet: сколько восстанавливать порций, при использовании 
+-- alpet: сколько восстанавливать порций, при использовании
 local use_rest_portions = {
  arc_art_box_1basic = 1,
  arc_art_box_basic  = 1,
- arc_art_box_8basic = 1  
+ arc_art_box_8basic = 1
 }
 
 
@@ -312,16 +313,16 @@ function used_item(obj)
   -- alpet: если восстановить число порций "съедобного" предмета, его не потребуется заново респавнить!
   local p = use_rest_portions[sect]
   if obj and p then
-     local eat = obj:get_eatable_item()     
+     local eat = obj:get_eatable_item()
      if eat then
        wprintf("[~T]. #DBG(used_item):~C0A %s~C07 portions now =~C0D %d~C07, restoring to~C0D %d~C07", obj:name(), eat.eat_portions_num, p)
-       eat.eat_portions_num = p  
+       eat.eat_portions_num = p
      end
-  end  
-  
-  if func then    
-     wprintf("[~T]. #DBG: used_item activating function~C0F %s~C07 for ~C0D %d~C07 ", DumpVar(func), obj:id()) 
-     func (obj:id()) -- улучшает трассировку стека     
+  end
+
+  if func then
+     wprintf("[~T]. #DBG: used_item activating function~C0F %s~C07 for ~C0D %d~C07 ", DumpVar(func), obj:id())
+     func (obj:id()) -- улучшает трассировку стека
   else
     test.anim_use_med( sect )
     vergas_medical_elastic.use_item(obj)
@@ -347,7 +348,7 @@ end
 
 
 function update_dyn_hud()
-  vergas_masks.update_blurs()      
+  vergas_masks.update_blurs()
 end
 
 function game_load()
@@ -374,20 +375,20 @@ function flag_inventory_on()
   flag_inventory=true
 end
 function inventory_info(i_info)
-  if i_info =="ui_inventory" or i_info == "ui_car_body" or i_info == "ui_trade" then 
+  if i_info =="ui_inventory" or i_info == "ui_car_body" or i_info == "ui_trade" then
 	flag_inventory=false
 	schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
-    if i_info == "ui_car_body" or i_info == "ui_trade" then 
+    if i_info == "ui_car_body" or i_info == "ui_trade" then
       vergas_watch.substitution_watch(1)
       used_items.set_get_flag_use_gadget(1,false)
-      inv_buttons_use.set_rucksack_mode(4)  
+      inv_buttons_use.set_rucksack_mode(4)
       razgruzka.inventory_on_off(true,true)
     end
-    
+
     if i_info =="ui_inventory" then
       if not inv_buttons_use.get_flag_equipment() then
         used_items.set_get_flag_use_gadget(1,false)
-        inv_buttons_use.set_rucksack_mode(4)  
+        inv_buttons_use.set_rucksack_mode(4)
         razgruzka.inventory_on_off(true,true)
       else
         razgruzka.set_inv_on_off(true)
@@ -396,7 +397,7 @@ function inventory_info(i_info)
   elseif i_info =="ui_inventory_hide" or i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then
   flag_inventory=false
   schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
-    if i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then 
+    if i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then
       vergas_watch.substitution_watch(2)
     end
     used_items.set_get_flag_use_gadget(1,true)
@@ -407,12 +408,12 @@ function inventory_info(i_info)
 end
 
 function search_items(section,count,mode,tips)
-  if razgruzka.object_stock_taking(section,count,tips) then  
+  if razgruzka.object_stock_taking(section,count,tips) then
     if mode == 1 then
-       return true     
+       return true
     elseif mode == 2  then
        return sak_inventory.release_actor_items(section, count)
-    end   
+    end
   end
   return false
 end
@@ -443,7 +444,7 @@ function add_record_in_klava(msg_id)
   local tbl_txt = {}
   local hvost
   local perenos
-  
+
   local tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id),true)
   msg_tema = set_data_string()..tbl_msg[1]
   if string.len(msg_tema) < 40 then
@@ -483,11 +484,11 @@ function add_record_in_klava(msg_id)
           tbl_txt[i+1] = hvost..tbl_txt[i+1]
         end
       end
-    elseif string.len(tbl_txt[i]) == 45 and string.sub(tbl_txt[i],1,1) == "[" then  
+    elseif string.len(tbl_txt[i]) == 45 and string.sub(tbl_txt[i],1,1) == "[" then
       tbl_txt[i] = string.sub(tbl_txt[i],2,string.len(tbl_txt[i])).." "
     end
   end
-  
+
   for i = 1, 14 do
     msg_text = msg_text..tbl_txt[i]
   end
@@ -533,9 +534,9 @@ function archiving_records(message)
   if string.len(tbl_tmp[1]) < dl then
     message = tbl_tmp[1].."|"..tostring(dl - string.len(tbl_tmp[1]))
   else
-    message = tbl_tmp[1].."|0"  
+    message = tbl_tmp[1].."|0"
   end
-  
+
   dl = 45
   for i = 2,15 do
     if tbl_tmp[i] == merka then
@@ -553,7 +554,7 @@ end
 function set_data_string()
   local message
   local str = ""
-  str = vergas_lib.return_time(3)  
+  str = vergas_lib.return_time(3)
   if string.len (str)==1 then
     message = "0"..str.."/"
   else
@@ -585,10 +586,10 @@ end
 
 function register_change(str,mode)
     if mode == 1 then
-       str = str:lower()       
-    else 
+       str = str:lower()
+    else
        str = str:upper()
-    end  
+    end
     -- wprintf(" mode = %d, str = %s ", mode, str)
   return str
 end
@@ -624,8 +625,8 @@ function backpack_search()
   for a,i in pairs(db.storage) do
     local objg=client_obj(a)
     if objg then
-      if (objg and strpos(objg:name(),"rykzack",1,true)) then 
-        rz = objg 
+      if (objg and strpos(objg:name(),"rykzack",1,true)) then
+        rz = objg
         flag = true
         break
       end
@@ -639,7 +640,7 @@ function backpack_search()
 end
 
 function ClearDiary()
-  nlc_vars.klava = {} 
+  nlc_vars.klava = {}
 end
 
 function DiaryReadMessage(id)
@@ -647,21 +648,21 @@ function DiaryReadMessage(id)
   return text
 end
 
-function DiarySaveMessage(id, text) 
+function DiarySaveMessage(id, text)
    nlc_vars.klava[id] = text
 end
 
-function read_messages()         
-  return xray_vars.load_table (nlc_vars, "klava", {})  
+function read_messages()
+  return xray_vars.load_table (nlc_vars, "klava", {})
 end
 
-function save_messages(tbl_tmp)  
-    local t = {}  
+function save_messages(tbl_tmp)
+    local t = {}
     -- просто фильтрация пустых строк
   for i = 1, table.getn(tbl_tmp) do
-    if tbl_tmp[i] ~= "" then      
-            table.insert(t, tbl_tmp[i])      
-    end  
+    if tbl_tmp[i] ~= "" then
+            table.insert(t, tbl_tmp[i])
+    end
   end
     nlc_vars.klava = t
 end
@@ -672,8 +673,8 @@ end
 
 function init_module()
  if nlc_vars.klava == nil then
-    nlc_vars.klava = {} 
- end 
+    nlc_vars.klava = {}
+ end
 end
 
 function late_init()

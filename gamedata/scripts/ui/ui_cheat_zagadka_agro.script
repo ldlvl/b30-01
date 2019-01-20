@@ -1,0 +1,84 @@
+--[[
+Ребус с кодом для сейфа вояк на агропроме
+]]--
+
+class "cheat"( CUIScriptWnd )
+
+local wnd, wnd_mask
+local text = "Cобралась как-то в Баре в ряд за одним столом компания сталкеров: бандит, нейтрал, охотник, учёный и долговец. Забавно смотрелись, все в комбезах разного цвета, но особо выделялся охотник, сидевший вообще в одном синем свитере. Нейтрал пристроился скраю слева, рядом со сталкером в оливковой горке. А тот из них, который был в коричневой СЕВЕ, сидел слева от своего дружбана в комбезе черного цвета. Этот, в дорогой СЕВЕ и запомнился больше всех, когда залил её своим пивом. Пришедший с Затона был одет во что-то серое; и не понять сразу, что за комбез такой. Ещё, помнится, когда один из этой компании стал нахваливать свою 'ксюху', сидевший рядом с ним быстро его осадил, сказав что на Затоне, откуда он пришёл, зверьё пошло такое, что она бы ему вряд ли помогла. Ну а дальше понеслось: учёный стал что-то рассказывать про достоинства своего ТТ, на что другой из их компании, который с Юпитера вернулся, лишь ухмылялся, поглаживая свой обрез. Потом кто-то достал свой штык-нож и сидящий рядом с ним сталкер с Лиманска тут же потянул руку проверить, настоящий ли, - да так неловко, что чуть не пролил водку, которую пил его сосед. Бандит, помнится пил портвейн. Тот что с Припяти пришёл - налегал на энергетик, и когда открывал очередную банку, чуть по ошибке не влил это в коньяк у сидящего по центру. А долговец всё рассказывал, как у них на Росток на базе хорошо. По итогам долговец посидел на 7 тысяч, бандит на 9, учёный на 6, нейтрал на 11, а охотник на 10. Мелочь, но денег ни у кого не оказалось, оставили своё оружие в качестве частичной оплаты, а кто что должен остался, позже поднести обещали. Бармен быстро прикинул, что ксюху он примет за 5 тысяч, кастет - за тысячу, обрез - за три, ТТ - за 4 косаря, а штык-нож - за две тысячи. Ну а циферки заветные как раз из долгов сидевших за столом и складываются. Хотя кто там как сидел, и у кого какая пуха была... Загадки..."
+
+function cheat:__init( owner ) super()
+	self.owner = owner
+	self:InitControls()
+	self:InitCallBacks()
+end
+
+function cheat:InitControls()
+	self:Init( 0, 0, 1024, 768 )
+	local xml = CScriptXmlInit()
+	xml:ParseFile( "ui_cheat_zagadka_agro.xml" )
+	xml:InitStatic( "background", self )
+	self:Register( xml:Init3tButton( "f_btn", self ), "f_btn" )
+	wnd = CUIStatic()
+	wnd:SetAutoDelete( true )
+	self:AttachChild( wnd )
+	wnd:SetStretchTexture( true )
+	wnd:SetWndRect( 230, 0, 546, 655 )
+	wnd:InitTexture( "ui\\ui_zagadka_agro.dds" )
+
+	local a_txt = CUIStatic()
+	--txt:SetWindowName( name )
+	a_txt:SetAutoDelete( true )
+	a_txt:SetTextComplexMode( true )
+	a_txt:SetTextColor( 255, 0, 0, 0 )
+	a_txt:SetText( text )
+	a_txt:Init( 370, 95, 300, 435 )
+	self:AttachChild( a_txt )
+
+	--вывожу маску костюма
+	if vergas_masks.get_flag_mask() then
+		wnd_mask = CUIStatic()
+		wnd_mask:SetAutoDelete( true )
+		wnd_mask:SetStretchTexture( true )
+		self:AttachChild( wnd_mask )
+		wnd_mask:Init( -128, -96, 1024, 768 )
+		wnd_mask:InitTexture("verg\\masks\\hud_mas_0_0.dds")
+	end
+end
+
+function cheat:InitCallBacks()
+	self:AddCallback( "f_btn", ui_events.BUTTON_CLICKED, self.f_btn, self )
+end
+
+function cheat:OnKeyboard( dik, keyboard_action )
+	CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE or dik == DIK_keys.MOUSE_1 then
+			self:on_quit()
+		end
+	end
+	return true
+end
+
+function cheat:f_btn()
+	--фальш-кнопка
+end
+
+function cheat:on_quit()
+	if a_txt ~= nil then
+		self:DetachChild( a_txt )
+		a_txt = nil
+	end
+	if wnd ~= nil then
+		self:DetachChild( wnd )
+		wnd = nil
+	end
+	if wnd_mask ~= nil then
+		self:DetachChild( wnd_mask )
+		wnd_mask = nil
+	end
+	bind_stalker.restore_weapon()		--восстанавливаю руки и оружие на худе
+	used_items.set_get_flag_use_gadget( 1, true )
+	self:GetHolder():start_stop_menu( self, true )
+	vergas_lib.spawn_item_in_inv( "zagadka_agro", true )
+end
