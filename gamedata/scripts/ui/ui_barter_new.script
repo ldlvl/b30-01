@@ -12,6 +12,7 @@ local tbl_translate_arts = {
 }
 
 local tbl_npc_name_koeff = {
+	[ "menyala"	 ] = { 20,	"Обмен артов у Санька-Менялы:"	 		},
 	[ "doctor"	 ] = { 18,	"Обмен артов у Болотного Доктора:"		},
 	[ "fuel_esc" ] = { 16,	"Сегодня за бензин предлагают:" 		},
 	[ "fuel_bar" ] = { 15,	"Сегодня за бензин предлагают:"			},
@@ -45,6 +46,20 @@ tbl_translate_price = {
 }
 
 local barter_tbl = {
+	[ "menyala" ] = {
+		{ "af_cristall_dyn2d", 			1, 	"lvl2", 			3 },
+		{ "af_night_star_dyn2d", 		1, 	"lvl2", 			3 },
+		{ "af_ameba_mica_dyn2d", 		1, 	"lvl2", 			3 },
+		{ "af_gold_fish_dyn2d", 		1, 	"lvl2", 			3 },
+		{ "af_rusty_sea-urchin_dyn2d", 	1, 	"lvl2", 			3 },
+		{ "af_soul_dyn2d",				1, 	"lvl2", 			3 },
+		{ "af_electra_moonlight_dyn2d", 1, 	"lvl2", 			3 },
+		{ "af_dummy_spring", 			1, 	"lvl3", 			3 },
+		{ "af_dummy_dummy", 			1, 	"lvl3", 			3 },
+		{ "af_dummy_battery", 			1, 	"lvl3", 			3 },
+		{ "af_dummy_pellicle", 			1, 	"lvl3", 			3 },
+		{ "af_dummy_glassbeads", 		1, 	"lvl3", 			3 }
+	},
 	[ "doctor" ] = {
 		{ "af_medusa_dyn2d",			1,	"lvl2",				1  },
 		{ "af_vyvert_dyn2d",			1,	"lvl2",				1  },
@@ -634,6 +649,11 @@ function make_list_by_trader( name )
 		tbl__ = generate_rnd_list( tmptbl2, 99, 6, 2 )
 		for k, v in pairs( tbl__ ) do table.insert(tbl_, v)	end
 		tbl_to_show = tbl_
+	
+	elseif name == "menyala" then
+		tbl_to_show = generate_rnd_list(
+		    barter_tbl[ name ], tbl_npc_name_koeff[ name ][ 1 ], 6, 4, 6
+		)
 
 	elseif name == "fuel_esc" or name == "fuel_bar" then
 		tbl_to_show = generate_rnd_list(

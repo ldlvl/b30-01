@@ -12906,8 +12906,10 @@
 	<phrase_list>
 		<phrase id="0">
 			<text>trade_art_need_dialog_0</text>
-			<next>1</next>
-			<next>11</next>
+			<action>dialogs.break_dialog</action>
+			<action>ui_barter_new.barter_screen("menyala")</action>
+<!-- 			<next>1</next>
+			<next>11</next> -->
 		</phrase>
 		<phrase id="11">
 		<precondition>sak_dialog.not_ready_time_to_game</precondition>
@@ -17737,7 +17739,9 @@
 	<phrase_list>
 		<phrase id="0">
 			<text>trad_dialog_sanya_0</text>
-			<next>1</next>
+			<action>dialogs.break_dialog</action>
+			<action>ui_barter_new.barter_screen("menyala")</action>
+			<!-- <next>1</next> -->
 		</phrase>
 		<phrase id="1">
 			<action>gnzi.trade_many_remove</action>
