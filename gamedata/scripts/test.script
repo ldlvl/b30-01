@@ -713,23 +713,23 @@ function on_new_game()
 	set_death_count( "p_stor", 0 )
 	get_death_count( "p_help" )
 	set_death_count( "p_help", 0 )
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_1" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_2" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_3" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_sem" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_uniq" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_treas_found" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_vodka_drink" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_1" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_2" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_3" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used" 		), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" 	), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" 			), 0, 0 ) --
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used"	), 0, 0 )
-	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" 		), 0, 0 ) --
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_1" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_2" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_3" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_sem" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_uniq" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_treas_found" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_vodka_drink" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_1" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_2" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_3" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used" 		), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" 	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used" 			), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used"	), 0, 0 ) --+
+	xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" 		), 0, 0 ) --+
 end
 
 function add_art_to_vars( id )
@@ -840,4 +840,79 @@ end
 
 function noBarterAvailable( treshold, npc_koeff )
   return not isBarterAvailable( treshold, npc_koeff )
+end
+
+function make_shron_voron( item_sect )
+	local tbl_pos = { 
+		[ "notebook_of_artist" ] = {             -- блокнот художника
+			"agru_secret_box_bloodsucker",
+			"agr_secret_stump",
+			"lost_secret_0000",
+			"esc_secret_safe_farm"
+		},
+		[ "bandit_master_outfit_m1" ] = {        -- плащ Крысюка
+			"mar_secret_0001",
+			"mar_secret_0002",
+			"bar_secret_0008",
+			"ros_secret_0010"
+		},
+		[ "outfit_specnaz_m1" ] = {              -- лечебный Берилл
+			"ros_secret_0011",
+			"esc_secret_refuge",
+			"mar_secret_0023",
+			"lost_secret_0009"
+		},
+		[ "soldier_outfit" ] = {                 -- гравикостюм
+			"red_secret_0006",
+			"mar_secret_0052",
+			"ros_secret_0011",
+			"agr_secret_inventory_schlosser"
+		},
+		[ "klava" ] = {                          -- книжка Вергаса
+			"esc_secret_tree",
+			"esc_secret_truck_goods",
+			"mar_secret_0059",
+			"mar_secret_0065"
+		},
+		[ "outfit_stalker_m1" ] = {              -- костюм Призрака
+			"mar_secret_0010",
+			"agr_secret_roof_box",
+			"lim_secret_0001",
+			"bar_secret_0018"
+		},
+		[ "ventilator_01" ] = {                  -- вечный Вентилятор       -- в х16, по декодеру Круглова
+			"mar_secret_0037",
+			"agr_secret_tube_radiactive",
+			"lost_secret_0001",
+			"mil_secret_0005"
+		},
+		[ "kartina04" ] = {                      -- картина из х18          -- в х18, по записям Сахарова
+			"dsc_secret_0005",
+			"lost_secret_0012",
+			"ros_secret_0014",
+			"mar_secret_0003"
+		},
+		[ "item_psi_helmet_01" ] = {             -- пси-шлем Стрелка        -- в х8, ????????
+			"yan_secret_0009",
+			"x16_secret_0000",
+			"red_secret_0001",
+			"gen_secret_0003"
+		}
+	}
+	-- klyk_pribor_1c    -- прибор Клыка
+	treasure_manager.get_treasure_manager():give_treasure(
+	    tbl_pos[ item_sect ][ dsh.get_next_random( "test.make_shron_voron", 1, 4 ) ]
+	)
+end
+
+function add_item_psi_helmet_01()
+	if dsh.get_next_random( "test.make_shron_voron" ) < 0.8 then
+		local u_obj = amk.spawn_item( "item_psi_helmet_01", sak.v3f( -47.9118, -10.75519, -178.83305 ), 2993, 3051 )
+		if u_obj then
+		local pk         = get_netpk( u_obj, 1 )
+		local data       = pk:get()
+		data.physic_type = 3
+		pk:set( data )
+		end
+	end
 end

@@ -14792,12 +14792,17 @@
 		<next>5</next>
 		<next>6</next>
 		<next>7</next>
+		<next>88</next>
+		<next>99</next>
+		<next>100</next>
 		<next>11</next>
 	</phrase>
+
 	<phrase id="11">
 		<text>voron_artist_dialog_11</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
+
 	<phrase id="2">
     <precondition>sak_dialog.have_notebook_of_artist</precondition>
 		<text>voron_artist_dialog_2</text>
@@ -14813,14 +14818,16 @@
 	</phrase>
         <phrase id="23">
 	    <text>voron_artist_dialog_23</text>
- 		<next>24</next>
+ 		<!-- <next>24</next> -->
         <next>25</next>
 		<next>8</next>
 	</phrase>
+
 	<phrase id="8">
 		<text>voron_artist_dialog_8</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
+
 	<phrase id="24">
 	    <text>voron_artist_dialog_24</text>
         <next>26</next>
@@ -14834,14 +14841,14 @@
 	<phrase id="25">
 		<text>voron_artist_dialog_25</text>
 	    <next>27</next>
-	    <next>28</next>
-	    <next>29</next>
+	    <!-- <next>28</next> -->
+	    <!-- <next>29</next> -->
 	</phrase>
 	<phrase id="27">
-		<precondition>sak_dialog.rand_1_dialog</precondition>
+		<!-- <precondition>sak_dialog.rand_1_dialog</precondition> -->
 		<text>voron_artist_dialog_27</text>
         <action>flamethrower.good_notebook_of_artist</action>
-		<action>sak_dialog.add_voron_treasure1</action>
+		<action>test.make_shron_voron("notebook_of_artist")</action>
 		<next>9</next>
 	</phrase>
 	<phrase id="28">
@@ -14858,10 +14865,12 @@
 		<action>sak_dialog.add_voron_treasure3</action>
 		<next>9</next>
 	</phrase>
+
 	<phrase id="9">
 		<text>voron_artist_dialog_9</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
+
 	<phrase id="3">
 	    <precondition>sak_dialog.bandit_master_outfit_m1_have</precondition>
 		<text>voron_artist_dialog_3</text>
@@ -14879,9 +14888,10 @@
 	</phrase>
 	<phrase id="33">
 		<text>voron_artist_dialog_33</text>
-		<action>sak_dialog.add_voron_find_item_5_done</action>
+		<action>test.make_shron_voron("bandit_master_outfit_m1")</action>
 		<next>9</next>
-        </phrase>
+    </phrase>
+
 	<phrase id="4">
 	    <precondition>sak_dialog.outfit_stalker_m1_have</precondition>
 		<text>voron_artist_dialog_4</text>
@@ -14899,9 +14909,10 @@
 	</phrase>
 	<phrase id="43">
 		<text>voron_artist_dialog_43</text>
-		<action>sak_dialog.add_voron_marsh_treasure</action>
+		<action>test.make_shron_voron("outfit_stalker_m1")</action>
 		<next>9</next>
 	</phrase>
+
 	<phrase id="5">
 	    <precondition>sak_dialog.have_klava_vergas</precondition>
 		<text>voron_artist_dialog_5</text>
@@ -14919,9 +14930,10 @@
 	</phrase>
 	<phrase id="53">
 		<text>voron_artist_dialog_53</text>
-		<action>sak_dialog.add_nagrada_voron</action>
+		<action>test.make_shron_voron("klava")</action>
 		<next>9</next>
 	</phrase>
+
 	<phrase id="6">
 	    <precondition>sak_dialog.outfit_specnaz_m1_have</precondition>
 		<text>voron_artist_dialog_6</text>
@@ -14939,9 +14951,10 @@
 	</phrase>
 	<phrase id="63">
 		<text>voron_artist_dialog_63</text>
-		<action>sak_dialog.add_voron_darkscape_treasure</action>
+		<action>test.make_shron_voron("outfit_specnaz_m1")</action>
 		<next>9</next>
 	</phrase>
+
 	<phrase id="7">
 	    <precondition>sak_dialog.soldier_outfit_have</precondition>
 		<text>voron_artist_dialog_7</text>
@@ -14959,9 +14972,73 @@
 	</phrase>
 	<phrase id="73">
 		<text>voron_artist_dialog_73</text>
-		<action>sak_dialog.add_voron_jantar_treasure</action>
+		<action>test.make_shron_voron("soldier_outfit")</action>
 		<next>9</next>
 	</phrase>
+
+	<phrase id="88">
+	    <precondition>sak_dialog.ventilator_01_have</precondition>
+		<text>voron_artist_dialog_88</text>
+		<next>881</next>
+	</phrase>
+	<phrase id="881">
+		<text>voron_artist_dialog_881</text>
+		<next>882</next>
+		<next>8</next>
+	</phrase>
+	<phrase id="882">
+		<text>voron_artist_dialog_882</text>
+		<action>sak_dialog.give_ventilator_01</action>
+		<next>883</next>
+	</phrase>
+	<phrase id="883">
+		<text>voron_artist_dialog_883</text>
+		<action>test.make_shron_voron("ventilator_01")</action>
+		<next>9</next>
+	</phrase>
+
+	<phrase id="99">
+	    <precondition>sak_dialog.kartina04_have</precondition>
+		<text>voron_artist_dialog_99</text>
+		<next>991</next>
+	</phrase>
+	<phrase id="991">
+		<text>voron_artist_dialog_991</text>
+		<next>992</next>
+		<next>8</next>
+	</phrase>
+	<phrase id="992">
+		<text>voron_artist_dialog_992</text>
+		<action>sak_dialog.give_kartina04</action>
+		<next>993</next>
+	</phrase>
+	<phrase id="993">
+		<text>voron_artist_dialog_993</text>
+		<action>test.make_shron_voron("kartina04")</action>
+		<next>9</next>
+	</phrase>
+
+	<phrase id="100">
+	    <precondition>sak_dialog.item_psi_helmet_01_have</precondition>
+		<text>voron_artist_dialog_100</text>
+		<next>1001</next>
+	</phrase>
+	<phrase id="1001">
+		<text>voron_artist_dialog_1001</text>
+		<next>1002</next>
+		<next>8</next>
+	</phrase>
+	<phrase id="1002">
+		<text>voron_artist_dialog_1002</text>
+		<action>sak_dialog.give_item_psi_helmet_01</action>
+		<next>1003</next>
+	</phrase>
+	<phrase id="1003">
+		<text>voron_artist_dialog_1003</text>
+		<action>test.make_shron_voron("item_psi_helmet_01")</action>
+		<next>9</next>
+	</phrase>
+
     </phrase_list>
 </dialog>
 

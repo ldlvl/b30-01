@@ -10403,6 +10403,27 @@ end
 function give_outfit_stalker_m1()
   sak_inventory.release_actor_items("outfit_stalker_m1",1)
 end
+---------------------- NEW -------------------------
+function ventilator_01_have()
+  return sak.have_items_count("ventilator_01",1)~=false
+end
+function give_ventilator_01()
+  sak_inventory.release_actor_items("ventilator_01",1)
+end
+function kartina04_have()
+  return sak.have_items_count("kartina04",1)~=false
+end
+function give_kartina04()
+  sak_inventory.release_actor_items("kartina04",1)
+end
+function item_psi_helmet_01_have()
+  return sak.have_items_count("item_psi_helmet_01",1)~=false
+end
+function give_item_psi_helmet_01()
+  sak_inventory.release_actor_items("item_psi_helmet_01",1)
+end
+---------------------- NEW -------------------------
+
 --вскрываем капсулу маятника у Сахарова
 table_mayat_capsule={
   "af_mayatnik_tuman_new_capsule",

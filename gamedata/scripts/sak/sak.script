@@ -1143,6 +1143,7 @@ function add_x8_docs()
 end
 
 function add_docs_X18()
+  local pk, data
 	local war_docs = {
 		{ 29.37519645690, -13.533881187439, 40.21166229248, 3320, 1158 },
 		{ 22.58949851989, -14.826943397522, 77.19501495361, 3320, 1158 },
@@ -1170,6 +1171,15 @@ function add_docs_X18()
 	} --23 >10
 	local i = true
 	local count = 0
+  if dsh.get_next_random( "test.make_shron_voron" ) < 0.7 then
+    local u_obj = amk.spawn_item( "kartina04", v3f( 3.45075, -14.1260, 44.69874 ), 1160, 3329 )
+    if u_obj then
+      pk               = get_netpk( u_obj, 1 )
+      data             = pk:get()
+      data.physic_type = 3
+      pk:set( data )
+    end
+  end
 	for n = 1, #war_docs do
 		if lua_random() > 0.5 then           -- как на релизе
 			local rand = lua_random( 2, 9 )
@@ -1179,8 +1189,8 @@ function add_docs_X18()
 			    war_docs[ n ][ 5 ], war_docs[ n ][ 4 ]
 			)
 			if obj then
-				local pk = get_netpk( obj, 1 )
-				local data = pk:get()
+				pk               = get_netpk( obj, 1 )
+				data             = pk:get()
 				data.visual_name = "new_item\\documents_" .. rand
 				data.physic_type = 3  -- чтобы полтеры не швырялись??????????
 				pk:set( data )
@@ -1197,8 +1207,8 @@ function add_docs_X18()
 		    war_docs[ 1 ][ 5 ], war_docs[ 1 ][ 4 ]
 		)
 		if obj then
-			local pk = get_netpk( obj, 1 )
-			local data = pk:get()
+			pk               = get_netpk( obj, 1 )
+			data             = pk:get()
 			data.visual_name = "new_item\\documents_" .. rand
 			data.physic_type = 3
 			pk:set( data )
@@ -1336,16 +1346,31 @@ function add_seif () amk.spawn_item("inventory_sakbox_03",v3f(15.52,-12.43,8.59)
 function give_seif (obj)
 amk.remove_item_from_inventory_by_name(obj,db.actor)
 amk.spawn_item("m_inventory_seif",v3f(34.37,-3.37,-37.29),1997,21736) end
+
 function add_decoder()
-  local rand=(amk_vars.r_task_reward or 1)*5
-  local points={
--120.773430,21.564411,-22.930630,68,1529,
--99.493599,21.564243,-20.232609,511,1529,
--108.488991,21.564507,-37.621181,309,1529,
--127.128922,18.912310,-21.667521,54,1529,
--126.292847,21.564272,-25.582495,79,1529
-}
-amk.spawn_item("decoder1",v3f(points[rand-4],points[rand-3],points[rand-2]),points[rand],points[rand-1]) end
+  local rand = ( amk_vars.r_task_reward or 1 ) * 5
+  local points = {
+    -120.773430, 21.564411, -22.930630, 68,  1529,
+    -99.493599,  21.564243, -20.232609, 511, 1529,
+    -108.488991, 21.564507, -37.621181, 309, 1529,
+    -127.128922, 18.912310, -21.667521, 54,  1529,
+    -126.292847, 21.564272, -25.582495, 79,  1529
+  }
+  amk.spawn_item(
+    "decoder1",
+    v3f( points[ rand - 4 ], points[ rand - 3 ], points[ rand - 2 ] ),
+    points[ rand ], points[ rand - 1 ]
+  )
+  if dsh.get_next_random( "test.make_shron_voron" ) < 0.8 then
+    local u_obj = amk.spawn_item( "ventilator_01", v3f( 74.9509, 10.17636, -9.08724 ), 1544, 5773 )
+    if u_obj then
+      local pk         = get_netpk( u_obj, 1 )
+      local data       = pk:get()
+      data.physic_type = 3
+      pk:set( data )
+    end
+  end
+end
 --функцию спавна гаусс - пистолета смотреть в sak_dialog.script
 function add_gauss() amk.spawn_item("wpn_gungauss",v3f(-126.11,0.91,-533.55),836,31356) end
 function add_pellicle_red() amk.spawn_item("af_red_dummy_pellicle",v3f(-239.99,4.85,99.93),1362,13956) end
