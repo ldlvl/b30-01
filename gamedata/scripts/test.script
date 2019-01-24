@@ -916,3 +916,56 @@ function add_item_psi_helmet_01()
 		end
 	end
 end
+
+function check_monster_part_march_restore()
+	if nlc_vars.monster_part_march_restore == nil then return true end
+	return false
+end
+
+function check_monster_part_march_restore_exist()
+	if nlc_vars.monster_part_march_restore ~= nil then return true end
+	return false
+end
+
+function check_for_march_restore( section, flag )
+	if
+		    sak.have_items_count( section, 1 ) ~= false
+		and sak.have_items_count( "banka_full", 1 ) ~= false
+		and sak_dialog.gg_n_bart_have( 2 )
+	then
+		if not flag then
+			return true
+		else
+			sak_inventory.release_actor_items( section, 1 )
+			sak_inventory.release_actor_items( "banka_full", 1 )
+			sak_dialog.give_n_bart( 2 )
+			nlc_vars.monster_part_march_restore = section
+			timers.start_timer(
+				    "march_monster_part_restore", 1, 0, 0, "test.march_monster_part_restore_end()"
+				)
+		end
+	end
+	return false
+end
+
+function march_monster_part_restore_end()
+	sak.send_tip( "Меченный, твоя запчасть готова, подваливай.", "Сообщение от Пахома:", 2, 20, "uniq", "sak", "green" )
+	timers.start_timer(
+		"march_monster_part_restore_end_timer", 1, 0, 0, "test.march_monster_part_restore_end_timer()"
+	)
+end
+
+function march_monster_part_restore_end_timer()
+	sak.send_tip( "Меченный, твоя запчасть ушла в фонд развития науки. Я предупреждал.", "Сообщение от Пахома:", 2, 20, "uniq", "sak", "red" )
+	nlc_vars.monster_part_march_restore = nil
+end
+
+function give_march_monster_part_restored()
+	add_to_actor( nlc_vars.monster_part_march_restore or "mutant_burer_hand", 1 )
+	timers.stop_timer( "march_monster_part_restore_end_timer" )
+	nlc_vars.monster_part_march_restore = nil
+end
+
+function check_monster_part_march_timer()
+	return not timers.check_timer( "march_monster_part_restore" )
+end

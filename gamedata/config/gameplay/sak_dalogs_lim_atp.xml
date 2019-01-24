@@ -1256,6 +1256,135 @@
 	</phrase_list>
 </dialog>
 
+<dialog id="pahom_monster_parts_dialog_begin">
+<precondition>sak_dialog.has_upgrade_info</precondition>
+<dont_has_info>pahom_monster_parts_dialog_start</dont_has_info>
+	<phrase_list>
+		<phrase id="0">
+			<text>pahom_monster_parts_dialog_begin_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>pahom_monster_parts_dialog_begin_1</text>
+			<give_info>pahom_monster_parts_dialog_start</give_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>pahom_monster_parts_dialog_begin_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>pahom_monster_parts_dialog_begin_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>pahom_monster_parts_dialog_begin_4</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="pahom_monster_parts_dialog">
+<has_info>pahom_monster_parts_dialog_start</has_info>
+	<phrase_list>
+
+		<phrase id="0">
+			<text>pahom_monster_parts_dialog_0</text>
+			<next>1</next>
+		</phrase>
+
+		<phrase id="1">
+			<text>pahom_monster_parts_dialog_1</text>
+			<next>2</next>
+			<next>3</next>
+			<next>9</next>
+		</phrase>
+
+		<phrase id="2">
+			<precondition>test.check_monster_part_march_restore</precondition>  <!-- нет запчасти в обработке -->
+			<text>pahom_monster_parts_dialog_2</text>
+			<next>21</next>
+		</phrase>
+
+		<phrase id="21">
+			<text>pahom_monster_parts_dialog_21</text>
+			<next>22</next>       <!-- кров -->
+			<next>23</next>       <!-- химера -->
+			<next>24</next>       <!-- почка -->
+			<next>25</next>       <!-- полтер -->
+			<next>26</next>       <!-- контра -->
+			<next>27</next>       <!-- гигант -->
+			<next>9</next>
+		</phrase>
+
+		<phrase id="22">
+			<precondition>test.check_for_march_restore("mutant_krovosos_jaw")</precondition>
+			<text>pahom_monster_parts_dialog_22</text>
+			<action>test.check_for_march_restore("mutant_krovosos_jaw",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="23">
+			<precondition>test.check_for_march_restore("mutant_chimera_kogot")</precondition>
+			<text>pahom_monster_parts_dialog_23</text>
+			<action>test.check_for_march_restore("mutant_chimera_kogot",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="24">
+			<precondition>test.check_for_march_restore("mutant_e_chimera_kidney")</precondition>
+			<text>pahom_monster_parts_dialog_24</text>
+			<action>test.check_for_march_restore("mutant_krovosos_jaw",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="25">
+			<precondition>test.check_for_march_restore("mutant_poltergeist_glas")</precondition>
+			<text>pahom_monster_parts_dialog_25</text>
+			<action>test.check_for_march_restore("mutant_poltergeist_glas",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="26">
+			<precondition>test.check_for_march_restore("mutant_hand_kontroler")</precondition>
+			<text>pahom_monster_parts_dialog_26</text>
+			<action>test.check_for_march_restore("mutant_hand_kontroler",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="27">
+			<precondition>test.check_for_march_restore("mutant_psevdogigant_hand")</precondition>
+			<text>pahom_monster_parts_dialog_27</text>
+			<action>test.check_for_march_restore("mutant_psevdogigant_hand",true)</action>
+			<next>8</next>
+		</phrase>
+
+		<phrase id="3">
+			<precondition>test.check_monster_part_march_restore_exist</precondition>   <!-- есть запчасть в обработке -->
+			<precondition>test.check_monster_part_march_timer</precondition>           <!-- таймер оттикал -->
+			<text>pahom_monster_parts_dialog_3</text>
+			<next>4</next>
+		</phrase>
+
+		<phrase id="4">
+			<text>pahom_monster_parts_dialog_4</text>
+			<action>test.give_march_monster_part_restored</action>
+			<next>9</next>
+		</phrase>
+
+		<phrase id="8">
+			<text>pahom_monster_parts_dialog_8</text>
+			<next>9</next>
+		</phrase>
+
+		<phrase id="9">
+			<text>pahom_monster_parts_dialog_9</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+	</phrase_list>
+</dialog>
+
 <dialog id="marsh_trader_dialog3">
 <dont_has_info>marsh_trader_dialog3_info</dont_has_info>
 <precondition>sak_dialog.has_upgrade_info</precondition>
