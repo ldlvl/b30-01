@@ -3326,7 +3326,7 @@
 </dialog>
 <dialog id="agr_vintorez_2_sherstyk">
 <precondition>sak_dialog.have_20vodka</precondition>
-<precondition>sak_dialog.have_cheques</precondition>
+<precondition>sak.have_items_count("bearer_cheque",2,true)</precondition>
 <has_info>agr_vintorez_sherstyk_info</has_info>
 <dont_has_info>agr_vintorez_sherstyk_done</dont_has_info>
 	<phrase_list>
@@ -3362,10 +3362,10 @@
 		<text>agr_vintorez_2_sherstyk_52</text>
 	</phrase>
 	<phrase id="4">
-	<precondition>sak_dialog.have_cheque</precondition>
+	<precondition>sak.have_items_count("bearer_cheque",2,true)</precondition>
 	<precondition>sak_dialog.have_20vodka</precondition>
 		<text>agr_vintorez_2_sherstyk_4</text>
-		<action>sak_dialog.give_cheque</action>
+		<action>sak_inventory.release_actor_items("bearer_cheque",2)</action>
 		<action>sak_dialog.give_20vodka</action>
 		<next>5</next>
 	</phrase>
@@ -3377,7 +3377,7 @@
 </phrase_list>
 </dialog>
 <dialog id="agr_vintorez_3_sherstyk">
-<precondition>sak_dialog.have_2_cheque</precondition>
+<precondition>sak.have_items_count("bearer_cheque",3)</precondition>
 <has_info>agr_vintorez_sherstyk_1info</has_info>
 <dont_has_info>agr_vintorez_sherstyk_done</dont_has_info>
 	<phrase_list>
@@ -3398,7 +3398,7 @@
 	<precondition>sak_dialog.vint_in_seif</precondition>
 		<text>agr_vintorez_2_sherstyk_3</text>
 		<next>41</next>
-		<next>42</next>
+		<!-- <next>42</next> -->
 	</phrase>
 	<phrase id="32">
 	<precondition>sak_dialog.vint_out_seif</precondition>
@@ -3414,7 +3414,7 @@
 		<text>agr_vintorez_2_sherstyk_52</text>
 	</phrase>
 	<phrase id="41">
-	<precondition>sak_dialog.have_cheque2</precondition>
+	<precondition>sak.have_items_count("bearer_cheque",3)</precondition>
 		<text>agr_vintorez_3_sherstyk_41</text>
 		<action>sak_dialog.give_cheque2</action>
 		<next>5</next>
@@ -5433,10 +5433,10 @@
 			<next>2102</next>
 		</phrase>
 		<phrase id="2101">
-			<precondition>sak_dialog.actor_30000_have</precondition>
+			<precondition>sak_dialog.actor_90000_have</precondition>
 			<text>lost_lebedev_pda_dialog_2101</text>
 			<give_info>lost_lebedev_pda_ok</give_info>
-			<action>sak_dialog.give_30000_money</action>
+			<action>sak_dialog.give_90000_money</action>
 			<next>211</next>
 		</phrase>
 		<phrase id="211">
@@ -5516,11 +5516,11 @@
 			<next>4023</next>
 		</phrase>
 		<phrase id="4021">
-			<precondition>sak_dialog.actor_30000_have</precondition>
+			<precondition>sak_dialog.actor_90000_have</precondition>
 			<text>lost_lebedev_pda_dialog_2101</text>
 			<disable_info>lost_lebedev_pda_no</disable_info>
 			<give_info>lost_lebedev_pda_ok</give_info>
-			<action>sak_dialog.give_30000_money</action>
+			<action>sak_dialog.give_90000_money</action>
 			<next>211</next>
 		</phrase>
 		<phrase id="4022">

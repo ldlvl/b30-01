@@ -7284,6 +7284,7 @@ function actor_55000_have() return db.actor:money()>=55000 end
 function actor_100000_have() return db.actor:money()>=100000 end
 function actor_115000_have() return db.actor:money()>=110000 end
 function actor_250000_have() return db.actor:money()>=250000 end
+function actor_90000_have() return db.actor:money()>=90000 end
 
 function take_100_money(t1,t2) dialogs.relocate_money(db.actor,100,"in") end
 function take_200_money(t1,t2) dialogs.relocate_money(db.actor,200,"in") end
@@ -7305,6 +7306,7 @@ function take_35000_money(t1,t2) dialogs.relocate_money(db.actor,35000,"in") end
 function take_40000_money(t1,t2) dialogs.relocate_money(db.actor,40000,"in") end
 function take_50000_money(t1,t2) dialogs.relocate_money(db.actor,50000,"in") end
 function take_70000_money(t1,t2) dialogs.relocate_money(db.actor,70000,"in") end
+function take_90000_money(t1,t2) dialogs.relocate_money(db.actor,90000,"in") end
 
 function give_bad_flamethrower()
   sak_inventory.release_actor_items("flamethrower_bad", 1)
@@ -7563,6 +7565,13 @@ function give_9000_money(t1,t2)
     npc=t2
   end
   relocate_money(npc,9000,1)
+end
+function give_90000_money(t1,t2)
+  local npc=t1
+  if npc:id()==db.actor:id() then
+    npc=t2
+  end
+  relocate_money(npc,90000,1)
 end
 function give_30000_money(t1,t2)
   local npc=t1
@@ -11296,12 +11305,10 @@ function add_sil_76251()
 end
 -- lim_fraer
 function lim_fraer_outfit_have()
-  return sak.have_items_count("ecolog_outfit",1)~=false or sak.have_items_count("protection_outfit",1)~=false
+  return sak.have_items_count("protection_outfit",1)~=false
 end
 function give_lim_fraer_outfit()
-	if sak.have_items_count("ecolog_outfit",1) then
-		sak_inventory.release_actor_items("ecolog_outfit",1)
-	elseif sak.have_items_count("protection_outfit",1) then
+	if sak.have_items_count("protection_outfit",1) then
 		sak_inventory.release_actor_items("protection_outfit",1)
 	end
 end

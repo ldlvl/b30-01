@@ -234,12 +234,12 @@ local i=nlc_vars.set
 end
 
 function have_3_cheque2()
-  return sak.have_items_count("2bearer_cheque",3)~=false
+  return sak.have_items_count("bearer_cheque",3)~=false
 end
 
 function give_3_cheque2()
-  if sak.have_items_count("2bearer_cheque",3) then
-	sak_inventory.release_actor_items("2bearer_cheque", 3)
+  if sak.have_items_count("bearer_cheque",3) then
+	sak_inventory.release_actor_items("bearer_cheque", 3)
   end
 end
 
@@ -730,15 +730,15 @@ function add_5_pda_npc()
 end
 
 function add_12_pda_npc()
-  for i=1,12 do 
-	  local a = lua_random()
-	  if a<=0.0 then 
-		sak.create_items(db.actor, "device_pda_npc")
+  for i = 1, 12 do 
+	  local a = dsh.get_next_random( "generic_rnd" )
+	  if a <= 0.2 then 
+		  sak.create_items( db.actor, "device_pda_npc" )
 	  else	
-		add_device_pda_npc()
+		  add_device_pda_npc()
 	  end
   end
-  sak.send_tip("12 шт.","Получены ПДА",0,5,"g_g","","green")
+  sak.send_tip( "12 шт.", "Получены ПДА", 0, 5, "g_g", "", "green" )
 end
 
 function add_25_pda_npc()
@@ -1804,7 +1804,7 @@ function pet_7_gift()
 end
 
 function pet_8_gift()
-	sak.create_items(db.actor, "2bearer_cheque",1)
+	sak.create_items(db.actor, "bearer_cheque",1)
 	sak.create_items(db.actor, "medkit_army",3)
 	sak.create_items(db.actor, "antirad",4)
 end

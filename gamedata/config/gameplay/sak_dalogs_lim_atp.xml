@@ -6432,9 +6432,9 @@
 			<next>63</next>
 		</phrase>
 		<phrase id="61">
-		<precondition>sak_dialog.have_any_bart</precondition>
+		<precondition>sak_dialog.have_any_cart</precondition>
 			<text>botans_report_osvedomitel_dialog_61</text>
-			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.transfer_any_cart</action>
 			<next>71</next>
 		</phrase>
 		<phrase id="71">
@@ -15977,7 +15977,6 @@
 		<phrase id="403">
 			<text>lim_lager_fraer_start_dialog_403</text>
 			<action>sak_dialog.klyk_pri_secret</action>
-			<action>sak_dialog.add_2bearer_cheque</action>
 			<action>mike.add_12_pda_npc</action>
 			<next>404</next>
 		</phrase>
@@ -16052,8 +16051,6 @@
 		<phrase id="1">
 			<text>red_borzyi_pda_dialog_1</text>
 			<next>21</next>
-			<next>22</next>
-			<next>23</next>
 			<next>24</next>
 		</phrase>
 		<phrase id="21">
@@ -16064,44 +16061,11 @@
 		</phrase>
 		<phrase id="31">
 			<text>red_borzyi_pda_dialog_31</text>
-			<action>mike.add_5_pda_npc</action>
-			<!--<action>sak_dialog.add_borzyi_5pda</action>-->
+			<action>mike.add_12_pda_npc</action>
 			<next>41</next>
 		</phrase>
 		<phrase id="41">
 			<text>red_borzyi_pda_dialog_41</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="22">
-		<precondition>sak_dialog.have_2_cheque</precondition>
-			<text>red_borzyi_pda_dialog_22</text>
-			<action>sak_dialog.give_2_cheque</action>
-			<next>32</next>
-		</phrase>
-		<phrase id="32">
-			<text>red_borzyi_pda_dialog_32</text>
-			<action>mike.add_12_pda_npc</action>
-			<!--<action>sak_dialog.add_borzyi_12pda</action>-->
-			<next>42</next>
-		</phrase>
-		<phrase id="42">
-			<text>red_borzyi_pda_dialog_42</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="23">
-		<precondition>sak_dialog.have_4_cheque</precondition>
-			<text>red_borzyi_pda_dialog_23</text>
-			<action>sak_dialog.give_4_cheque</action>
-			<next>33</next>
-		</phrase>
-		<phrase id="33">
-			<text>red_borzyi_pda_dialog_33</text>
-			<action>mike.add_25_pda_npc</action>
-			<!--<action>sak_dialog.add_borzyi_25pda</action>-->
-			<next>43</next>
-		</phrase>
-		<phrase id="43">
-			<text>red_borzyi_pda_dialog_43</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="24">
