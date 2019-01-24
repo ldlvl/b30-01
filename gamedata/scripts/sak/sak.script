@@ -8962,10 +8962,12 @@ end
 function precondition_80_percent()
 precondition_percent(80)
 end
-function precondition_percent(perc)
-  local rnd=lua_random(100)
-  if rnd<perc then db.actor:give_info_portion("black_tip_yes")
-  else db.actor:give_info_portion("black_tip_no")
+function precondition_percent( perc )
+  local rnd = dsh.get_next_random( "generic_rnd", 100 )
+  if rnd < perc then
+    db.actor:give_info_portion( "black_tip_yes" )
+  else
+    db.actor:give_info_portion( "black_tip_no" )
   end
 end
 function timer2_volkodav_start()
