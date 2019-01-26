@@ -228,7 +228,8 @@ function ev_see_stuff:evaluate()
 					and	(
 					    	   db.actor              == nil
 					    	or db.actor:alive()      == false
-					    	or db.actor:position():distance_to_sqr( obj:position() ) > 6 )
+					    	or db.actor:position():distance_to_sqr( obj:position() ) > 6
+					    )
 				then
 					local valuable, corpse = isValuable( npc, obj )
 					if valuable then 

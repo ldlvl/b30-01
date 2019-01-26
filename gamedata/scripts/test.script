@@ -997,3 +997,19 @@ function anomaly_near2( tobj )
 	end
 	return false
 end
+
+function update_sleep_icon( mode )
+	local color = { 0, 0, 0, 0 }
+	if     mode == 4 then color = { 160, 150, 150, 255 } 
+	elseif mode == 3 then color = { 120, 255, 255, 0 } 
+	elseif mode == 2 then color = {  80, 255, 255, 150 }
+	elseif mode == 1 then color = {  40, 255, 255, 255 }
+	elseif mode == 0 then color = {   0,   0,   0,   0 }   end
+	local hud        = get_hud()
+	local static     = hud:GetCustomStatic( "sleep_icon_nlc" )
+	if static then
+    	hud:RemoveCustomStatic( "sleep_icon_nlc" )
+	end
+	static = hud:AddCustomStatic( "sleep_icon_nlc", true ):wnd()
+	static:SetColor(GetARGB( unpack( color )))
+end

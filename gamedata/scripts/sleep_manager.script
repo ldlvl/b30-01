@@ -68,16 +68,16 @@ function test_sleep_pp()
     level.add_pp_effector("black.ppe", 105, false)
     if zevota_flag ~= 3 then
       zevota_flag=3
-      level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
-      level.set_pp_effector_factor(999, 7.5)
+      --level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
+      --level.set_pp_effector_factor(999, 7.5)
     end
   elseif points > 190 then
     if zevota_flag ~=2 then
       zevota()
       level.add_pp_effector("black.ppe", 105, false)
       zevota_flag=2
-      level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
-      level.set_pp_effector_factor(999, 5.0)
+      --level.add_pp_effector("yantar_underground_psi.ppe", 999, true)
+      --level.set_pp_effector_factor(999, 5.0)
     end
   elseif points > 185 then
     if zevota_flag ~= 1 then
@@ -90,6 +90,12 @@ function test_sleep_pp()
       zevota_flag=0
       level.remove_pp_effector(999)
     end
+  end
+  if     points > 230 then test.update_sleep_icon( 4 )
+  elseif points > 210 then test.update_sleep_icon( 3 )
+  elseif points > 190 then test.update_sleep_icon( 2 )
+  elseif points > 170 then test.update_sleep_icon( 1 )
+  else   test.update_sleep_icon( 0 )
   end
 end
 

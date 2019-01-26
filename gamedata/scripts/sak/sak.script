@@ -3397,22 +3397,22 @@ function actor_heart()
 end
 --local bolt_id=1
 function health_handle()
-  local npc=db.actor
+  local npc = db.actor
   if not npc then return end
-  local lname=level.name()
-  local time_current=time_global()
-  local time_delta=time_current - time_sub
-  local time_delta_sound=time_current - time_sound
-  if time_delta_sound >= 1113 and lname~="l05_bar" and lname~="l01_escape" then
+  local lname            = level.name()
+  local time_current     = time_global()
+  local time_delta       = time_current - time_sub
+  local time_delta_sound = time_current - time_sound
+  if time_delta_sound >= 1113 and lname ~= "l05_bar" and lname ~= "l01_escape" then
     fear_sounds()
-    time_sound=time_current + lua_random(t_s_1, t_s_1*2)
+    time_sound = time_current + lua_random( t_s_1, t_s_1 * 2 )
   end
-  local n_healh=npc.health
-  local r_healh=npc.power
-  local p_healh=params.actor_psy_health()
-  local s_healh=params.actor_satiety_health()
-  local b_healh=params.actor_bleeding()
-  local x_healh=npc.radiation
+  local n_healh  = npc.health
+  local r_healh  = npc.power
+  local p_healh  = params.actor_psy_health()
+  local s_healh  = params.actor_satiety_health()
+  local b_healh  = params.actor_bleeding()
+  local x_healh  = npc.radiation
   if n_healh < 0.92 then hud_params.set_icon_color(1,argb32((n_healh*1.08),1)) else hud_params.set_icon_color(1,0) end
   --if p_healh < 0.95 then hud_params.set_icon_color(5,argb32(p_healh,4)) else hud_params.set_icon_color(5,0) end
   if p_healh < 0.95 then hud_params.set_icon_color(5,argb32(p_healh,1)) else hud_params.set_icon_color(5,0) end
