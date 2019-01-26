@@ -379,7 +379,7 @@ zoom_weapon       = false  -- game_object!
 gg_tired          = 1
 
 function scope_wobble()
-  local actor = db.actor
+  local actor             = db.actor
   local wobble_progress_k = 1       -- начальный коээф. раскачки по времени, умножается потом на базовый
 	local eff_obj = wpn_params.get_zie_obj()
 	if eff_obj == nil then    	   
@@ -402,11 +402,11 @@ function scope_wobble()
     end
 		wpn_params.disp_add[ 1 ] = math.random()*30-15
 		wpn_params.disp_add[ 2 ] = 12
-		wpn_params.disp_add[ 3 ] =-math.random()*30+15
-		base_radius = 0
-		last_cond = 1
-		flag_wpn = true
-		start_woobl = timers.Get_Game_Seconds()
+		wpn_params.disp_add[ 3 ] = -math.random()*30+15
+		base_radius              = 0
+		last_cond                = 1
+		flag_wpn                 = true
+		start_woobl              = timers.Get_Game_Seconds()
 	end
  	wobble_x = 0
 	wobble_y = 0
@@ -414,20 +414,19 @@ function scope_wobble()
 		local wpn = actor:active_item()
 		if wpn and wpn:section() then
   		base_wobble = wobble_wpn[ wpn:section() ] or 2
-      if base_wobble > 1 then                                    -- если раскачка больше 1
+      if base_wobble > 1 then                                      -- если раскачка больше 1
         wobble_progress_k = 1 - ( timers.Get_Game_Days() / 200 )   -- снижение в 2 раза к 100-му дню в Зоне 
         if wobble_progress_k < 0.5 then                            -- и на этом стоп!!
           wobble_progress_k = 0.5
         end
         base_wobble = base_wobble * wobble_progress_k
         local arm6 = actor:item_in_slot( 6 )
-        if arm6 ~= nil then                          -- Если инвалид в экзе, то раскачка на 30% слабее
+        if arm6 ~= nil then                                        -- Если в экзе, то раскачка на 30% слабее
           if strposx ( arm6:section(), "exo" ) then base_wobble = base_wobble * 0.75 end
         end
       end
       if base_wobble < 1 then base_wobble = 1 end
-      --wprintf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  " .. base_wobble .. "  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  		wpn_id = wpn:id()
+  		wpn_id   = wpn:id()
   		flag_wpn = false
 		end
 	end
@@ -438,19 +437,20 @@ function scope_wobble()
 			local h, p = coord_params.camera_angles()
 			local hofs = 0.001
 			local pofs = 0.03
-			hofs = hofs*math.random()-hofs/2
-			pofs = pofs*math.random()-pofs/2
+			hofs       = hofs*math.random()-hofs/2
+			pofs       = pofs*math.random()-pofs/2
 			coord_params.camera_angles( h+hofs, p+pofs )
 			base_radius = 0
 			wpn_params.zoom_time = 1
 		end
 	end
-  local div_limit = 10
-  local crouch = actor:get_crouch_factor()
-  if crouch == 1 then
+  local div_limit  = 10
+  local crouch     = actor:get_crouch_factor()
+  local sleepiness = sleep_manager.get_sleepiness()
+  if crouch == 1 and sleepiness < 170 then
     wpn_params.zoom_time = wpn_params.zoom_time + 0.07
     div_limit = 20
-  elseif crouch == 2 then
+  elseif crouch == 2 and sleepiness < 170 then
     wpn_params.zoom_time = wpn_params.zoom_time + 0.25
     div_limit = 40
   else
@@ -458,12 +458,12 @@ function scope_wobble()
   end
 	local power = 0.2 + ( actor.power * 0.8 )
 	if timers.Get_Game_Seconds() - start_woobl > 60 * power then
-    last_cond = 2
+    last_cond   = 2
     start_woobl = timers.Get_Game_Seconds()
     vergas_lib.s_play( "actor\\breathout", 1 )
   end
 	base_radius = math.min( 1, base_radius + 0.1 ) * base_wobble * gg_tired / power
-	local dir = vector():set( device().cam_dir )
+	local dir   = vector():set( device().cam_dir )
 	for i, deg in ipairs( disp_angles ) do
 		inc_angle( i )
 		local rdiv = math.min( div_limit, wpn_params.zoom_time )
@@ -475,7 +475,7 @@ function scope_wobble()
 	local m_rot = matrix()
 	m_rot:setHPB( dir:getH(), dir:getP(), 0 )
 	local v = vector():set( wobble_x, wobble_y, 0 )
-	v = transform_tiny( m_rot, v )
+	v       = transform_tiny( m_rot, v )
   switch_zoom_osc( true )  
  	-- zupd('current_point', 	v,     false, eff_obj)
   zupd( 'target_point', 	 v,     false, eff_obj )
