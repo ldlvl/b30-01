@@ -31,7 +31,10 @@ local disabled_objects={}
 corpse_checked={} -- true - has loot, false - hasn't loot, nil - not checked
 
 function checkCorpse(obj)
-	if (IsStalker(obj) or IsMonster(obj)) and obj:alive()==false then
+	if (IsStalker(obj) or IsMonster(obj))
+		and obj:alive()==false
+		and not test.anomaly_near2( obj )
+	then
 		if corpse_checked[obj:id()]~=nil then
 			return corpse_checked[obj:id()]
 		end
@@ -75,9 +78,10 @@ function isValuable(npc, obj)
 	local sec=obj:section()
 ------ added by dSh as exclusion for some quest items ------	
 	if get_bool( obj:section(), "watcher_act.bad_item", false ) then
-    return false, false
+    	return false, false
     end
 -------------------------------------------------------------	
+	if test.anomaly_near2( obj ) then return false,false end       -- чтобы не лезли в аномалию за оружием?
 	if sec=="amk_metka" or sec==black_tip.section then
 		return false,false
 	end
@@ -162,63 +166,89 @@ function bad_danger(npc)
 end
 	
 function ev_see_stuff:evaluate()
-	local res=getGObject(self.st)~=nil
-	local npc=self.object
-	local actsch=db.storage[npc:id()].active_scheme
+	local res    = getGObject( self.st ) ~= nil
+	local npc    = self.object
+	local actsch = db.storage[ npc:id() ].active_scheme
 	if actsch and db.actor then
-		xr_logic.try_switch_to_another_section(npc, db.storage[npc:id()][actsch], db.actor)
+		xr_logic.try_switch_to_another_section( npc, db.storage[ npc:id() ][ actsch ], db.actor )
 	end
-	local act_sec=db.storage[npc:id()].active_section or ""
-	if (not npc:alive()) or xr_wounded.is_wounded(npc) or npc:best_enemy() or 
-			bad_danger(npc) or (actsch and db.storage[npc:id()][actsch].no_loot) then
-		if res then
-			freeGObject(self.st)
-			end
+	local act_sec = db.storage[ npc:id() ].active_section or ""
+	if
+		not npc:alive()
+		or xr_wounded.is_wounded( npc )
+		or npc:best_enemy()
+		or bad_danger( npc )
+		or ( actsch and db.storage[ npc:id() ][ actsch ].no_loot )
+	then
+		if res then	freeGObject( self.st ) end
 		return false
 	end
-	local dist_limit=1000
-	if bgwith(act_sec,"camper") then
-		dist_limit=5
+	local dist_limit = 1000
+	if bgwith( act_sec, "camper" ) then
+		dist_limit = 5
 	end
-	local busy=bgwith(act_sec,"walker") or bgwith(act_sec,"combat") or bgwith(act_sec,"danger") -- or npc:best_danger()
+	local busy = bgwith( act_sec, "walker" ) or bgwith( act_sec, "combat" ) or bgwith( act_sec, "danger" ) -- or npc:best_danger()
 	if res and self.st.block_search then
 		-- NPC собрался взять вещь. Временно прекратим поиск.
 		return true
 	end
-	timed(self.st,"tm1",lua_random(5000,15000),
+	timed( self.st, "tm1", lua_random( 5000,15000 ),
 		function()
-			local min_dist=100000
-			local function check_item(o)
-				local obj=o:object()
-				if obj_owner[obj:id()] and (client_obj(obj_owner[obj:id()])==nil or client_obj(obj_owner[obj:id()]):alive()==false) then
-					obj_owner[obj:id()]=nil
+			local min_dist = 100000
+			local function check_item( o )
+				local obj = o:object()
+				if
+					obj_owner[ obj:id() ]
+					and (
+					     	client_obj( obj_owner[ obj:id() ] ) == nil
+					     	or client_obj( obj_owner[ obj:id() ] ):alive() == false
+					    )
+				then
+					obj_owner[ obj:id() ] = nil
 				end
-				if (corpse_checked[obj:id()]==false) or (obj.parent_id and corpse_checked[obj.parent_id]==false) then return false end
-				if (self.st.disabled_objects[obj:id()]~=true) and (obj:parent()==nil or obj_owner[obj:id()]==BAD_OBJ_ID or not IsStalker(obj:parent())) and 
-					(obj_owner[obj:id()]==nil or obj_owner[obj:id()]==BAD_OBJ_ID or obj_owner[obj:id()]==npc:id()) and npc:accessible(obj:level_vertex_id()) and
-					(db.actor==nil or db.actor:alive()==false or db.actor:position():distance_to_sqr(obj:position())>6) then
-					local valuable,corpse=isValuable(npc, obj)
+				if
+					corpse_checked[ obj:id() ] == false
+					or ( obj.parent_id and corpse_checked[ obj.parent_id ] == false )
+				then
+					return false
+				end
+				if
+					self.st.disabled_objects[ obj:id() ] ~= true
+					and (
+					     	   obj:parent()          == nil
+					     	or obj_owner[ obj:id() ] == BAD_OBJ_ID
+					     	or not IsStalker( obj:parent() )
+					    )
+					and	(
+					     	   obj_owner[ obj:id() ] == nil
+					     	or obj_owner[ obj:id() ] == BAD_OBJ_ID
+					     	or obj_owner[ obj:id() ] == npc:id()
+					    )
+					and npc:accessible( obj:level_vertex_id() )
+					and	(
+					    	   db.actor              == nil
+					    	or db.actor:alive()      == false
+					    	or db.actor:position():distance_to_sqr( obj:position() ) > 6 )
+				then
+					local valuable, corpse = isValuable( npc, obj )
 					if valuable then 
-						local value=3000
-						if not corpse then
-							value = objValue(obj)
-						end
-						if value<=0 then value=0 end
-						
-						if corpse or not npc_has_same_wo(npc, obj) then
-							local max_dist=5+math.sqrt(value)
+						local value = 3000
+						if not corpse then value = objValue( obj ) end
+						if value <= 0 then value = 0 end
+						if corpse or not npc_has_same_wo( npc, obj ) then
+							local max_dist = 5 + math.sqrt( value )
 							if busy then
-								max_dist=max_dist/5
+								max_dist = max_dist / 5
 							end
-							local dist=level.vertex_position(obj:level_vertex_id()):distance_to(npc:position())
-							local corrected_dist=dist
-							if dist>5 then
-								corrected_dist=5+(dist-5)/math.sqrt(value)
+							local dist = level.vertex_position( obj:level_vertex_id() ):distance_to( npc:position() )
+							local corrected_dist = dist
+							if dist > 5 then
+								corrected_dist = 5 + ( dist - 5 ) / math.sqrt( value )
 							end
-							if dist<max_dist and corrected_dist<min_dist and dist<dist_limit then
-								min_dist=corrected_dist
-								claimGObject(npc,self.st,obj)
-								res=true
+							if dist < max_dist and corrected_dist < min_dist and dist < dist_limit then
+								min_dist = corrected_dist
+								claimGObject( npc, self.st, obj )
+								res = true
 							end
 						end
 					end
@@ -226,7 +256,7 @@ function ev_see_stuff:evaluate()
 			end -- function check_item
 			if npc and npc:alive() then
 				for o in npc:memory_visible_objects() do
-					check_item(o)
+					check_item( o )
 				end
 				--[[for o in npc:memory_sound_objects() do
 					check_item(o)

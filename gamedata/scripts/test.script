@@ -969,3 +969,31 @@ end
 function check_monster_part_march_timer()
 	return not timers.check_timer( "march_monster_part_restore" )
 end
+
+function anomaly_near( tobj )
+	local flag     = false
+	local ids, cnt = registry.clsid_objects( CLID_ZONE_BURNING_FUZZ, CLID_ZONE_AMEBA, true, nil, 7 )
+	for n = 1, cnt do
+		local id  = ids[ n ]
+		local obj = client_obj( id )
+		if obj then
+			local t_pos = tobj:position()
+			local pos   = obj:position()
+			if pos:distance_to( t_pos ) < 5 then
+				flag = true
+				break
+			end
+		end
+	end
+	return flag
+end
+
+function anomaly_near2( tobj )
+	local id, pos, radius, dist = amk_anoms.get_nearest_anomaly( tobj )
+	if id and dist < 2 then
+		if not strposx( client_obj( id ):section(), "radioactive" ) then
+			return true
+		end
+	end
+	return false
+end
