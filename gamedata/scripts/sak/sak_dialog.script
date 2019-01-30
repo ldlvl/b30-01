@@ -289,12 +289,11 @@ end
 -- На северных локах небольшой шанс на редкий арт  ++ пусть зелень теперь тоже попадается.
 function rand_semart()
   local section = ""
-  local lname   = level.name()
-  if sak.level_difficulty[ lname ] > 1.3 and lua_random() < 0.18 then
-     section = table_good_semart[ lua_random( 1, #table_good_semart ) ]
+  if sak.level_difficulty[ level.name() ] > 1.3 and dsh.get_next_random( "semeneckyi" ) < 0.2 then
+     section = table_good_semart[ dsh.get_next_random( "semeneckyi", 1, #table_good_semart ) ]
   else
-     section = table_semart[ lua_random( 1, #table_semart ) ]
-     section = section .. "_dyn" .. lua_random( 3, 5 ) .. "d"
+     section = table_semart[ dsh.get_next_random( "semeneckyi", 1, #table_semart ) ]
+     section = section .. "_dyn" .. tostring( dsh.get_next_random( "semeneckyi", 3, 5 ) ) .. "d"
   end
   return section
 end

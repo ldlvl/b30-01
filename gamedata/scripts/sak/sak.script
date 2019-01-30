@@ -5308,6 +5308,7 @@ function add_tail()
   end
   if lname~=sname and sname~="" then
     wprintf("sak.add_tail: level change detected from~C0E %s~C07 to~C0F %s~C07", sname, lname)
+    nlc_vars.semeneckyi_done = nil
     local obj
     if lname~="l05_bar" and not has_alife_info("minigame_stas_start") then  actor:give_info_portion("minigame_stas_start") end
     if (not has_alife_info("bar_heli_scene_professor_die")) and (not has_alife_info("kruglov_is_fly")) and (actor:has_info("kruglov_way_2_end") or actor:has_info("kruglov_flash_done") or actor:has_info("kruglov_resiever_done") or actor:has_info("kruglov_weapon_done") or actor:has_info("kruglov_letter_done") or actor:has_info("kruglov_follow_done") or actor:has_info("krugl_end_time")) then
@@ -8111,18 +8112,27 @@ end
 -- А давай где угодно на уровне спавниться и небольшой шанс редкого арта вдобавок??
 function spawn_art_semeneckyi()
   local lname = level.name()
-  local lvc = const.level_vertices[ lname ]
+  if str_in_tab( lname, { "l05_bar", "hospital" } ) then return end
+  local lvc   = const.level_vertices[ lname ]
   if lvc ~= nil and const.ground_levels[ lname ] and not sleep_manager.is_sleep_active() then
-    local new_lv, pos = const.random_level_point( lname )
-    if ( new_lv == nil ) or ( not amk_anoms.check_coordinates_arts( pos, lname ) ) then return end
-    local new_gw = const.best_game_vertex( pos )
-    local section = sak_dialog.rand_semart()
-    local sobj = amk.spawn_item( section, pos, new_gw, new_lv )
-    if sobj then
-      nlc_vars.semart_id = sobj.id  -- для статистики
-      test.add_art_to_vars( sobj.id ) -- для статистики
-      --amk.add_spot_on_map( sobj.id, 'red_location', section )
-      vergas_art.add_in_tbl( sobj )
+    for i = 1, 20 do
+      local new_lv, pos = const.random_level_point( lname )
+      if
+        amk_anoms.check_coordinates_arts( pos, lname )
+        and new_lv ~= nil
+      then
+        local new_gw  = const.best_game_vertex( pos )
+        local section = sak_dialog.rand_semart()
+        local sobj    = amk.spawn_item( section, pos, new_gw, new_lv )
+        if sobj then
+          nlc_vars.semart_id = sobj.id                    -- для статистики
+          test.add_art_to_vars( sobj.id )                 -- для статистики
+          vergas_art.add_in_tbl( sobj )
+        end
+        wprintf( "@------------- eternal art spawned successfully after " .. i .. " tries... PRAISE BE!" )
+        nlc_vars.semeneckyi_done = true
+        return
+      end
     end
   end
 end

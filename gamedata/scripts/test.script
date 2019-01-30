@@ -663,6 +663,7 @@ function firemode_switch_try()
 end
 
 function on_late_init()
+	schedule.add( "do_eternal", "test.eternal_start()", 12000 )
  	local d_saved = get_death_count( "d_stor" ) or 0
  	local d_pda   = actor_stats.get_points( "stalkerkills" ) or 0
  	local d_diff  = d_saved - d_pda
@@ -816,7 +817,6 @@ function count_actor_ammo( section )
     for sect, cnt in rukzak:pairs() do
         if strposx( sect, section ) then count = count + cnt end
     end
-	--wprintf( "++++++++++++++++++++++++++++++++++" .. count )
 	return count
 end
 
@@ -1001,15 +1001,29 @@ end
 function update_sleep_icon( mode )
 	local color = { 0, 0, 0, 0 }
 	if     mode == 4 then color = { 160, 150, 150, 255 } 
-	elseif mode == 3 then color = { 120, 255, 255, 0 } 
+	elseif mode == 3 then color = { 120, 255, 255, 0   } 
 	elseif mode == 2 then color = {  80, 255, 255, 150 }
 	elseif mode == 1 then color = {  40, 255, 255, 255 }
-	elseif mode == 0 then color = {   0,   0,   0,   0 }   end
-	local hud        = get_hud()
-	local static     = hud:GetCustomStatic( "sleep_icon_nlc" )
+	elseif mode == 0 then color = {   0,   0,   0,   0 }
+	end
+	local hud    = get_hud()
+	local static = hud:GetCustomStatic( "sleep_icon_nlc" )
 	if static then
     	hud:RemoveCustomStatic( "sleep_icon_nlc" )
 	end
 	static = hud:AddCustomStatic( "sleep_icon_nlc", true ):wnd()
-	static:SetColor(GetARGB( unpack( color )))
+	static:SetColor( GetARGB( unpack( color ) ) )
+end
+
+function eternal_start()
+	if nlc_vars.semeneckyi_done then return end
+	local delay = lua_random( 30, 300 )
+	if not timers.check_timer( "semeneckyi_timer" ) then
+		timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
+		wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  min" )
+	else
+		timers.stop_timer( "semeneckyi_timer" )
+		timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
+		wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
+	end
 end

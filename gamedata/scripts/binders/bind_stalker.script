@@ -699,29 +699,33 @@ end
 function actor_binder:test_method(param)
   ODS("[~T]. #test_method: param = "..tostring(param)..", self = "..DumpVar(self))
 end
+
 function actor_binder:net_destroy()
- ODS('[~T].~CF0 #DBG: actor_binder:net_destroy() processing ...~C07')
- local sname = (amk_vars.level_on_save or "")
-  if ( level.name() == sname or sname == "" ) and time_global() > 300000 and db.actor:alive() then
+  ODS('[~T].~CF0 #DBG: actor_binder:net_destroy() processing ...~C07')
+  local sname = (amk_vars.level_on_save or "")
+  if
+    ( level.name() == sname or sname == "" )
+    and time_global() > 300000
+    and db.actor:alive()
+  then
     test.set_death_count( "p_stor", test.get_death_count( "p_stor" ) + 1 )
   end
- modmgmt.stop_modules() 
- xr_s.on_event("net_destroy")
- SetVerbosity(1)
- texman.ret_tex_trees()
- LuaCleanup(255) 
- DebugDumpAll()
- SetVerbosity(3)
- 
- self:clear_callbacks()
- db.del_actor(self.object) 
- object_binder.net_destroy(self)
- SetVerbosity(3)
- SleepEx(200) 
- db.sim = nil
- xvars.nlc = nil
- xvars.amk = nil
- xvars = nil
+  modmgmt.stop_modules() 
+  xr_s.on_event("net_destroy")
+  SetVerbosity( 1 )
+  texman.ret_tex_trees()
+  LuaCleanup( 255 ) 
+  DebugDumpAll()
+  SetVerbosity( 3 )
+  self:clear_callbacks()
+  db.del_actor( self.object ) 
+  object_binder.net_destroy( self )
+  SetVerbosity( 3 )
+  SleepEx( 200 ) 
+  db.sim    = nil
+  xvars.nlc = nil
+  xvars.amk = nil
+  xvars     = nil
 end
 
 function actor_binder:clear_callbacks()
