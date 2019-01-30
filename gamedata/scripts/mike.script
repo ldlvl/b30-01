@@ -202,7 +202,7 @@ function timer_voron_end()
 end
 
 function timer_scarman()
-  timers.start_timer("timer_scarman",0,12,0,"mike.timer_scarman_end()")
+  timers.start_timer("timer_scarman",1,0,0,"mike.timer_scarman_end()")
 end
 
 function timer_scarman_end()
@@ -300,26 +300,6 @@ function last_sheet()
   sak.send_tip("Последний отрывок из записок Стрелка.","",0,20,"g_g","news", "blue")
 end
 
-function add_scarman_habar()
-  local obj1=amk.spawn_item("rukzak_inventory_box",vector():set(147.80940246582,-0.24155102670193,-187.4507598877),3304,106630)
-  if obj1 then
-     fill_scarman_habar(obj1.id)
-  end
-end
-
-function fill_scarman_habar(obj)
-  local obj1=g_sim:object(tonumber(obj))
-  g_sim:create("af_kol_1",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  g_sim:create("af_rusty_sea-urchin_capsule",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  g_sim:create("ammo_5.56x45_ap", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  g_sim:create("ammo_5.56x45_ap", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  g_sim:create("ammo_5.56x45_ap", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  if obj1.online then
-    g_sim:set_switch_online(obj1.id, false)
-    g_sim:set_switch_offline(obj1.id, true)
-    amk.convert_npc[obj1.id]=1
-  end
-end
 -- убрал Акуумулятор из х12
 function spawn_in_x12() 
  -- amk.spawn_item("af_dummy_dummy_new",vector():set(8.1679067611694,-22.772760391235,8.207935333252),2703,7794)
@@ -623,6 +603,7 @@ end
 
 function scarman_pda_give()
   sak_inventory.release_actor_items("scarman_pda", 1)
+  sak_dialog.transfer_any_cart()
 end
 
 function manometr_vodka_have()

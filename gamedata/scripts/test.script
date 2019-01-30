@@ -1027,3 +1027,95 @@ function eternal_start()
 		wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
 	end
 end
+
+function spawn_no_ai( spawn_item, pos, gv, lv )
+	local obj = alife():create( spawn_item, pos, lv, gv )
+	obj       = alife():object( obj.id )
+	local pk  = get_netpk( obj, 1 )
+	if pk:isOk() then
+		local data        = pk:get()
+		data.object_flags = bit_and( data.object_flags, bit_not( 128 ) )
+		pk:set( data )
+		end
+	return obj
+end
+
+function use_ai_locations( obj )       -- перенести в g.script ????
+	local sobj = alife():object( obj.id )
+	local pk   = get_netpk( sobj, 1 )
+	if pk:isOk() then
+		local data        = pk:get()
+		data.object_flags = bit_and( data.object_flags, bit_not( 128 ) )
+		pk:set( data )
+	end
+end
+
+function add_scarman_habar()
+	local ind       = amk_vars.r_task_reward or 2
+	local ind_habar = amk_vars.r_treas_items or 1
+	local tbl       = { 
+		{  56.603, -2.8180,   11.557, 3013, 53606 },
+		{  14.191, -1.4650, -106.612, 3002, 33484 },
+		{ -34.687, -3.7060, -202.182, 2990, 9369  },
+		{  19.803,  3.6930, -269.262, 3012, 35918 },
+		{ -19.920,  5.1954, -302.300, 3009, 16001 }
+	}
+	local tbl_habar = { 
+		{
+			"af_dummy_buliz",
+			"ammo_8.6x70_ap",
+			"ammo_8.6x70_ap",
+			"wpn_addon_acog"
+		},
+		{
+			"af_kol_1",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"ammo_9x39_ap",
+			"repair_item_weapon_feik",
+			"repair_item_weapon_feik",
+			"medkit_scientic",
+			"medkit_scientic"
+
+		},
+		{
+			"af_spirit_1",
+			"ammo_7.62x54_7h14",
+			"ammo_7.62x54_7h14",
+			"ammo_7.62x54_7h14",
+			"ammo_7.62x54_7h14",
+			"repair_itemoutfit_feik",
+			"repair_itemoutfit_feik",
+			"medkit_scientic",
+			"medkit_scientic"
+		}
+	}
+	local obj = spawn_no_ai(
+	                "rukzak_inventory_box",
+	                sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+	                tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
+	            )
+	if obj then
+		local obj1 = g_sim:object( obj.id )
+		for _, v in ipairs( tbl_habar[ ind_habar ] ) do
+			g_sim:create(
+				v,
+				obj1.position,
+				obj1.m_level_vertex_id,
+				obj1.m_game_vertex_id,
+				obj1.id
+			)
+		end
+		if obj1.online then
+			g_sim:set_switch_online ( obj1.id, false )
+			g_sim:set_switch_offline( obj1.id, true  )
+			amk.convert_npc[ obj1.id ] = 1
+		end
+	end
+end
+
+function scarman_sms()
+	sak.send_tip( "'Галиматья какая-то. Слова, снизу цифры, типа ключ. Цифр вроде в 2 раза больше, чем слов.'", "В ПДА добавлена статья:", 0, 10, "uniq", "sak", "orange" )
+end

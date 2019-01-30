@@ -2224,8 +2224,10 @@
 			<next>62</next>			
 		</phrase>
 		<phrase id="61">
+			<precondition>sak_dialog.have_any_cart</precondition>
 			<text>scarman1_docent_dialog_61</text>
 			<action>mike.scarman_pda_give</action>
+			<give_info>scarman1_docent_info</give_info>			
 			<action>mike.timer_scarman</action>
 			<next>7</next>			
 		</phrase>		
@@ -2235,7 +2237,6 @@
 		</phrase>
 		<phrase id="7">
 			<text>scarman1_docent_dialog_7</text>
-			<give_info>scarman1_docent_info</give_info>			
 			<next>8</next>
 		</phrase>
 		<phrase id="8">
@@ -2247,7 +2248,7 @@
 
 <dialog id="scarman2_docent_dialog">
 <has_info>timer_scarman_end</has_info>
-<dont_has_info>scarman2_docent_info</dont_has_info>
+<dont_has_info>scarman_pda_puzzle</dont_has_info>
 	<phrase_list>
 		<phrase id="0">
 			<text>scarman2_docent_dialog_0</text>
@@ -2263,6 +2264,9 @@
 		</phrase>
 		<phrase id="3">
 			<text>scarman2_docent_dialog_3</text>
+			<give_info>scarman_pda_puzzle</give_info>
+			<action>test.add_scarman_habar</action>
+			<action>test.scarman_sms</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -2279,7 +2283,7 @@
 		</phrase>		
 		<phrase id="7">
 			<text>scarman2_docent_dialog_7</text>
-			<give_info>scarman2_docent_info</give_info>		
+			<!-- <give_info>scarman2_docent_info</give_info>	 -->	
  			<next>8</next>
 		</phrase>				
 		<phrase id="8">
