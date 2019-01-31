@@ -7165,14 +7165,13 @@ function timer_muller_2()
   timers.start_timer("timer_muller_2",0,7,30,"sak.timer_muller_end()")
 end
 function add_muller_treasure()
-  local treases={5855,5854,5859,5861,5863}
-  local sid=lua_random(1,#treases)
-  local obj= g_sim:story_object(treases[sid])
+  local treases = { 5855, 5854, 5859, 5861, 5863 }
+  local sid     = lua_random( 1, #treases )
+  local obj     = g_sim:story_object( treases[ sid ] )
   if obj then
-  local rand = lua_random(4,6)
-    for a=1,rand do
-      misc.spawn_to("antirad", obj)
-      misc.spawn_to("medkit_army", obj)
+    for a = 1, 2 do
+      misc.spawn_to( "antirad",     obj )
+      misc.spawn_to( "medkit_army", obj )
     end
   end
 end
@@ -9666,15 +9665,13 @@ function info_volk_pda()
 end
 --тайник ћюллера 2
 function add_muller_treasure2()
-  local treases={5855,5854,5859,5861,5863}
-  local sid=lua_random(1,#treases)
-  local obj= g_sim:story_object(treases[sid])
+  local treases = { 5855, 5854, 5859, 5861, 5863 }
+  local sid     = lua_random( 1, #treases )
+  local obj     = g_sim:story_object( treases[ sid ] )
   if obj then
-  misc.spawn_to("af_rusty_kristall_dyn5d", obj)
-  local rand = lua_random(4,6)
-    for a=1,rand do
-      misc.spawn_to("antirad", obj)
-      misc.spawn_to("medkit_army", obj)
+    misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 1, 5 ), obj )  -- рандомный арт 1 ур 5 дана
+    for a = 1, 2 do
+      misc.spawn_to( "antirad", obj )
     end
   end
 end
