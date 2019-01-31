@@ -1,203 +1,160 @@
 ;Винтовка Мосина
 [wpn_mosin]:identity_immunities
-GroupControlSection					= spawn_group
-discovery_dependency    			= 
-$spawn                  			= "weapons\m1891"
-$npc								= off
-$prefetch 							= 8
-scheduled               			= off
-cform                   			= skeleton
-class                   			= WP_SHOTG
-min_radius              			= 10
-max_radius              			= 100
-
-inv_name	        				= wpn_mosin
-inv_name_short						= wpn_mosin
-description							= enc_wpn_mosin
-
-default_to_ruck						= false
-
-ef_main_weapon_type     			= 3
-ef_weapon_type						= 8
-
-holder_range_modifier				= 2.15               
-holder_fov_modifier					= 0.3            
-
-cost								= 20000
-weapon_class						= sniper_rifle
-tri_state_reload					= on
-
-ammo_limit							= 60
-ammo_current						= 5
-ammo_elapsed						= 0
-
-ammo_mag_size						= 5
-ammo_class							= ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_7h14
-
-sprint_allowed						= true
-
-fire_dispersion_base				= 0.19
-control_inertion_factor				= 1.3f
-	
-cam_relax_speed         			= 5
-cam_dispersion          			= 1.1
-cam_dispersion_inc					= 1.1
-cam_dispertion_frac					= 1.0
-cam_max_angle						= 30
-cam_max_angle_horz					= 10
-cam_step_angle_horz					= 1.5	
-
-fire_dispersion_condition_factor 	= 1.4
-misfire_probability 				= 0.004 
-misfire_condition_k					= 0.50
-condition_shot_dec 					= 0.0005
-
-hand_dependence 					= 1
-single_handed						= 0
-
-slot 								= 2	
-animation_slot						= 3
-
-inv_weight							= 4.5
-
-icon_group                  		= 2
-inv_grid_width     					= 7
-inv_grid_height    					= 2
-inv_grid_x         					= 34
-inv_grid_y         					= 10
-
-kill_msg_x							= 0
-kill_msg_y							= 0
-kill_msg_width						= 98
-kill_msg_height						= 23
-
-direction               			= 0, 0, 1
-
-fire_point              			= 0.0, 0.129, 0.942
-
-flame_particles						= weapons\generic_weapon03
-smoke_particles						= weapons\generic_shoot_00
-
-shell_point							= 0.0, 0.129, 0.192	
-shell_dir							= 0.0, 0.0, 0.4
-
-PDM_disp_base 						= 4.0
-PDM_disp_vel_factor 				= 5.0
-PDM_disp_accel_factor 				= 7.0
-PDM_crouch							= 3.9
-PDM_crouch_no_acc					= 2.7
-
-hit_power               			= 0.96
-hit_impulse							= 1
-hit_type 							= fire_wound
-
-fire_distance           			= 300
-bullet_speed						= 865
-rpm                     			= 29
-
-use_aim_bullet						= false
-time_to_aim							= 1.0
-
-hud                     			= wpn_mosin_hud
-normal                  			= 0, 1, 0
-position                			= -0.026, -0.16, 0.1
-orientation             			= 0, 30, 0
-
-strap_position         				= -0.15,-0.15,0.45
-strap_orientation      				= -25,-189,65		
-
-strap_bone0							= bip01_spine2
-strap_bone1							= bip01_spine1
-
-startup_ammo            			= 10
-visual                  			= weaponsv\mosin\wpn_mosin.ogf
-
-light_color							= 0.6,0.5,0.3
-light_range							= 4.0
-light_var_color						= 0.05
-light_var_range						= 0.5
-light_time 							= 0.2
-
-ph_mass								= 3
-
-scope_status						= 2
-scope_x 							= 85
-scope_y 							= 1
-silencer_status						= 2
-silencer_x                  		= 313
-silencer_y                  		= 9
-grenade_launcher_status				= 0
-
-scope_mode 							= 3
-scope_name 							= wpn_addon_pe
-
-ironsight_zoom_factor       		= 80
-scope_zoom_factor					= 85
-
-silencer_name  						= wpn_addon_sil_mosin
-silencer_x 							= 315
-silencer_y 							= 1	
-
-zoom_enabled						= true
-
-snd_draw							= weapons\generic_draw, 0.4
-snd_holster							= weapons\mosin\mosin_holster
-snd_shoot							= weapons\mosin\mosin_shot			
-;snd_empty							= weapons\mosin\mosin_empty
-snd_reload							= weapons\mosin\mosin_reload, 0.6
-snd_shoot_duplet					= weapons\mosin\mosin_shot
-snd_open_weapon						= weapons\mosin\mosin_open		
-snd_add_cartridge					= weapons\mosin\mosin_load	
-snd_close_weapon					= weapons\mosin\mosin_close	
-snd_silncer_shot					= weapons\mosin\mosin_shot_sil
-snd_razgruzka						= weapons\razgruzka\ammo_4
-
-silencer_light_color				= 1.0, 0.1, 0.0
-silencer_light_range				= 0.01
-silencer_light_var_color			= 0.05
-silencer_light_var_range			= 0.5
-silencer_light_time 				= 0.2
+GroupControlSection              = spawn_group
+discovery_dependency             = 
+$spawn                           = "weapons\m1891"
+$npc                             = off
+$prefetch                        = 8
+scheduled                        = off
+cform                            = skeleton
+class                            = WP_SHOTG
+min_radius                       = 10
+max_radius                       = 100
+inv_name                         = wpn_mosin
+inv_name_short                   = wpn_mosin
+description                      = enc_wpn_mosin
+default_to_ruck                  = false
+ef_main_weapon_type              = 3
+ef_weapon_type                   = 8
+holder_range_modifier            = 2.15               
+holder_fov_modifier              = 0.3            
+cost                             = 20000
+weapon_class                     = sniper_rifle
+tri_state_reload                 = on
+ammo_limit                       = 60
+ammo_current                     = 5
+ammo_elapsed                     = 0
+ammo_mag_size                    = 5
+ammo_class                       = ammo_7.62x54_ap, ammo_7.62x54_7h1, ammo_7.62x54_7h14
+sprint_allowed                   = true
+fire_dispersion_base             = 0.19
+control_inertion_factor          = 1.3f
+cam_relax_speed                  = 5
+cam_dispersion                   = 1.1
+cam_dispersion_inc               = 1.1
+cam_dispertion_frac              = 1.0
+cam_max_angle                    = 30
+cam_max_angle_horz               = 10
+cam_step_angle_horz              = 1.5	
+fire_dispersion_condition_factor = 2
+misfire_probability              = 0.009 
+misfire_condition_k              = 0.50
+condition_shot_dec               = 0.0009
+hand_dependence                  = 1
+single_handed                    = 0
+slot                             = 2	
+animation_slot                   = 3
+inv_weight                       = 4.5
+icon_group                       = 2
+inv_grid_width                   = 7
+inv_grid_height                  = 2
+inv_grid_x                       = 34
+inv_grid_y                       = 10
+kill_msg_x                       = 0
+kill_msg_y                       = 0
+kill_msg_width                   = 98
+kill_msg_height                  = 23
+direction                        = 0, 0, 1
+fire_point                       = 0.0, 0.129, 0.942
+flame_particles                  = weapons\generic_weapon03
+smoke_particles                  = weapons\generic_shoot_00
+shell_point                      = 0.0, 0.129, 0.192	
+shell_dir                        = 0.0, 0.0, 0.4
+PDM_disp_base                    = 4.0
+PDM_disp_vel_factor              = 5.0
+PDM_disp_accel_factor            = 7.0
+PDM_crouch                       = 3.9
+PDM_crouch_no_acc                = 2.7
+hit_power                        = 0.96
+hit_impulse                      = 1
+hit_type                         = fire_wound
+fire_distance                    = 300
+bullet_speed                     = 865
+rpm                              = 29
+use_aim_bullet                   = false
+time_to_aim                      = 1.0
+hud                              = wpn_mosin_hud
+normal                           = 0, 1, 0
+position                         = -0.026, -0.16, 0.1
+orientation                      = 0, 30, 0
+strap_position                   = -0.15,-0.15,0.45
+strap_orientation                = -25,-189,65		
+strap_bone0                      = bip01_spine2
+strap_bone1                      = bip01_spine1
+startup_ammo                     = 10
+visual                           = weaponsv\mosin\wpn_mosin.ogf
+light_color                      = 0.6,0.5,0.3
+light_range                      = 4.0
+light_var_color                  = 0.05
+light_var_range                  = 0.5
+light_time                       = 0.2
+ph_mass                          = 3
+scope_status                     = 2
+scope_x                          = 85
+scope_y                          = 1
+silencer_status                  = 2
+silencer_x                       = 313
+silencer_y                       = 9
+grenade_launcher_status          = 0
+scope_mode                       = 3
+scope_name                       = wpn_addon_pe
+ironsight_zoom_factor            = 80
+scope_zoom_factor                = 85
+silencer_name                    = wpn_addon_sil_mosin
+silencer_x                       = 315
+silencer_y                       = 1	
+zoom_enabled                     = true
+snd_draw                         = weapons\generic_draw, 0.4
+snd_holster                      = weapons\mosin\mosin_holster
+snd_shoot                        = weapons\mosin\mosin_shot			
+;snd_empty                       = weapons\mosin\mosin_empty
+snd_reload                       = weapons\mosin\mosin_reload, 0.6
+snd_shoot_duplet                 = weapons\mosin\mosin_shot
+snd_open_weapon                  = weapons\mosin\mosin_open		
+snd_add_cartridge                = weapons\mosin\mosin_load	
+snd_close_weapon                 = weapons\mosin\mosin_close	
+snd_silncer_shot                 = weapons\mosin\mosin_shot_sil
+snd_razgruzka                    = weapons\razgruzka\ammo_4
+silencer_light_color             = 1.0, 0.1, 0.0
+silencer_light_range             = 0.01
+silencer_light_var_color         = 0.05
+silencer_light_var_range         = 0.5
+silencer_light_time              = 0.2
 
 [wpn_mosin_hud]
-fire_point							= 0.0,0.0,0.0
-fire_bone               			= wpn_body
-orientation             			= 0, 0, 0		
-position                			= 0, 0, 0
-visual                  			= weaponsv\mosin\wpn_mosin_hud.ogf
-
-anim_holster	        			= holster
-anim_idle							= idle
-anim_idle_aim	        			= idle_aim
-anim_draw							= draw
-anim_shoot							= shoot
-anim_reload	        				= draw
-anim_idle_sprint					= idle_sprint
-anim_shoot_both 					= idle_sprint
-anim_open_weapon					= reload_1_open
-anim_add_cartridge					= reload_2_add
-anim_close_weapon					= reload_3_close
-
-zoom_offset							= -0.091960,0.031600,0.014000
-zoom_rotate_x						= -0.000600
-zoom_rotate_y						= 0.000300
-
-zoom_rotate_time					= 0.27
-rotate_time							= 0.27
+fire_point                       = 0.0,0.0,0.0
+fire_bone                        = wpn_body
+orientation                      = 0, 0, 0
+position                         = 0, 0, 0
+visual                           = weaponsv\mosin\wpn_mosin_hud.ogf
+anim_holster                     = holster
+anim_idle                        = idle
+anim_idle_aim                    = idle_aim
+anim_draw                        = draw
+anim_shoot                       = shoot
+anim_reload                      = draw
+anim_idle_sprint                 = idle_sprint
+anim_shoot_both                  = idle_sprint
+anim_open_weapon                 = reload_1_open
+anim_add_cartridge               = reload_2_add
+anim_close_weapon                = reload_3_close
+zoom_offset                      = -0.091960,0.031600,0.014000
+zoom_rotate_x                    = -0.000600
+zoom_rotate_y                    = 0.000300
+zoom_rotate_time                 = 0.27
+rotate_time                      = 0.27
 
 [wpn_mosin_pe]:wpn_mosin
-visual                  			= weaponsv\mosin\wpn_mosin
-hud                     			= wpn_mosin_pe_hud
-grenade_launcher_status				= 0
-scope_attached         				= 0
-
-control_inertion_factor				= 1.35f
+visual                           = weaponsv\mosin\wpn_mosin
+hud                              = wpn_mosin_pe_hud
+grenade_launcher_status          = 0
+scope_attached                   = 0
+control_inertion_factor          = 1.35f
 
 [wpn_mosin_pe_hud]:wpn_mosin_hud
-visual                  			= weaponsv\mosin\wpn_mosin_hud
-
-zoom_offset							= -0.090460,-0.008500,1.043000
-zoom_rotate_x						= -0.000100
-zoom_rotate_y						= -0.002040
-
-zoom_rotate_time					= 0.29
-rotate_time							= 0.29
+visual                           = weaponsv\mosin\wpn_mosin_hud
+zoom_offset                      = -0.090460,-0.008500,1.043000
+zoom_rotate_x                    = -0.000100
+zoom_rotate_y                    = -0.002040
+zoom_rotate_time                 = 0.29
+rotate_time                      = 0.29
