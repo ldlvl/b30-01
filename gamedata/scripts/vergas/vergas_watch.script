@@ -86,9 +86,6 @@ function uber_watch:update(delta, curtime, taskrec)
   local now_time   = time_minutes()         -- сколько минут от полуночи
   local prev_time  = self.prev_update or 24 * 60
   local days       = math.floor ( time_days() ) -- текущий день в зоне (точно)
-
-
-
   local set        = cfg.f or false
   local sleep      = sleep_manager.is_sleep_active()
 
@@ -98,7 +95,6 @@ function uber_watch:update(delta, curtime, taskrec)
   local tts = wakeup - now_time              -- time-to-sleep
 
   while (tts < 0) and (days < cfg.d) do tts = tts + 24 * 60 end   -- видимо переход через полночь
-
 
   -- детектирование смены дня
   if days ~= (self.prev_days or 0) then
