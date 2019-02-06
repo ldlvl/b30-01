@@ -42,6 +42,7 @@ local rare_list = {
 		"conserva",
 		"energy_drink",
 		"green_kolbasa",
+		"flask_army",
 		"vodka"
 	},
 	experienced_section = {
@@ -93,10 +94,10 @@ local rare_list = {
 		"af_rusty_kristall",
 		"af_rusty_thorn",
 
+		"playboy2",
 		"flesh_leather",
 		"repair_itemoutfit_feik",
 		"repair_item_weapon_feik",
-		"flask_army",
 		"medkit_army",
 		"antirad",
 		"amk_kanistra",
@@ -299,28 +300,28 @@ function CTreasure:__init()
 	for i = 0, n - 1 do
 		result, id, value               = self.ini:r_line( "list", i, "", "" )
 		self.treasure_info[ id ]        = {}
-		self.treasure_info[ id ].target = utils.cfg_get_number(
-											self.ini, id, "target", nil, true
-										)
-		self.treasure_info[ id ].name = utils.cfg_get_string(
-		                                    self.ini, id, "name", nil, true, ""
-		                                )
+		self.treasure_info[ id ].target      = utils.cfg_get_number(
+											        self.ini, id, "target", nil, true
+										        )
+		self.treasure_info[ id ].name        = utils.cfg_get_string(
+		                                            self.ini, id, "name", nil, true, ""
+		                                        )
 		self.treasure_info[ id ].description = utils.cfg_get_string(
-		                                    self.ini, id, "description" .. r_trs_item,
-		                                    nil, true, ""
-		                                )
-		self.treasure_info[ id ].items = parse_spawns(
-		                                    utils.cfg_get_string(
-		                                        self.ini, id, "items" .. r_trs_item,
-		                                        nil, true, ""
-		                                    )
-		                                )
-		local community	= parse_names(
-		                    utils.cfg_get_string(
-		                        self.ini, id, "community" .. r_trs_item,
-		                        nil, false, "", "stalker"
-		                    )
-		                )
+		                                            self.ini, id, "description" .. r_trs_item,
+		                                            nil, true, ""
+		                                        )
+		self.treasure_info[ id ].items       = parse_spawns(
+		                                            utils.cfg_get_string(
+		                                                self.ini, id, "items" .. r_trs_item,
+		                                                nil, true, ""
+		                                            )
+		                                        )
+		local community	                     = parse_names(
+		                                            utils.cfg_get_string(
+		                                                self.ini, id, "community" .. r_trs_item,
+		                                                nil, false, "", "stalker"
+		                                            )
+		                                        )
 		self.treasure_info[ id ].community = {}
 		for k, v in pairs( community ) do
 			self.treasure_info[ id ].community[ v ] = true
@@ -384,9 +385,7 @@ function CTreasure:use( npc, community, rang_n )
 			and v.active            == false
 			and v.community[ comm ] == true
 		then
-			local treasure_prob = xr_logic.pick_section_from_condlist(
-			                        db.actor, npc, v.condlist
-			                    )
+			local treasure_prob = xr_logic.pick_section_from_condlist( db.actor, npc, v.condlist )
 			if treasure_prob == "" or treasure_prob == nil then
 				treasure_prob = 5
 			end
@@ -451,16 +450,28 @@ function CTreasure:give_treasure( k )
 					vv.section = sak_dialog.treasure_any_capsule()
 				end
 				if
-					string.find( vv.section, "^af_" )
-					and not string.find( vv.section, "_dummy_", 1, true )
-					and not string.find( vv.section, "_1", 1, true )
-					and not string.find( vv.section, "_2", 1, true )
-					and not string.find( vv.section, "_3", 1, true )
-					and not string.find( vv.section, "_4", 1, true )
-					and not string.find( vv.section, "_dyn", 1, true )
-					and not string.find( vv.section, "_new", 1, true )
-					and not string.find( vv.section, "full_akkum", 1, true )
-					and not string.find( vv.section, "simbion", 1, true )
+					strposx( vv.section, "af_" )
+					and not str_in_tab( vv.section, {
+						"_dummy_",
+						"_1",
+						"_2",
+						"_3",
+						"_4",
+						"_dyn",
+						"_new",
+						"full_akkum",
+						"simbion",
+						"baloon"
+					} )
+					-- and not strposx( vv.section, "_dummy_" )
+					-- and not strposx( vv.section, "_1" )
+					-- and not strposx( vv.section, "_2" )
+					-- and not strposx( vv.section, "_3" )
+					-- and not strposx( vv.section, "_4" )
+					-- and not strposx( vv.section, "_dyn")
+					-- and not strposx( vv.section, "_new")
+					-- and not strposx( vv.section, "full_akkum")
+					-- and not strposx( vv.section, "simbion")
 				then
 					vv.section = vv.section .. "_dyn" .. b .. "d"
 					b = b + 1
@@ -637,9 +648,10 @@ function CTreasure:give_item_list( skip_onetime_items, level_name )
 		elseif
 			   strposx( s, "playboy" )
 			or strposx( s, "flesh_leather" )
+			or s == "flask_army"
 		then
 			j = j + 1
-			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 2 )  	-- шкуры, плейбои
+			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 2 )  	-- шкуры, плейбои, фляги
 		else
 			j = j + 1
 			cnt = dsh.get_next_random( "treasure_manager.rnd", 1, 5 ) 	-- остальное
@@ -700,7 +712,8 @@ function CTreasure:load( p )
 end
 
 function CTreasure:named_treasure( v )
-	if
+	if	
+		v.name == "val_secret_krysyk_name"
 		--v.name == "agr_secret_0000_name" 	--Тайник Серого
 		--or v.name == "bar_secret_0011_name" --Тайник Арни
 		--or v.name == "esc_secret_0013_name" --Тайник Ворпала
@@ -716,7 +729,6 @@ function CTreasure:named_treasure( v )
 		--or v.name == "val_secret_0028_name" --Тайник Борова
 		--or v.name == "x18_secret_0000_name" --Тайник Копченого
 		--or v.name == "yan_secret_0011_name" --Тайник учёного
-		   v.name == "val_secret_krysyk_name"
 		or v.name == "agr_secret_krysyk_name"
 		or v.name == "mil_secret_borov_name"
 		or v.name == "mil_secret_kruglov_name"
