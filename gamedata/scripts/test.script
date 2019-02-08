@@ -674,7 +674,7 @@ function on_late_init()
  	if p_diff > 0 then
  		xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used" ), p_diff, 0 )
  	end
- 	dsh.get_next_random( "sak.artmod", rand_goods )  -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
+ 	dsh.get_next_random( "sak.artmod" )  -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
  end
 
 function get_death_count( what )
