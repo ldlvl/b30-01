@@ -433,8 +433,6 @@ function CTreasure:give_treasure( k )
 			"\\n" .. "%c[default]" .. game.translate_string( v.description )
 		local spot = lua_random( 1, 4 )
 			level.map_add_object_spot_ser( obj.id, "crlc_big_treasure" .. spot, text )
-		local b = sak.day_shmoney
-		while b > 4 do b = b - 4 end
     	-- проверка, какой тип тайника выбран
     	-- если тайник не именной, то заменим содержимое
     	local t_items = {}
@@ -463,19 +461,8 @@ function CTreasure:give_treasure( k )
 						"simbion",
 						"baloon"
 					} )
-					-- and not strposx( vv.section, "_dummy_" )
-					-- and not strposx( vv.section, "_1" )
-					-- and not strposx( vv.section, "_2" )
-					-- and not strposx( vv.section, "_3" )
-					-- and not strposx( vv.section, "_4" )
-					-- and not strposx( vv.section, "_dyn")
-					-- and not strposx( vv.section, "_new")
-					-- and not strposx( vv.section, "full_akkum")
-					-- and not strposx( vv.section, "simbion")
 				then
-					vv.section = vv.section .. "_dyn" .. b .. "d"
-					b = b + 1
-					if b > 4 then b = 1 end
+					vv.section = vv.section .. "_dyn" .. tostring( dsh.get_next_random( "treasure_manager.rnd", 1, 5 ) ) .. "d"
 				end
 				local obj_sp = alife():create(
 				                vv.section,
@@ -486,7 +473,10 @@ function CTreasure:give_treasure( k )
 				            )
 				if vv.section == "arc_art_box_basic" then
 					sak_dialog.spawn_arts_cont(obj_sp)
-				elseif strposx( vv.section, "wpn_" ) then
+				elseif
+					        strposx( vv.section, "wpn_" )
+					and not strposx( vv.section, "wpn_addon" )
+				then
 					if dsh.get_next_random( "treasure_manager.rnd" ) > 0.5 then
 						local ammo_tbl = se_respawn.parse_names(
 						    				utils.cfg_get_string(
