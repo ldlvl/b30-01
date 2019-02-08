@@ -1829,95 +1829,101 @@ function artmodscheck(anom,af,anom_sect)
 	end
 end
 
-function artmod(nearest_anomaly,af,item1,item2,item3,item4,info_artmod,item_targ)
-  local af_sect=af:section()
-  local pos=af:position()
-  local startflag=false
-  local zombieflag=false
-  if not db.actor:has_info(info_artmod) then return end
-  if g_sim:object(af:id())==nil then return end
-  if (strpos(af_sect,item1,1,true) or strpos(af_sect,item2,1,true) or strpos(af_sect,item3,1,true) or strpos(af_sect,item4,1,true)) and db.actor:has_info(info_artmod) then
-      local s={}
-      s.i0t=-1
-      s.i1t=-1
-      s.i2t=-1
-      s.i3t=-1
-      s.i4t=-1
-      s.ams=0
-      s.ami=-1
-      s=nlc_vars["artmod_activation_"..info_artmod] or s
-      if s.i0t~=nearest_anomaly then
-        s.i0t=nearest_anomaly
-        s.i1t=-1
-        s.i2t=-1
-        s.i3t=-1
-        s.i4t=-1
-        s.ams=0
-        s.ami=-1
+function artmod( nearest_anomaly, af, item1, item2, item3, item4, info_artmod, item_targ )
+  local af_sect    = af:section()
+  local pos        = af:position()
+  local startflag  = false
+  local zombieflag = false
+  if not db.actor:has_info( info_artmod ) then return end
+  if g_sim:object( af:id() ) == nil then return end
+  if  (  strpos( af_sect, item1, 1, true )
+      or strpos( af_sect, item2, 1, true )
+      or strpos( af_sect, item3, 1, true )
+      or strpos( af_sect, item4, 1, true ) )
+      and db.actor:has_info( info_artmod )
+  then
+      local s = {}
+      s.i0t = -1
+      s.i1t = -1
+      s.i2t = -1
+      s.i3t = -1
+      s.i4t = -1
+      s.ams =  0
+      s.ami = -1
+      s = nlc_vars[ "artmod_activation_" .. info_artmod ] or s
+      if s.i0t ~= nearest_anomaly then
+        s.i0t = nearest_anomaly
+        s.i1t = -1
+        s.i2t = -1
+        s.i3t = -1
+        s.i4t = -1
+        s.ams =  0
+        s.ami = -1
       end
-  if s.ams==1 and s.ami~=info_artmod then return
+  if s.ams == 1 and s.ami ~= info_artmod then return end
+  if strpos( af_sect, item1, 1, true ) and s.i1t == -1 then
+    s.i1t = af:id()
+    level.add_pp_effector( "blink.ppe", 234, false )
+    if s.ams == 0 then startflag = true end
   end
-  if strpos(af_sect,item1,1,true) and s.i1t==-1 then s.i1t=af:id()
-    level.add_pp_effector("blink.ppe", 234, false)
-    if s.ams==0 then startflag=true
-    end
+  if strpos( af_sect, item2, 1, true ) and s.i2t == -1 then
+    s.i2t = af:id()
+    level.add_pp_effector( "blink.ppe", 235, false )
+    if s.ams == 0 then startflag = true end
   end
-  if strpos(af_sect,item2,1,true) and s.i2t==-1 then s.i2t=af:id()
-    level.add_pp_effector("blink.ppe", 235, false)
-    if s.ams==0 then startflag=true
-    end
+  if strpos( af_sect, item3, 1, true ) and s.i3t == -1 then
+    s.i3t = af:id()
+    level.add_pp_effector( "blink.ppe", 236, false )
+    if s.ams == 0 then startflag = true end
   end
-  if strpos(af_sect,item3,1,true) and s.i3t==-1 then s.i3t=af:id()
-    level.add_pp_effector("blink.ppe", 236, false)
-    if s.ams==0 then startflag=true
-    end
-  end
-  if strpos(af_sect,item4,1,true) and s.i4t==-1 then s.i4t=af:id()
-    level.add_pp_effector("blink.ppe", 237, false)
-    if s.ams==0 then startflag=true
-    end
+  if strpos( af_sect, item4, 1, true ) and s.i4t == -1 then
+    s.i4t = af:id()
+    level.add_pp_effector( "blink.ppe", 237, false )
+    if s.ams == 0 then startflag = true end
   end
   if startflag then
-    s.ams=1
-    s.ami=info_artmod
-    startflag=false
+    s.ams     = 1
+    s.ami     = info_artmod
+    startflag = false
   end
-  if ((s.i1t~=-1) and(sim:object(s.i1t)==nil)) then s.i1t=-1 zombieflag=true end
-  if ((s.i2t~=-1) and(sim:object(s.i2t)==nil)) then s.i2t=-1 zombieflag=true end
-  if ((s.i3t~=-1) and(sim:object(s.i3t)==nil)) then s.i3t=-1 zombieflag=true end
-  if ((s.i4t~=-1) and(sim:object(s.i4t)==nil)) then s.i4t=-1 zombieflag=true end
+  if s.i1t ~= -1 and sim:object( s.i1t ) == nil then s.i1t = -1 zombieflag = true end
+  if s.i2t ~= -1 and sim:object( s.i2t ) == nil then s.i2t = -1 zombieflag = true end
+  if s.i3t ~= -1 and sim:object( s.i3t ) == nil then s.i3t = -1 zombieflag = true end
+  if s.i4t ~= -1 and sim:object( s.i4t ) == nil then s.i4t = -1 zombieflag = true end
   if zombieflag then
-    if (s.i1t==-1 and s.i2t==-1 and s.i3t==-1 and s.i4t==-1) then
-      s.i0t=-1
-      s.ams=0
-      s.ami=-1
-      zombieflag=false
+    if s.i1t == -1 and s.i2t == -1 and s.i3t == -1 and s.i4t == -1 then
+      s.i0t      = -1
+      s.ams      =  0
+      s.ami      = -1
+      zombieflag = false
     end
   end
-    nlc_vars["artmod_activation_"..info_artmod] = s
-    if (s.i1t~=-1 and s.i2t~=-1 and s.i3t~=-1 and s.i4t~=-1) then
-      misc.release_obj(s.i1t, 'sak.script:829')
-      misc.release_obj(s.i2t, 'sak.script:830')
-      misc.release_obj(s.i3t, 'sak.script:831')
-      misc.release_obj(s.i4t, 'sak.script:832')
-      level.add_pp_effector("teleport.ppe", 1530, false)
-      -- Варим арт определенного уровня, в зависимости от времени, сложности  и опыта гг
-      local dgc = 1+(3-level.get_game_difficulty())/5 -- коэффицент в зависимости от сложности игры
-      local goods= nlc_vars.artmod_goods or 1
-      if strpos(item_targ,"af_dummy_",1,true)==nil and strpos(item_targ,"af_dummy_simbion",1,true)==nil and strpos(item_targ,"_new",1,true)==nil then
-        local rand_goods=math.floor(math.log(goods*dgc))+1
-        if rand_goods>5 then rand_goods=5 end
-        local rand_dyn = (math.abs(math.floor(level.get_time_minutes()/17)-level.get_time_hours()))%rand_goods+1 -- в определенный час и минуту - определенный арт
-		    --ODS("Уровень арта: "..rand_dyn.." потолок: "..rand_goods.." количество варок: "..goods,'g')
-		    xr_statistic.addCookingPoints(item_targ)
-        item_targ=(item_targ.."_dyn"..rand_dyn.."d")
+  nlc_vars[ "artmod_activation_" .. info_artmod ] = s
+  if s.i1t ~= -1 and s.i2t ~= -1 and s.i3t ~= -1 and s.i4t ~= -1 then
+    misc.release_obj( s.i1t, 'sak.script:829' )
+    misc.release_obj( s.i2t, 'sak.script:830' )
+    misc.release_obj( s.i3t, 'sak.script:831' )
+    misc.release_obj( s.i4t, 'sak.script:832' )
+    level.add_pp_effector( "teleport.ppe", 1530, false )
+    -- Варим арт определенного уровня, в зависимости от сложности и опыта гг
+    local dgc   = 1 + ( 3 - level.get_game_difficulty() ) / 5 -- коэффициент в зависимости от сложности игры
+    local goods = nlc_vars.artmod_goods or 1
+    if not str_in_tab( item_targ, { "af_dummy_", "af_dummy_simbion", "_new" } ) then
+      local rand_goods = math.floor( math.log( goods * dgc ) ) + 1
+      if rand_goods > 5 then rand_goods = 5 end
+      -- переделаем на dsh-рандомы, чтобы не было соблазна время подгонять под зелень
+      local rand_dyn = dsh.get_next_random( "sak.artmod", rand_goods )
+      xr_statistic.addCookingPoints( item_targ )
+      item_targ = ( item_targ .. "_dyn" .. rand_dyn .. "d" )
       end
-      amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,7+math.random(0,6)) -- варим 7-13 минут
-      --amk_mod.af_start_transform_timer(amk_mod.af_start_transform(100,0,"af_dummy_buliz",item_targ) , pos ,0,0,1)
-      nlc_vars.artmod_goods = goods + 1       nlc_vars["artmod_activation_"..info_artmod] = nil
+      amk_mod.af_start_transform_timer(
+        amk_mod.af_start_transform( 100, 0, "af_dummy_buliz", item_targ ),
+        pos, 0, 0, 7 + math.random( 0, 6 )
+      ) -- варим 7-13 минут
+      nlc_vars.artmod_goods = goods + 1
+      nlc_vars[ "artmod_activation_" .. info_artmod ] = nil
       return
     end
-
   end
 end
 
