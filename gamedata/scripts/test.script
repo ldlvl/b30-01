@@ -971,6 +971,9 @@ function check_monster_part_march_timer()
 	return not timers.check_timer( "march_monster_part_restore" )
 end
 
+-- очень тормозная, если вызывать из эвалюатора нпс на поиск трупов-лута вокруг себя
+-- оставлю на будущее, может и то что сейчас, не совсем правильное
+-- и нужно будет на каком-то из медленных апдейтов вот это взамест запускать...
 function anomaly_near( tobj )
 	local flag     = false
 	local ids, cnt = registry.clsid_objects( CLID_ZONE_BURNING_FUZZ, CLID_ZONE_AMEBA, true, nil, 7 )
@@ -992,7 +995,7 @@ end
 function anomaly_near2( tobj )
 	local id, pos, radius, dist = amk_anoms.get_nearest_anomaly( tobj )
 	if id and dist < 2 then
-		if not strposx( client_obj( id ):section(), "radioactive" ) then
+		if not str_in_tab( client_obj( id ):section(), { "radioactive", "sakbuzz" } ) then
 			return true
 		end
 	end
