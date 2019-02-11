@@ -88,7 +88,7 @@ function trade_many_add()
 end
 
 function start_randoms()
-	for _, v in ipairs ({ 
+	for _, v in ipairs({ 
 							"treasure_manager.rnd",
 							"sak.changed_art_class",
 							"amk_anoms.generate_arts",
@@ -97,7 +97,9 @@ function start_randoms()
 							"test.make_shron_voron",
 							"sak.artmod",
 							"generic_rnd",
-							"test.rec_art_info" }) do
+							"xr_box.ph_item_box",
+							"test.rec_art_info"
+						})	do
 		dsh.get_next_random( v )
 	end
 end
