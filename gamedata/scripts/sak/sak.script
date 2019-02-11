@@ -5004,7 +5004,7 @@ function add_yan_izm_spots(sid)
 end
 function add_rad_izm_spots(sid)
   local obj= g_sim:story_object(sid)
-  local spot=lua_random(1,4)
+  local spot=lua_random(1,3)
   if obj then
   amk.add_spot_on_map(obj.id, "crlc_big_treasure"..spot, "rad_izm_spot")
   end
@@ -6992,45 +6992,50 @@ function relocate_item(actor, type, item, amount, is_ammo_count)
   end
 
 end
-function send_treasure(name)
-  local level_name={}
-    level_name["esc"]  = "Кордон"
-    level_name["gar"]  = "Свалка"
-    level_name["agr"]  = "НИИ Агропром"
-    level_name["agru"]  ="Подвалы Агропрома"
-    level_name["val"]  = "Тёмная долина"
-    level_name["mil"]  = "Армейские склады"
-    level_name["yan"]  = "Янтарь"
-    level_name["x16"]  = "Лаборатория Х-16"
-    level_name["rad"]  = "Радар"
-    level_name["pri"]  = "Припять"
-    level_name["x18"]  = "Лаборатория Х-18"
-    level_name["bar"]  = "Территория Долга"
-    level_name["ros"]  = "Дикая территория"
-    level_name["mar"]  = "Болота"
-    level_name["lim"]  = "Лиманск"
-    level_name["hos"]  = "Санаторий"
-    level_name["aver"]  = "Туманная чаща"
-    level_name["avp"]  = "Подземелье диггеров"
-    level_name["pes"]  = "Катакомбы"
-    level_name["vil"]  = "Забытый хутор"
-    level_name["red"]  = "Рыжий лес"
-    level_name["gen"]  = "Зона Тесла"
-    level_name["puz"]  = "Тихая роща"
-    level_name["dsc"]  = "Кишка"
-    level_name["lost"]  = "Забытый хутор"
-  amk.pda_news:play(db.actor, 0, sound_object.s2d)
-  local task_texture, task_rect=get_texture_info("ui_iconsTotal_found_thing")
-  local level_key=string.sub(name,1,strpos(name,"_s",1,plain)-1)
-  local tmp_str=""
-  if level_name[level_key]~=nil then tmp_str=level_name[level_key]..": "
-  else tmp_str="Где-то там: "
+function send_treasure( name )
+  local level_name = {}
+  level_name[ "esc"  ]  = "Кордон"
+  level_name[ "gar"  ]  = "Свалка"
+  level_name[ "agr"  ]  = "НИИ Агропром"
+  level_name[ "agru" ]  ="Подвалы Агропрома"
+  level_name[ "val"  ]  = "Тёмная долина"
+  level_name[ "mil"  ]  = "Армейские склады"
+  level_name[ "yan"  ]  = "Янтарь"
+  level_name[ "x16"  ]  = "Лаборатория Х-16"
+  level_name[ "rad"  ]  = "Радар"
+  level_name[ "pri"  ]  = "Припять"
+  level_name[ "x18"  ]  = "Лаборатория Х-18"
+  level_name[ "bar"  ]  = "Территория Долга"
+  level_name[ "ros"  ]  = "Дикая территория"
+  level_name[ "mar"  ]  = "Болота"
+  level_name[ "lim"  ]  = "Лиманск"
+  level_name[ "hos"  ]  = "Санаторий"
+  level_name[ "aver" ]  = "Туманная чаща"
+  level_name[ "avp"  ]  = "Подземелье диггеров"
+  level_name[ "pes"  ]  = "Катакомбы"
+  level_name[ "vil"  ]  = "Забытый хутор"
+  level_name[ "red"  ]  = "Рыжий лес"
+  level_name[ "gen"  ]  = "Зона Тесла"
+  level_name[ "puz"  ]  = "Тихая роща"
+  level_name[ "dsc"  ]  = "Кишка"
+  level_name[ "lost" ]  = "Забытый хутор"
+  amk.pda_news:play( db.actor, 0, sound_object.s2d )
+  local task_texture, task_rect = get_texture_info( "ui_iconsTotal_found_thing" )
+  local level_key = string.sub( name, 1, strpos( name, "_s", 1, plain ) - 1 )
+  local tmp_str   = ""
+  if level_name[ level_key ] ~= nil then tmp_str = level_name[ level_key ] .. ": "
+  else tmp_str = "Где-то там: "
   end
-  local news_text="%c[255,1,255,255]"..game.translate_string("st_found_new_treasure").."\\n".."%c[120,255,120,160]"..tmp_str.."%c[170,200,200,200]"..game.translate_string(name)
+  local news_text = "%c[255,1,255,255]" .. game.translate_string( "st_found_new_treasure" ) .. 
+                    "\\n" .. "%c[120,255,120,160]" .. tmp_str .. "%c[170,200,200,200]" ..
+                    game.translate_string( name )
+  if name == "pda_secret" then
+    news_text = "%c[ 255, 230, 255, 1 ] Неужто наводка на схрон? Не мешало бы проверить..."
+  end
   if db.actor:is_talking() then
-    db.actor:give_talk_message(news_text, task_texture, task_rect,"iconed_answer_item")
+    db.actor:give_talk_message( news_text, task_texture, task_rect, "iconed_answer_item" )
   else
-    db.actor:give_game_news(news_text, task_texture, task_rect, 2000, 25000)
+    db.actor:give_game_news( news_text, task_texture, task_rect, 2000, 25000 )
   end
 end
 function u_agr_tele_in()
@@ -7575,7 +7580,7 @@ function bar_korovan_3()
   for i=1,7 do
   amk.spawn_item("weapon_box",v3f(-182.0,1.86,-321.86),689,54409)
   end
-  local spot=lua_random(1,4)
+  local spot=lua_random(1,3)
   local objt= g_sim:story_object(story_ids.agr_korovan_zone)
   if objt then
   amk.add_spot_on_map(objt.id, "crlc_big_treasure"..spot, "Место нападения на караван с оружием")

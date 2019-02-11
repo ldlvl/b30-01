@@ -1152,7 +1152,7 @@ end
 function cheat:set_treasure()
 	if flag_treasure and tbl_info[7] == "0" then
 		local shron = tbl_info[6]
-		treasure_manager.get_treasure_manager():give_treasure(shron)
+		treasure_manager.get_treasure_manager():give_treasure(shron, true)
 		--помечаю в кастом-дате ПДА тайник как установленный
 		self:set_status_pda()
 end
