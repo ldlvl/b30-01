@@ -6629,53 +6629,48 @@ end
 
 function kolb_baded()
   if kolb then return end
-  for a=1,MAX_OBJ_ID do
-  local obj= g_sim:object(a)
+  for a = 1, MAX_OBJ_ID do
+    local obj = g_sim:object( a )
     if obj then
-        local p_obj=obj.parent_id
+        local p_obj = obj.parent_id
         local nname = obj:name()
-      if (string.sub(nname,1,7)=="mutant_" or strpos(nname,"bread") or strpos(nname,"kolbasa")) and (p_obj==nil or p_obj==BAD_OBJ_ID or p_obj==0 or g_sim:object(p_obj):section_name()=="rucksack" or g_sim:object(p_obj):section_name()=="inventory_box" or g_sim:object(p_obj):section_name()=="m_inventory_box" or IsStalker(sim:object(p_obj))) then
-		local pk = get_netpk(obj,1)
-		local data = pk:get()
-		local new_cond=0.10
-		local cond = obj.condition or data.condition
-		if strpos(nname,"green_kolbasa") then
-			new_cond=0.02
-		elseif strpos(nname,"kolbasa") then
-			new_cond=0.08
-		--elseif strpos(nname,"mutant_chimera_kogot") then
-			--new_cond=0.01
-		--elseif strpos(nname,"mutant_krovosos_jaw") then
-			--new_cond=0.09
-		--elseif strpos(nname,"mutant_poltergeist_glas") then
-			--new_cond=0.08
-		--elseif strpos(nname,"mutant_hand_kontroler") then
-			--new_cond=0.07
-		--elseif strpos(nname,"mutant_psevdogigant_hand") then
-			--new_cond=0.06
-		--elseif strpos(nname,"mutant_e_chimera_kidney") then
-			--new_cond=0.05
-		--elseif strpos(nname,"mutant_zombie_hand") then
-			--new_cond=0.15
-		end
-		if cond and cond>0.15 then
-			data.condition=cond-new_cond
-			local cobj = client_obj(a)
-			if cobj then
-				cobj:set_condition(data.condition)
-			elseif obj.condtion ~= nil then
-				obj.condition = data.condition
-			else
-				pk:set(data)
-			end
-		else
-			misc.release_obj(obj, 'sak.script:4160')
-		end
+        if
+          str_in_tab( nname, { "mutant_", "bread", "kolbasa"} )
+          and (
+                p_obj == nil or p_obj == BAD_OBJ_ID or p_obj == 0
+                or str_in_tab(
+                    g_sim:object( p_obj ):section_name(),
+                    { "rucksack", "inventory_box" }
+                )
+                or IsStalker ( sim:object( p_obj ) )
+          )
+        then
+          local pk       = get_netpk( obj, 1 )
+          local data     = pk:get()
+          local new_cond = 0.10
+          local cond     = obj.condition or data.condition
+          if     strpos( nname, "green_kolbasa" ) then new_cond = 0.02
+          elseif strpos( nname, "kolbasa"       ) then new_cond = 0.08
+        end
+        if cond and cond > 0.15 then
+          data.condition = cond - new_cond
+          local cobj = client_obj( a )
+          if cobj then
+            cobj:set_condition( data.condition )
+          elseif obj.condtion ~= nil then
+            obj.condition = data.condition
+          else
+            pk:set( data )
+          end
+        else
+          misc.release_obj( obj, 'sak.script:4160' )
+        end
       end
     end
   end
-  kolb=true
+  kolb = true
 end
+
 -- обработка вс€кого при ¬ыбросе, насколько € пон€л
 function off_testobj()
   local h       = hit()
