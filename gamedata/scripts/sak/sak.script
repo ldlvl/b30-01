@@ -8117,7 +8117,6 @@ end
 -- А давай где угодно на уровне спавниться и небольшой шанс редкого арта вдобавок??
 function spawn_art_semeneckyi()
   local lname = level.name()
-  if str_in_tab( lname, { "l05_bar", "hospital" } ) then return end
   local lvc   = const.level_vertices[ lname ]
   if lvc ~= nil and const.ground_levels[ lname ] and not sleep_manager.is_sleep_active() then
     for i = 1, 20 do
