@@ -1881,7 +1881,6 @@ function get_u32( section, param, def_val, ini_file )
   end
 end
 
-
 function get_bool( section, param, def_val, ini_file )
   ASSERT(
     section,
@@ -1901,7 +1900,6 @@ function get_bool( section, param, def_val, ini_file )
   end
 end
 
-
 function get_float( section, param, def_val, ini_file )
   ASSERT(
     section,
@@ -1918,5 +1916,106 @@ function get_float( section, param, def_val, ini_file )
     return ini:r_float( section, param )
   else
     return def_val
+  end
+end
+
+-- делит строку в виде "aaa,bbb,ccc" на строки "aaa", "bbb", "ccc" и возвращает
+-- их в виде массива
+function split_comma_separated_list( s )
+  return string.explode( ",", s )
+end
+
+-- читает время, сохранённое в виде строки со значениями, разделёнными запятой, и конвертирует в значение класса CTime
+function unpack_time_from_string(str_time)
+  local time_values = {}
+  for i,s in ipairs(split_comma_separated_list(str_time)) do
+    local value = tonumber(s)
+    ASSERT(value, "unpack_time_from_string: problem with unpacking saved time '%s', value #%d (%s)", str_time, i, tostring(s))
+    table.insert(time_values, value)
+  end
+  ASSERT(#time_values == 7, "unpack_time_from_string: packed time '%s' has wrong number of components. Must be equal to seven.")
+  local res = game.CTime()
+  res:set(unpack(time_values))
+  return res
+end
+-- упаковать время в виде объекта CTime в строку значений, разделённых запятой
+function pack_time_to_string(t)
+  ASSERT(t, "pack_time_to_string: t is a nil reference")
+  return table.concat({t:get()}, ',')
+end
+
+function seconds2ctime(time_sec)
+  local s,ms = math.modf(time_sec)
+  local t = game.CTime()
+  t:setHMSms(0,0,s,ms*1000)
+  return t
+end
+
+--=================================[Функции из xrLuaFix]=======================
+-- Cрезать первое "слово"
+string.trim_w = function( s ) return s:gsub( "%s-(%S+)%s+", "", 1 ) end
+-- Срезать пробелы слева
+string.trim_l = function( s ) return s:gsub( "^%s+", "" ) end
+-- Срезать пробелы справа
+string.trim_r = function( s ) return s:gsub( "%s*$", "" ) end
+-- Срезать пробелы слева и справа
+string.trim   = function( s ) return s:match( "^%s*(.*%S)" ) or "" end
+--=============================================================================
+-- Взято из аддона Naxac'a
+local to_ptrn = {
+  [ " " ] = "%s",
+  [ "." ] = "%.",
+  [ "%" ] = "%%",
+  [ "*" ] = "%*",
+  [ "-" ] = "%-",
+}
+string.explode = function( div, str, clear )
+-- div   -- разделитель
+-- str   -- строка
+-- clear -- обрезать ли пробелы по краям строк (false/true)
+  local ret = {}
+  for s in str:gmatch( "([^" .. ( to_ptrn[ div ] or div ) .. "]+)" ) do
+   table.insert( ret, ( clear and s:trim() or s ) )
+  end
+  return ret
+end
+--=============================================================================
+-- Форматирование текста по ширине
+-- http://www.amk-team.ru/forum/topic/13216-sborochnyy-ceh/?do=findComment&comment=959286
+string.width = function( str, width, return_table, indent, paragrapf )
+  indent    = indent    or 0
+  paragrapf = paragrapf or 0
+  width     = ( width or 80 ) - indent
+    
+  local i    = string.rep( " ", indent )
+  local t    = {}
+  local line = string.rep( " ", paragrapf )
+    
+  for exp, word in str:gmatch( "(%s-(%S+))" ) do
+    if line == "" and table.getn( t ) ~= 0 then
+      exp = word
+    end
+
+    local l_len = #line
+    local len   = l_len + #exp
+        
+    if len > width then
+      table.getn( t, line )       
+      line = word
+    else
+      line = line .. exp
+      if l_len == width then
+        table.getn( t, line )       
+        line = ""
+      end
+    end
+  end
+
+  table.getn( t, line )       
+
+  if return_table then
+    return t
+  else
+    return i .. table.concat( t, "\n" .. i )
   end
 end
