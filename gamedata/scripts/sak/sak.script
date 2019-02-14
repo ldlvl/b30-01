@@ -7309,7 +7309,7 @@ function add_sidor_info_kuzn()
   send_tip("Сталкеры! Вояки в Долине рейд проводят - не суйтесь туда. Одним из отрядов в оцеплении командует наш хороший знакомый из-под моста. Просил не нарываться в районе перехода с Долины на Свалку...","Сообщение от Сидоровича",11,20,"trader","sak", "red")
   db.actor:give_info_portion("sidor_info_kuzn")
   timers.start_timer("timer_kuzn",1,5,0,"sak.timer_timer_kuzn_end()")
-  add_dsc_stalker()
+  --add_dsc_stalker()
   end
 end
 function timer_timer_kuzn_end()
@@ -9205,8 +9205,8 @@ function start_progress()
     end
     -- bind_stalker.hide_weapon() -- из-за этого вызова случается жопа с инвентарем, временно отключил
     nlc_vars.first_run = false
-    sleep_manager.change_sleepiness(150)
-    params.satiety_add(-0.8)
+    sleep_manager.change_sleepiness(145)
+    params.satiety_add(-0.75)
     params.offs_huds()
 	    --ZAGOLSKI
     gnzi.add_first_spawn()
