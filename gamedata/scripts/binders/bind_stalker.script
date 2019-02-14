@@ -371,7 +371,7 @@ function bind_stalker.handle_taked()
           -- wprintf(" processing take~C0A %s~C07, r.flag =~C0F %s~C07", obj:name(), DumpVar(razgruzka.open_inv_raz_pod))
           arc_arts.on_item_take(obj) -- подбирание артефактов, пояса и ряда других вещей  
           allcore_mayatniks.on_item_take(obj) 
-		  sak_dialog.fix_prizrak_outfit_take(obj)
+		  --sak_dialog.fix_prizrak_outfit_take(obj)
 			
           if  razgruzka.open_inv_raz_pod == true then                                                                        
               amk.on_item_take(obj)                        -- вызов amk_mod.check_usable_item, проверка на записки и добавление ЧМ          

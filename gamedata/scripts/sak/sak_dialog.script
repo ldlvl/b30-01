@@ -3908,7 +3908,7 @@ function add_pm_volk()
 end
 function add_kontainer_1()
   sak.create_items(db.actor,"medkit",1)
-  sak.create_items(db.actor,"bandage",3)
+  sak.create_items(db.actor,"bandage",2)
 end
 function give_knife()
   sak.create_items(db.actor,"wpn_knife",1)  
@@ -10720,44 +10720,15 @@ function take_volk_ak(id)
   data.condition = 0.85
   pk:set(data)
 end
---нож от Игната
+
+--артефакт Пицца от Игната
 function add_kabar_prize()
-  --sak.create_items(db.actor,"wpn_knife_m1",1)
-  sak.create_items(db.actor,"af_flower_new",1) 
-end
---спавним костюм Призрака в труп х16
---костюм не всегда ломается.. нет времени биться с ним.. при поднятии сломаю
-function prizrak_outfit_prize()
-  local obj1 = g_sim:story_object(story_ids.x16_stalker_pseudo_ghost)
-  g_sim:create("wpn_mp153_m1",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)  
-  g_sim:create("outfit_stalker_m1",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  if obj1.online then
-    g_sim:set_switch_online(obj1.id, false)
-    g_sim:set_switch_offline(obj1.id, true)
-    amk.convert_npc[obj1.id]=1
-  end
+  sak.create_items( db.actor, "af_flower_new", 1 ) 
 end
 
---[[function fix_prizrak_outfit()
-	if nlc_vars.prizrak_outfit_fix then return end
-	if not nlc_vars.prizrak_outfit_id then return end
-	local obj1 = g_sim:story_object(story_ids.x16_stalker_pseudo_ghost)
-	if obj1 then
-		if strpos(level.name(), "l08u_brainlab",1,true) then
-			nlc_vars.prizrak_outfit_fix = 1
-			params.obj_condition(nlc_vars.prizrak_outfit_id,0.65)
-		end
-	end
-end]]
-function fix_prizrak_outfit_take(obj)
- if not nlc_vars.ggwp_prizrak_outfit then
-	if level.name() == "l08u_brainlab" then
-		if obj:section() == "outfit_stalker_m1" then
-			params.upd_condition(obj:id(), 0.65)
-			nlc_vars.ggwp_prizrak_outfit = true
-		end
-	end
- end
+-- тут только флаг на спавн, сам спавн при загрузке уровня
+function prizrak_outfit_prize()
+  nlc_vars.tmp_prizrak_outfit = true
 end
 
 --спавним тайник Ореха в райцентре по наводке Кочерги
