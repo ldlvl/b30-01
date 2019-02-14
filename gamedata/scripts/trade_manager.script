@@ -45,14 +45,14 @@ function update( npc )
 
     local str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.buy_condition )
     if tt.current_buy_condition ~= str then
-        log2( "TRADE UPDATE[%s]: buy condition = %s", npc:name(), str )
+        --log2( "TRADE UPDATE[%s]: buy condition = %s", npc:name(), str )
         npc:buy_condition( tt.config, str )
         tt.current_buy_condition = str
     end
 
     str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.sell_condition )
     if tt.current_sell_condition ~= str then
-        log2( "TRADE UPDATE[%s]: sell condition = %s", npc:name(), str )
+        --log2( "TRADE UPDATE[%s]: sell condition = %s", npc:name(), str )
         npc:sell_condition( tt.config, str )
         tt.current_sell_condition = str
     end
@@ -66,16 +66,16 @@ function update( npc )
         end
         str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.buy_supplies )
         if tt.current_buy_supplies ~= str then
-            log2( "TRADE UPDATE[%s]: buy_supplies = %s", npc:name(), str )
+            --log2( "TRADE UPDATE[%s]: buy_supplies = %s", npc:name(), str )
             npc:buy_supplies( tt.config, str )
             --add_buy_supplies( npc, tt.config, str )
             tt.current_buy_supplies = str
         end
         tt.resuply_time = game.get_game_time() + seconds2ctime( math.random( 12, 24 ) * 3600 )
-        log2(
-          "TRADE UPDATE[%s] resuply_time in %s seconds",
-          npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
-        )
+        -- log2(
+        --   "TRADE UPDATE[%s] resuply_time in %s seconds",
+        --   npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
+        -- )
         local sobj = alife():object( npc:id() )
         if sobj then
             local data
@@ -123,16 +123,16 @@ function save( obj, packet )
         packet:w_s32( -1 )
     else
         packet:w_s32( tt.update_time - cur_tm )
-            log2(
-                    "TRADE SAVE[%s]: update_time = %s",
-                    obj:name(), ( tt.update_time - cur_tm ) / 1000
-                )
+        -- log2(
+        --         "TRADE SAVE[%s]: update_time = %s",
+        --         obj:name(), ( tt.update_time - cur_tm ) / 1000
+        --     )
     end
     if tt.resuply_time then
-        log2(
-          "TRADE SAVE[%s]: resuply_time = %s",
-          obj:name(), tt.resuply_time:diffSec( game.get_game_time() )
-        )
+        -- log2(
+        --   "TRADE SAVE[%s]: resuply_time = %s",
+        --   obj:name(), tt.resuply_time:diffSec( game.get_game_time() )
+        -- )
         packet:w_s32( tt.resuply_time:diffSec( game.get_game_time() ) * 1000 )
     else
         packet:w_s32( -1 )
@@ -174,9 +174,9 @@ function load( obj, packet, ver )
         tt.update_time = cur_tm + a
     end
     a = packet:r_s32()
-    log2(
-      "TRADE LOAD[%s]: resuply_time = %s", obj:name(), tostring( a )
-    )
+    -- log2(
+    --   "TRADE LOAD[%s]: resuply_time = %s", obj:name(), tostring( a )
+    -- )
     if a > 0 then
         tt.resuply_time = game.get_game_time() + seconds2ctime( a / 1000 )
     end
