@@ -15800,6 +15800,26 @@
 	</phrase_list>
 </dialog>
 
+<dialog id="mar_boryan_radiation_heal">
+<has_info>mar_boryan_new_gg</has_info>
+<precondition>test.rad_disease_check</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>mar_boryan_radiation_heal_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>mar_boryan_radiation_heal_1</text>
+			<action>test.rad_disease_boryan_heal</action>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>mar_boryan_radiation_heal_2</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
 <dialog id="mar_boryan_what_need_dialog">
 <dont_has_info>mar_boryan_what_need_info</dont_has_info>
 	<phrase_list>

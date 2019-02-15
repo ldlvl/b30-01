@@ -1214,3 +1214,32 @@ function prizrak_outfit_prize()
     nlc_vars.tmp_prizrak_outfit = nil
 end
 
+function add_rad_disease()
+    local total_remove = nlc_vars.rad_disease or 0
+    total_remove = total_remove + dsh.get_next_random( "test.add_rad_disease", 0.08, 0.15 )
+    if total_remove >= 0.8 then total_remove = 0.8 end
+    nlc_vars.rad_disease = total_remove
+    wprintf( "~C0C #WARN:~C07 added_rad_disease = %s", DumpVar( total_remove ) )
+end
+
+function rad_disease_health_handle()
+    if nlc_vars.catched_bt      then return end     -- выход сразу, если есть „ћ
+    if not nlc_vars.rad_disease then return end     -- выход сразу, если в организме нет последствий антирада
+    local curr_max_health = 1 - nlc_vars.rad_disease
+    if db.actor.health >= curr_max_health then
+        params.health_add( -0.05 )
+    end
+    if lua_random() < 0.17 then
+        level.add_pp_effector( "eat_drug.ppe", 1039, false )
+    end
+end
+
+function rad_disease_check()
+    if nlc_vars.rad_disease ~= nil then return true end
+    return false
+end
+
+function rad_disease_boryan_heal()
+    nlc_vars.rad_disease = nil
+end
+
