@@ -4,6 +4,7 @@
 sleeping              = false
 sleep_blowout         = true
 magic_sleep           = false
+sleep_in_sleeping_bag = 1
 
 local start_satiety   = 0
 local sleep_timer     = misc.game_timer( "sleep_timer" )
@@ -165,11 +166,10 @@ function main( scale )   -- подготовка к starter
     if magic_sleep then
         params.satiety_v_add( 200 / scale, 1 )
     else
-        -- скорость пассивного нарастания голода, во сне расходуется меньше калорий
-        params.satiety_v_add( 0.9 + diff * 0.1, 1 )
+        params.satiety_v_add( ( 1 + ( 2 * scale / sleep_in_sleeping_bag ) ), 1 )
+        --params.satiety_v_add( 0.9 + diff * 0.1, 1 ) -- скорость пассивного нарастания голода
     end
-    -- скорость восстановления здоровья во сне, относительно сложности
-    params.health_v_add(
+    params.health_v_add(                            -- скорость восстановления здоровья во сне
         balance.health.restore_w_sleep - diff * 0.1,
         sak.level_difficulty[ level.name() ]
     )
@@ -218,10 +218,11 @@ function restore_coef() -- установка коэф. высыпаемости от предетов в слотах
     local act = db.actor
     local coef = 1
     -- вещи в слотах мешают выспаться быстрее
-    if act:item_in_slot( 1 ) then coef = coef * 0.90 end              -- левый слот
-    if act:item_in_slot( 2 ) then coef = coef * 0.90 end              -- правый слот
-    if act:item_in_slot( 6 ) then coef = coef * 0.85 end              -- бинокль
-    if get_shadow_inv():update_storage() then coef = coef * 0.85 end  -- рюкзак
+    if act:item_in_slot( 1 )             then coef = coef * 0.93 end  -- левый слот
+    if act:item_in_slot( 2 )             then coef = coef * 0.93 end  -- правый слот
+    if act:item_in_slot( 6 )             then coef = coef * 0.90 end  -- броня
+    if get_shadow_inv():update_storage() then coef = coef * 0.90 end  -- рюкзак
+    if sleep_in_sleeping_bag == 2        then coef = coef * 0.83 end  -- сон в спальнике
     return coef
 end
 
@@ -237,8 +238,8 @@ function relaxation( treshold ) -- убирание сонливости во время сна
         sleep_timer:dump()
     end
     if sub < treshold then return get_sleepiness() end
-    sleep_time = time
-    local coef = restore_coef()
+    sleep_time       = time
+    local coef       = restore_coef()
     local sleepiness = math.max( 0, get_sleepiness() - sub * coef )
     params.tiredness_add()
     wprintf(
@@ -366,6 +367,7 @@ function stopper()    -- конец сна, просыпание
     end
     schedule.add("restore_bio", "sleep_manager.end_sleeping()", 300 )
     get_shadow_inv():after_sleep()
+    sleep_in_sleeping_bag = 1
 end
 
 sleep_manager.stopper = stopper

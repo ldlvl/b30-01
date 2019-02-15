@@ -72,7 +72,7 @@ end
 function spawn_star(actor,npc,p1,p2)
   local b = lua_random(table.getn(points))
   local a = points[b]
-  local obj = misc.spawn_obj ("arc_art_box_1basic", vector():set(a.position.x,a.position.y,a.position.z))
+  local obj = misc.spawn_obj ("arc_art_box_8basic", vector():set(a.position.x,a.position.y,a.position.z))
   local pk = get_netpk(obj,1)
   local data = pk:get()
   data.custom_data = "amk_af_night_star_29"
@@ -85,7 +85,7 @@ function spawn_star(actor,npc,p1,p2)
   else
     m_where = "Здесь, на Кордоне"
   end
-  db.actor:give_talk_message(m_where.." скорее всего поискать стоит. Где-то там он, точно говорю.\\nПомнишь, как контейнер-то выглядит? Вот так:","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
+  --db.actor:give_talk_message(" скорее всего поискать стоит. Где-то там он, точно говорю.\\nПомнишь, как контейнер-то выглядит? Вот так:","ui\\ui_iconstotal", Frect():set(0,0,10,10),"simple_answer_item")
   db.actor:give_talk_message("", "ui\\ui_icon_equipment_1",Frect():set(0,0,150,100),"iconed_item")
   db.actor:give_info_portion("amk_af_night_star_"..b)
 end
@@ -517,6 +517,7 @@ function test_for_need_sleep_matras(oid)
       if ( sleep_manager.get_sleepiness(108) ) > 10 then
         if oid:section()=="sleeping_bag" then
           vergas_lib.s_play([[device\sleeping_bag\sleep_bag_down]])
+          sleep_manager.sleep_in_sleeping_bag = 2 -- если спать в спальнике, голод во сне растёт в 2 раза медленнее
         end
         used_items.sleep_management()
         --local spwn=ui_cheat.cheat(get_hud())
