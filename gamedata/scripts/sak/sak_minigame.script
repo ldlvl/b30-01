@@ -1,737 +1,1050 @@
 -------------------
 local die_a, die_b, die_c, die_d, die_e
 local die_f, die_g, die_h, die_i, die_j
-local game_difficulty=tonumber(level.get_game_difficulty())
-local vodka_wins=(10-(game_difficulty*2))
-local art_wins=1
-local dices_drop_npc, dices_drop_gg=xray_vars.load_table(nlc_vars, "dices_npc", {}), xray_vars.load_table(nlc_vars, "dices_gg", {})
-local dices_drop_mass_npc, dices_drop_mass_gg=xray_vars.load_table(nlc_vars, "dices_mass_npc", {}), xray_vars.load_table(nlc_vars, "dices_mass_gg", {})
-local dices_drop_o_mass_npc, dices_drop_o_mass_gg=xray_vars.load_table(nlc_vars, "dices_o_mass_npc", {}), xray_vars.load_table(nlc_vars, "dices_o_mass_gg", {})
+local game_difficulty       = tonumber( level.get_game_difficulty() )
+local vodka_wins            = ( 10 - ( game_difficulty * 2 ) )
+local art_wins              = 1
+local dices_drop_npc        = xray_vars.load_table( nlc_vars, "dices_npc",        {} )
+local dices_drop_gg         = xray_vars.load_table( nlc_vars, "dices_gg",         {} )
+local dices_drop_mass_npc   = xray_vars.load_table( nlc_vars, "dices_mass_npc",   {} )
+local dices_drop_mass_gg    = xray_vars.load_table( nlc_vars, "dices_mass_gg",    {} )
+local dices_drop_o_mass_npc = xray_vars.load_table( nlc_vars, "dices_o_mass_npc", {} )
+local dices_drop_o_mass_gg  = xray_vars.load_table( nlc_vars, "dices_o_mass_gg",  {} )
 
 local numer = {
-  "%c[255,175,2,39]единичка",
-  "%c[255,175,2,169]двойка",
-  "%c[255,65,77,235]тройка",
-  "%c[255,15,140,140]четвёрка",
-  "%c[255,14,175,128]пятёрка",
-  "%c[255,14,175,2]шестёрочка"}
-  
+    "%c[255,175,2,39]единичка",
+    "%c[255,175,2,169]двойка",
+    "%c[255,65,77,235]тройка",
+    "%c[255,15,140,140]четвёрка",
+    "%c[255,14,175,128]пятёрка",
+    "%c[255,14,175,2]шестёрочка"
+}
+
 local summ_dises = {
-  "один",
-  "два",
-  "три",
-  "четыре",
-  "пять",
-  "шесть",
-  "семь",
-  "восемь",
-  "девять",
-  "десять",
-  "одиннадцать",
-  "двенадцать"}
-  
+    "один",
+    "два",
+    "три",
+    "четыре",
+    "пять",
+    "шесть",
+    "семь",
+    "восемь",
+    "девять",
+    "десять",
+    "одиннадцать",
+    "двенадцать"
+}
+
 local its_aart = {
-  "af_medusa",
-  "af_vyvert",
-  "af_blood",
-  "af_electra_sparkler",
-  "af_drops",
-  "af_ameba_slime",
-  "af_rusty_thorn"}
+    "af_medusa",
+    "af_vyvert",
+    "af_blood",
+    "af_electra_sparkler",
+    "af_drops",
+    "af_ameba_slime",
+    "af_rusty_thorn"
+}
 
 local its_bart = {
-  "af_cristal_flower",
-  "af_gravi",
-  "af_mincer_meat",
-  "af_electra_flash",
-  "af_fireball",
-  "af_ameba_slug",
-  "af_rusty_kristall"}
+    "af_cristal_flower",
+    "af_gravi",
+    "af_mincer_meat",
+    "af_electra_flash",
+    "af_fireball",
+    "af_ameba_slug",
+    "af_rusty_kristall"
+}
 
 local its_cart = {
-  "af_night_star",
-  "af_gold_fish",
-  "af_soul",
-  "af_electra_moonlight",
-  "af_cristall",
-  "af_ameba_mica",
-  "af_rusty_sea-urchin"}
-  
+    "af_night_star",
+    "af_gold_fish",
+    "af_soul",
+    "af_electra_moonlight",
+    "af_cristall",
+    "af_ameba_mica",
+    "af_rusty_sea-urchin"
+}
+
 function take_aart()
-  local c=lua_random(1,7)
-  local d=lua_random(1,3)
-  local item=its_aart[c]
-  sak.create_items(db.actor, item.."_dyn"..d.."d",1)
+    local c    = lua_random( 1, 7 )
+    local d    = lua_random( 1, 3 )
+    local item = its_aart[ c ]
+    sak.create_items( db.actor, item .. "_dyn" .. d .. "d", 1 )
 end
+
 function take_bart()
-  local c=lua_random(1,7)
-  local d=lua_random(1,3)
-  local item=its_bart[c]
-  sak.create_items(db.actor, item.."_dyn"..d.."d",1)
+    local c    = lua_random( 1, 7 )
+    local d    = lua_random( 1, 3 )
+    local item = its_bart[ c ]
+    sak.create_items( db.actor, item .. "_dyn" .. d .. "d", 1 )
 end
+
 function take_cart()
-  local c=lua_random(1,7)
-  local d=lua_random(1,3)
-  local item=its_cart[c]
-  sak.create_items(db.actor, item.."_dyn"..d.."d",1)
+    local c    = lua_random( 1, 7 )
+    local d    = lua_random( 1, 3 )
+    local item = its_cart[ c ]
+    sak.create_items( db.actor, item .. "_dyn" .. d .. "d", 1 )
 end
 
 function generate_dices_drop()
-dices_drop_npc=generate_rand_vector(true)
-nlc_vars.dices_npc=dices_drop_npc
-dices_drop_gg=generate_rand_vector(false)
-nlc_vars.dices_gg=dices_drop_gg
-end
-function generate_dices_drop_mass()
-dices_drop_mass_npc=generate_rand_mass(true)
-nlc_vars.dices_mass_npc=dices_drop_mass_npc
-dices_drop_mass_gg=generate_rand_mass(false)
-nlc_vars.dices_mass_gg=dices_drop_mass_gg
-end
-function generate_dices_drop_o_mass()
-dices_drop_o_mass_npc=generate_rand_o_mass(true)
-nlc_vars.dices_o_mass_npc=dices_drop_o_mass_npc
-dices_drop_o_mass_gg=generate_rand_o_mass(false)
-nlc_vars.dices_o_mass_gg=dices_drop_o_mass_gg
-end
-function prov_dices_drop()
-  if #dices_drop_npc<5 then
-  generate_dices_drop()
-  end
-  if #dices_drop_mass_npc<5 then
-  generate_dices_drop_mass()
-  end
-  if #dices_drop_o_mass_npc<5 then
-  generate_dices_drop_o_mass()
-  end
+    dices_drop_npc     = generate_rand_vector( true  )
+    nlc_vars.dices_npc = dices_drop_npc
+    dices_drop_gg      = generate_rand_vector( false )
+    nlc_vars.dices_gg  = dices_drop_gg
 end
 
-function generate_rand_vector(npc)
-local t = {}
-local g,l=1,6
-  if npc then
-  t=xray_vars.load_table(nlc_vars, "dices_npc", {})
-  else
-  t=xray_vars.load_table(nlc_vars, "dices_gg", {})
-  end
-  for i = 1,30 do 
+function generate_dices_drop_mass()
+    dices_drop_mass_npc     = generate_rand_mass( true  )
+    nlc_vars.dices_mass_npc = dices_drop_mass_npc
+    dices_drop_mass_gg      = generate_rand_mass( false )
+    nlc_vars.dices_mass_gg  = dices_drop_mass_gg
+end
+
+function generate_dices_drop_o_mass()
+    dices_drop_o_mass_npc     = generate_rand_o_mass( true  )
+    nlc_vars.dices_o_mass_npc = dices_drop_o_mass_npc
+    dices_drop_o_mass_gg      = generate_rand_o_mass( false )
+    nlc_vars.dices_o_mass_gg  = dices_drop_o_mass_gg
+end
+
+function prov_dices_drop()
+    if #dices_drop_npc        < 5 then generate_dices_drop()        end
+    if #dices_drop_mass_npc   < 5 then generate_dices_drop_mass()   end
+    if #dices_drop_o_mass_npc < 5 then generate_dices_drop_o_mass() end
+end
+
+function generate_rand_vector( npc )
+    local t    = {}
+    local g, l = 1, 6
     if npc then
-    g=lua_random(1,2)
-    end
-  local p = {lua_random(g,l), lua_random(3-g,l), lua_random(g,l)}
-  table.insert (t, p)
-  end
-  return t
- end
- function generate_rand_mass(npc)
-local t = {}
-local g,l=1,6
-  if npc then
-  t=xray_vars.load_table(nlc_vars, "dices_mass_npc", {})
-  else
-  t=xray_vars.load_table(nlc_vars, "dices_mass_gg", {})
-  end
-  for i = 1,30 do 
-    if npc then
-    g=lua_random(1,3)
-    end
-  local p = {lua_random(g,l), lua_random(4-g,l), lua_random(g,l)}
-  table.insert (t, p)
-  end
-  return t
- end
- function generate_rand_o_mass(npc)
-local t = {}
-local g,l=1,6
-  if npc then
-  t=xray_vars.load_table(nlc_vars, "dices_o_mass_npc", {})
-  else
-  t=xray_vars.load_table(nlc_vars, "dices_o_mass_gg", {})
-  end
-  for i = 1,30 do 
-    if npc then
-    g=lua_random(1,3)
+        t = xray_vars.load_table( nlc_vars, "dices_npc", {} )
     else
-    l=lua_random(1,2)
+        t = xray_vars.load_table( nlc_vars, "dices_gg",  {} )
     end
-  local p = {lua_random(g,4+l), lua_random(4-g,7-l), lua_random(g,6)}
-  table.insert (t, p)
-  end
-  return t
- end
+    for i = 1, 30 do
+        if npc then g = lua_random( 1, 2 ) end
+        local p = {
+            lua_random(     g, l ),
+            lua_random( 3 - g, l ),
+            lua_random(     g, l )
+        }
+        table.insert( t, p )
+    end
+    return t
+end
+
+function generate_rand_mass( npc )
+    local t    = {}
+    local g, l = 1, 6
+    if npc then
+        t = xray_vars.load_table( nlc_vars, "dices_mass_npc", {} )
+    else
+        t = xray_vars.load_table( nlc_vars, "dices_mass_gg",  {} )
+    end
+    for i = 1, 30 do
+        if npc then g = lua_random( 1, 3 ) end
+        local p = {
+            lua_random(     g, l ),
+            lua_random( 4 - g, l ),
+            lua_random(     g, l )
+        }
+        table.insert( t, p )
+    end
+    return t
+end
+
+function generate_rand_o_mass( npc )
+    local t    = {}
+    local g, l = 1, 6
+    if npc then
+        t = xray_vars.load_table( nlc_vars, "dices_o_mass_npc", {} )
+    else
+        t = xray_vars.load_table( nlc_vars, "dices_o_mass_gg",  {} )
+    end
+    for i = 1, 30 do
+        if npc then
+            g = lua_random( 1, 3 )
+        else
+            l = lua_random( 1, 2 )
+        end
+        local p = {
+            lua_random(     g, 4 + l ),
+            lua_random( 4 - g, 7 - l ),
+            lua_random(     g, 6     )
+        }
+        table.insert(t, p )
+    end
+    return t
+end
+
 function roll_dice_npc()
-  dices_drop_npc=xray_vars.load_table(nlc_vars, "dices_npc", {})
-  die_a=dices_drop_npc[1][1]
-  die_b=dices_drop_npc[1][2]
-  die_e=dices_drop_npc[1][3]
-  db.actor:give_talk_message("%c[255,216,186,140]Тэк-с, у меня "..numer[die_a].."%c[255,216,186,140], "..numer[die_b].."%c[255,216,186,140] и "..numer[die_e].."\\n%c[255,216,186,140]Теперь ты кидай...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_npc,1)
-  nlc_vars.dices_npc=dices_drop_npc
+    dices_drop_npc = xray_vars.load_table( nlc_vars, "dices_npc", {} )
+    die_a          = dices_drop_npc[ 1 ][ 1 ]
+    die_b          = dices_drop_npc[ 1 ][ 2 ]
+    die_e          = dices_drop_npc[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]Тэк-с, у меня " .. numer[ die_a ]
+        .. "%c[255,216,186,140], "          .. numer[ die_b ]
+        .. "%c[255,216,186,140] и "         .. numer[ die_e ]
+        .. "\\n%c[255,216,186,140]Теперь ты кидай...",
+        "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_npc, 1 )
+    nlc_vars.dices_npc = dices_drop_npc
 end
 
 function roll_dice_gg()
-  dices_drop_gg=xray_vars.load_table(nlc_vars, "dices_gg", {})
-  die_c=dices_drop_gg[1][1]
-  die_d=dices_drop_gg[1][2]
-  die_f=dices_drop_gg[1][3]
-  db.actor:give_talk_message("%c[255,255,232,208]А у меня "..numer[die_c].."%c[255,216,186,140], "..numer[die_f].."%c[255,216,186,140] и "..numer[die_d], "ui\\ui_iconstotal", Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_gg,1)
-  nlc_vars.dices_gg=dices_drop_gg
-  if die_a and die_b and die_c and die_d then
-    local a=tonumber(die_a)
-    local b=tonumber(die_b)
-    local c=tonumber(die_c)
-    local d=tonumber(die_d)
-    local e=tonumber(die_e)
-    local f=tonumber(die_f)
-    if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then
-      db.actor:give_info_portion("gg_winner")
-      -- для статистики:
-      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
-    elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
+    dices_drop_gg = xray_vars.load_table( nlc_vars, "dices_gg", {} )
+    die_c         = dices_drop_gg[ 1 ][ 1 ]
+    die_d         = dices_drop_gg[ 1 ][ 2 ]
+    die_f         = dices_drop_gg[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,255,232,208]А у меня " .. numer[ die_c ]
+        .. "%c[255,216,186,140], "     .. numer[ die_f ]
+        .. "%c[255,216,186,140] и "    .. numer[ die_d ],
+        "ui\\ui_iconstotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_gg, 1 )
+    nlc_vars.dices_gg = dices_drop_gg
+    if die_a and die_b and die_c and die_d then
+        local a = tonumber( die_a )
+        local b = tonumber( die_b )
+        local c = tonumber( die_c )
+        local d = tonumber( die_d )
+        local e = tonumber( die_e )
+        local f = tonumber( die_f )
+        if     ( a + b + e ) > ( c + d + f ) then
+            db.actor:give_info_portion( "gg_luser" )
+        elseif ( a + b + e ) < ( c + d + f ) then
+            db.actor:give_info_portion( "gg_winner" )
+            -- для статистики:
+            xr_statistic.add_pts(
+                "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
+            )
+        elseif ( a + b + e ) == ( c + d + f ) then
+            db.actor:give_info_portion( "draw" )
+        end
     end
-  end
 end
+
 function roll_dice_mass_npc()
-  dices_drop_mass_npc=xray_vars.load_table(nlc_vars, "dices_mass_npc", {})
-  die_a=dices_drop_mass_npc[1][1]
-  die_b=dices_drop_mass_npc[1][2]
-  die_e=dices_drop_mass_npc[1][3]
-  db.actor:give_talk_message("%c[255,216,186,140]Тэк-с, у меня "..numer[die_a].."%c[255,216,186,140], "..numer[die_b].."%c[255,216,186,140] и "..numer[die_e].."\\n%c[255,216,186,140]Теперь ты кидай...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_mass_npc,1)
-  nlc_vars.dices_mass_npc=dices_drop_mass_npc
+    dices_drop_mass_npc = xray_vars.load_table( nlc_vars, "dices_mass_npc", {} )
+    die_a               = dices_drop_mass_npc[ 1 ][ 1 ]
+    die_b               = dices_drop_mass_npc[ 1 ][ 2 ]
+    die_e               = dices_drop_mass_npc[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]Тэк-с, у меня " .. numer[ die_a ]
+        .. "%c[255,216,186,140], "          .. numer[ die_b ]
+        .. "%c[255,216,186,140] и "         .. numer[ die_e ]
+        .. "\\n%c[255,216,186,140]Теперь ты кидай...",
+        "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_mass_npc, 1 )
+    nlc_vars.dices_mass_npc = dices_drop_mass_npc
 end
 
 function roll_dice_mass_gg()
-  dices_drop_mass_gg=xray_vars.load_table(nlc_vars, "dices_mass_gg", {})
-  die_c=dices_drop_mass_gg[1][1]
-  die_d=dices_drop_mass_gg[1][2]
-  die_f=dices_drop_mass_gg[1][3]
-  db.actor:give_talk_message("%c[255,255,232,208]А у меня "..numer[die_c].."%c[255,216,186,140], "..numer[die_f].."%c[255,216,186,140] и "..numer[die_d], "ui\\ui_iconstotal", Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_mass_gg,1)
-  nlc_vars.dices_mass_gg=dices_drop_mass_gg
-  if die_a and die_b and die_c and die_d then
-    local a=tonumber(die_a)
-    local b=tonumber(die_b)
-    local c=tonumber(die_c)
-    local d=tonumber(die_d)
-    local e=tonumber(die_e)
-    local f=tonumber(die_f)
-    if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then
-      db.actor:give_info_portion("gg_winner")
-      -- для статистики:
-      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
-    elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
+    dices_drop_mass_gg = xray_vars.load_table( nlc_vars, "dices_mass_gg", {} )
+    die_c              = dices_drop_mass_gg[ 1 ][ 1 ]
+    die_d              = dices_drop_mass_gg[ 1 ][ 2 ]
+    die_f              = dices_drop_mass_gg[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,255,232,208]А у меня " .. numer[ die_c ]
+        .."%c[255,216,186,140], "      .. numer[ die_f ]
+        .."%c[255,216,186,140] и "     .. numer[ die_d ],
+        "ui\\ui_iconstotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_mass_gg, 1 )
+    nlc_vars.dices_mass_gg = dices_drop_mass_gg
+    if die_a and die_b and die_c and die_d then
+        local a = tonumber( die_a )
+        local b = tonumber( die_b )
+        local c = tonumber( die_c )
+        local d = tonumber( die_d )
+        local e = tonumber( die_e )
+        local f = tonumber( die_f )
+        if     ( a + b + e ) > ( c + d + f ) then
+            db.actor:give_info_portion( "gg_luser" )
+        elseif ( a + b + e ) < ( c + d + f ) then
+            db.actor:give_info_portion( "gg_winner" )
+            -- для статистики:
+            xr_statistic.add_pts(
+                "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
+            )
+        elseif ( a + b + e ) == ( c + d + f ) then
+            db.actor:give_info_portion( "draw" )
+        end
     end
-  end
 end
+
 function roll_dice_o_mass_npc()
-  dices_drop_o_mass_npc=xray_vars.load_table(nlc_vars, "dices_o_mass_npc", {})
-  die_a=dices_drop_o_mass_npc[1][1]
-  die_b=dices_drop_o_mass_npc[1][2]
-  die_e=dices_drop_o_mass_npc[1][3]
-  db.actor:give_talk_message("%c[255,216,186,140]Тэк-с, у меня "..numer[die_a].."%c[255,216,186,140], "..numer[die_b].."%c[255,216,186,140] и "..numer[die_e].."\\n%c[255,216,186,140]Теперь ты кидай...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_o_mass_npc,1)
-  nlc_vars.dices_o_mass_npc=dices_drop_o_mass_npc
+    dices_drop_o_mass_npc = xray_vars.load_table( nlc_vars, "dices_o_mass_npc", {} )
+    die_a                 = dices_drop_o_mass_npc[ 1 ][ 1 ]
+    die_b                 = dices_drop_o_mass_npc[ 1 ][ 2 ]
+    die_e                 = dices_drop_o_mass_npc[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]Тэк-с, у меня " .. numer[ die_a ]
+        .. "%c[255,216,186,140], "          .. numer[ die_b ]
+        .. "%c[255,216,186,140] и "         .. numer[ die_e ]
+        .. "\\n%c[255,216,186,140]Теперь ты кидай...",
+        "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_o_mass_npc, 1 )
+    nlc_vars.dices_o_mass_npc = dices_drop_o_mass_npc
 end
 
 function roll_dice_o_mass_gg()
-  dices_drop_o_mass_gg=xray_vars.load_table(nlc_vars, "dices_o_mass_gg", {})
-  die_c=dices_drop_o_mass_gg[1][1]
-  die_d=dices_drop_o_mass_gg[1][2]
-  die_f=dices_drop_o_mass_gg[1][3]
-  db.actor:give_talk_message("%c[255,255,232,208]А у меня "..numer[die_c].."%c[255,216,186,140], "..numer[die_f].."%c[255,216,186,140] и "..numer[die_d], "ui\\ui_iconstotal", Frect():set(498,188,83,47),"iconed_answer_item")
-  table.remove(dices_drop_o_mass_gg,1)
-  nlc_vars.dices_o_mass_gg=dices_drop_o_mass_gg
-  if die_a and die_b and die_c and die_d then
-    local a=tonumber(die_a)
-    local b=tonumber(die_b)
-    local c=tonumber(die_c)
-    local d=tonumber(die_d)
-    local e=tonumber(die_e)
-    local f=tonumber(die_f)
-    if (a+b+e)>(c+d+f) then db.actor:give_info_portion("gg_luser")
-    elseif (a+b+e)<(c+d+f) then
-      db.actor:give_info_portion("gg_winner")
-      -- для статистики:
-      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
-    elseif (a+b+e)==(c+d+f) then db.actor:give_info_portion("draw")
+    dices_drop_o_mass_gg = xray_vars.load_table( nlc_vars, "dices_o_mass_gg", {} )
+    die_c                = dices_drop_o_mass_gg[ 1 ][ 1 ]
+    die_d                = dices_drop_o_mass_gg[ 1 ][ 2 ]
+    die_f                = dices_drop_o_mass_gg[ 1 ][ 3 ]
+    db.actor:give_talk_message(
+        "%c[255,255,232,208]А у меня " .. numer[ die_c ]
+        .. "%c[255,216,186,140], "     .. numer[ die_f ]
+        .. "%c[255,216,186,140] и "    .. numer[ die_d ],
+        "ui\\ui_iconstotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+    )
+    table.remove( dices_drop_o_mass_gg, 1 )
+    nlc_vars.dices_o_mass_gg = dices_drop_o_mass_gg
+    if die_a and die_b and die_c and die_d then
+        local a = tonumber( die_a )
+        local b = tonumber( die_b )
+        local c = tonumber( die_c )
+        local d = tonumber( die_d )
+        local e = tonumber( die_e )
+        local f = tonumber( die_f )
+        if     ( a + b + e ) > ( c + d + f ) then
+            db.actor:give_info_portion( "gg_luser" )
+        elseif ( a + b + e ) < ( c + d + f ) then
+            db.actor:give_info_portion( "gg_winner" )
+            -- для статистики:
+            xr_statistic.add_pts(
+                "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
+            )
+        elseif ( a + b + e ) == ( c + d + f ) then
+            db.actor:give_info_portion( "draw" )
+        end
     end
-  end
 end
-local ochko=11
-local gg_sum=0
-local npc_sum=0
+
+local ochko   = 11
+local gg_sum  = 0
+local npc_sum = 0
+
 function new_game_ochko()
-  gg_sum=0
-  npc_sum=0
-  db.actor:disable_info_portion("gg_winner")
-  db.actor:disable_info_portion("gg_luser")
-  db.actor:disable_info_portion("draw")
-  -- для статистики:
-  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0 )
+    gg_sum  = 0
+    npc_sum = 0
+    db.actor:disable_info_portion( "gg_winner" )
+    db.actor:disable_info_portion( "gg_luser"  )
+    db.actor:disable_info_portion( "draw"      )
+    -- для статистики:
+    xr_statistic.add_pts(
+        "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0
+    )
 end
+
 function roll_dice_ochko_npc_for_gg()
-  die_a=lua_random(1,6)
-  if (die_a+gg_sum)==ochko then
-  db.actor:give_talk_message("%c[255,216,186,140]Так..."..numer[die_a].."%c[255,216,186,140], а было "..summ_dises[gg_sum].."\\n%c[255,216,186,140]Всего одиннадцать! Очко! Повезло...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  db.actor:give_info_portion("gg_winner")
-  -- для статистики:
-  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
-  elseif (die_a+gg_sum)>ochko then
-  db.actor:give_talk_message("%c[255,216,186,140]Ха! У тебя "..numer[die_a].."%c[255,216,186,140], а было "..summ_dises[gg_sum].."\\n%c[255,216,186,140]Перебор... Банк мой!", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  db.actor:give_info_portion("gg_luser")
-  elseif (die_a+gg_sum)<ochko then
-    if gg_sum~=0 then
-    db.actor:give_talk_message("%c[255,216,186,140]У тебя "..numer[die_a].."%c[255,216,186,140], а было "..summ_dises[gg_sum].."\\nВсего "..summ_dises[(gg_sum+die_a)].."\\n%c[255,216,186,140]Ещё? Бросать?", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    gg_sum=(die_a+gg_sum)
-    else 
-    db.actor:give_talk_message("%c[255,216,186,140]У тебя "..numer[die_a].."\\n%c[255,216,186,140]Ещё бросать? Или хватит?", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    gg_sum=(die_a+gg_sum)
+    die_a = lua_random( 1, 6 )
+    if ( die_a + gg_sum ) == ochko then
+        db.actor:give_talk_message(
+            "%c[255,216,186,140]Так..."       .. numer[ die_a ]
+            .. "%c[255,216,186,140], а было " .. summ_dises[ gg_sum ]
+            .. "\\n%c[255,216,186,140]Всего одиннадцать! Очко! Повезло...",
+            "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+        )
+        db.actor:give_info_portion( "gg_winner" )
+        -- для статистики:
+        xr_statistic.add_pts(
+            "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
+        )
+    elseif ( die_a + gg_sum ) > ochko then
+        db.actor:give_talk_message(
+            "%c[255,216,186,140]Ха! У тебя "  .. numer[ die_a ]
+            .. "%c[255,216,186,140], а было " .. summ_dises[ gg_sum ]
+            .. "\\n%c[255,216,186,140]Перебор... Банк мой!",
+            "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+        )
+        db.actor:give_info_portion( "gg_luser" )
+    elseif ( die_a + gg_sum ) < ochko then
+        if gg_sum ~= 0 then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]У тебя "      .. numer[ die_a ]
+                .. "%c[255,216,186,140], а было " .. summ_dises[ gg_sum ]
+                .. "\\nВсего "                    .. summ_dises[ ( gg_sum + die_a ) ]
+                .. "\\n%c[255,216,186,140]Ещё? Бросать?",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            gg_sum = die_a + gg_sum
+        else
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]У тебя " .. numer[ die_a ]
+                .. "\\n%c[255,216,186,140]Ещё бросать? Или хватит?",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            gg_sum = die_a + gg_sum
+        end
     end
-  end
 end
+
 function roll_dice_ochko_npc()
-  die_e=lua_random(1,5)
-  if (die_e+npc_sum)==ochko then
-  db.actor:give_talk_message("%c[255,216,186,140]Ага! У меня "..numer[die_e].."%c[255,216,186,140], а было "..summ_dises[npc_sum].."\\n%c[255,216,186,140]Очко! Я забираю банк...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  db.actor:give_info_portion("gg_luser")
-  elseif (die_e+npc_sum)>ochko then
-  db.actor:give_talk_message("%c[255,216,186,140]Блинн! "..numer[die_e].."%c[255,216,186,140], а было "..summ_dises[npc_sum].."\\n%c[255,216,186,140]Перебор... Банк твой...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-  db.actor:give_info_portion("gg_winner")
-  -- для статистики:
-  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
-  elseif (die_e+npc_sum)<gg_sum then
-    if npc_sum~=0 then
-    db.actor:give_talk_message("%c[255,216,186,140]Так "..numer[die_e].."%c[255,216,186,140], да ещё до этого было "..summ_dises[npc_sum].."\\nВсего "..summ_dises[(npc_sum+die_e)].."\\n%c[255,216,186,140]Бросаю ещё! Не против?", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
-    else
-    db.actor:give_talk_message("%c[255,216,186,140]У меня "..numer[die_e].."\\n%c[255,216,186,140]Едем дальше...\\nДа?", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
+    die_e = lua_random( 1, 5 )
+    if ( die_e + npc_sum ) == ochko then
+        db.actor:give_talk_message(
+            "%c[255,216,186,140]Ага! У меня "  .. numer[ die_e ]
+            .. "%c[255,216,186,140], а было "  .. summ_dises[ npc_sum ]
+            .. "\\n%c[255,216,186,140]Очко! Я забираю банк...", 
+            "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+        )
+        db.actor:give_info_portion( "gg_luser" )
+    elseif ( die_e + npc_sum ) > ochko then
+        db.actor:give_talk_message(
+            "%c[255,216,186,140]Блинн! "      .. numer[ die_e ]
+            .. "%c[255,216,186,140], а было " .. summ_dises[ npc_sum ]
+            .. "\\n%c[255,216,186,140]Перебор... Банк твой...",
+            "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+        )
+        db.actor:give_info_portion( "gg_winner" )
+        -- для статистики:
+        xr_statistic.add_pts(
+            "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 
+        )
+    elseif ( die_e + npc_sum ) < gg_sum then
+        if npc_sum ~= 0 then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]Так "                       .. numer[ die_e ]
+                .. "%c[255,216,186,140], да ещё до этого было " .. summ_dises[ npc_sum ]
+                .. "\\nВсего "                                  .. summ_dises[ ( npc_sum + die_e ) ]
+                .. "\\n%c[255,216,186,140]Бросаю ещё! Не против?",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        else
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]У меня " .. numer[ die_e ]
+                .. "\\n%c[255,216,186,140]Едем дальше...\\nДа?",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        end
+    elseif ( die_e + npc_sum ) == gg_sum then
+        if npc_sum ~= 0 then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]Ну вот... "   .. numer[ die_e ]
+                .. "%c[255,216,186,140], а было " .. summ_dises[ npc_sum ]
+                .. "\\nВсего "                    .. summ_dises[ ( npc_sum + die_e ) ]
+                .. "\\n%c[255,216,186,140]Не буду больше бросать, останемся при своих...",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        else
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]Ну вот... " .. numer[ die_e ]
+                .. "\\n%c[255,216,186,140]Не буду больше бросать, останемся при своих...",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        end
+        db.actor:give_info_portion( "draw" )
+    elseif
+            ( die_e + npc_sum ) > gg_sum
+        and ( die_e + npc_sum ) < ochko
+    then
+        if npc_sum ~= 0 then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]Ну вот... "   .. numer[ die_e ]
+                .. "%c[255,216,186,140], а было " .. summ_dises[ npc_sum ]
+                .. "\\nВсего "                    .. summ_dises[ ( npc_sum + die_e ) ]
+                .. "\\n%c[255,216,186,140]Я победил! Кровные Меченного уплыли...",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        else
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]Ага! Вот... " .. numer[ die_e ]
+                .. "\\n%c[255,216,186,140]Я победил! Кровные Меченного уплыли...",
+                "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
+            )
+            npc_sum = ( die_e + npc_sum )
+        end
+        db.actor:give_info_portion("gg_luser")
     end
-  elseif (die_e+npc_sum)==gg_sum then
-    if npc_sum~=0 then
-    db.actor:give_talk_message("%c[255,216,186,140]Ну вот... "..numer[die_e].."%c[255,216,186,140], а было "..summ_dises[npc_sum].."\\nВсего "..summ_dises[(npc_sum+die_e)].."\\n%c[255,216,186,140]Не буду больше бросать, останемся при своих...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
-    else
-    db.actor:give_talk_message("%c[255,216,186,140]Ну вот... "..numer[die_e].."\\n%c[255,216,186,140]Не буду больше бросать, останемся при своих...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
-    end
-  db.actor:give_info_portion("draw")
-  elseif (die_e+npc_sum)>gg_sum and(die_e+npc_sum)<ochko then
-    if npc_sum~=0 then
-    db.actor:give_talk_message("%c[255,216,186,140]Ну вот... "..numer[die_e].."%c[255,216,186,140], а было "..summ_dises[npc_sum].."\\nВсего "..summ_dises[(npc_sum+die_e)].."\\n%c[255,216,186,140]Я победил! Кровные Меченного уплыли...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
-    else
-    db.actor:give_talk_message("%c[255,216,186,140]Ага! Вот... "..numer[die_e].."\\n%c[255,216,186,140]Я победил! Кровные Меченного уплыли...", "ui\\ui_iconsTotal",Frect():set(498,188,83,47),"iconed_answer_item")
-    npc_sum=(die_e+npc_sum)
-    end
-  db.actor:give_info_portion("gg_luser")
-  end
 end
+
 function stas_have_vodka()
-  local vodka_winned=nlc_vars.vodka_win or 0
-  if vodka_winned<vodka_wins then return true
-  end
+    local vodka_winned = nlc_vars.vodka_win or 0
+    if vodka_winned < vodka_wins then return true end
 end
+
 function stas_no_have_vodka()
-  local vodka_winned=nlc_vars.vodka_win or 0
-  if vodka_winned>=vodka_wins then return true
-  end
+    local vodka_winned = nlc_vars.vodka_win or 0
+    if vodka_winned >= vodka_wins then return true end
 end
+
 function vodka1_wins_from_stas()
-  local vodka_winned=nlc_vars.vodka_win or 0
-  nlc_vars.vodka_win = vodka_winned+1
+    local vodka_winned = nlc_vars.vodka_win or 0
+    nlc_vars.vodka_win = vodka_winned + 1
 end
+
 function vodka8_wins_from_stas()
-  local vodka_winned=nlc_vars.vodka_win or 0
-  nlc_vars.vodka_win = vodka_winned+8
+    local vodka_winned = nlc_vars.vodka_win or 0
+    nlc_vars.vodka_win = vodka_winned + 8
 end
+
 function vodka6_wins_from_stas()
-  local vodka_winned=nlc_vars.vodka_win or 0
-  nlc_vars.vodka_win = vodka_winned+6
+    local vodka_winned = nlc_vars.vodka_win or 0
+    nlc_vars.vodka_win = vodka_winned + 6
 end
+
 function lysyi_have_art()
-  local art_winned=nlc_vars.art_win or 0
-  if art_winned<art_wins then return true
-  end
-  return false
+    local art_winned = nlc_vars.art_win or 0
+    if art_winned < art_wins then return true end
+    return false
 end
-function lysyi_no_have_art()
-  return not lysyi_have_art()
-end
-function gg_wined()
-  WriteIni(db.stor_ltx, "stor","chtml", 0)
-end
+
+function lysyi_no_have_art() return not lysyi_have_art() end
+
+function gg_wined() WriteIni( db.stor_ltx, "stor","chtml", 0 ) end
+
 function gg_lused_simple()
-  local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-  chit_many=chit_many+15000
-  WriteIni(db.stor_ltx, "stor","chtml", chit_many)
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor","chtml" ) ) or 0
+    chit_many       = chit_many + 15000
+    WriteIni( db.stor_ltx, "stor", "chtml", chit_many )
 end
+
 function gg_lused_hard()
-  local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-  chit_many=chit_many+30000
-  WriteIni(db.stor_ltx, "stor","chtml", chit_many)
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor", "chtml" ) ) or 0
+    chit_many       = chit_many + 30000
+    WriteIni( db.stor_ltx, "stor", "chtml", chit_many )
 end
+
 function is_gg_chiter()
-  local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-  if chit_many>0 and not has_alife_info("gg_luser") then return true
-  end
-  return false
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor", "chtml" ) ) or 0
+    if chit_many > 0 and not has_alife_info( "gg_luser" ) then return true end
+    return false
 end
-function no_gg_chiter()
-  return not is_gg_chiter()
-end
+
+function no_gg_chiter() return not is_gg_chiter() end
+
 function text_money_gg_chiter()
-local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-  db.actor:give_talk_message("%c[255,216,186,140]Верни то, что должен: "..chit_many.." рубликов, тогда и разговор будет дальше...","ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor", "chtml" ) ) or 0
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]Верни то, что должен: " .. chit_many
+        .. " рубликов, тогда и разговор будет дальше...",
+        "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
+    )
 end
-function gg_chiter_money_have() 
-local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-return db.actor:money()>=chit_many end
-function give_gg_chiter_money(t1,t2)
-  local npc=t1
-  if npc:id()==db.actor:id() then
-    npc=t2
-  end
-  local chit_many=tonumber(ReadIni(db.stor_ltx, "stor","chtml")) or 0
-  sak_dialog.relocate_money(npc,chit_many,1)
+
+function gg_chiter_money_have()
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor", "chtml" ) ) or 0
+    return db.actor:money() >= chit_many
 end
+
+function give_gg_chiter_money( t1, t2 )
+    local npc = t1
+    if npc:id() == db.actor:id() then npc = t2 end
+    local chit_many = tonumber( ReadIni( db.stor_ltx, "stor", "chtml" ) ) or 0
+    sak_dialog.relocate_money( npc, chit_many, 1 )
+end
+
 function art1_wins_from_lysyi()
-  local art_winned=nlc_vars.art_win or 0
-  nlc_vars.art_win = art_winned+1
+    local art_winned = nlc_vars.art_win or 0
+    nlc_vars.art_win = art_winned + 1
 end
-function run_roll_dice_npc_stas(first_speaker, second_speaker)
-  game.start_tutorial("dises_sidor01")
+
+function run_roll_dice_npc_stas( first_speaker, second_speaker )
+  game.start_tutorial( "dises_sidor01" )
 end
-function run_roll_dice_gg_stas(first_speaker, second_speaker)
-  game.start_tutorial("dises_sidor02")
+
+function run_roll_dice_gg_stas( first_speaker, second_speaker )
+  game.start_tutorial( "dises_sidor02" )
 end
-function run_roll_dice_npc_lysyi(first_speaker, second_speaker)
-  game.start_tutorial("dises_bar01")
+
+function run_roll_dice_npc_lysyi( first_speaker, second_speaker )
+  game.start_tutorial( "dises_bar01" )
 end
-function run_roll_dice_gg_lysyi(first_speaker, second_speaker)
-  game.start_tutorial("dises_bar02")
+
+function run_roll_dice_gg_lysyi( first_speaker, second_speaker )
+  game.start_tutorial( "dises_bar02" )
 end
-function run_roll_dice_npc_mongol(first_speaker, second_speaker)
-  game.start_tutorial("dises_bandit01")
+
+function run_roll_dice_npc_mongol( first_speaker, second_speaker )
+  game.start_tutorial( "dises_bandit01" )
 end
-function run_roll_dice_gg_mongol(first_speaker, second_speaker)
-  game.start_tutorial("dises_bandit02")
+
+function run_roll_dice_gg_mongol( first_speaker, second_speaker )
+  game.start_tutorial( "dises_bandit02" )
 end
-local thimble_ids = {}
-local blow_thimbles = {}
+
+local thimble_ids        = {}
+local blow_thimbles      = {}
 local thimble_fill_items = {
-  "ammo_vog-25", 15,
-  "ammo_11.43x23_fmj", 10,
-  "ammo_ammo_7.62x39_ap", 5,
-  "grenade_f1", 10,
-  "ammo_m209", 15,
-  "ammo_5.56x45_ap", 5,
-  "ammo_9x39_ap", 5,
-  "ammo_5.45x39_ap", 10,
-  "medkit_army", 10
+    "ammo_vog-25", 15,
+    "ammo_11.43x23_fmj", 10,
+    "ammo_ammo_7.62x39_ap", 5,
+    "grenade_f1", 10,
+    "ammo_m209", 15,
+    "ammo_5.56x45_ap", 5,
+    "ammo_9x39_ap", 5,
+    "ammo_5.45x39_ap", 10,
+    "medkit_army", 10
 }
 
-local thimble_minigame={
-    {position={x=80.7,y=-12.57,z=61.5},gv=1558,lv=377701},
-  {position={x=81.7,y=-12.57,z=61.5},gv=1558,lv=379106},   
-  {position={x=82.7,y=-12.57,z=61.5},gv=1558,lv=379778}
+local thimble_minigame = {
+    { position = { x = 80.7, y = -12.57, z = 61.5 }, gv = 1558, lv = 377701 },
+    { position = { x = 81.7, y = -12.57, z = 61.5 }, gv = 1558, lv = 379106 },
+    { position = { x = 82.7, y = -12.57, z = 61.5 }, gv = 1558, lv = 379778 }
 }
+
 function empty_thimbles()
-  for a,i in pairs(db.storage) do
-    local objg=client_obj(a)
-    if objg and objg:section() and  objg:section()=="minigame_thimble" then
-      alife():release(alife():object(objg:id()), true)
-    end 
-  end
-end
-function create_thimbles()
-  -- для статистики:
-  xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0 )
-local a=lua_random(1,3)
-  for k=1,3 do
-    if k==a then
-    local main_thimble=alife():create("minigame_thimble",vector():set(thimble_minigame[k].position.x,thimble_minigame[k].position.y,thimble_minigame[k].position.z), thimble_minigame[k].lv, thimble_minigame[k].gv)
-    local param=main_thimble.id
-    timers.start_timer("main_thimble_id",1,"sak_minigame.fill_thimbles("..param..")")  
-    else
-    local sec_thimble=alife():create("minigame_thimble",vector():set(thimble_minigame[k].position.x,thimble_minigame[k].position.y,thimble_minigame[k].position.z), thimble_minigame[k].lv, thimble_minigame[k].gv)
-    local pk = get_netpk(sec_thimble)
-    local data = pk:get()
-    data.custom_data = "[logic]\ncfg = scripts\\minigame_inventory_box.ltx"
-    pk:set(data)  
-    table.insert(blow_thimbles,sec_thimble.id)
+    for a, i in pairs( db.storage ) do
+        local objg = client_obj( a )
+        if objg and objg:section() and objg:section() == "minigame_thimble" then
+            alife():release( alife():object( objg:id() ), true )
+        end
     end
-  end
 end
-function fill_thimbles(main_thimble_id)
-local fill_items,fill_item,fill_count
-local main_thimble=alife():object(main_thimble_id)
-  fill_items = lua_random((table.getn(thimble_fill_items))/2)*2-1
-  fill_item = thimble_fill_items[fill_items]
-  fill_count = thimble_fill_items[fill_items+1]
-  for i=1,fill_count do
-  local fills=alife():create(fill_item, main_thimble.position, main_thimble.m_level_vertex_id, main_thimble.m_game_vertex_id, main_thimble.id)
-  end
+
+function create_thimbles()
+    -- для статистики:
+    xr_statistic.add_pts(
+        "stalkerkills", game.translate_string( "st_pda_minigames_played" ), 1, 0
+    )
+    local a = lua_random( 1, 3 )
+    for k = 1, 3 do
+        if k == a then
+            local main_thimble = alife():create(
+                "minigame_thimble",
+                vector():set(
+                    thimble_minigame[k].position.x,
+                    thimble_minigame[k].position.y,
+                    thimble_minigame[k].position.z
+                ),
+                thimble_minigame[k].lv, thimble_minigame[k].gv
+            )
+            local param = main_thimble.id
+            timers.start_timer(
+                "main_thimble_id", 1,
+                "sak_minigame.fill_thimbles("..param..")"
+            )
+        else
+            local sec_thimble = alife():create(
+                "minigame_thimble",
+                vector():set(
+                    thimble_minigame[k].position.x,
+                    thimble_minigame[k].position.y,
+                    thimble_minigame[k].position.z
+                ),
+                thimble_minigame[k].lv, thimble_minigame[k].gv
+            )
+            local pk         = get_netpk( sec_thimble )
+            local data       = pk:get()
+            data.custom_data = "[logic]\ncfg = scripts\\minigame_inventory_box.ltx"
+            pk:set( data )
+            table.insert( blow_thimbles, sec_thimble.id )
+        end
+    end
+end
+
+function fill_thimbles( main_thimble_id )
+    local fill_items, fill_item, fill_count
+    local main_thimble = alife():object( main_thimble_id )
+    fill_items = lua_random( ( table.getn( thimble_fill_items ) ) / 2 ) * 2 - 1
+    fill_item  = thimble_fill_items[ fill_items ]
+    fill_count = thimble_fill_items[ fill_items + 1 ]
+    for i = 1, fill_count do
+        local fills = alife():create(
+            fill_item, main_thimble.position, main_thimble.m_level_vertex_id,
+            main_thimble.m_game_vertex_id, main_thimble.id
+        )
+    end
 end
 
 function thimbles_explosion( box )
-  local box_id = box:id()
-  for i = 1, table.getn( blow_thimbles ) do
-    local obj_id = blow_thimbles[ i ]
-    if box_id == obj_id then
-      close_window()
-      level.disable_input()
-      level.hide_indicators()
-      local h = hit()
-      h.power = 0.2
-      h.impulse = 50
-      h:bone( "bip01_spine" )
-      h.draftsman = db.actor
-      local bpos = box:position()
-      amk_particle.amk_particle(
-        { particle = [[explosions\explosion_dynamite]],
-        pos = bpos, sound = [[weapons\rpg7_explode]] }
-      )
-      level.add_cam_effector( "camera_effects\\hit_front.anm", 150, false, "" )
-      local apos = db.actor:position()
-      local dist = bpos:distance_to( apos )
-      if dist > 0 then
-        h.direction = vector():set(
-          ( apos.x - bpos.x ) / dist,
-          ( apos.y - bpos.y ) / dist,
-          ( apos.z - bpos.z ) / dist
-        )
-        h.type = hit.explosion
-        db.actor:hit( h )
-      end
-      local active_item = db.actor:active_item()
-      if active_item and active_item:section() ~= "bolt" and active_item:section() ~= "wpn_knife" then
-        db.actor:drop_item( active_item )
-      end
-      timers.start_timer( "mil_minigame_effector", 1, "sak_minigame.mil_minigame_effector()" )
-      --set_inactivate_input_time(delta)
-    else
-      -- для статистики:
-      xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 )
+    local box_id = box:id()
+    for i = 1, table.getn( blow_thimbles ) do
+        local obj_id = blow_thimbles[ i ]
+        if box_id == obj_id then
+            close_window()
+            level.disable_input()
+            level.hide_indicators()
+            local h   = hit()
+            h.power   = 0.2
+            h.impulse = 50
+            h:bone( "bip01_spine" )
+            h.draftsman = db.actor
+            local bpos = box:position()
+            amk_particle.amk_particle({
+                particle = [[explosions\explosion_dynamite]],
+                pos      = bpos,
+                sound    = [[weapons\rpg7_explode]]
+            })
+            level.add_cam_effector( "camera_effects\\hit_front.anm", 150, false, "" )
+            local apos = db.actor:position()
+            local dist = bpos:distance_to( apos )
+            if dist > 0 then
+                h.direction = vector():set(
+                    ( apos.x - bpos.x ) / dist,
+                    ( apos.y - bpos.y ) / dist,
+                    ( apos.z - bpos.z ) / dist
+                )
+                h.type = hit.explosion
+                db.actor:hit( h )
+            end
+            local active_item = db.actor:active_item()
+            if
+                active_item
+                and active_item:section() ~= "bolt"
+                and active_item:section() ~= "wpn_knife"
+            then
+                db.actor:drop_item( active_item )
+            end
+            timers.start_timer(
+                "mil_minigame_effector", 1,
+                "sak_minigame.mil_minigame_effector()"
+            )
+            --set_inactivate_input_time(delta)
+        else
+            -- для статистики:
+            xr_statistic.add_pts(
+                "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
+            )
+        end
     end
-  end
 end
 
 function mil_minigame_effector()
-  level.add_pp_effector("deadcity_wake.ppe", 50, false)
-  db.actor:set_actor_position(patrol("blow_thimbles"):point(0))
-  local dir = patrol("blow_thimbles"):point(0):sub(patrol("blow_thimbles"):point(0))
-  db.actor:set_actor_direction(-dir:getH())
-  timers.start_timer("mil_minigame_effector2",8,"sak_minigame.mil_minigame_effector2()")
+    level.add_pp_effector( "deadcity_wake.ppe", 50, false )
+    db.actor:set_actor_position(
+        patrol( "blow_thimbles" ):point( 0 )
+    )
+    local dir = patrol( "blow_thimbles" ):point( 0 ):sub( patrol( "blow_thimbles" ):point( 0 ) )
+    db.actor:set_actor_direction( -dir:getH() )
+    timers.start_timer(
+        "mil_minigame_effector2", 8,
+        "sak_minigame.mil_minigame_effector2()"
+    )
 end
+
 function mil_minigame_effector2()
-  level.add_cam_effector("camera_effects\\prison_1.anm", 250, false, "")
-  level.show_indicators()
-  level.enable_input()
+    level.add_cam_effector( "camera_effects\\prison_1.anm", 250, false, "" )
+    level.show_indicators()
+    level.enable_input()
 end
+
 function close_window()
-local self=level.main_input_receiver()
-  if self then
-    self:GetHolder():start_stop_menu(self,true)
-  end
+    local self = level.main_input_receiver()
+    if self then
+        self:GetHolder():start_stop_menu( self, true )
+    end
 end
+
 local esc_bio_1 = {
-[1]={"Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по Зоне пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где-то неподалеку. Кое-кто даже пытался его расколоть на эту тему, но молчит как рыба... Петруха как-то по пьяни обмолвился, что на Забытом хуторе Волк основную часть своего хабара припрятал. Вот бы глянуть, что там. Наверняка ни у кого больше такого нет...", "Не слышал про Волка?","esc_wolf_bio","",
+    [ 1 ] = {
+        "Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по Зоне пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где-то неподалеку. Кое-кто даже пытался его расколоть на эту тему, но молчит как рыба... Петруха как-то по пьяни обмолвился, что на Забытом хуторе Волк основную часть своего хабара припрятал. Вот бы глянуть, что там. Наверняка ни у кого больше такого нет...",
+        "Не слышал про Волка?", "esc_wolf_bio", "",
 
-  "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, толи еще что... Теперь у Сидора в охранниках ошивается. Знает, блинн, где водку достать, но не продает, а от скуки предлагает перекинуться в кости... Кое кто даже умудряется выиграть у него...", "Знаешь, что про Стаса рассказывают?","esc_stas_bio","",
-  
-  "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей лёгкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношёрстными клиентами. Лучше не ссориться с ним, а то и за пределами Зоны не скроешься... Эх, найти бы зимники его! Ведь говорят, у него склады целые зарыты, с водкой и харчами. Я даже примерно знаю - где-то на Забытом хуторе есть...", "Про нашего Сидора слышал?","escape_trader_bio","",
-  
-  "Это свой человек... Вояка, конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько ещё и снаряги подгонит... Давно уже тут ошивается, говорят, семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность... А патроны на обмен знаешь где берёт? Солдатик один брякнул, что склад у него где-то на Болотах. Вроде как умудрился он как-то списать уйму боеприпасов, а сам заныкал всё. Вот теперь на водочку и меняет. Нехилый, видно, склад. Найти бы хоть часть...", "С Кузнецовым, майором, дела имел?","esc_soldier_commander_bio","",
-  
-  "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь...", "Про Упыря предупрежу...","esc_upir_bio","",
-  
-  "Хоть и недавно в Зоне, но показал себя нормальным мужиком... Ходил пару раз вглубь Зоны и хотя больших хабаров не принёс, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания... Волк недавно обиделся на Петруху. А всё потому что Петруха где-то в Тёмной долине спрятал от него пару артов хороших. Жаба - оно и понятно, кому охота делиться. А я бы поискал эти артефакты...", "Петруху видел? Любимчик Волковский...","esc_petruha_bio",""},
-  
-  [2]={"Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по Зоне пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где-то неподалеку. Кое-кто даже пытался его расколоть на эту тему, но молчит как рыба... Вроде, Шустрый говорил, что где-то на Свалке он часть хабара припрятал, врёт, наверное...", "Не слышал про Волка?","esc_wolf_bio","",
-  
-  "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, то ли ещё что... Теперь у Сидора в охранниках ошивается. Знает, блин, где водку достать, но не продаёт, а от скуки предлагает перекинуться в кости... Кое-кто даже умудряется выиграть у него... Брехали тут, что поставщик ему какой-то водку с Болот постоянно приносит. Как-то давно через Болота завезли в Зону целый вагон водки. Ну Стас с тем мужиком первые и наткнулись на такую халяву, сколько смогли перепрятали в разные места на Болотах, а теперь вот жируют на этом.", "Знаешь, что про Стаса рассказывают?","esc_stas_bio","",
-  
-  "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей легкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношерстными клиентами. Лучше не ссориться с ним, а то и за пределами зоны не скроешься...", "Про нашего Сидора слышал?","escape_trader_bio","",
-  
-  "Это свой человек... Вояка, конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько ещё и снаряги подгонит... Давно уже тут ошивается, говорят, семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность... Ходит слух, что умудрился он как-то списать уйму боеприпасов и медикаментов, а сам заныкал всё. Вот теперь на водочку и меняет. Нехилый, видно, склад, где-то на Агропроме, вроде...", "С Кузнецовым, майором, дела имел?","esc_soldier_commander_bio","",
-  
-  "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь... Сам-то он живучий. А знаешь почему? Где-то в Тёмной долине у него приличная нычка с медикаментами. Но не говорит, сука, где. Врут, говорит, нет, мол, ничего... Но точно тебе говорю - есть где-то нычка...", "Про Упыря предупрежу...","esc_upir_bio","",
-  
-  "Хоть и недавно в ЗОНЕ, но показал себя нормальным мужиком... Ходил пару раз вглубь ЗОНЫ, и хотя больших хабаров не принес, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания.", "Петруху видел? Любимчик Волковский...","esc_petruha_bio",""},
+        "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, толи еще что... Теперь у Сидора в охранниках ошивается. Знает, блинн, где водку достать, но не продает, а от скуки предлагает перекинуться в кости... Кое кто даже умудряется выиграть у него...",
+        "Знаешь, что про Стаса рассказывают?", "esc_stas_bio", "",
 
-[3]={"Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по ЗОНЕ пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где то неподалеку. Кое кто даже пытался его расколоть на эту тему, но молчит как рыба...", "Не слышал про Волка?","esc_wolf_bio","",
-  
-  "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, то ли ещё что... Теперь у Сидора в охранниках ошивается. Знает, блин, где водку достать, но не продаёт, а от скуки предлагает перекинуться в кости... Кое-кто даже умудряется выиграть у него... Говорят, кто-то в Кишке ему самогон варит и сюда приносит, но часть в условном месте в Кишке оставляет - мало ли что... Стоит в Кишке поискать его запасы...", "Знаешь, что про Стаса рассказывают?","esc_stas_bio","",
-  
-  "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей лёгкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношёрстными клиентами. Лучше не ссориться с ним, а то и за пределами Зоны не скроешься... Не помню кто, но говорил один, что у Сидора целый склад с харчами зарыт где-то в Кишке, на случай ядерной войны, так сказать. А может, и не в одном месте, мало ли что может с поставками случиться, а харчи, сам понимаешь, в таком случае первым делом понадобятся, а потом уж всё остальное. Эх, найти бы этот зимник его...", "Про нашего Сидора слышал?","escape_trader_bio","",
-  
-  "Это свой человек... Вояка конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько еще и снаряги подгонит... Давно уже тут ошивается, говорят семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность...", "С Кузнецовым, майором, дела имел?","esc_soldier_commander_bio","",
-  
-  "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь... Сам-то он живучий. А знаешь почему? Где-то в Кишке у него приличная нычка с антирадом. Иначе непонятно, почему его радиация не берёт... Точно тебе говорю - есть где-то нычка...", "Про Упыря предупрежу...","esc_upir_bio","",
-  
-  "Хоть и недавно в Зоне, но показал себя нормальным мужиком... Ходил пару раз вглубь Зоны и хотя больших хабаров не принёс, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания... Однажды про артефакт чудной рассказывал - и то он может, и это... Мы говорим: ну покажи хоть... А нету. Продал, говорит. Врёт. Не стал бы он его продавать, уж я-то Петруху знаю. Спрятал где-то. На Свалке спрятал, потому что как раз перед тем там он был... А я бы поискал этот артефактик...", "Петруху видел? Любимчик Волковский...","esc_petruha_bio",""}
+        "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей лёгкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношёрстными клиентами. Лучше не ссориться с ним, а то и за пределами Зоны не скроешься... Эх, найти бы зимники его! Ведь говорят, у него склады целые зарыты, с водкой и харчами. Я даже примерно знаю - где-то на Забытом хуторе есть...",
+        "Про нашего Сидора слышал?", "escape_trader_bio", "",
+
+        "Это свой человек... Вояка, конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько ещё и снаряги подгонит... Давно уже тут ошивается, говорят, семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность... А патроны на обмен знаешь где берёт? Солдатик один брякнул, что склад у него где-то на Болотах. Вроде как умудрился он как-то списать уйму боеприпасов, а сам заныкал всё. Вот теперь на водочку и меняет. Нехилый, видно, склад. Найти бы хоть часть...",
+        "С Кузнецовым, майором, дела имел?", "esc_soldier_commander_bio", "",
+
+        "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь...",
+        "Про Упыря предупрежу...", "esc_upir_bio", "",
+
+        "Хоть и недавно в Зоне, но показал себя нормальным мужиком... Ходил пару раз вглубь Зоны и хотя больших хабаров не принёс, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания... Волк недавно обиделся на Петруху. А всё потому что Петруха где-то в Тёмной долине спрятал от него пару артов хороших. Жаба - оно и понятно, кому охота делиться. А я бы поискал эти артефакты...",
+        "Петруху видел? Любимчик Волковский...", "esc_petruha_bio", ""
+    },
+    [ 2 ] = {
+        "Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по Зоне пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где-то неподалеку. Кое-кто даже пытался его расколоть на эту тему, но молчит как рыба... Вроде, Шустрый говорил, что где-то на Свалке он часть хабара припрятал, врёт, наверное...",
+        "Не слышал про Волка?", "esc_wolf_bio", "",
+
+        "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, то ли ещё что... Теперь у Сидора в охранниках ошивается. Знает, блин, где водку достать, но не продаёт, а от скуки предлагает перекинуться в кости... Кое-кто даже умудряется выиграть у него... Брехали тут, что поставщик ему какой-то водку с Болот постоянно приносит. Как-то давно через Болота завезли в Зону целый вагон водки. Ну Стас с тем мужиком первые и наткнулись на такую халяву, сколько смогли перепрятали в разные места на Болотах, а теперь вот жируют на этом.",
+        "Знаешь, что про Стаса рассказывают?", "esc_stas_bio", "",
+
+        "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей легкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношерстными клиентами. Лучше не ссориться с ним, а то и за пределами зоны не скроешься...",
+        "Про нашего Сидора слышал?", "escape_trader_bio", "",
+
+        "Это свой человек... Вояка, конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько ещё и снаряги подгонит... Давно уже тут ошивается, говорят, семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность... Ходит слух, что умудрился он как-то списать уйму боеприпасов и медикаментов, а сам заныкал всё. Вот теперь на водочку и меняет. Нехилый, видно, склад, где-то на Агропроме, вроде...",
+        "С Кузнецовым, майором, дела имел?", "esc_soldier_commander_bio", "",
+
+        "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь... Сам-то он живучий. А знаешь почему? Где-то в Тёмной долине у него приличная нычка с медикаментами. Но не говорит, сука, где. Врут, говорит, нет, мол, ничего... Но точно тебе говорю - есть где-то нычка...",
+        "Про Упыря предупрежу...", "esc_upir_bio", "",
+
+        "Хоть и недавно в ЗОНЕ, но показал себя нормальным мужиком... Ходил пару раз вглубь ЗОНЫ, и хотя больших хабаров не принес, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания.",
+        "Петруху видел? Любимчик Волковский...", "esc_petruha_bio", ""
+    },
+    [ 3 ] = {
+        "Сейчас он здесь в лагере заправляет, учит молодняк, защищает. Много по ЗОНЕ пошатался, опыта ему не занимать. Ходят слухи, что он на покой собрался и заныкал нехилый хабар где то неподалеку. Кое кто даже пытался его расколоть на эту тему, но молчит как рыба...",
+        "Не слышал про Волка?", "esc_wolf_bio", "",
+
+        "Раньше он считался удачливым сталкером, но в последнее время предпочитает не высовываться, то ли наступил кому на хвост, то ли ещё что... Теперь у Сидора в охранниках ошивается. Знает, блин, где водку достать, но не продаёт, а от скуки предлагает перекинуться в кости... Кое-кто даже умудряется выиграть у него... Говорят, кто-то в Кишке ему самогон варит и сюда приносит, но часть в условном месте в Кишке оставляет - мало ли что... Стоит в Кишке поискать его запасы...",
+        "Знаешь, что про Стаса рассказывают?", "esc_stas_bio", "",
+
+        "Это торгаш с малолетства! В детском садике продавал цветные карандаши. В школе торговал жевательной резинкой. В институте промышлял продажей лёгкой наркоты. С появлением Зоны смекнул, что на этом можно хорошо заработать. Славится тем, что способен наладить хорошие торговые отношения с самыми разношёрстными клиентами. Лучше не ссориться с ним, а то и за пределами Зоны не скроешься... Не помню кто, но говорил один, что у Сидора целый склад с харчами зарыт где-то в Кишке, на случай ядерной войны, так сказать. А может, и не в одном месте, мало ли что может с поставками случиться, а харчи, сам понимаешь, в таком случае первым делом понадобятся, а потом уж всё остальное. Эх, найти бы этот зимник его...",
+        "Про нашего Сидора слышал?", "escape_trader_bio", "",
+
+        "Это свой человек... Вояка конечно, и если полезешь напролом, прикажет завалить с чистой совестью, но имеет слабость к народному напитку - водочке. За бутылку пропустит, за несколько еще и снаряги подгонит... Давно уже тут ошивается, говорят семьи у него нет, вот и не сменяется, можно сказать - местная достопримечательность...",
+        "С Кузнецовым, майором, дела имел?", "esc_soldier_commander_bio", "",
+
+        "Невероятно везучий сталкер. Много раз его группа оказывалась на волосок от смерти, и всегда он был единственным, кому удавалось спастись. У сталкеров пользуется дурной славой несчастливого талисмана. С некоторых пор ходит в одиночку. Лучше не связывайся с ним, здоровее будешь... Сам-то он живучий. А знаешь почему? Где-то в Кишке у него приличная нычка с антирадом. Иначе непонятно, почему его радиация не берёт... Точно тебе говорю - есть где-то нычка...",
+        "Про Упыря предупрежу...", "esc_upir_bio", "",
+
+        "Хоть и недавно в Зоне, но показал себя нормальным мужиком... Ходил пару раз вглубь Зоны и хотя больших хабаров не принёс, всё же не впустую. Попусту на рожон не лезет, но и за спины товарищей не прячется. Пользуется особым расположением Волка, который его частенько отправляет на важные задания... Однажды про артефакт чудной рассказывал - и то он может, и это... Мы говорим: ну покажи хоть... А нету. Продал, говорит. Врёт. Не стал бы он его продавать, уж я-то Петруху знаю. Спрятал где-то. На Свалке спрятал, потому что как раз перед тем там он был... А я бы поискал этот артефактик...",
+        "Петруху видел? Любимчик Волковский...", "esc_petruha_bio", ""
+    }
 }
+
 local esc_bio_2 = {
-[1]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но один никогда, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишняя обуза. Хабар собирает очень редко. Живёт на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай... Но мне кажется, он дурачком только прикидывается, а сам потихоньку хабарок притыривает и прячет. Видел я, как он на Свалке однажды крутился, наверняка там и нычка его...", "С Неумехой ещё не встречался?","esc_neumeha_bio","",
+    [ 1 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но один никогда, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишняя обуза. Хабар собирает очень редко. Живёт на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай... Но мне кажется, он дурачком только прикидывается, а сам потихоньку хабарок притыривает и прячет. Видел я, как он на Свалке однажды крутился, наверняка там и нычка его...",
+        "С Неумехой ещё не встречался?", "esc_neumeha_bio", "",
 
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Всё пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может, кому и покажется надёжным, но лучше с ним серьёзных дел не иметь... Доказательств нет, конечно, но говорят иногда, что Толик крысятничать любит. Никто точно не видел, но никто и не видел, чтобы он в ходку за хабаром ходил, однако барахлишко приносит откуда-то. Да вот хоть недавно со Свалки - ну точно говорю - ныкает он что-то на Свалке...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит, в Зону пришёл из любопытства и сам себе дал обещание: два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день (9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьёт водки, в качестве причины ссылается на язву, явно что-то недоговаривает... Как с Бара идёт, так при нём всегда несколько банок энергетика. Но не покупает, я у Бармена спрашивал. А где берёт? То-то и оно, где-то на Баре склад у него, это точно...", "Есть тут такой живчик, Воробей его зовут.","esc_vorobey_bio","",
-  
-  "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется... Но я примерно знаю, где его схрон. Где-то в Тёмной долине он арты прячет - точно говорю. Ну, может, не только арты, но точно там...", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""},
-  
-  [2]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но один никогда, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишняя обуза. Хабар собирает очень редко. Живёт на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай... Между нами, прикид у него такой - под дурачка. А сам втихаря приныкивает кое-что. Вот хоть взять Болота, что ему там делать? Вот там он и прячет барахло своё...", "С Неумехой ещё не встречался?","esc_neumeha_bio","",
-  
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем, старый прожжённый Зоной одиночка... Кто-то из группы Крота однажды тут был, так рассказал под бутылочку, что на Агропроме где-то у Лиса схрон есть, уж больно часто он туда наведывается. Не просто же так...", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит, в Зону пришёл из любопытства и сам себе дал обещание: два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день (9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьёт водки, в качестве причины ссылается на язву, явно что-то недоговаривает... Видели его в Тёмной долине недавно, довольный такой шёл, как будто выпил и закусил только что... Явно нычка какая-то у него там...", "Есть тут такой живчик, Воробей его зовут.","esc_vorobey_bio","",
-  
-  "Его и Шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать... Но не только он подсматривать умеет. Я вот тоже за ним как-то подсмотрел, как он в Кишку ходил. Покрутился он там, покрутился, да и вернулся с барахлом разным. Притащил дробь, для ПМа патроны, ещё что-то. Продал всё и обратно упилил. Нычку он где-то там организовал, вот и ходит туда время от времени...", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""},
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
 
-[3]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...", "С Неумехой еще не встречался?","esc_neumeha_bio","",
+        "Новичок... Всё пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может, кому и покажется надёжным, но лучше с ним серьёзных дел не иметь... Доказательств нет, конечно, но говорят иногда, что Толик крысятничать любит. Никто точно не видел, но никто и не видел, чтобы он в ходку за хабаром ходил, однако барахлишко приносит откуда-то. Да вот хоть недавно со Свалки - ну точно говорю - ныкает он что-то на Свалке...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
 
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем, старый прожжённый Зоной одиночка... Говорят, сваливать они собираются с Кротом, а пока складывают всё на Забытом хуторе...", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Всё пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может, кому и покажется надёжным, но лучше с ним серьёзных дел не иметь... Однажды мужик один хвастал, что кучу антирада имеет, ну выпил, понятно, а наутро хвать - нету антирада... Ладно, бывает по пьяни - сам не помнит, где оставил, утёрся он и ушёл. А я-то видел, что Толик крутился возле него, а потом слинял куда-то. Доказательств нет, конечно, но говорю тебе - он стырил тот антирад и где-то на Кордоне припрятал до поры, до времени...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.", "Есть тут такой живчик, Воробей его зовут","esc_vorobey_bio","",
-  
-  "Его и Шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать... Он хоть и Шустрый, а есть шустрее его. Ну и подсмотрели как-то, куда он бегает чаще всего - на Болота... А зачем? Да затем, что нычит он там барахло своё...", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется... Иногда на Болота ходит. Вот что ему на Болотах делать? А я знаю - схрон у него там, он там арты прячет. А что ещё как не арты? Точно говорю - там его схрон...", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""}
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит, в Зону пришёл из любопытства и сам себе дал обещание: два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день (9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьёт водки, в качестве причины ссылается на язву, явно что-то недоговаривает... Как с Бара идёт, так при нём всегда несколько банок энергетика. Но не покупает, я у Бармена спрашивал. А где берёт? То-то и оно, где-то на Баре склад у него, это точно...",
+        "Есть тут такой живчик, Воробей его зовут.", "esc_vorobey_bio", "",
+
+        "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.",
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется... Но я примерно знаю, где его схрон. Где-то в Тёмной долине он арты прячет - точно говорю. Ну, может, не только арты, но точно там...",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    },
+    [ 2 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но один никогда, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишняя обуза. Хабар собирает очень редко. Живёт на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай... Между нами, прикид у него такой - под дурачка. А сам втихаря приныкивает кое-что. Вот хоть взять Болота, что ему там делать? Вот там он и прячет барахло своё...",
+        "С Неумехой ещё не встречался?", "esc_neumeha_bio", "",
+
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем, старый прожжённый Зоной одиночка... Кто-то из группы Крота однажды тут был, так рассказал под бутылочку, что на Агропроме где-то у Лиса схрон есть, уж больно часто он туда наведывается. Не просто же так...",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
+
+        "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
+
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит, в Зону пришёл из любопытства и сам себе дал обещание: два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день (9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьёт водки, в качестве причины ссылается на язву, явно что-то недоговаривает... Видели его в Тёмной долине недавно, довольный такой шёл, как будто выпил и закусил только что... Явно нычка какая-то у него там...",
+        "Есть тут такой живчик, Воробей его зовут.", "esc_vorobey_bio", "",
+
+        "Его и Шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать... Но не только он подсматривать умеет. Я вот тоже за ним как-то подсмотрел, как он в Кишку ходил. Покрутился он там, покрутился, да и вернулся с барахлом разным. Притащил дробь, для ПМа патроны, ещё что-то. Продал всё и обратно упилил. Нычку он где-то там организовал, вот и ходит туда время от времени...", 
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    },
+    [ 3 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...",
+        "С Неумехой еще не встречался?", "esc_neumeha_bio", "",
+
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем, старый прожжённый Зоной одиночка... Говорят, сваливать они собираются с Кротом, а пока складывают всё на Забытом хуторе...",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
+
+        "Новичок... Всё пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может, кому и покажется надёжным, но лучше с ним серьёзных дел не иметь... Однажды мужик один хвастал, что кучу антирада имеет, ну выпил, понятно, а наутро хвать - нету антирада... Ладно, бывает по пьяни - сам не помнит, где оставил, утёрся он и ушёл. А я-то видел, что Толик крутился возле него, а потом слинял куда-то. Доказательств нет, конечно, но говорю тебе - он стырил тот антирад и где-то на Кордоне припрятал до поры, до времени...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
+
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.",
+        "Есть тут такой живчик, Воробей его зовут", "esc_vorobey_bio", "",
+
+        "Его и Шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать... Он хоть и Шустрый, а есть шустрее его. Ну и подсмотрели как-то, куда он бегает чаще всего - на Болота... А зачем? Да затем, что нычит он там барахло своё...",
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется... Иногда на Болота ходит. Вот что ему на Болотах делать? А я знаю - схрон у него там, он там арты прячет. А что ещё как не арты? Точно говорю - там его схрон...",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    }
 }
 
 local gar_bio_1 = {
-[1]={"Добрейшей души человек... Пришёл не так давно, но вполне освоился. Помогает кому как может - зелёных уму разуму научит, бывалым аптечкой поможет, в общем, хороший мужик. Имеет связи на Кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают, он друзей потерял во время последней вылазки, жаль мужика. Да и на большой земле не всё ладно у него было, но он про это не распространялся. В общем, вот такой вот Кулинар. Мда... А база его продуктовая где-то на Забытом хуторе. Не зря же он с Кордона когда идёт такой круг через хутор делает. Наверняка там где-то складик с припасами, не всё же на Свалку тащит...", "Случаем не знаешь про местного Кулинара?","gar_kulinar_bio","",
+    [ 1 ] = {
+        "Добрейшей души человек... Пришёл не так давно, но вполне освоился. Помогает кому как может - зелёных уму разуму научит, бывалым аптечкой поможет, в общем, хороший мужик. Имеет связи на Кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают, он друзей потерял во время последней вылазки, жаль мужика. Да и на большой земле не всё ладно у него было, но он про это не распространялся. В общем, вот такой вот Кулинар. Мда... А база его продуктовая где-то на Забытом хуторе. Не зря же он с Кордона когда идёт такой круг через хутор делает. Наверняка там где-то складик с припасами, не всё же на Свалку тащит...",
+        "Случаем не знаешь про местного Кулинара?", "gar_kulinar_bio", "",
 
-  "Это начальник блок-поста долга на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серъезно, то мужик правильный, слово свое держит. Силы ему не занимать... Ты бы видал как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся.. хе-хе.. Откуда пришел и как записался в Долг я не знаю, поспрашивай в Баре, если конечно он тебя пропустит.", "О Прапоре слыхал чего? Нет?","gar_prapor_bio","",
-  
-  "Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только какого-то серьёзно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря, опасности не представляет. Бывало даже как-то к нам подрулил после хорошей сделки - ящик водки принёс, проставился - ничего не жалел, даже ружьё подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо, на большой земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то ещё представление. От такого ржача вся фауна в радиусе 10 километров разбежалась... \"Я Крепкий Орешек!\" - выдавал тогда он... короче, понесло мужика. Так и приобрёл прозвище Орех... Он обычно далеко не уходит, всё на Свалке ошивается, но заявляется иногда и на Кордон. Что-то ему надо на Кордоне, Скорее всего хабарок прячет...", "Про Ореховую шайку местную слыхал?", "gar_orex_bio","",
-  
-  "Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жёсткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришёл, прячась от ментов. Что уж он там натворил, не знаю, не спрашивал, ха-ха... И тебе не советую... Он мужик себе на уме. Иногда в Тёмную долину шастает, а с неё вроде в Туманную чащу попадает, чёрт его знает как. Что-то у него там припрятано, может, патроны, а может, ещё что - кто его Беса знает, но есть нычка, есть. Не без этого...", "Бес всё с бандитами счёты сводит...","bes_bio","",
-  
-  "*Кротом* прозвали потому что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что..Вообщем, хороший мужик.", "Про Крота много разных слухов ходит..","krot_bio","",
-  
-  "Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьёт принципиально, так что, с водкой не подходи к нему. Он по молодости и глупости своей артефакты берёт с охотой, не боится, что штаны прожгут ему, ха-ха... Оружие, конечно, не выменяешь у него, побаивается, но через мост пропустит... Говорят, патронами он боится промышлять, а вот медициной может. Потому и припрятал где-то на Болотах медикаменты...", "Видел нового начальника блокпоста под мостом на Кордоне?","koval_bio",""},
+        "Это начальник блок-поста долга на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серъезно, то мужик правильный, слово свое держит. Силы ему не занимать... Ты бы видал как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся.. хе-хе.. Откуда пришел и как записался в Долг я не знаю, поспрашивай в Баре, если конечно он тебя пропустит.",
+        "О Прапоре слыхал чего? Нет?", "gar_prapor_bio", "",
 
-[2]={"Добрейшей души человек... Пришёл не так давно, но вполне освоился. Помогает кому как может - зелёных уму разуму научит, бывалым аптечкой поможет, в общем, хороший мужик. Имеет связи на Кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают, он друзей потерял во время последней вылазки, жаль мужика. Да и на большой земле не всё ладно у него было, но он про это не распространялся. В общем, вот такой вот Кулинар. Мда... Говорят, он несколько баз имеет где-то на Болотах. Продовольствие там и медикаменты. Не всё же на Свалку тащит...", "Случаем не знаешь про местного Кулинара?","gar_kulinar_bio","",
+        "Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только какого-то серьёзно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря, опасности не представляет. Бывало даже как-то к нам подрулил после хорошей сделки - ящик водки принёс, проставился - ничего не жалел, даже ружьё подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо, на большой земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то ещё представление. От такого ржача вся фауна в радиусе 10 километров разбежалась... \"Я Крепкий Орешек!\" - выдавал тогда он... короче, понесло мужика. Так и приобрёл прозвище Орех... Он обычно далеко не уходит, всё на Свалке ошивается, но заявляется иногда и на Кордон. Что-то ему надо на Кордоне, Скорее всего хабарок прячет...",
+        "Про Ореховую шайку местную слыхал?", "gar_orex_bio", "",
 
-"Это начальник блокпоста \"Долга\" на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серьёзно, то мужик правильный, слово своё держит. Силы ему не занимать... Ты бы видел, как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся... хе-хе... Откуда пришёл и как записался в \"Долг\", я не знаю, поспрашивай в Баре, если, конечно, он тебя пропустит... Имеет арты, между прочим, - кто за проход даёт, а кто ещё за что. Но не в том дело, а в том, куда он их ныкает? А я тебе скажу куда: проследили однажды, куда он время от времени бегает - в Туманную чащу! Зачем? Ну вот - арты нычит, зачем ещё...", "О Прапоре слыхал чего? Нет?","gar_prapor_bio","",
+        "Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жёсткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришёл, прячась от ментов. Что уж он там натворил, не знаю, не спрашивал, ха-ха... И тебе не советую... Он мужик себе на уме. Иногда в Тёмную долину шастает, а с неё вроде в Туманную чащу попадает, чёрт его знает как. Что-то у него там припрятано, может, патроны, а может, ещё что - кто его Беса знает, но есть нычка, есть. Не без этого...",
+        "Бес всё с бандитами счёты сводит...", "bes_bio", "",
 
-"Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только кого-то серьезно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря опасности не представляет. Бывало даже как то к нам подрулил после хорошей сделки - ящик водки принес, проставился - ничего не жалел, даже ружье подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо на Большой Земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то еще представление - от такого ржача вся фауна в радиусе 10 километров разбежалась... *Я Крепкий Орешек!* - выдавал тогда он... короче понесло мужика, зато приобрел прозвище Орех.", "Про Ореховую шайку местную слыхал...", "gar_orex_bio","",
+        "*Кротом* прозвали потому что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что..Вообщем, хороший мужик.",
+        "Про Крота много разных слухов ходит..", "krot_bio", "",
 
-"Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жёсткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришёл, прячась от ментов. Что уж он там натворил, не знаю, не спрашивал, ха-ха... И тебе не советую... Он мужик себе на уме. Бандюков он не только на Свалке гоняет, но и в Тёмной долине. Там, кстаи, у него и патроны где-то заныканы...", "Бес всё с бандитами счёты сводит...","bes_bio","",
+        "Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьёт принципиально, так что, с водкой не подходи к нему. Он по молодости и глупости своей артефакты берёт с охотой, не боится, что штаны прожгут ему, ха-ха... Оружие, конечно, не выменяешь у него, побаивается, но через мост пропустит... Говорят, патронами он боится промышлять, а вот медициной может. Потому и припрятал где-то на Болотах медикаменты...",
+        "Видел нового начальника блокпоста под мостом на Кордоне?", "koval_bio", ""
+    },
+    [ 2 ] = {
+        "Добрейшей души человек... Пришёл не так давно, но вполне освоился. Помогает кому как может - зелёных уму разуму научит, бывалым аптечкой поможет, в общем, хороший мужик. Имеет связи на Кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают, он друзей потерял во время последней вылазки, жаль мужика. Да и на большой земле не всё ладно у него было, но он про это не распространялся. В общем, вот такой вот Кулинар. Мда... Говорят, он несколько баз имеет где-то на Болотах. Продовольствие там и медикаменты. Не всё же на Свалку тащит...",
+        "Случаем не знаешь про местного Кулинара?", "gar_kulinar_bio", "",
 
-"Кротом прозвали потому, что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры, до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что... В общем, хороший мужик... Вот чего он на Агропроме всё крутится? Говорил кто-то, что сныкал он там добро своё, а найти теперь и сам не может. По пьяной лавочке скорее всего. А может, другая причина, может, в подземку сныкал, да лезть боится, вот и ждёт удачного момента. В общем, есть у него где-то там нычка, и наверняка в подвалах где-то...", "Про Крота много разных слухов ходит...","krot_bio","",
+        "Это начальник блокпоста \"Долга\" на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серьёзно, то мужик правильный, слово своё держит. Силы ему не занимать... Ты бы видел, как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся... хе-хе... Откуда пришёл и как записался в \"Долг\", я не знаю, поспрашивай в Баре, если, конечно, он тебя пропустит... Имеет арты, между прочим, - кто за проход даёт, а кто ещё за что. Но не в том дело, а в том, куда он их ныкает? А я тебе скажу куда: проследили однажды, куда он время от времени бегает - в Туманную чащу! Зачем? Ну вот - арты нычит, зачем ещё...",
+        "О Прапоре слыхал чего? Нет?", "gar_prapor_bio", "",
 
-"Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьет принципиально, так что с водкой не подходи к нему. Он по молодости и глупости своей артефакты берет с охотой, не боится что штаны прожгут ему, ха-ха.. Оружие конечно не выменяешь у него, побаивается, но через мост пропустит.", "Видел нового начальника  блок-поста под мостом на Кордоне?","koval_bio",""},
+        "Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только кого-то серьезно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря опасности не представляет. Бывало даже как то к нам подрулил после хорошей сделки - ящик водки принес, проставился - ничего не жалел, даже ружье подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо на Большой Земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то еще представление - от такого ржача вся фауна в радиусе 10 километров разбежалась... *Я Крепкий Орешек!* - выдавал тогда он... короче понесло мужика, зато приобрел прозвище Орех.",
+        "Про Ореховую шайку местную слыхал...", "gar_orex_bio", "",
 
-[3]={"Добрейшей души человек... Пришел не так давно, но вполне освоился. Помогает кому как может - зеленых уму разуму научит, бывалым аптечкой поможет, в общем хороший мужик. Имеет связи на кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают он друзей потерял во время последней вылазки, жаль мужика. Да и на Большой Земле не все ладно у него было, но он про это не распространялся. В общем вот такой вот Кулинар. Мда...", "Случаем не знаешь про местного Кулинара?","gar_kulinar_bio","",
+        "Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жёсткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришёл, прячась от ментов. Что уж он там натворил, не знаю, не спрашивал, ха-ха... И тебе не советую... Он мужик себе на уме. Бандюков он не только на Свалке гоняет, но и в Тёмной долине. Там, кстаи, у него и патроны где-то заныканы...",
+        "Бес всё с бандитами счёты сводит...", "bes_bio", "",
 
-  "Это начальник блокпоста \"Долга\" на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серьёзно, то мужик правильный, слово своё держит. Силы ему не занимать... Ты бы видел, как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся... хе-хе... Откуда пришёл и как записался в \"Долг\", я не знаю, поспрашивай в Баре, если, конечно, он тебя пропустит... Имеет арты, между прочим, - кто за проход даёт, а кто ещё за что. Вот он иногда в Бар наведывается, типа за патронами. А сам прячет там что-то, как пить дать, прячет...", "О Прапоре слыхал чего? Нет?","gar_prapor_bio","",
-  
-  "Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только какого-то серьёзно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря, опасности не представляет. Бывало даже как-то к нам подрулил после хорошей сделки - ящик водки принёс, проставился - ничего не жалел, даже ружьё подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо, на большой земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то ещё представление. От такого ржача вся фауна в радиусе 10 километров разбежалась... \"Я Крепкий Орешек!\" - выдавал тогда он... короче, понесло мужика. Так и приобрёл прозвище Орех... Он никуда и не ходит, всё на Свалке ошивается, но в Тёмную долину иногда забегает. Покрутится то тут, то там - и обратно на Свалку. Что-то он складывает в долине, по нычкам распихивает...", "Про Ореховую шайку местную слыхал?", "gar_orex_bio","",
-  
-  "Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жесткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришел, прячась от ментов. Что уж он там натворил - не знаю, не спрашивал, ха-ха.. И тебе не советую", "Бес всё с бандитами счеты сводит...","bes_bio","",
-  
-  "Кротом прозвали потому, что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры, до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что... В общем, хороший мужик... Он на Агропроме обычно ошивается. Хотя говорил кто-то, что с Лисом они спрятали кое-что на Забытом хуторе...", "Про Крота много разных слухов ходит...","krot_bio","",
-  
-  "Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьёт принципиально, так что, с водкой не подходи к нему. Он по молодости и глупости своей артефакты берёт с охотой, не боится, что штаны прожгут ему, ха-ха... Оружие, конечно, не выменяешь у него, побаивается, но через мост пропустит... Арты-то он берёт, а вот куда складывает? Он когда не на смене, на Болота ходит, видели его там. Наверное, туда и сносит цацки свои, там где-то поискать стоит...", "Видел нового начальника блокпоста под мостом на Кордоне?","koval_bio",""}
+        "Кротом прозвали потому, что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры, до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что... В общем, хороший мужик... Вот чего он на Агропроме всё крутится? Говорил кто-то, что сныкал он там добро своё, а найти теперь и сам не может. По пьяной лавочке скорее всего. А может, другая причина, может, в подземку сныкал, да лезть боится, вот и ждёт удачного момента. В общем, есть у него где-то там нычка, и наверняка в подвалах где-то...",
+        "Про Крота много разных слухов ходит...", "krot_bio", "",
+
+        "Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьет принципиально, так что с водкой не подходи к нему. Он по молодости и глупости своей артефакты берет с охотой, не боится что штаны прожгут ему, ха-ха.. Оружие конечно не выменяешь у него, побаивается, но через мост пропустит.",
+        "Видел нового начальника  блок-поста под мостом на Кордоне?", "koval_bio", ""
+    },
+    [ 3 ] = {
+        "Добрейшей души человек... Пришел не так давно, но вполне освоился. Помогает кому как может - зеленых уму разуму научит, бывалым аптечкой поможет, в общем хороший мужик. Имеет связи на кордоне, провозит продовольствие в Зону - сдохли бы тут без него... Помнится в ходки ходил по первой, но после нескольких вылазок сник совсем, в торгаши подался... поговаривают он друзей потерял во время последней вылазки, жаль мужика. Да и на Большой Земле не все ладно у него было, но он про это не распространялся. В общем вот такой вот Кулинар. Мда...",
+        "Случаем не знаешь про местного Кулинара?", "gar_kulinar_bio", "",
+
+        "Это начальник блокпоста \"Долга\" на Свалке, как у нас поговаривают - местный фэйс-контроль. Ну фэйс у тебя, между нами - девочками, родная мама не узнает, так что не светит тебе попасть в Бар. Хе-хе... шучу я. А если серьёзно, то мужик правильный, слово своё держит. Силы ему не занимать... Ты бы видел, как на днях он кабана ножом завалил - все в шоке были, одного даже стошнило в противогаз, еле откачали - чуть не захлебнулся... хе-хе... Откуда пришёл и как записался в \"Долг\", я не знаю, поспрашивай в Баре, если, конечно, он тебя пропустит... Имеет арты, между прочим, - кто за проход даёт, а кто ещё за что. Вот он иногда в Бар наведывается, типа за патронами. А сам прячет там что-то, как пить дать, прячет...",
+        "О Прапоре слыхал чего? Нет?", "gar_prapor_bio", "",
+
+        "Местная гопота. Орех у них заводила. Ходят себе по Зоне, дань с молокососов собирают, как только какого-то серьёзно настроенного сталкера завидят на горизонте, так сразу очко играть начинает, образно говоря... Короче говоря, опасности не представляет. Бывало даже как-то к нам подрулил после хорошей сделки - ящик водки принёс, проставился - ничего не жалел, даже ружьё подогнал корефану моему! Ну и нажрался же он тогда.. у-у-у... Видимо, на большой земле был ярым киноманом, но суть не в этом. Как он начал пародировать Брюса Уилиса - то ещё представление. От такого ржача вся фауна в радиусе 10 километров разбежалась... \"Я Крепкий Орешек!\" - выдавал тогда он... короче, понесло мужика. Так и приобрёл прозвище Орех... Он никуда и не ходит, всё на Свалке ошивается, но в Тёмную долину иногда забегает. Покрутится то тут, то там - и обратно на Свалку. Что-то он складывает в долине, по нычкам распихивает...",
+        "Про Ореховую шайку местную слыхал?", "gar_orex_bio", "",
+
+        "Правильный сталкер, старается порядок в Зоне поддерживать, как он себе его представляет. Жесткий, правда, иногда, но справедливый. Гопников местных гоняет. Говорят, в Зону пришел, прячась от ментов. Что уж он там натворил - не знаю, не спрашивал, ха-ха.. И тебе не советую",
+        "Бес всё с бандитами счеты сводит...", "bes_bio", "",
+
+        "Кротом прозвали потому, что диггер бывший. Со своими парнями лезет во все заброшенные лаборатории и бункеры, до которых может добраться. Говорят, много интересного там находят. Бывалый сталкер, во многих передрягах побывал. Никогда в помощи не откажет, если что... В общем, хороший мужик... Он на Агропроме обычно ошивается. Хотя говорил кто-то, что с Лисом они спрятали кое-что на Забытом хуторе...",
+        "Про Крота много разных слухов ходит...", "krot_bio", "",
+
+        "Это молодой лейтенантик, сменщик Кузнецова, недавно совсем в Зоне. Не пьёт принципиально, так что, с водкой не подходи к нему. Он по молодости и глупости своей артефакты берёт с охотой, не боится, что штаны прожгут ему, ха-ха... Оружие, конечно, не выменяешь у него, побаивается, но через мост пропустит... Арты-то он берёт, а вот куда складывает? Он когда не на смене, на Болота ходит, видели его там. Наверное, туда и сносит цацки свои, там где-то поискать стоит...",
+        "Видел нового начальника блокпоста под мостом на Кордоне?", "koval_bio", ""
+    }
 }
 
 local gar_bio_2 = {
-[1]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...", "С Неумехой еще не встречался?","esc_neumeha_bio","",
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.", "Есть тут такой живчик, Воробей его зовут","esc_vorobey_bio","",
-  
-  "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""},
+    [ 1 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...",
+        "С Неумехой еще не встречался?", "esc_neumeha_bio", "",
 
-[2]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...", "С Неумехой еще не встречался?","esc_neumeha_bio","",
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
 
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.", "Есть тут такой живчик, Воробей его зовут","esc_vorobey_bio","",
-  
-  "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""},
+        "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
 
-[3]={"На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...", "С Неумехой еще не встречался?","esc_neumeha_bio","",
-  
-  "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.", "Про Лиса рассказать?","esc_fox_bio","",
-  
-  "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...", "Толика встречал? Салага...","esc_tolik_bio","",
-  
-  "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.", "Есть тут такой живчик, Воробей его зовут","esc_vorobey_bio","",
-  
-  "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.", "Шустрый всё для Сидора шустрит...","esc_shustryi_bio","",
-  
-  "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.", "Фанат часто сюда забегает, не нравится он мне...","esc_fanat_bio",""}
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.",
+        "Есть тут такой живчик, Воробей его зовут", "esc_vorobey_bio", "",
+
+        "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.",
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    },
+    [ 2 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...",
+        "С Неумехой еще не встречался?", "esc_neumeha_bio", "",
+
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
+
+        "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
+
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.",
+        "Есть тут такой живчик, Воробей его зовут", "esc_vorobey_bio", "",
+
+        "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.",
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    },
+    [ 3 ] = {
+        "На большой земле ничего и никого у него не осталось, и он решил приехать сюда. Уезжать из Зоны ему попросту некуда. В Зоне просто сводит концы с концами. Очень многим сталкерам должен некоторые суммы денег. В Зону ходит очень часто, но никогда один, чаще примазывается к группам сталкеров. Но мало кто соглашается брать его, ведь он лишь лишняя обуза. Хабар собирает очень редко. Живет на подачки от других сталкеров и поэтому весь в долгах. Будет просить денег - не давай...",
+        "С Неумехой еще не встречался?", "esc_neumeha_bio", "",
+
+        "Лиса мало кто близко знает. Он корефанится с Рыжим и Кротом. Вместе ходки делают, вместе и хабарят... Тут редко появляется, особо ни с кем не разговаривает - привет и разошлись... В общем - старый прожженный зоной одиночка.",
+        "Про Лиса рассказать?", "esc_fox_bio", "",
+
+        "Новичок... Все пытается показать себя крутым, но как только начинается настоящее дело - слабеет в коленях... Может кому и покажется надёжным, но лучше с ним серъёзных дел не иметь...",
+        "Толика встречал? Салага...", "esc_tolik_bio", "",
+
+        "Хитрый, себе на уме, но иногда совершает грубейшие ошибки. В целом, оставляет о себе двойственное впечатление. Худой и бледный. Говорит - в Зону пришёл из любопытства и сам себе дал обещание - два месяца в Зоне - и домой. Но так здесь и остался. В первой своей вылазке в Зону умудрился пройти без приборов по полю, сплошь усыпанному аномалиями, не зная о них. Когда ему сообщили об этом, он долго не мог прийти в себя. С тех пор отмечает тот день(9 октября), как свой второй день рождения. Странность у него есть подозрительная - не пьет водки, в качестве причины ссылается на язву, явно что то недоговаривает.",
+        "Есть тут такой живчик, Воробей его зовут", "esc_vorobey_bio", "",
+
+        "Его и шустрым прозвали за его умение быть незаметным и незаменимым. Сидорович его иногда использует для деликатных заданий, проследить за кем-то, что-то подсмотреть, подслушать.",
+        "Шустрый всё для Сидора шустрит...", "esc_shustryi_bio", "",
+
+        "Хлебом не корми - дай покомандовать. Но новичкам нравится, пользуется среди них авторитетом... А по мне - просто сам собой любуется.",
+        "Фанат часто сюда забегает, не нравится он мне...", "esc_fanat_bio", ""
+    }
 }
 
 local bar_bio = {
-[1]={"Собровец бывший, принципиальный - дальше некуда... Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришёл? Да заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в \"Долг\". Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего... Но, честно говоря, жить одними принципами не будешь, потому он тоже на чёрный день кое-что откладывает. Видели его, как на Складах приныкивал хабарок. Точно не скажу где, но там где-то - точно, не зря же он там всё время пасётся...", "Про Черепа ещё не слыхал?","cherep_bio","",
+    [ 1 ] = {
+        "Собровец бывший, принципиальный - дальше некуда... Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришёл? Да заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в \"Долг\". Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего... Но, честно говоря, жить одними принципами не будешь, потому он тоже на чёрный день кое-что откладывает. Видели его, как на Складах приныкивал хабарок. Точно не скажу где, но там где-то - точно, не зря же он там всё время пасётся...",
+        "Про Черепа ещё не слыхал?", "cherep_bio", "",
 
-  "Знаешь кем был? - слесарем на ХолоМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтерся за пару лет и среди сталкеров завоевал определенный авторитет, благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении.", "Мастера не встречал?","master_bio","",
-  
-  "Бывший опер, ушёл из ментовки из-за того, что нарыл информацию на какую-то шишку. Его подставить собирались уже, он и подался в Зону, чтобы не достали. Сразу вступил в \"Долг\". Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. В общем, честный служака и неглупый мужик. Умеет с людьми разговаривать... Как все неглупые мужики он не живёт одними лозунгами. На Дикой территории прячет что-то. Может, патроны, а может и арты - поди знай что, но точно там...", "C Иванцовым лучше не связывайся.","ivanzov_bio","",
-  
-  "Это технарь-самоучка по стволам и броникам. В Зону пришёл обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него, сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьёзная - неси ему, восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить... Где-то тут на территории Бара складик у него, хорошо бы проверить, что хранит...", "Если починить что нужно, к Долговязому обращайся.","dolgovazyi_bio","",
-  
-  "Спец по электронике. Его бармен выписал с Большой земли, в НИИ там каком то трудился за зарплату инженера, ха-ха.. Говорят, денег ему платит нехило, и бережет его как зеницу ока. Если какие проблемы с КПК, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставит. А.., если потерял кого в Зоне - тоже к нему, настроит КПК на поиск пропавшего.", "Есть тут голован один - Доцент.","docent_bio","",
-  
-  "Непонятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан, хрен его знает, но народ его опасается... Одним словом, мутный тип, я с ним не связываюсь... Зуб - мужик непростой. А раз так, то нычек у него по всей Зоне напихано должно быть. Да я даже примерно знаю, что на Янтаре есть...", "В Баре ошивается типок один - Зуб, все его так зовут...","osvedomitel_bio",""},
+        "Знаешь кем был? - слесарем на ХолоМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтерся за пару лет и среди сталкеров завоевал определенный авторитет, благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении.",
+        "Мастера не встречал?", "master_bio", "",
 
-[2]={"Собровец бывший, принципиальный - дальше некуда... Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришёл? Да заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в \"Долг\". Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего... Одними принципами жив не будешь, так что, не брезгует он и артами. На Янтаре, вроде, видели его, там значит и прячет что-то...", "Про Черепа ещё не слыхал?","cherep_bio","",
+        "Бывший опер, ушёл из ментовки из-за того, что нарыл информацию на какую-то шишку. Его подставить собирались уже, он и подался в Зону, чтобы не достали. Сразу вступил в \"Долг\". Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. В общем, честный служака и неглупый мужик. Умеет с людьми разговаривать... Как все неглупые мужики он не живёт одними лозунгами. На Дикой территории прячет что-то. Может, патроны, а может и арты - поди знай что, но точно там...",
+        "C Иванцовым лучше не связывайся.", "ivanzov_bio", "",
 
-  "Знаешь кем был? Слесарем на ХолодМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтёрся за пару лет и среди сталкеров завоевал определённый авторитет благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении... Недавно ребята на Дикой территории его видели. Чего его туда занесло? Не иначе тоже нычку имеет, как все нормальные сталкеры. Да уж, шила в мешке не утаишь, точно на Дикой его нычка...", "Мастера не встречал?","master_bio","",
-  
-  "Бывший опер, ушел из ментовки из-за того что нарыл информацию на какую то шишку. Его подставить собиралсиь уже, он и подался в Зону, чтобы не достали. Сразу вступил в Долг. Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. Вообщем, честный служака и неглупый мужик. Умеет с людьми разговаривать.", "C Иванцовым лучше не связывайся","ivanzov_bio","",
-  
-  "Это технарь-самоучка по стволам и броникам. В Зону пришёл обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него, сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьёзная - неси ему, восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить... Где-то недалеко он склад устроил. Вроде даже на Свалке. А что - никто и не догадается, чем проще, тем лучше...", "Если починить что нужно, к Долговязому обращайся.","dolgovazyi_bio","",
-  
-  "Спец по электронике. Его бармен выписал с большой земли, в НИИ там каком-то трудился за зарплату инженера, ха-ха... Говорят, денег ему платит нехило, и бережёт его как зеницу ока. Если какие проблемы с ПДА, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставить. А если потерял кого в Зоне - тоже к нему, настроит ПДА на поиск пропавшего... Ему частенько арты подносят за всякую работу, но он же не продаёт их, а где-то прячет. А где - тут и думать не надо, на Складах где-то. Был он там совсем недавно, а перед этим я же ему артефакт и отдал за пояс. Точно говорю - на Складах нычка его...", "Есть тут голован один - Доцент.","docent_bio","",
-  
-  "Не понятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан хрен его знает, но народ его опасается.. Одним словом, мутный тип, я с ним не связываюсь.", "В Баре ошивается типок один - Зуб, все его так зовут...","osvedomitel_bio",""},
+        "Это технарь-самоучка по стволам и броникам. В Зону пришёл обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него, сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьёзная - неси ему, восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить... Где-то тут на территории Бара складик у него, хорошо бы проверить, что хранит...",
+        "Если починить что нужно, к Долговязому обращайся.", "dolgovazyi_bio", "",
 
-[3]={"Собровец бывший, принципиальный - дальше некуда..Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришел? - а заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в Долг. Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего..", "Про Черепа ещё не слыхал?","cherep_bio","",
+        "Спец по электронике. Его бармен выписал с Большой земли, в НИИ там каком то трудился за зарплату инженера, ха-ха.. Говорят, денег ему платит нехило, и бережет его как зеницу ока. Если какие проблемы с КПК, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставит. А.., если потерял кого в Зоне - тоже к нему, настроит КПК на поиск пропавшего.",
+        "Есть тут голован один - Доцент.", "docent_bio", "",
 
-  "Знаешь кем был? Слесарем на ХолодМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтёрся за пару лет и среди сталкеров завоевал определённый авторитет благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении... Говорят, на Дикой территории его видели. А оттуда как-то он в Рыжий лес попадает, ну так говорят. Значит есть что прятать, раз так далеко заходит...", "Мастера не встречал?","master_bio","",
-  
-  "Бывший опер, ушёл из ментовки из-за того, что нарыл информацию на какую-то шишку. Его подставить собирались уже, он и подался в Зону, чтобы не достали. Сразу вступил в \"Долг\". Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. В общем, честный служака и неглупый мужик. Умеет с людьми разговаривать... Ну и как все неглупые мужики не одними лозунгами живёт, а и на будущее что-то подкапливает. На Янтаре его видали, с ботанами там корешился, что-то продавал им. Но не с Бара же тащил. А откуда? Вот! Значит на Янтаре у него припрятано что-то, может, патроны, а может и арты - поди знай что, но точно там...", "C Иванцовым лучше не связывайся.","ivanzov_bio","",
-  
-  "Это технарь-самоучка по стволам и броникам. В зону пришел обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьезная неси ему - восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить.", "Если починить что нужно к Долговязому обращайся.","dolgovazyi_bio","",
-  
-  "Спец по электронике. Его бармен выписал с большой земли, в НИИ там каком-то трудился за зарплату инженера, ха-ха... Говорят, денег ему платит нехило, и бережёт его как зеницу ока. Если какие проблемы с ПДА, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставить. А если потерял кого в Зоне - тоже к нему, настроит ПДА на поиск пропавшего... Ему частенько арты подносят за всякую работу, но он же не продаёт их, а где-то прячет. Я думаю, тут и прячет где-то, на Баре...", "Есть тут голован один - Доцент.","docent_bio","",
-  
-  "Непонятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан, хрен его знает, но народ его опасается... Одним словом, мутный тип, я с ним не связываюсь... А ещё говорят, с Султаном он дела какие-то проворачивает. Султану модификаты нужны, а Зуб рецептами торгует, ну и какую-то долю с его бизнеса имеет. Сложная схема. Но суть не в этом, а в том, что на Забытом хуторе Зубик артики складывает. Вот как пить дать там...", "В Баре ошивается типок один - Зуб, все его так зовут...","osvedomitel_bio",""}
+        "Непонятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан, хрен его знает, но народ его опасается... Одним словом, мутный тип, я с ним не связываюсь... Зуб - мужик непростой. А раз так, то нычек у него по всей Зоне напихано должно быть. Да я даже примерно знаю, что на Янтаре есть...",
+        "В Баре ошивается типок один - Зуб, все его так зовут...", "osvedomitel_bio", ""
+    },
+    [ 2 ] = {
+        "Собровец бывший, принципиальный - дальше некуда... Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришёл? Да заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в \"Долг\". Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего... Одними принципами жив не будешь, так что, не брезгует он и артами. На Янтаре, вроде, видели его, там значит и прячет что-то...",
+        "Про Черепа ещё не слыхал?", "cherep_bio", "",
+
+        "Знаешь кем был? Слесарем на ХолодМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтёрся за пару лет и среди сталкеров завоевал определённый авторитет благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении... Недавно ребята на Дикой территории его видели. Чего его туда занесло? Не иначе тоже нычку имеет, как все нормальные сталкеры. Да уж, шила в мешке не утаишь, точно на Дикой его нычка...",
+        "Мастера не встречал?", "master_bio", "",
+
+        "Бывший опер, ушел из ментовки из-за того что нарыл информацию на какую то шишку. Его подставить собирались уже, он и подался в Зону, чтобы не достали. Сразу вступил в Долг. Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. Вообщем, честный служака и неглупый мужик. Умеет с людьми разговаривать.",
+        "C Иванцовым лучше не связывайся", "ivanzov_bio", "",
+
+        "Это технарь-самоучка по стволам и броникам. В Зону пришёл обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него, сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьёзная - неси ему, восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить... Где-то недалеко он склад устроил. Вроде даже на Свалке. А что - никто и не догадается, чем проще, тем лучше...",
+        "Если починить что нужно, к Долговязому обращайся.", "dolgovazyi_bio", "",
+
+        "Спец по электронике. Его бармен выписал с большой земли, в НИИ там каком-то трудился за зарплату инженера, ха-ха... Говорят, денег ему платит нехило, и бережёт его как зеницу ока. Если какие проблемы с ПДА, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставить. А если потерял кого в Зоне - тоже к нему, настроит ПДА на поиск пропавшего... Ему частенько арты подносят за всякую работу, но он же не продаёт их, а где-то прячет. А где - тут и думать не надо, на Складах где-то. Был он там совсем недавно, а перед этим я же ему артефакт и отдал за пояс. Точно говорю - на Складах нычка его...",
+        "Есть тут голован один - Доцент.", "docent_bio", "",
+
+        "Не понятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан хрен его знает, но народ его опасается.. Одним словом, мутный тип, я с ним не связываюсь.",
+        "В Баре ошивается типок один - Зуб, все его так зовут...", "osvedomitel_bio", ""
+    },
+    [ 3 ] = {
+        "Собровец бывший, принципиальный - дальше некуда..Одна беда - все вопросы только силой привык решать, прямой как столб, никакой гибкости. А в Зону знаешь как пришел? - а заодно с ребятами. Большинство из них так вместе с ним и держаться. Естественно, с такой биографией ему прямая дорога в Долг. Как вступил туда, так и служит. Сейчас вон уже командир спецназа ихнего..",
+        "Про Черепа ещё не слыхал?", "cherep_bio", "",
+
+        "Знаешь кем был? Слесарем на ХолодМаше. От него жена ушла, так он решил покончить с жизнью, а в качестве способа выбрал уход в Зону. Тут пообтёрся за пару лет и среди сталкеров завоевал определённый авторитет благодаря своим профессиональным навыкам. На данный момент Мастер - самый компетентный слесарь в Зоне, ремонт оборудования и техники, обустройство систем защиты бункеров группировок и т.д. и т.п. - его епархия. Вхож в любые двери, влиятелен, прост, но грубоват в общении... Говорят, на Дикой территории его видели. А оттуда как-то он в Рыжий лес попадает, ну так говорят. Значит есть что прятать, раз так далеко заходит...",
+        "Мастера не встречал?", "master_bio", "",
+
+        "Бывший опер, ушёл из ментовки из-за того, что нарыл информацию на какую-то шишку. Его подставить собирались уже, он и подался в Зону, чтобы не достали. Сразу вступил в \"Долг\". Руководит карательными операциями и операциями по зачистке крупных скоплений мутантов. В общем, честный служака и неглупый мужик. Умеет с людьми разговаривать... Ну и как все неглупые мужики не одними лозунгами живёт, а и на будущее что-то подкапливает. На Янтаре его видали, с ботанами там корешился, что-то продавал им. Но не с Бара же тащил. А откуда? Вот! Значит на Янтаре у него припрятано что-то, может, патроны, а может и арты - поди знай что, но точно там...",
+        "C Иванцовым лучше не связывайся.", "ivanzov_bio", "",
+
+        "Это технарь-самоучка по стволам и броникам. В зону пришел обычным сталкером, и уже тут талант в себе обнаружил к ентому делу: одному ствол починил, другому броньку подлатал - зауважали его мужики. Бармен как услыхал про него сразу приютил, и Долговязому спокойнее под крышей, и бармену лишние посетители. Ежели поломка серьезная неси ему - восстановит, будет ствол как новенький. Оружие до ума может довести, оптику там поставить, с магазинами помудрить. Броники на заказ хреначит. Но это уже в индивидуальном порядке, надо с ним говорить.",
+        "Если починить что нужно к Долговязому обращайся.", "dolgovazyi_bio", "",
+
+        "Спец по электронике. Его бармен выписал с большой земли, в НИИ там каком-то трудился за зарплату инженера, ха-ха... Говорят, денег ему платит нехило, и бережёт его как зеницу ока. Если какие проблемы с ПДА, то прямая дорога к нему. За дополнительную плату может и наворотов тебе каких поставить. А если потерял кого в Зоне - тоже к нему, настроит ПДА на поиск пропавшего... Ему частенько арты подносят за всякую работу, но он же не продаёт их, а где-то прячет. Я думаю, тут и прячет где-то, на Баре...",
+        "Есть тут голован один - Доцент.", "docent_bio", "",
+
+        "Непонятно откуда, но знает он очень много. Обычно его в баре можно найти, он там торгует информацией, покупает чертежи, документы и записи из лабораторий. С кем уж он связан, хрен его знает, но народ его опасается... Одним словом, мутный тип, я с ним не связываюсь... А ещё говорят, с Султаном он дела какие-то проворачивает. Султану модификаты нужны, а Зуб рецептами торгует, ну и какую-то долю с его бизнеса имеет. Сложная схема. Но суть не в этом, а в том, что на Забытом хуторе Зубик артики складывает. Вот как пить дать там...",
+        "В Баре ошивается типок один - Зуб, все его так зовут...", "osvedomitel_bio", ""
+    }
 }
-local end_phras={"Не-е-е, более не помню ничего...",
-        "Э-э-э... Вроде все, больше ничего не знаю...",
-        "Слушай отвали, чет мне не хорошо...",
-        "Задолбал... Дай передохнуть хоть..."
-        }
-        
+
+local end_phras = {
+    "Не-е-е, более не помню ничего...",
+    "Э-э-э... Вроде все, больше ничего не знаю...",
+    "Слушай отвали, чет мне не хорошо...",
+    "Задолбал... Дай передохнуть хоть..."
+}
+
 --[[
 Отец Диодор - Не святой отец. Воевал в Афгане, там после передряги одной и ударился в религию. Говорят даже в семинарии потом учился и проповедовал во Львове. Когда услыхал про Чернобыль пошел добровольцем помогать пострадавшим. Теперь вот тут наставляет на пути истинные. С Сяком знается, они оказывается в Афгане служили в соседних частях. Как то, говорят, сидели бухали с ним вдвоем неделю, их потом растаскивать пришлось....Видать, воспоминания нахлынули..
 
@@ -739,272 +1052,66 @@ local end_phras={"Не-е-е, более не помню ничего...",
 
 Умник - Это студент химфака, с пятого курса института ушел в Зону на заработок, лаборантом у ученых на Болотах подрабатывал. Потом подался на Кордон к сталкерам. Он тут пока в деревне был всё познаниями своими хвастался в химии . За этот выпендреж его сталкеры и недолюбливали. Но в целом парень неплохой. Пытался даже местным ханыгам самогонный аппарат собрать, хе-хе...
 ]]
-function bio_story(loka)
-local stop_dlg=0
-local m=amk_vars.r_treas_items or 1
-loka=loka[m]
-  for a=1,table.getn(loka)/4,1 do 
-    local rand_bio=lua_random(1,table.getn(loka)/4)
-    if not db.actor:has_info(loka[rand_bio*4-1]) then
-    db.actor:give_talk_message("%c[255,216,186,140]"..loka[rand_bio*4-2].."\\n"..loka[rand_bio*4-3], "ui\\ui_iconsTotal",Frect():set(249,282,83,47),"iconed_answer_item")
-    stop_dlg=1
-    if loka[rand_bio*4]~="" then
-    loadstring(loka[rand_bio*4])()
+
+function bio_story( loka )
+    local stop_dlg = 0
+    local m        = amk_vars.r_treas_items or 1
+    loka           = loka[ m ]
+    for a = 1, table.getn( loka ) / 4, 1 do
+        local rand_bio = lua_random( 1,table.getn( loka ) / 4 )
+        if not db.actor:has_info( loka[ rand_bio * 4 - 1 ] ) then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]" .. loka[ rand_bio * 4 - 2 ] .. "\\n" .. loka[ rand_bio * 4 - 3 ],
+                "ui\\ui_iconsTotal", Frect():set( 249, 282, 83, 47 ), "iconed_answer_item"
+            )
+            stop_dlg = 1
+            if loka[ rand_bio * 4 ] ~= "" then loadstring( loka[ rand_bio * 4 ] )() end
+            db.actor:give_info_portion( loka[ rand_bio * 4 - 1 ] )
+            break
+        end
     end
-    db.actor:give_info_portion(loka[rand_bio*4-1]) break
+    if stop_dlg == 0 then
+    local rand_phras = lua_random( 1, table.getn( end_phras ) )
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]" .. end_phras[ rand_phras ],
+        "ui\\ui_iconstotal", Frect():set( 0, 0, 10, 10 ), "simple_answer_item"
+    )
     end
-  end
-  if stop_dlg==0 then
-  local rand_phras=lua_random(1,table.getn(end_phras))
-  db.actor:give_talk_message("%c[255,216,186,140]"..end_phras[rand_phras],"ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
-  end
 end
-function one_bio_esc()
-bio_story(esc_bio_1)
-end
-function two_bio_esc()
-bio_story(esc_bio_2)
-end
-function one_bio_gar()
-bio_story(gar_bio_1)
-end
-function two_bio_gar()
-bio_story(gar_bio_2)
-end
-function bio_bar()
-bio_story(bar_bio)
-end
+
+function one_bio_esc() bio_story( esc_bio_1 ) end
+function two_bio_esc() bio_story( esc_bio_2 ) end
+function one_bio_gar() bio_story( gar_bio_1 ) end
+function two_bio_gar() bio_story( gar_bio_2 ) end
+function bio_bar()     bio_story( bar_bio   ) end
+
 function two_bio_esc_()
-local stop_dlg=0
-  for a=1,table.getn(esc_bio_2)/3,1 do 
-    local rand_bio=lua_random(1,table.getn(esc_bio_2)/3)
-    if not db.actor:has_info(esc_bio_2[rand_bio*3]) then
-    db.actor:give_talk_message("%c[255,216,186,140]"..esc_bio_2[rand_bio*3-1].."\\n"..esc_bio_2[rand_bio*3-2], "ui\\ui_iconsTotal",Frect():set(249,282,83,47),"iconed_answer_item")
-    stop_dlg=1
-    db.actor:give_info_portion(esc_bio_2[rand_bio*3]) break
+    local stop_dlg = 0
+    for a = 1, table.getn( esc_bio_2 ) / 3, 1 do
+        local rand_bio = lua_random( 1, table.getn( esc_bio_2 ) / 3 )
+        if not db.actor:has_info( esc_bio_2[ rand_bio * 3 ] ) then
+            db.actor:give_talk_message(
+                "%c[255,216,186,140]" .. esc_bio_2[ rand_bio * 3 - 1 ]
+                .. "\\n" .. esc_bio_2[ rand_bio * 3 - 2 ],
+                "ui\\ui_iconsTotal", Frect():set( 249, 282, 83, 47 ), "iconed_answer_item"
+            )
+            stop_dlg = 1
+            db.actor:give_info_portion( esc_bio_2[ rand_bio * 3 ] )
+            break
+        end
     end
-  end
-  if stop_dlg==0 then
-  db.actor:give_talk_message("%c[255,216,186,140]Не-е-е, более не помню ничего...","ui\\ui_iconstotal", Frect():set(0,0,10,10), "simple_answer_item")
-  end
+    if stop_dlg == 0 then
+        db.actor:give_talk_message(
+            "%c[255,216,186,140]Не-е-е, более не помню ничего...",
+            "ui\\ui_iconstotal", Frect():set( 0, 0, 10, 10 ), "simple_answer_item"
+        )
+    end
 end
-local sultan_weapons={
-  {"wpn_beretta93","ammo_9x19_fmj","ammo_9x19_pbp"},
-  {"wpn_ump45","ammo_11.43x23_fmj"},
-  {"wpn_pp19","ammo_9x19_fmj","ammo_9x19_pbp"},
-  {"wpn_saiga12c_m1","ammo_12x70_buck","ammo_12x76_zhekan","ammo_12x76_dart"},
-  {"wpn_saiga12c","ammo_12x70_buck","ammo_12x76_zhekan","ammo_12x76_dart"},
-  {"wpn_mp153","ammo_12x70_buck","ammo_12x76_zhekan","ammo_12x76_dart"},
-  {"wpn_fn2000","ammo_5.56x45_ss190","ammo_5.56x45_ap"},
-  {"wpn_ak104","ammo_7.62x39_fmj","ammo_7.62x39_ap"},
-  {"wpn_ak107","ammo_5.45x39_fmj","ammo_5.45x39_ap"},
-  {"wpn_ak108","ammo_5.56x45_ss190","ammo_5.56x45_ap"},
-  {"wpn_sv98","ammo_7.62x54_7h1","ammo_7.62x54_ap","ammo_7.62x54_7h14"},
-  {"wpn_awm","ammo_8.6x70","ammo_8.6x70_ap"},
-  {"wpn_svd","ammo_7.62x54_7h1","ammo_7.62x54_ap","ammo_7.62x54_7h14"},
-  {"wpn_m16a4","ammo_5.56x45_ss190","ammo_5.56x45_ap"},
-  {"wpn_m110","ammo_7.62x51_fmj","ammo_7.62x51_ap"},
-  {"wpn_pkm","ammo_7.62x54r"},
-}
-local weapons_icons = {
-  {0, 0},
-  {700, 0},
-  {350, 0},
-  {0, 300},
-  {1050, 0},
-  {1400, 0},
-  {1050, 300},
-  {1400, 150},
-  {0, 150},
-  {350, 150},
-  {350, 300},
-  {1050, 300},
-  {0, 150},
-  {700, 150},
-  {700, 300},
-  {1050, 150},
-  }
-local sultan_arts={
-  "Модификаты - Капля души, Слёзы Электры, Огненная пустышка, Бабкины бусы, Дикобраз, Стальной колобок, Шкура...",
-  "Модификаты - Капля души, Слёзы Электры, Огненная пустышка, Бабкины бусы, Дикобраз, Стальной колобок, Шкура...",
-  "Модификаты - Капля души, Слёзы Электры, Огненная пустышка, Бабкины бусы, Дикобраз, Стальной колобок, Шкура...",
-  "Гипермодификаты - Кристальная душа, Слёзы химеры, Бусы бабки бюрера, Лунная пустышка, Сопливый дикобраз, Алмазный колобок, Панцирь...",
-  "Модификаты - Капля души, Слёзы Электры, Огненная пустышка, Бабкины бусы, Дикобраз, Стальной колобок, Шкура...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя...",
-  "Гипермодификаты - Кристальная душа, Слёзы химеры, Бусы бабки бюрера, Лунная пустышка, Сопливый дикобраз, Алмазный колобок, Панцирь...",
-  "Гипермодификаты - Кристальная душа, Слёзы химеры, Бусы бабки бюрера, Лунная пустышка, Сопливый дикобраз, Алмазный колобок, Панцирь...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя...",
-  "Гипермодификаты - Кристальная душа, Слёзы химеры, Бусы бабки бюрера, Лунная пустышка, Сопливый дикобраз, Алмазный колобок, Панцирь...",
-  "Абсолюты - Кристальная душа Бенгала, Слеза Гиганта, Пудинг, Бусы прабабки бюрера, Каменный дикобраз, Младший брат Гиганта, Скальп контролёра...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя...",
-  "Гипермодификаты - Кристальная душа, Слёзы химеры, Бусы бабки бюрера, Лунная пустышка, Сопливый дикобраз, Алмазный колобок, Панцирь...",
-  "Мезомодификаты - Огненная душа, Слёзы огня, Бусы прабабки, Яркая пустышка, Электрический дикобраз, Титановый колобок, Чешуя..."
-}
-local sultan_treasure={9127,"На Кордоне на территории южного блок поста в кустах ящик с оружием. С вояками лучше не связывайся - тихонько обойди с восточной стороны, через поваленное дерево. Там первый же куст - твой.",9128,"На болоте есть старая дорога от мехдвора на запад. На дороге  стоит камаз, вот в кузове и посмотри... Зверья там полно - без хорошего снаряжения не суйся...",9129,"На болоте старый рыбацкий хутор есть, ещё водонапорная башня стоит рядом... Так возле этой башни есть подвальчик, там и посмотри... Только будь осторожен - в подвальчике сильная радиация..."}
-function sultan_weapon_story_11()
-sultan_weapon(1)
-end
-function sultan_weapon_story_12()
-sultan_weapon(2)
-end
-function sultan_weapon_story_13()
-sultan_weapon(3)
-end
-function sultan_weapon_story_21()
-sultan_weapon(4)
-end
-function sultan_weapon_story_22()
-sultan_weapon(5)
-end
-function sultan_weapon_story_31()
-sultan_weapon(6)
-end
-function sultan_weapon_story_32()
-sultan_weapon(7)
-end
-function sultan_weapon_story_33()
-sultan_weapon(8)
-end
-function sultan_weapon_story_34()
-sultan_weapon(9)
-end
-function sultan_weapon_story_35()
-sultan_weapon(10)
-end
-function sultan_weapon_story_36()
-sultan_weapon(16)
-end
-function sultan_weapon_story_41()
-sultan_weapon(11)
-end
-function sultan_weapon_story_42()
-sultan_weapon(12)
-end
-function sultan_weapon_story_43()
-sultan_weapon(13)
-end
-function sultan_weapon_story_44()
-sultan_weapon(14)
-end
-function sultan_weapon_story_45()
-sultan_weapon(15)
-end
-function save_sultan_weapon_story_11()
-save_sultan_weapon(1)
-end
-function save_sultan_weapon_story_12()
-save_sultan_weapon(2)
-end
-function save_sultan_weapon_story_13()
-save_sultan_weapon(3)
-end
-function save_sultan_weapon_story_21()
-save_sultan_weapon(4)
-end
-function save_sultan_weapon_story_22()
-save_sultan_weapon(5)
-end
-function save_sultan_weapon_story_31()
-save_sultan_weapon(6)
-end
-function save_sultan_weapon_story_32()
-save_sultan_weapon(7)
-end
-function save_sultan_weapon_story_33()
-save_sultan_weapon(8)
-end
-function save_sultan_weapon_story_34()
-save_sultan_weapon(9)
-end
-function save_sultan_weapon_story_35()
-save_sultan_weapon(10)
-end
-function save_sultan_weapon_story_36()
-save_sultan_weapon(16)
-end
-function save_sultan_weapon_story_41()
-save_sultan_weapon(11)
-end
-function save_sultan_weapon_story_42()
-save_sultan_weapon(12)
-end
-function save_sultan_weapon_story_43()
-save_sultan_weapon(13)
-end
-function save_sultan_weapon_story_44()
-save_sultan_weapon(14)
-end
-function save_sultan_weapon_story_45()
-save_sultan_weapon(15)
-end
-function load_sultan_weapon_story()
-local tip=nlc_vars.sultan_weapon or 0
-  if tip~=0 then
-     db.actor:give_talk_message("%c[255,216,186,140]"..game.translate_string(sultan_arts[tip]),"ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
-  end
-end
-function sultan_weapon(tip)
-  local x = weapons_icons[tip][1]
-  local y = weapons_icons[tip][2]
-  db.actor:give_talk_message("%c[255,216,186,140]"..game.translate_string(amk.get_inv_name(sultan_weapons[tip][1])), "ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_center")
-  db.actor:give_talk_message("", "ui\\ui_unique_weapon",Frect():set(x,y,350,150),"iconed_weapon_item")
-  db.actor:give_talk_message("%c[255,216,186,140]"..game.translate_string(get_inv_name_dial_desc(sultan_weapons[tip][1])), "ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
-end
-function save_sultan_weapon(tip)
-  nlc_vars.sultan_weapon = tip
-end
-function get_inv_name_dial_desc(section)
-   if system_ini():line_exist(section, "dialog_description") then
-    return system_ini():r_string(section,"dialog_description")
-   else
-      return sprintf("#ERROR: not assigned %s.dialog_description", section)
-   end 
-end
-function need_sultan_weapon_art_1()
-  local tip=nlc_vars.sultan_weapon or 0
-  if tip==1 or tip==2 or tip==3 or tip==5  then return true end
-end
-function need_sultan_weapon_art_2()
-  local tip=nlc_vars.sultan_weapon or 0
-  if tip==1 or tip==2 or tip==3 or tip==5 or tip==6 or tip==10 or tip==13 or tip==14 or tip==16  then return true end
-end
-function need_sultan_weapon_art_3()
-  local tip=nlc_vars.sultan_weapon or 0
-  if tip~=12 and tip~=0 then return true end
-end
-function need_sultan_weapon_art_4()
-  local tip=nlc_vars.sultan_weapon or 0
-  if tip~=0 then return true end
-end
-function load_sultan_weapon_treasure()
-  local tip=nlc_vars.sultan_weapon or 0
-  local rand_treasure
-  local npc=db.actor
-  if npc:has_info("time_morning") or npc:has_info("time_evening") then
-  rand_treasure=1
-  elseif npc:has_info("time_night") then
-  rand_treasure=2
-  elseif npc:has_info("time_day") then
-  rand_treasure=3
-end
---local rand_treasure=lua_random(1,tonumber(table.getn(sultan_treasure)/2))
-local obj = alife():story_object(sultan_treasure[rand_treasure*2-1])
-  if tip~=0 and obj then
-    for k,v in pairs(sultan_weapons[tip]) do
-      misc.spawn_to(v, obj)
-      --  alife():create(v,obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
-    end 
-    npc:give_talk_message("%c[255,216,186,140]"..sultan_treasure[rand_treasure*2],"ui\\ui_iconsTotal",Frect():set(0,0,0,0),"simple_answer_item")
-    npc:give_info_portion("way_sultan_treasure_"..rand_treasure)
-    nlc_vars.sultan_weapon = nil
-    npc:disable_info_portion("sultan_weapon_starting")
-  end
-end
+
+
 --[[Покер с игральными костями
 
-Для этой игры необходимо иметь пять покерных игральных костей. 
+Для этой игры необходимо иметь пять покерных игральных костей.
 Цель игры: составить наиболее выгодную покерную комбинацию из пяти игральных костей.
 Количество игроков может быть любым, но лучше всего, если число играющих не будет превышать пяти.
 Каждый игрок кидает одну игральную кость, чтобы определить очередность ходов. Начинает тот у кого выпала старшая карта(Например, если выпадает Туз, то игрок у которого он выпал начинает игру)
