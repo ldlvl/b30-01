@@ -745,14 +745,12 @@ function art_is_bio_art( id )
     local lname = level.name()
     local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
     if tbl ~= nil then
-        --misc.dump_table( tbl )                         -- TODO выключить нах
         for k, v in pairs( tbl ) do
             if k == lname then
                 for i = 1, #v do
                     if id == v[ i ] then 
                         v[ i ] = -1
                         nlc_vars.tbl_bio_art = tbl
-                        --misc.dump_table( tbl )         -- TODO выключить нах
                         return true
                     end
                 end
@@ -810,7 +808,7 @@ function count_actor_ammo( section )
     --      end
     --  end
     -- end
-    local count = 0
+    local count  = 0
     local rukzak = get_shadow_inv():hidden_items( true )
     for sect, cnt in rukzak:pairs() do
         if strposx( sect, section ) then count = count + cnt end
@@ -1241,5 +1239,80 @@ end
 
 function rad_disease_boryan_heal()
     nlc_vars.rad_disease = nil
+end
+
+function spawn_star()  -- контейнер Неумехи
+    local points = {
+        { -35.998790740967,  2.4215788841248, 59.656208038330 },
+        { -36.106407165527, -4.6675720214844, 28.859741210938 },
+        { -11.250000000000,  2.8200000000000, 79.931000000000 },
+        {  10.333771705627,  2.7344491481781, 88.417984008789 },
+        {  12.841078758240,  2.6875066757202, 83.037651062012 },
+        { -9.2912588119507,  6.6563358306885, 129.08688354492 },
+        { -13.526727676392,  6.1161804199219, 57.125473022461 },
+        {  16.319122314453,  8.7260303497314, 92.502799987793 },
+        {  15.662046432495,  7.0975394248962, 93.969375610352 }
+    }
+    local ind = lua_random( #points )
+    local obj = misc.spawn_obj(
+        "arc_art_box_1basic",
+        sak.v3f( points[ ind ][ 1 ], points[ ind ][ 2 ], points[ ind ][ 3 ] )
+    )
+    local pk         = get_netpk( obj, 1 )
+    local data       = pk:get()
+    data.custom_data = "amk_af_night_star_29"
+    data.mass        = 20
+    pk:set( data )
+    nlc_vars.kontainer = obj.id
+end
+
+function add_document_wolf() -- документ Волка, ПБ и колбаса
+    local pk, data
+    local tbl = {
+        { 128.968,  0.820, 366.818, 229, 435505, "dynamics\\balon\\bidon"                      },
+        { 137.444, -0.050, 338.506, 232, 442080, "equipments\\gasmask3"                        },
+        { 129.840,  5.490, 340.000, 233, 433230, "physics\\decor\\teapot_1"                    },
+        { 125.146,  9.321, 348.930, 233, 427971, "physics\\box\\old_box"                       },
+        { 125.370, -0.405, 317.195, 236, 429427, "dynamics\\kitchen_room\\kitchen_kastrula_up" },
+        { 145.963, -0.859, 343.261, 231, 451406, "dynamics\\balon\\bidon"                      },
+        { 127.584, -1.457, 308.490, 236, 431636, "dynamics\\balon\\bidon"                      },
+        { 130.638,  2.503, 305.731, 236, 434700, "physics\\decor\\teapot_1"                    },
+        { 125.900,  2.283, 316.455, 236, 430156, "physics\\box\\old_box"                       },
+        { 139.124,  3.312, 336.360, 232, 444960, "physics\\decor\\teapot_1"                    }
+    }
+    amk.spawn_item( "sak_document2", sak.v3f( -80, -1.28, 153 ), 163, 187916 )
+    amk.spawn_item( "wpn_pb",        sak.v3f( -80, -1.20, 153 ), 163, 187916 )
+    local ind = lua_random( #tbl )
+    local par = test.spawn_no_ai(
+                    "rukzak_inventory_box",
+                    sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+                    tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
+                )
+    pk  = get_netpk( par, 1 )
+    if pk:isOk() then
+        data             = pk:get()
+        data.visual_name = tbl[ ind ][ 6 ]
+        pk:set( data )
+    end
+    local obj
+    for a = 1, 2 do
+        obj = g_sim:create(
+            "kolbasa", par.position, par.m_level_vertex_id,
+            par.m_game_vertex_id, par.id
+        )
+        misc.process_spawn()
+        local new_cond = 0.3 * a
+        pk             = get_netpk( obj, 1 )
+        data           = pk:get()
+        data.condition = new_cond
+        pk:set( data )
+    end
+    obj = client_obj( obj.id )
+    obj:set_condition( new_cond )
+    if par.online then
+        g_sim:set_switch_online ( par.id, false )
+        g_sim:set_switch_offline( par.id, true  )
+        amk.convert_npc[ par.id ] = 1
+    end
 end
 

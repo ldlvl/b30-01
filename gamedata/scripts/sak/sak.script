@@ -1273,27 +1273,9 @@ function add_ammo_bes() local obj= g_sim:story_object(story_ids.dv_box_bes_02)  
   amk.convert_npc[obj.id]=1
    end
 end
-function add_document_wolf() amk.spawn_item("sak_document2",v3f(-80,-1.28,153),163,187916) amk.spawn_item("wpn_pb",v3f(-80,-1.20,153),163,187916)
-  local obj1 = g_sim:story_object(story_ids.esc_inventory_box_0010)
-  local obj
-  for a=1,2 do
-  obj= g_sim:create("kolbasa",obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id)
-  misc.process_spawn()
-  local new_cond=0.3*a
-  local pk = get_netpk(obj,1)
-  local data = pk:get()
-  data.condition = new_cond
-  pk:set(data)
-  end
-  obj = client_obj(obj.id)
-  obj:set_condition(new_cond)
-  if obj1.online then
-  sim:set_switch_online(obj1.id, false)
-  sim:set_switch_offline(obj1.id, true)
-  amk.convert_npc[obj1.id]=1
-   end
-end
+
 function add_postmens_bag() amk.spawn_item("postmens_bag",v3f(269.293823,-7.944348,0.794339),390,376745) end
+
 function add_dsc_gigant()
   local obj=amk.spawn_item("marsh_gigant",v3f(239.132904,-2.481397,655.872864),4084,680450)
     local pk = get_netpk(obj)

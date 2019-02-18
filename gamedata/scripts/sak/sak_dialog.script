@@ -1464,24 +1464,25 @@ end
 function add_bridge_leader_art()
   sak.create_items(db.actor, "af_dummy_dummy_new",1)
 end
+
 function neumeha_container_spot()
-  local ct = lua_random(1,3)
-  local a=(nlc_vars.kontainer or 0)
-  if a==0 then return end
-  local obj = g_sim:object(a)
-  if obj then
-    level.map_add_object_spot(obj.id, "crlc_big_treasure"..ct, "neumeha_container_spot")
-  end
+  -- local ct = lua_random( 1, 3 )
+  -- local a  = ( nlc_vars.kontainer or 0 )
+  -- if a == 0 then return end
+  -- local obj = g_sim:object( a )
+  -- if obj then
+  --   level.map_add_object_spot( obj.id, "crlc_big_treasure" .. ct, "neumeha_container_spot" )
+  -- end
 end
+
 function off_kontainer()
-  local a=(nlc_vars.kontainer or 0)
-  if a==0 then return end
-  local obj = g_sim:object(a)
-  if obj then
-  g_sim:release(obj, true)
-  end
+  local a = ( nlc_vars.kontainer or 0 )
+  if a == 0 then return end
+  local obj = g_sim:object( a )
+  if obj then g_sim:release( obj, true ) end
   nlc_vars.kontainer = nil
 end
+
 function add_red_sos_spot()
 level_tasks.add_location(9801, "crlc_big", "red_sos_spot")
 end
@@ -3886,7 +3887,7 @@ function add_kontainer_8()
   local npc=db.actor
   sak.create_items(npc,"wpn_pm",1)
   sak.create_items(npc,"ammo_9x18_fmj",2)
-  sak.create_items(npc,"antirad",1)
+  --sak.create_items(npc,"antirad",1)
   nlc_vars.kontainer = nil
 end
 function neumeha_drags_have()
@@ -10705,12 +10706,13 @@ function take_outfit_dolg(id)
   pk:set(data)
 end
 --укорот от Волка
-function take_sescape_lager_volk_ak(first_speaker, second_speaker)
-  local obj = misc.spawn_to ("wpn_ak74u_old", db.actor)
-  if obj then
-      schedule.add ("t_m_p_t","sak_dialog.take_volk_ak("..obj.id..")",200)
-      sak.relocate_item(second_speaker, "in", "wpn_ak74u_old", 1)
-  end
+function take_sescape_lager_volk_ak( first_speaker, second_speaker )
+  -- local obj = misc.spawn_to("wpn_ak74u_old", db.actor)
+  -- if obj then
+  --     schedule.add ("t_m_p_t","sak_dialog.take_volk_ak("..obj.id..")",200)
+  --     sak.relocate_item(second_speaker, "in", "wpn_ak74u_old", 1)
+  -- end
+  sak.create_items( db.actor, "wpn_bm16", 1 ) 
 end
 function take_volk_ak(id)
   params.obj_condition (id, 0.85)
