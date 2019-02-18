@@ -1317,3 +1317,8 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
     end
 end
 
+function move_tolik()
+    local sobj = g_sim:story_object( story_ids.esc_vagon_wounded )
+    if not sobj then return end
+    g_sim:teleport_object( sobj.id, 76, 186568, sak.v3f( -80.888, -4.891, -74.827 ) )
+end
