@@ -1292,6 +1292,7 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
     if pk:isOk() then
         data             = pk:get()
         data.visual_name = tbl[ ind ][ 6 ]
+        data.custom_data = "[logic]\nactive = ph_idle@enable\n[ph_idle@enable]\nnonscript_usable = true"
         pk:set( data )
     end
     local obj
