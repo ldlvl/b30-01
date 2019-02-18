@@ -2574,8 +2574,7 @@ end
 function actor_check_body(npc)
     if npc then
         body_blow_id = npc:id()
-        local lname = level.name()
-        amk_mod.try_add_black_tip(lname,npc:id())
+        amk_mod.try_add_black_tip(level.name(),npc:id())
     end
 end
 
