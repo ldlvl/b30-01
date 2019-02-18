@@ -6,384 +6,295 @@ Vergas
 
 class "bag_dialog" (CUIScriptDialog)
 
-local inv_items_list  --информаци€ дл€ сумки (что положить), список записей секций и количества
-local bag_content   --информаци€ дл€ сумки (что лежит)
-local inv_items_ids   --информаци€ по id (что положить), cписок записей секций и id
-
-local save_bag_ids = {}  -- храню ID предметов, которые уже лежали в сумке 
+local inv_items_list     -- информаци€ дл€ сумки (что положить), список записей секций и количества
+local bag_content        -- информаци€ дл€ сумки (что лежит)
+local inv_items_ids      -- информаци€ по id (что положить), cписок записей секций и id
+local save_bag_ids = {}  -- храню ID предметов, которые уже лежали в сумке
 
 function bag_dialog:__init(owner) super()
-  self.owner = owner
-  self:InitControls()
-  self:InitCallBacks()
+    self.owner = owner
+    self:InitControls()
+    self:InitCallBacks()
 end
 
 function bag_dialog:InitControls()
-
-  -- ѕоложение и размеры окна
-  --self:Init(196,0,420,334)
-  self:Init(249,0,526,418)
-  -- файл-описатель элементов
-  local xml = CScriptXmlInit()
-  xml:ParseFile("ui_cheat_bag_on_belt.xml")
-  
-  xml:InitStatic("background_0", self)     
-  xml:InitStatic("background", self)       --—обственно рамка
-  --xml:InitStatic("background_2", self)     --надпись —”ћ ј
-
-  self:Register(xml:Init3tButton("btn_stop",    self),"btn_stop")    --  нопка ¬ыкл
-  self:Register(xml:Init3tButton("btn_empty",   self),"btn_empty")  --  нопка ¬ыгрузить
-  self:Register(xml:Init3tButton("btn_left_1",  self),"btn_left_1")  --  нопка прокрутки слотов влево
-  self:Register(xml:Init3tButton("btn_right_1", self),"btn_right_1")  --  нопка прокрутки слотов вправо
-  self:Register(xml:Init3tButton("btn_1", self),"btn_1")        --  нопка 1 
-  self:Register(xml:Init3tButton("btn_2", self),"btn_2")        --  нопка 2 
-  self:Register(xml:Init3tButton("btn_3", self),"btn_3")        --  нопка 3 
-  self:Register(xml:Init3tButton("btn_4", self),"btn_4")        --  нопка 4 
-  
-  --собираю мелочь в рюкзаке
-  inv_items_list, inv_items_ids = bag_on_belt_use.inventory_items()
- 
-  --≈сли надо, добавл€ю в таблицы записи-пустышки
-  if inv_items_list:size() < 4 then
-     inv_items_list:set_size(4)
-  end   
-  wprintf(" inv_items_list dump: ")
-  inv_items_list:dump() 
-  --wprintf(" inv_items_ids dump: ")
-  --inv_items_ids:dump()
-
-	--определ€ю содержимое сумки
-  bag_content = bag_on_belt_use.load_bag_content()
-    bag_content:set_size(4)		
-    
-    wprintf(" bag_content dump: ")
-    bag_content:dump()
-    
-  local i
-  save_bag_ids = {}
-  
-  for i, rec in bag_content:ipairs() do
-    if rec.id ~= 0 then
-           save_bag_ids[rec.id] = true  -- только те, что сейчас в сумке
+    self:Init(249,0,526,418)        -- ѕоложение и размеры окна
+    local xml = CScriptXmlInit()    -- файл-описатель элементов
+    xml:ParseFile ( "ui_cheat_bag_on_belt.xml" )
+    xml:InitStatic( "background_0", self       )
+    xml:InitStatic( "background", self         )                            -- —обственно рамка
+    self:Register( xml:Init3tButton( "btn_stop",    self ), "btn_stop"    ) --  нопка ¬ыкл
+    self:Register( xml:Init3tButton( "btn_empty",   self ), "btn_empty"   ) --  нопка ¬ыгрузить
+    self:Register( xml:Init3tButton( "btn_left_1",  self ), "btn_left_1"  ) --  нопка прокрутки влево
+    self:Register( xml:Init3tButton( "btn_right_1", self ), "btn_right_1" ) --  нопка прокрутки вправо
+    self:Register( xml:Init3tButton( "btn_1",       self ), "btn_1"       ) --  нопка 1
+    self:Register( xml:Init3tButton( "btn_2",       self ), "btn_2"       ) --  нопка 2
+    self:Register( xml:Init3tButton( "btn_3",       self ), "btn_3"       ) --  нопка 3
+    self:Register( xml:Init3tButton( "btn_4",       self ), "btn_4"       ) --  нопка 4
+    inv_items_list, inv_items_ids = bag_on_belt_use.inventory_items()       --собираю мелочь в рюкзаке
+    if inv_items_list:size() < 4 then      -- ≈сли надо, добавл€ю в таблицы записи-пустышки
+        inv_items_list:set_size( 4 )
     end
-  end  
-    
-  -- расставл€ю иконки на кнопки
-  self:set_bag_pocket()
-  self:reset_windows()  
+    -- wprintf(" inv_items_list dump: ")
+    -- inv_items_list:dump()               -- выключу
+    --определ€ю содержимое сумки
+    bag_content = bag_on_belt_use.load_bag_content()
+    bag_content:set_size( 4 )
+    -- wprintf(" bag_content dump: ")
+    -- bag_content:dump()                  -- выключу
+    local i
+    save_bag_ids = {}
+    for i, rec in bag_content:ipairs() do
+        if rec.id ~= 0 then
+            save_bag_ids[ rec.id ] = true  -- только те, что сейчас в сумке
+        end
+    end
+    self:set_bag_pocket()   -- расставл€ю иконки на кнопки
+    self:reset_windows()
 end
 
 function bag_dialog:InitCallBacks()
-  self:AddCallback("btn_stop", ui_events.BUTTON_CLICKED, self.btn_stop, self)     --  нопка ¬ыкл
-  self:AddCallback("btn_empty", ui_events.BUTTON_CLICKED, self.btn_empty, self)     --  нопка ¬ыгрузить
-  self:AddCallback("btn_left_1", ui_events.BUTTON_CLICKED, self.btn_left_1, self)    --  нопка прокрутки слотов влево
-  self:AddCallback("btn_right_1", ui_events.BUTTON_CLICKED, self.btn_right_1, self)  --  нопка прокрутки слотов влево
-  self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self)         --  нопка 1 
-  self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self)         --  нопка 2 
-  self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self)         --  нопка 3 
-  self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self)         --  нопка 4
+    self:AddCallback( "btn_stop",    ui_events.BUTTON_CLICKED, self.btn_stop,    self )  --  нопка ¬ыкл
+    self:AddCallback( "btn_empty",   ui_events.BUTTON_CLICKED, self.btn_empty,   self )  --  нопка ¬ыгрузить
+    self:AddCallback( "btn_left_1",  ui_events.BUTTON_CLICKED, self.btn_left_1,  self )  --  нопка прокрутки влево
+    self:AddCallback( "btn_right_1", ui_events.BUTTON_CLICKED, self.btn_right_1, self )  --  нопка прокрутки влево
+    self:AddCallback( "btn_1",       ui_events.BUTTON_CLICKED, self.btn_1,       self )  --  нопка 1
+    self:AddCallback( "btn_2",       ui_events.BUTTON_CLICKED, self.btn_2,       self )  --  нопка 2
+    self:AddCallback( "btn_3",       ui_events.BUTTON_CLICKED, self.btn_3,       self )  --  нопка 3
+    self:AddCallback( "btn_4",       ui_events.BUTTON_CLICKED, self.btn_4,       self )  --  нопка 4
 end
 
-function bag_dialog:OnKeyboard(dik, keyboard_action)
- --  if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-	-- if dik == DIK_keys.DIK_A then
-	--    self:btn_left_1()
- --       return true
-	-- elseif dik == DIK_keys.DIK_D then
-	--    self:btn_right_1()
- --       return true
- --    end
- --  end
-  return CUIScriptDialog.OnKeyboard(self,dik,keyboard_action)
+function bag_dialog:OnKeyboard( dik, keyboard_action )
+    return CUIScriptDialog.OnKeyboard( self, dik, keyboard_action )
 end
 
 function bag_dialog:CloseDialog()
-  bag_content = nil
-  inv_items_list = nil
-  inv_items_ids = nil
-  self:del_windows_pocket()
-  self:del_windows_1_4()
-  
-  used_items.set_get_flag_use_gadget(1,true)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_deselect"),1)
-  razgruzka.inventory_on_off(false)
-  CUIScriptDialog.CloseDialog(self)
+    bag_content    = nil
+    inv_items_list = nil
+    inv_items_ids  = nil
+    self:del_windows_pocket()
+    self:del_windows_1_4()
+    used_items.set_get_flag_use_gadget( 1, true )
+    vergas_lib.s_play( vergas_lib.set_pr_from_config_str( "bag_on_belt", "snd_deselect" ), 1 )
+    razgruzka.inventory_on_off( false )
+    CUIScriptDialog.CloseDialog( self )
 end
 
 -------------------------------------------------------------------------
 --расстановка иконок и количества на кнопках
 -------------------------------------------------------------------------
-function bag_dialog:set_btn_n(n)
-   if n > 4 then return end
-
-   local name = "wnd_"..tostring(n) 
-   self:remove_static(name)
-   local rec = inv_items_list:get(n)
-   -- wprintf(" set_btn_n(%d) rec = %s", n, DumpVar(rec))
-   
-   if not rec or rec.count == 0 then return end   
-   local m_rects = {}
-   
-   m_rects[1] = 
-    {
-        { 106+32,352,33,33 },    
-        { 178+32,352,33,33 }, 
-        { 255+32,352,33,33 }, 
-        { 332+32,352,33,33 }
+function bag_dialog:set_btn_n( n )
+    if n > 4 then return end
+    local name = "wnd_" .. tostring( n )
+    self:remove_static( name )
+    local rec = inv_items_list:get( n )
+    if not rec or rec.count == 0 then return end
+    local m_rects = {}
+    m_rects[ 1 ] = {
+        { 106 + 32, 352, 33, 33 },
+        { 178 + 32, 352, 33, 33 },
+        { 255 + 32, 352, 33, 33 },
+        { 332 + 32, 352, 33, 33 }
     }
-   
-   m_rects[2] = 
-    {
-        { 90+32,352,66,33  },
-        { 162+32,352,66,33 }, 
-        { 239+32,352,66,33 }, 
-        { 316+32,352,66,33 }
+    m_rects[ 2 ] = {
+        { 90  + 32, 352, 66, 33 },
+        { 162 + 32, 352, 66, 33 },
+        { 239 + 32, 352, 66, 33 },
+        { 316 + 32, 352, 66, 33 }
     }
-   
-   m_rects[3] = m_rects[2]
-   
-   local ik_t = vergas_lib.set_pr_from_config("bag_"..rec.sect, "size_icon")
-   local l_rects = m_rects[ik_t] or {}
-   local rect = l_rects[n]
-   if rect == nil then
-      wprintf("~C0C #ERROR~C07: nil == m_rects[%d][%d] ", ik_t or -1, n or -1)
-     return
-   end
-   
-   self:add_static(name, rect, tostring(rec.count), nil, "", rec.sect)
+    m_rects[ 3 ] = m_rects[ 2 ]
+    local ik_t    = vergas_lib.set_pr_from_config( "bag_" .. rec.sect, "size_icon" )
+    local l_rects = m_rects[ ik_t ] or {}
+    local rect    = l_rects[ n ]
+    if rect == nil then
+        wprintf( "~C0C #ERROR~C07: nil == m_rects[%d][%d] ", ik_t or -1, n or -1 )
+        return
+    end
+    self:add_static( name, rect, tostring( rec.count ), nil, "", rec.sect )
 end
 
-
-function bag_dialog:set_wnd_pocket_n(n, x,y,w,h)
-   local sect = bag_content(n).sect
-   local rect = { x, y, w, h }
-   self:add_static("wnd_pocket_"..tostring(n), rect, "1", nil, "", sect)
+function bag_dialog:set_wnd_pocket_n( n, x, y, w, h )
+    local sect = bag_content( n ).sect
+    local rect = { x, y, w, h }
+    self:add_static( "wnd_pocket_" .. tostring( n ), rect, "1", nil, "", sect )
 end
-
 -------------------------------------------------------------------------
 --работа кнопок сумки
 -------------------------------------------------------------------------
 function bag_dialog:btn_stop()          -- нопка закрыти€ сумки
-  local i                   
-    bag_content = bag_on_belt_use.clean_holes_table(bag_content) 
-              
-  for i, rec in bag_content:ipairs()  do         
-    if rec.id > 0 and save_bag_ids[rec.id] then
-       bag_on_belt_use.transfer_item_in_hran(rec.id)
+    local i
+    bag_content = bag_on_belt_use.clean_holes_table( bag_content )
+    for i, rec in bag_content:ipairs()  do
+        if rec.id > 0 and save_bag_ids[ rec.id ] then
+            bag_on_belt_use.transfer_item_in_hran( rec.id )
+        end
     end
-  end
-  
-  --записываю инфу в переменную
-  bag_on_belt_use.save_bag_content(bag_content)
-  schedule.add ("bag_weight", "bag_on_belt_use.calculate_bag_weight()", 500)
-  self:CloseDialog()
+    bag_on_belt_use.save_bag_content(bag_content)      --записываю инфу в переменную
+    schedule.add( "bag_weight", "bag_on_belt_use.calculate_bag_weight()", 500 )
+    self:CloseDialog()
 end
 
-function bag_dialog:btn_empty()    -- нопка ¬ыгрузить из сумки
-    
-  --трансферю предметы, если они в хранилище
-  for i, rec in bag_content:ipairs() do
-    if save_bag_ids [rec.id] then
-       if not bag_on_belt_use.transfer_item_from_hran(rec.id) then -- если есть проблемы, то зачем?
-              -- return
-           end
+function bag_dialog:btn_empty()               -- нопка ¬ыгрузить из сумки
+    for i, rec in bag_content:ipairs() do     --трансферю предметы, если они в хранилище
+        if save_bag_ids[ rec.id ] then
+            if not bag_on_belt_use.transfer_item_from_hran( rec.id ) then -- если есть проблемы, то зачем?
+            -- return
+            end
+        end
     end
-  end
-
-    -- возвращение на исходные позиции      
-    inv_items_list, inv_items_ids = bag_on_belt_use.inventory_items()
-    bag_content:set_default(1, 4)
-  save_bag_ids = { }
-  
-  --обновл€ю иконки
-  self:set_bag_pocket()
-  self:reset_windows()
-
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
+    inv_items_list, inv_items_ids = bag_on_belt_use.inventory_items() -- возвращение на исходные позиции
+    bag_content:set_default( 1, 4 )
+    save_bag_ids = { }
+    self:set_bag_pocket()     --обновл€ю иконки
+    self:reset_windows()
+    vergas_lib.s_play( vergas_lib.set_pr_from_config_str( "bag_on_belt", "snd_scroll" ), 1 )
 end
 
-function bag_dialog:btn_x(n)
-  if inv_items_list(n).id ~= 0 then
-     self:put_in_bag(n)
-     self:set_btn_n(n)
-  end
+function bag_dialog:btn_x( n )
+    if inv_items_list( n ).id ~= 0 then
+        self:put_in_bag( n )
+        self:set_btn_n( n )
+    end
 end
 
---  нопка 1
-function bag_dialog:btn_1() self:btn_x(1) end
---  нопка 2
-function bag_dialog:btn_2() self:btn_x(2) end
---  нопка 3
-function bag_dialog:btn_3() self:btn_x(3) end
---  нопка 4
-function bag_dialog:btn_4() self:btn_x(4) end
-
+function bag_dialog:btn_1() self:btn_x(1) end --  нопка 1
+function bag_dialog:btn_2() self:btn_x(2) end --  нопка 2
+function bag_dialog:btn_3() self:btn_x(3) end --  нопка 3
+function bag_dialog:btn_4() self:btn_x(4) end --  нопка 4
 -------------------------------------------------------------------------
 --работа кнопок прокрутки
 -------------------------------------------------------------------------
-
-function bag_dialog:btn_left_1()                -- нопка прокрутки слотов влево
-  if inv_items_list:size() <= 4 then return end
-  inv_items_list:rotate_left()
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
-  self:reset_windows()
+function bag_dialog:btn_left_1()  -- нопка прокрутки слотов влево
+    if inv_items_list:size() <= 4 then return end
+    inv_items_list:rotate_left()
+    vergas_lib.s_play( vergas_lib.set_pr_from_config_str( "bag_on_belt", "snd_scroll" ), 1 )
+    self:reset_windows()
 end
 
-function bag_dialog:btn_right_1()              -- нопка прокрутки слотов вправо
-  if inv_items_list:size() <= 4 then return end
-  inv_items_list:rotate_right()
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_scroll"),1)
-  self:reset_windows()
+function bag_dialog:btn_right_1() -- нопка прокрутки слотов вправо
+    if inv_items_list:size() <= 4 then return end
+    inv_items_list:rotate_right()
+    vergas_lib.s_play( vergas_lib.set_pr_from_config_str( "bag_on_belt", "snd_scroll" ), 1 )
+    self:reset_windows()
 end
-
 -------------------------------------------------------------------------
---функции перемещени€ хабара 
+--функции перемещени€ хабара
 -------------------------------------------------------------------------
-function bag_dialog:put_in_bag(btn)
-
-  local i
-  local pocket = 1  
-  --определ€ю количество зан€тых карманов сумки
-  local filling_pocket = 0
-  for i, rec  in bag_content:ipairs() do
-    if rec.sect ~= "?" then
-       filling_pocket = filling_pocket + vergas_lib.set_pr_from_config("bag_"..rec.sect, "size")
+function bag_dialog:put_in_bag( btn )
+    local i
+    local pocket         = 1
+    local filling_pocket = 0                -- определ€ю количество зан€тых карманов сумки
+    for i, rec in bag_content:ipairs() do
+        if rec.sect ~= "?" then
+            filling_pocket = filling_pocket + vergas_lib.set_pr_from_config( "bag_" .. rec.sect, "size" )
+        end
     end
-  end
-  
-    local brec = inv_items_list(btn) -- исходный предмет 
-  if (filling_pocket + vergas_lib.set_pr_from_config("bag_"..brec.sect,"size")) > 4 then -- больше не поместитс€
-    return
-  end
-        
-  
-  --определ€ю пустую €чейку сумки
-    local void = bag_content:find(1, "?") 
-    if void > 0 then 
-       pocket = void
-       wprintf(" target cell = %d ", void)
+    local brec = inv_items_list( btn )      -- исходный предмет
+    if ( filling_pocket + vergas_lib.set_pr_from_config( "bag_" .. brec.sect, "size" ) ) > 4 then -- больше не поместитс€
+        return
     end
-  
-  --засовываю хабар
+    local void = bag_content:find( 1, "?" ) -- определ€ю пустую €чейку сумки
+    if void > 0 then
+        pocket = void
+        --wprintf( " target cell = %d ", void )
+    end
+    --засовываю хабар
     local moved = false
-  for i, rec in inv_items_ids:ipairs() do
-        wprintf("~C0F checking~C0D %d~C0B =~C0A %s ~C07", rec.id, rec.sect)  
-    if brec.sect == rec.sect and not save_bag_ids[rec.id] then
-           wprintf("~C0E found~C0D #%d~C0B =~C0A %s ~C07", i, rec.sect)        
-           bag_content:set(pocket, rec)
-           save_bag_ids[rec.id] = true
-           inv_items_ids:remove(i) -- использовали один id, надо его удал€ть
-           moved = true                              
-       break
-    end    
-  end
-     
-    --[[
-    wprintf("~CF0 updated bag_content dump: ~C07")
-    bag_content:dump()
-    wprintf(" save_bag_ids: ")
-    dump_table(save_bag_ids)
-    --]]
+    for i, rec in inv_items_ids:ipairs() do
+        --wprintf( "~C0F checking~C0D %d~C0B =~C0A %s ~C07", rec.id, rec.sect )
+        if brec.sect == rec.sect and not save_bag_ids[ rec.id ] then
+            --wprintf("~C0E found~C0D #%d~C0B =~C0A %s ~C07", i, rec.sect)
+            bag_content:set( pocket, rec )
+            save_bag_ids[ rec.id ] = true
+            inv_items_ids:remove( i )            -- использовали один id, надо его удал€ть
+            moved = true
+            break
+        end
+    end
     if not moved then
-       wprintf("~C0C #WARN: nothing moved to bag! ~C07")  
-       return 
+        --wprintf("~C0C #WARN: nothing moved to bag! ~C07")
+        return
     end -- кака€-то проблема
-             
-  brec.count = brec.count - 1
-    
-  if brec.count == 0 then
-     brec.sect = "?"
-     inv_items_list = bag_on_belt_use.clean_holes_table(inv_items_list)
-  end
-  
-  --играю звук
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_load"),1)
-  
-  --ќбновл€ю иконки сумки
-  self:set_bag_pocket()
-  self:reset_windows()
+    brec.count = brec.count - 1
+    if brec.count == 0 then
+        brec.sect      = "?"
+        inv_items_list = bag_on_belt_use.clean_holes_table( inv_items_list )
+    end
+    vergas_lib.s_play(vergas_lib.set_pr_from_config_str("bag_on_belt","snd_load"),1)    -- играю звук
+    self:set_bag_pocket()     --ќбновл€ю иконки сумки
+    self:reset_windows()
 end
 
 function bag_dialog:set_bag_pocket()
-
-  local i
-  local template = ""
-  
-  --составл€ю шаблон размешени€ предметов
-  for i, rec in bag_content:ipairs() do
-    if rec.sect ~= "?" then
-       template = template..tostring(vergas_lib.set_pr_from_config("bag_"..rec.sect,"size_icon"))
+    local i
+    local template = ""
+    --составл€ю шаблон размешени€ предметов
+    for i, rec in bag_content:ipairs() do
+        if rec.sect ~= "?" then
+            template = template .. tostring(
+                vergas_lib.set_pr_from_config( "bag_" .. rec.sect, "size_icon" )
+            )
+        end
     end
-  end
-
-  self:del_windows_pocket()
-  
-  if template == "2" then
-    self:set_wnd_pocket_n(1, 230,281,66,33)
-  elseif template == "22" then
-    self:set_wnd_pocket_n(1, 197,281,66,33)
-    self:set_wnd_pocket_n(2, 267,281,66,33)
-  elseif template == "21" then
-    self:set_wnd_pocket_n(1, 197,281,66,33)
-    self:set_wnd_pocket_n(2, 284,281,33,33)
-  elseif template == "12" then
-    self:set_wnd_pocket_n(1, 210,281,33,33)  
-    self:set_wnd_pocket_n(2, 267,281,66,33)
-  elseif template == "211" then
-    self:set_wnd_pocket_n(1, 191,281,66,33)  --211
-    self:set_wnd_pocket_n(2, 260,281,33,33)
-    self:set_wnd_pocket_n(3, 299,281,33,33)
-  elseif template == "121" then
-    self:set_wnd_pocket_n(1, 194,281,33,33)  --121
-    self:set_wnd_pocket_n(2, 230,281,66,33)
-    self:set_wnd_pocket_n(3, 299,281,33,33)
-  elseif template == "112" then
-    self:set_wnd_pocket_n(1, 194,281,33,33)  --112
-    self:set_wnd_pocket_n(2, 233,281,33,33)
-    self:set_wnd_pocket_n(3, 269,281,66,33)
-  elseif template == "1" then
-    self:set_wnd_pocket_n(1, 247,281,33,33)    --1
-  elseif template == "11" then
-    self:set_wnd_pocket_n(1, 210,281,33,33)    --11
-    self:set_wnd_pocket_n(2, 284,281,33,33)
-  elseif template == "111" then  
-    self:set_wnd_pocket_n(1, 198,281,33,33)    --111
-    self:set_wnd_pocket_n(2, 246,281,33,33)
-    self:set_wnd_pocket_n(3, 294,281,33,33)
-  elseif template == "1111" then
-    self:set_wnd_pocket_n(1, 193,281,33,33)    --1111
-    self:set_wnd_pocket_n(2, 229,281,33,33)
-    self:set_wnd_pocket_n(3, 265,281,33,33)
-    self:set_wnd_pocket_n(4, 301,281,33,33)
-  end
+    self:del_windows_pocket()
+    if template     == "2"  then
+        self:set_wnd_pocket_n( 1, 230, 281, 66, 33 )
+    elseif template == "22" then
+        self:set_wnd_pocket_n( 1, 197, 281, 66, 33 )
+        self:set_wnd_pocket_n( 2, 267, 281, 66, 33 )
+    elseif template == "21" then
+        self:set_wnd_pocket_n( 1, 197, 281, 66, 33 )
+        self:set_wnd_pocket_n( 2, 284, 281, 33, 33 )
+    elseif template == "12" then
+        self:set_wnd_pocket_n( 1, 210, 281, 33, 33 )
+        self:set_wnd_pocket_n( 2, 267, 281, 66, 33 )
+    elseif template == "211" then
+        self:set_wnd_pocket_n( 1, 191, 281, 66, 33 )  --211
+        self:set_wnd_pocket_n( 2, 260, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 299, 281, 33, 33 )
+    elseif template == "121" then
+        self:set_wnd_pocket_n( 1, 194, 281, 33, 33 )  --121
+        self:set_wnd_pocket_n( 2, 230, 281, 66, 33 )
+        self:set_wnd_pocket_n( 3, 299, 281, 33, 33 )
+    elseif template == "112" then
+        self:set_wnd_pocket_n( 1, 194, 281, 33, 33 )  --112
+        self:set_wnd_pocket_n( 2, 233, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 269, 281, 66, 33 )
+    elseif template == "1" then
+        self:set_wnd_pocket_n( 1, 247, 281, 33, 33 )  --1
+    elseif template == "11" then
+        self:set_wnd_pocket_n( 1, 210, 281, 33, 33 )  --11
+        self:set_wnd_pocket_n( 2, 284, 281, 33, 33 )
+    elseif template == "111" then
+        self:set_wnd_pocket_n( 1, 198, 281, 33, 33 )  --111
+        self:set_wnd_pocket_n( 2, 246, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 294, 281, 33, 33 )
+    elseif template == "1111" then
+        self:set_wnd_pocket_n( 1, 193, 281, 33, 33 )  --1111
+        self:set_wnd_pocket_n( 2, 229, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 265, 281, 33, 33 )
+        self:set_wnd_pocket_n( 4, 301, 281, 33, 33 )
+    end
 end
-
 -------------------------------------------------------------------------
 --функции общего назначени€
 -------------------------------------------------------------------------
 function bag_dialog:reset_windows()
-  
-  self:del_windows_1_4()
-  
-  for i, rec in inv_items_list:ipairs() do
-     if i < 5 and rec.sect ~= "?" then
-        self:set_btn_n(i)
-     end   
-  end
-
+    self:del_windows_1_4()
+    for i, rec in inv_items_list:ipairs() do
+        if i < 5 and rec.sect ~= "?" then self:set_btn_n( i ) end
+    end
 end
 
-function bag_dialog:del_windows_1_4()
-  --убираю объ€вленные статики
+function bag_dialog:del_windows_1_4()      -- убираю объ€вленные статики
     for i = 1, 4 do
-        self:remove_static("wnd_"..tostring(i))
-    end    
+        self:remove_static( "wnd_" .. tostring( i ) )
+    end
 end
 
-function bag_dialog:del_windows_pocket()
-  --убираю объ€вленные статики
+function bag_dialog:del_windows_pocket()   -- убираю объ€вленные статики
     for i = 1, 4 do
-       self:remove_static("wnd_pocket_"..tostring(i))
-    end    
+       self:remove_static( "wnd_pocket_" .. tostring( i ) )
+    end
 end
 
