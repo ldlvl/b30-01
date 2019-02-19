@@ -658,22 +658,6 @@ function firemode_switch_try()
     end
 end
 
-function on_late_init()
-    schedule.add( "do_eternal", "test.eternal_start()", 12000 )
-    local d_saved = get_death_count( "d_stor" ) or 0
-    local d_pda   = actor_stats.get_points( "stalkerkills" ) or 0
-    local d_diff  = d_saved - d_pda
-    local p_diff  = get_death_count( "p_stor" ) - get_death_count( "p_help" )
-    if d_diff > 0 then
-        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), d_diff, 1 )
-    end
-    if p_diff > 0 then
-        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used" ), p_diff, 0 )
-    end
-    dsh.get_next_random( "sak.artmod" )  -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
-    prizrak_outfit_prize()
- end
-
 function get_death_count( what )
     local f = getFS()
     local flist = f:file_list_open_ex(
@@ -705,31 +689,56 @@ function set_death_count( what, value )
     end
 end
 
-function on_new_game()
-    get_death_count( "d_stor" )
-    set_death_count( "d_stor", 0 )
-    get_death_count( "p_stor" )
-    set_death_count( "p_stor", 0 )
-    get_death_count( "p_help" )
-    set_death_count( "p_help", 0 )
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_blowouts_num"      ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_1"      ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_2"      ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_3"      ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_sem"    ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_arts_found_uniq"   ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_treas_found"       ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_vodka_drink"       ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_1"     ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_2"     ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_medkit_used_3"     ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_antirad_used"      ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_played"  ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_minigames_won"     ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_lc_used"           ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used"    ), 0, 0 ) --+
-    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths"         ), 0, 0 ) --+
+function reset_death_count( what )
+    local f  = getFS()
+    local f1 = f:update_path( "$fs_root$", "fsgame.ltx" )
+    local f2 = f:update_path( "$game_stats$", "0." .. what )
+    f:file_copy( f1, f2 )
 end
+
+function on_new_game()
+    reset_death_count( "d_stor" )
+    reset_death_count( "p_stor" )
+    reset_death_count( "p_help" )
+    for _, v in ipairs({ 
+        "st_pda_blowouts_num",
+        "st_pda_arts_found_1",
+        "st_pda_arts_found_2",
+        "st_pda_arts_found_3",
+        "st_pda_arts_found_sem",
+        "st_pda_arts_found_uniq",
+        "st_pda_treas_found",
+        "st_pda_vodka_drink",
+        "st_pda_medkit_used_1",
+        "st_pda_medkit_used_2",
+        "st_pda_medkit_used_3",
+        "st_pda_antirad_used",
+        "st_pda_minigames_played",
+        "st_pda_minigames_won",
+        "st_pda_lc_used",
+        "st_pda_saveloads_used",
+        "st_pda_gg_deaths"
+    }) do
+        xr_statistic.add_pts( "stalkerkills", game.translate_string( v ), 0, 0 )
+    end
+end
+
+
+function on_late_init()
+    schedule.add( "do_eternal", "test.eternal_start()", 12000 )
+    local d_saved = get_death_count( "d_stor" ) or 0
+    local d_pda   = actor_stats.get_points( "stalkerkills" ) or 0
+    local d_diff  = d_saved - d_pda
+    local p_diff  = get_death_count( "p_stor" ) - get_death_count( "p_help" )
+    if d_diff > 0 then
+        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_gg_deaths" ), d_diff, 1 )
+    end
+    if p_diff > 0 then
+        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used" ), p_diff, 0 )
+    end
+    if lua_random() > 0.5 then dsh.get_next_random( "sak.artmod" ) end -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
+    prizrak_outfit_prize()
+ end
 
 function add_art_to_vars( id )
     if id ~= nil then
