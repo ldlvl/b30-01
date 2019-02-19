@@ -1997,16 +1997,28 @@
 		<phrase id="307">
 			<text>escape_trader_new_start_dialog_307</text>
 			<give_info>kvest_art_started</give_info>
-			<action>sak_dialog.add_kontainer_1</action>
 			<action>test.spawn_star</action>
-			<next>308</next>
+			<next>3081</next>
+			<next>3082</next>
 		</phrase>
-		<phrase id="308">
-			<text>escape_trader_new_start_dialog_308</text>
-			<next>309</next>
+		<phrase id="3081">
+			<text>escape_trader_new_start_dialog_3081</text>
+			<next>3091</next>
 		</phrase>
-		<phrase id="309">
+		<phrase id="3082">
+			<text>escape_trader_new_start_dialog_3082</text>
+			<next>3092</next>
+		</phrase>
+		<phrase id="3091">
 			<text>escape_trader_new_start_dialog_309</text>
+			<action>test.add_to_actor("conserva",1)</action>
+			<action>test.add_to_actor("bandage",2)</action>
+			<next>310</next>
+		</phrase>
+		<phrase id="3092">
+			<text>escape_trader_new_start_dialog_309</text>
+			<action>test.add_to_actor("medkit",1)</action>
+			<action>test.add_to_actor("bandage",2)</action>
 			<next>310</next>
 		</phrase>
 		<phrase id="310">
