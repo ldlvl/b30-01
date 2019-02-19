@@ -141,7 +141,7 @@ hit_absorbation_sect		= capsule_absorbation
 GroupControlSection			= spawn_group
 art_mama					= ice
 hit_type					= burn, radiation, shock, telepatic, chemical_burn
-unit_hit					= 0.20
+unit_hit					= 0.19
 $spawn						= "artifacts\moscito star"
 visual						= physics\anomaly\m_capsule.ogf
 description					= enc_zone_capsule
@@ -164,27 +164,21 @@ hit_absorbation_sect		= m_capsule_absorbation
 [af_mayatnik_tuman_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_tuman_new_capsule_absorbation
 [af_mayatnik_tuman_new_capsule_absorbation]:absorbation_fake
-
 [af_mayatnik_les_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_les_new_capsule_absorbation
 [af_mayatnik_les_new_capsule_absorbation]:absorbation_fake
-
 [af_mayatnik_radar_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_radar_new_capsule_absorbation
 [af_mayatnik_radar_new_capsule_absorbation]:absorbation_fake
-
 [af_mayatnik_tesla_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_tesla_new_capsule_absorbation
 [af_mayatnik_tesla_new_capsule_absorbation]:absorbation_fake
-
 [af_mayatnik_stadion_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_stadion_new_capsule_absorbation
 [af_mayatnik_stadion_new_capsule_absorbation]:absorbation_fake
-
 [af_mayatnik_chaes_new_capsule]:m_capsule
 hit_absorbation_sect		= af_mayatnik_chaes_new_capsule_absorbation
 [af_mayatnik_chaes_new_capsule_absorbation]:absorbation_fake
-
 [af_night_star_capsule]:capsule
 hit_absorbation_sect		= af_night_star_capsule_absorbation
 [af_night_star_capsule_absorbation]:absorbation_fake
@@ -283,7 +277,7 @@ fire_wound_immunity 		= 0.85
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\gravy vyvert"
 art_mama					= voronka
-hit_type					= strike
+hit_type					= shock, burn
 unit_hit					= 0.04
 visual						= physics\anomaly\artefact_gravy1.ogf
 description					= artifact_af-vyvert
@@ -311,7 +305,7 @@ strike_immunity 			= 0.85
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\gravy gravi"
 art_mama					= voronka
-hit_type					= strike, wound
+hit_type					= shock, burn
 unit_hit					= 0.1
 visual						= physics\anomaly\artefact_gravy2.ogf
 description					= artifact_af-gravi
@@ -360,7 +354,7 @@ radiation_restore_speed		= 0.0006
 good_effects				= strike_immunity, wound_immunity
 hit_absorbation_sect		= af_gold_fish_absorbation
 [af_gold_fish_absorbation]:absorbation_fake
-strike_immunity 			= 0.75
+strike_immunity 			= 0.85
 
 ; Капли
 [af_drops]:af_base
@@ -384,7 +378,7 @@ lights_enabled				= true
 trail_light_color			= 0.98, 0.3, 0.05
 trail_light_range			= 4
 radiation_restore_speed		= -0.0001
-power_restore_speed			= -0.005
+power_restore_speed			= -0.00495
 good_effects				= radiation_restore_speed, telepatic_immunity
 hit_absorbation_sect		= af_drops_absorbation
 [af_drops_absorbation]:absorbation_fake
@@ -414,7 +408,7 @@ lights_enabled				= true
 trail_light_color			= 0.98, 0.3, 0.1
 trail_light_range			= 5
 radiation_restore_speed		= -0.0002
-power_restore_speed			= -0.004
+power_restore_speed			= -0.00495
 good_effects				= radiation_restore_speed, telepatic_immunity
 hit_absorbation_sect		= af_fireball_absorbation
 [af_fireball_absorbation]:absorbation_fake
@@ -444,7 +438,7 @@ trail_light_color			= 0.98, 0.1, 0.1
 trail_light_range			= 8
 artefact_activation_seq		= af_activation_mincer
 radiation_restore_speed		= -0.0003
-power_restore_speed			= -0.0035
+power_restore_speed			= -0.00495
 good_effects				= radiation_restore_speed, telepatic_immunity
 hit_absorbation_sect		= af_cristall_absorbation
 [af_cristall_absorbation]:absorbation_fake
@@ -456,7 +450,7 @@ telepatic_immunity 			= 0.85
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\mincer blood"
 art_mama					= karusel
-hit_type					= wound
+hit_type					= chemical_burn
 unit_hit					= 0.04
 visual						= physics\anomaly\artefact_myasorubka1.ogf
 description					= artifact_af-blood
@@ -485,7 +479,7 @@ radiation_immunity 			= 0.85
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\mincer meatloaf"
 art_mama					= karusel
-hit_type					= wound, strike
+hit_type					= chemical_burn, radiation
 unit_hit					= 0.1
 visual						= physics\anomaly\artefact_myasorubka2.ogf
 description					= artifact_af-mincer-meat
@@ -615,14 +609,14 @@ lights_enabled				= true
 trail_light_color			= 0.6, 0.7, 0.98
 trail_light_range			= 3.0
 artefact_activation_seq		= af_activation_electra
-power_restore_speed			= 0.004
+power_restore_speed			= 0.0033
 add_satiety					= 25
 reduce_satiety				= 1
 good_effects				= power_restore_speed
 hit_absorbation_sect		= af_electra_flash_absorbation
 [af_electra_flash_absorbation]:absorbation_fake
-shock_immunity				= 1.3
-radiation_immunity 			= 1.3
+shock_immunity				= 1.45
+radiation_immunity 			= 1.45
 
 ; Лунный свет
 [af_electra_moonlight]:af_base
@@ -645,14 +639,14 @@ lights_enabled				= true
 trail_light_color			= 0.05,0.1,0.2
 trail_light_range			= 10.0
 artefact_activation_seq		= af_activation_electra
-power_restore_speed			= 0.0055
+power_restore_speed			= 0.00495
 add_satiety					= 50
 reduce_satiety				= 1
 good_effects				= power_restore_speed
 hit_absorbation_sect		= af_electra_moonlight_absorbation
 [af_electra_moonlight_absorbation]:absorbation_fake
-shock_immunity				= 1.15
-radiation_immunity 			= 1.15
+shock_immunity				= 1.3
+radiation_immunity 			= 1.3
 
 ; Слизь
 [af_ameba_slime]:af_base
@@ -743,7 +737,7 @@ telepatic_immunity 			= 0.85
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\rusty thorn"
 art_mama					= g_puh
-hit_type					= explosion
+hit_type					= chemical_burn
 unit_hit					= 0.04
 $npc						= on
 visual						= physics\anomaly\artefact_needles1.ogf
@@ -773,7 +767,7 @@ good_effects				= radiation_restore_speed, explosion_immunity
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\rusty cristall"
 art_mama					= g_puh
-hit_type					= wound, explosion
+hit_type					= chemical_burn, burn
 unit_hit					= 0.1
 $npc						= on
 visual						= physics\anomaly\artefact_needles2.ogf
@@ -833,7 +827,7 @@ good_effects				= radiation_restore_speed, explosion_immunity
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\dummy spring"
 art_mama					= pustishka
-hit_type					= strike, telepatic, radiation, dummy
+hit_type					= chemical_burn, telepatic, radiation, dummy
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_pustishka.ogf
@@ -851,7 +845,6 @@ hit_absorbation_sect		= af_dummy_spring_absorbation
 [af_dummy_spring_absorbation]:absorbation_fake
 strike_immunity 			= 0.7
 good_effects				= strike_immunity
-
 [af_dummy_spring_fake]:af_dummy_spring
 hit_absorbation_sect		= af_dummy_spring_fake_absorbation
 [af_dummy_spring_fake_absorbation]:absorbation_fake
@@ -861,7 +854,7 @@ hit_absorbation_sect		= af_dummy_spring_fake_absorbation
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\dummy dummy"
 art_mama					= pustishka
-hit_type					= burn, telepatic, radiation
+hit_type					= burn, telepatic, radiation, chemical_burn
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_pustishka1.ogf
@@ -878,7 +871,6 @@ hit_absorbation_sect		= af_dummy_dummy_absorbation
 [af_dummy_dummy_absorbation]:absorbation_fake
 burn_immunity				= 0.55
 good_effects				= burn_immunity
-
 [af_dummy_dummy_fake]:af_dummy_dummy
 hit_absorbation_sect		= af_dummy_dummy_fake_absorbation
 [af_dummy_dummy_fake_absorbation]:absorbation_fake
@@ -888,7 +880,7 @@ hit_absorbation_sect		= af_dummy_dummy_fake_absorbation
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\dummy battery"
 art_mama					= pustishka
-hit_type					= shock, telepatic, radiation
+hit_type					= shock, telepatic, radiation, burn
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_battery.ogf
@@ -916,7 +908,7 @@ hit_absorbation_sect		= af_dummy_battery_fake_absorbation
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\dummy pellicle"
 art_mama					= pustishka
-hit_type 					= chemical_burn, telepatic, radiation
+hit_type 					= chemical_burn, telepatic, radiation, shock
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_plenka.ogf
@@ -946,7 +938,7 @@ hit_absorbation_sect		= af_dummy_pellicle_fake_absorbation
 GroupControlSection			= spawn_group
 $spawn 						= "artifacts\dummy glassbeads"
 art_mama 					= pustishka
-hit_type 					= wound,fire_wound, telepatic, radiation
+hit_type 					= burn, chemical_burn, telepatic, radiation
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_spiral.ogf
@@ -966,7 +958,6 @@ hit_absorbation_sect		= af_dummy_glassbeads_absorbation
 [af_dummy_glassbeads_absorbation]:absorbation_fake
 fire_wound_immunity			= 0.55
 good_effects				= fire_wound_immunity
-
 [af_dummy_glassbeads_fake]:af_dummy_glassbeads
 hit_absorbation_sect		= af_dummy_glassbeads_fake_absorbation
 [af_dummy_glassbeads_fake_absorbation]:absorbation_fake
@@ -976,7 +967,7 @@ hit_absorbation_sect		= af_dummy_glassbeads_fake_absorbation
 GroupControlSection			= spawn_group
 $spawn						= "artifacts\fuzz kolobok"
 art_mama					= g_puh
-hit_type					= chemical_burn,burn,radiation,dummy
+hit_type					= chemical_burn, burn, radiation, dummy
 unit_hit					= 0.08
 $npc						= on
 visual						= physics\anomaly\artefact_rusty_hairs.ogf
@@ -994,7 +985,6 @@ hit_absorbation_sect		= af_dummy_kolobok_absorbation
 [af_dummy_kolobok_absorbation]:absorbation_fake
 wound_immunity				= 0.7
 good_effects				= wound_immunity
-
 [af_dummy_kolobok_fake]:af_dummy_kolobok
 jump_height					= 0
 hit_absorbation_sect		= af_dummy_kolobok_fake_absorbation
