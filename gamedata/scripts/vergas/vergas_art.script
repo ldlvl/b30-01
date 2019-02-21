@@ -1,31 +1,13 @@
-visual_effect={
-  [ "elektra"   ] = { "anomaly2\\electra2_blast_00",
-                      "anomaly\\electra_blast1"
-                    },
-  [ "tramplin"  ] = { "amk_anoms\\bold_blast",
-                      "anomaly\\anomaly_gravy_blast1"
-                    },
-  [ "voronka"   ] = { "anomaly2\\gravity_blast_final00",
-                      "anomaly\\gravi_blowout6"
-                    },
-  [ "garka"     ] = { "static\\zharka_static",
-                      "anomaly\\zhar_blow"
-                    },
-  [ "karusel"   ] = { "anomaly2\\gravi_zaxvat_myasorubka",
-                      "anomaly\\anomaly_mincer_blowout"
-                    },
-  [ "holodec"   ] = { "anomaly2\\studen_blowout",
-                      "anomaly\\buzz_hit"
-                    },
-  [ "g_puh"     ] = { "anomaly2\\pux_blast",
-                      "anomaly\\pux_blast"
-                    },
-  [ "ice"       ] = { "amk\\snow",
-                      "anomaly\\ice"
-                    },
-  [ "pustishka" ] = { "anomaly2\\snow\\blow_snow_01",
-                      "anomaly\\anomaly_mincer_blowout"
-                    }
+visual_effect = {
+    [ "elektra"   ] = { "anomaly2\\electra2_blast_00",       "anomaly\\electra_blast1"         },
+    [ "tramplin"  ] = { "amk_anoms\\bold_blast",             "anomaly\\anomaly_gravy_blast1"   },
+    [ "voronka"   ] = { "anomaly2\\gravity_blast_final00",   "anomaly\\gravi_blowout6"         },
+    [ "garka"     ] = { "static\\zharka_static",             "anomaly\\zhar_blow"              },
+    [ "karusel"   ] = { "anomaly2\\gravi_zaxvat_myasorubka", "anomaly\\anomaly_mincer_blowout" },
+    [ "holodec"   ] = { "anomaly2\\studen_blowout",          "anomaly\\buzz_hit"               },
+    [ "g_puh"     ] = { "anomaly2\\pux_blast",               "anomaly\\pux_blast"              },
+    [ "ice"       ] = { "amk\\snow",                         "anomaly\\ice"                    },
+    [ "pustishka" ] = { "anomaly2\\snow\\blow_snow_01",      "anomaly\\anomaly_mincer_blowout" }
 }
 
 local ver_art               -- таблица id артов на земле
@@ -38,245 +20,237 @@ local unit_time_power = 15  -- врем€ задержки восстановлени€ выносливости дл€ од
 local finish_time_power     -- врем€ конца задержки восстановлени€ выносливости (в игровых секундах)
 
 function spawn_art()
-  if g_sim == nil then 
-     abort( " alife simulator not assigned !" )
-  end
-  ver_art = {} 
-  for i = 1, MAX_OBJ_ID do
-    local obj = g_sim:object( i )
-    if
-      obj
-      and obj.parent_id
-      and obj.section_name
-      and ( obj.parent_id == nil or obj.parent_id == BAD_OBJ_ID )
-    then
-      if
-        string.sub( obj:section_name(), 1, 3 ) == "af_"
-        and obj:section_name() ~= "af_full_akkum"
-      then
-        table.insert( ver_art, obj.id )
-      end
+    if g_sim == nil then abort( " alife simulator not assigned !" ) end
+    ver_art = {} 
+    for i = 1, MAX_OBJ_ID do
+        local obj = g_sim:object( i )
+        if
+            obj
+            and obj.parent_id
+            and obj.section_name
+            and ( obj.parent_id == nil or obj.parent_id == BAD_OBJ_ID )
+        then
+            if
+                string.sub( obj:section_name(), 1, 3 ) == "af_"
+                and obj:section_name() ~= "af_full_akkum"
+            then
+                table.insert( ver_art, obj.id )
+            end
+        end
     end
-  end
 end
 
 function add_in_tbl( obj )
-  if string.sub( obj:section_name(), 1 , 3 ) == "af_" then
-    table.insert( ver_art, obj.id )
-  end
+    if string.sub( obj:section_name(), 1 , 3 ) == "af_" then
+        table.insert( ver_art, obj.id )
+    end
 end
 
 function take_art( obj )
-  local new_add_damage = 0.1
-  local sect = obj:section()
-   -- дл€ статистики:
-  test.haldle_art_for_stats( sect, obj:id() )
-  if sect == "esc_af_medusa" then new_add_damage = 0 end  -- чтобы первой же медузой не убило при новых дамагах
-  local actor = db.actor
-  if ver_art ~= nil and table.getn( ver_art ) ~= 0 then
-    for i = 1, table.getn( ver_art ) do
-      if ver_art[ i ] == obj:id() then
-        flag_take_art = true
-        ver_art[ i ] = 0
-      end
+    local add_dmg = 0.1
+    local sect    = obj:section()
+    local actor   = db.actor
+    -- дл€ статистики:
+    test.haldle_art_for_stats( sect, obj:id() )
+    if sect == "esc_af_medusa" then add_dmg = 0 end  -- чтобы первой же медузой не убило при новых дамагах
+    if ver_art ~= nil and table.getn( ver_art ) ~= 0 then
+        for i = 1, table.getn( ver_art ) do
+            if ver_art[ i ] == obj:id() then
+                flag_take_art = true
+                ver_art[ i ] = 0
+            end
+        end
     end
-  end
-  local result = false
-  if flag_take_art then
-    local art_particle, art_sound
-    local m = lua_random()
-    if m > 0.6 and strposx( obj:name(), "af_" ) then
-      amk.drop_item( actor, obj )
+    local result = false
+    if flag_take_art then
+        local art_particle, art_sound
+        local m = lua_random()
+        if m > 0.6 and strposx( obj:name(), "af_" ) then
+            amk.drop_item( actor, obj )
+        else
+            result = not vergas_rucksack.drop_art( obj )            
+        end
+        --определ€ю партикли
+        local art_mama = vergas_lib.set_pr_from_config_str( sect, "art_mama" )
+        art_particle   = particles_object( visual_effect[ art_mama ][ 1 ] )
+        art_sound      = sound_object( visual_effect[ art_mama ][ 2 ] )
+        if art_particle ~= nil and art_sound ~= nil then
+            local act_pos   = actor:position()
+            local dir       = device().cam_dir
+            local a         = vector()
+            a.y             = math.atan2( dir.x, dir.z )
+            local xdelta    = math.sin( a.y )
+            local zdelta    = math.cos( a.y )
+            local pos_blast = sak.v3f(
+                                ( act_pos.x + xdelta ),
+                                ( act_pos.y + 0.6),
+                                ( act_pos.z + zdelta) 
+                            )
+            art_particle:play_at_pos( pos_blast ) 
+            art_sound:play_at_pos( actor,pos_blast, 0 )
+        end
+        hit_tbl = vergas_lib.str_explode(
+            ",", vergas_lib.set_pr_from_config_str( sect, "hit_type" ), true
+        )
+        unit_hit = vergas_lib.set_pr_from_config_str( sect, "unit_hit" ) or 0.02
+        unit_hit = unit_hit + 0.01 * sak.dog_psy + add_dmg
+        if vergas_masks.get_flag_mask() then     --при надетой маске по 85% от каждого хита из конфига
+            unit_hit = unit_hit * 0.85
+        end   
+        local armor = actor:item_in_slot( 6 )
+        if armor then
+            if strposx( armor:section(), "monolit" ) then  -- костюмы монолита тоже снижают хит.
+                unit_hit = unit_hit * 0.75
+            end
+        end
+        if table.getn( hit_tbl ) ~= 0 then
+            counter_hit = #hit_tbl
+        else
+            counter_hit = 0
+        end
     else
-      result = not vergas_rucksack.drop_art( obj )            
+        result = not vergas_rucksack.drop_art( obj )
     end
-    --определ€ю партикли
-    local art_mama = vergas_lib.set_pr_from_config_str( sect, "art_mama" )
-    art_particle   = particles_object( visual_effect[ art_mama ][ 1 ] )
-    art_sound      = sound_object( visual_effect[ art_mama ][ 2 ] )
-    if art_particle ~= nil and art_sound ~= nil then
-      local act_pos   = actor:position()
-      local dir       = device().cam_dir
-      local a         = vector()
-      a.y             = math.atan2( dir.x, dir.z )
-      local xdelta    = math.sin( a.y )
-      local zdelta    = math.cos( a.y )
-      local pos_blast = sak.v3f(
-        ( act_pos.x + xdelta ),
-        ( act_pos.y + 0.6),
-        ( act_pos.z + zdelta) 
-      )
-      art_particle:play_at_pos( pos_blast ) 
-      art_sound:play_at_pos( actor,pos_blast, 0 )
+    if flag_take_art == false or flag_take_art == nil then
+        local flag_id = 0
+        if ver_art ~= nil then
+            for i = 1, table.getn( ver_art ) do
+                if ver_art[ i ] ~= 0 then flag_id = 1 end
+            end
+            if flag_id == 0 then ver_art = {} end
+        end
     end
-    hit_tbl = vergas_lib.str_explode(
-      ",", vergas_lib.set_pr_from_config_str( sect, "hit_type" ), true
-    )
-    unit_hit = vergas_lib.set_pr_from_config_str( sect, "unit_hit" ) or 0.02
-    unit_hit = unit_hit + 0.01 * sak.dog_psy + new_add_damage
-    if vergas_masks.get_flag_mask() then     --при надетой маске по 85% от каждого хита из конфига
-      unit_hit = unit_hit * 0.85
-    end   
-    local armor = actor:item_in_slot( 6 )
-    if armor then
-      if strposx( armor:section(), "monolit" ) then  -- костюмы монолита тоже снижают хит.
-        unit_hit = unit_hit * 0.75
-      end
-    end
-    if table.getn( hit_tbl ) ~= 0 then
-      counter_hit = #hit_tbl
-    else
-      counter_hit = 0
-    end
-  else
-    result = not vergas_rucksack.drop_art( obj )
-  end
-  if flag_take_art == false or flag_take_art == nil then
-    local flag_id = 0
-    if ver_art ~= nil then
-      for i = 1, table.getn( ver_art ) do
-        if ver_art[ i ] ~= 0 then flag_id = 1 end
-      end
-      if flag_id == 0 then ver_art = {} end
-    end
-  end
-  return result
+    return result
 end
 
 function take_art_update()
-  if flag_take_art and counter_hit ~= 0 then
-    db.actor.power = -1
-    drawing_hits( hit_tbl[ counter_hit ] )
-    counter_hit = counter_hit - 1
-    if counter_hit == 0 then
-      flag_take_art = false
-      local hael = db.actor.health
-      if      hael >= 0.75 then
-        scheme_1()
-      elseif  hael >= 0.50 and hael < 0.75 then
-        scheme_2()
-      elseif  hael >= 0.25 and hael < 0.50 then
-        scheme_3()
-      elseif  hael <  0.25 then
-        scheme_4()
-      end
-      flag_show_power = true
-      finish_time_power = game.time() / 1000 + unit_time_power * table.getn( hit_tbl )
-      hit_tbl = {}
+    if flag_take_art and counter_hit ~= 0 then
+        db.actor.power = -1
+        change_art_on_belt()
+        drawing_hits( hit_tbl[ counter_hit ] )
+        counter_hit = counter_hit - 1
+        if counter_hit == 0 then
+            flag_take_art = false
+            local hael = db.actor.health
+            if      hael >= 0.75 then                 scheme_1()
+            elseif  hael >= 0.50 and hael < 0.75 then scheme_2()
+            elseif  hael >= 0.25 and hael < 0.50 then scheme_3()
+            elseif  hael <  0.25 then                 scheme_4()
+            end
+            flag_show_power   = true
+            finish_time_power = game.time() / 1000 + unit_time_power * table.getn( hit_tbl )
+            hit_tbl = {}
+        end
     end
-  end
-  if flag_show_power then
-    show_power()
-  end
+    if flag_show_power then show_power() end
 end
 
 function show_power()
-  local current_time = game.time() / 1000
-  if current_time < finish_time_power then
-    db.actor.power = - 1
-  else
-    flag_show_power = false
-  end
+    local current_time = game.time() / 1000
+    if current_time < finish_time_power then
+        db.actor.power = - 1
+    else
+        flag_show_power = false
+    end
 end
 
 function drawing_hits( hit_type )
-  local h = hit()
-  h.draftsman = db.actor
-  h:bone( "bip01_spine" )  --им€ кости, по которой наноситс€ удар
-  if       hit_type == "fire_wound"    then h.type = hit.fire_wound
-  elseif   hit_type == "wound"         then h.type = hit.wound
-  elseif   hit_type == "strike"        then h.type = hit.strike
-  elseif   hit_type == "telepatic"     then h.type = hit.telepatic
-  elseif   hit_type == "radiation"     then h.type = hit.radiation
-  elseif   hit_type == "chemical_burn" then h.type = hit.chemical_burn
-  elseif   hit_type == "explosion"     then h.type = hit.explosion
-  elseif   hit_type == "shock"         then h.type = hit.shock
-  end
-  h.power = unit_hit
-  db.actor:hit( h )
-  mike.takeup_mayatnik()
-  --local hael = db.actor.health
-  --get_console():execute("ЌјЌќ—»“—я_’»“="..hit_type)
-  --get_console():execute("”–ќ¬≈Ќ№_«ƒќ–ќ¬№я="..hael)
+    local h     = hit()
+    h.draftsman = db.actor
+    h:bone( "bip01_spine" )
+    if       hit_type == "fire_wound"    then h.type = hit.fire_wound
+    elseif   hit_type == "wound"         then h.type = hit.wound
+    elseif   hit_type == "strike"        then h.type = hit.strike
+    elseif   hit_type == "telepatic"     then h.type = hit.telepatic
+    elseif   hit_type == "radiation"     then h.type = hit.radiation
+    elseif   hit_type == "chemical_burn" then h.type = hit.chemical_burn
+    elseif   hit_type == "explosion"     then h.type = hit.explosion
+    elseif   hit_type == "shock"         then h.type = hit.shock
+    end
+    h.power = unit_hit
+    db.actor:hit( h )
+    mike.takeup_mayatnik()
 end
 
 function scheme_1()
-  level.add_cam_effector( "camera_effects\\surge_01.anm", 25, false, "" )  --резкий рывок вправо
-  --level.add_pp_effector("1.ppe", 2001, false)  --через промежуток двоение в глазах и белое блинкование
-  local snd_rand = lua_random( 1, 5 )
-  if     snd_rand == 1 then
-    vergas_lib.s_play( [[actor\arts_hit_1]], 1 )
-  elseif snd_rand == 2 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
-  elseif snd_rand == 3 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 4 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
-  elseif snd_rand == 5 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
-  end
-  --get_console():execute("—’≈ћј_1")
+    level.add_cam_effector( "camera_effects\\surge_01.anm", 25, false, "" )  --резкий рывок вправо
+    --level.add_pp_effector("1.ppe", 2001, false)  --через промежуток двоение в глазах и белое блинкование
+    local snd_rand = lua_random( 1, 5 )
+    if     snd_rand == 1 then vergas_lib.s_play( [[actor\arts_hit_1]], 1 )
+    elseif snd_rand == 2 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
+    elseif snd_rand == 3 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 4 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
+    elseif snd_rand == 5 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
+    end
 end  
 
 function scheme_2()
-  level.add_cam_effector( "camera_effects\\head_shot.anm", 26, false, "" )  --резко болтануло. 
-  --level.add_pp_effector("gar_ambush_hit.ppe", 2002, false)  --сначала двоитс€, потом полностью темнеет
-  local snd_rand = lua_random( 1, 6 )
-  if snd_rand     == 1 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
-  elseif snd_rand == 2 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 3 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
-  elseif snd_rand == 4 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 5 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
-  elseif snd_rand == 6 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
-  end
-  --get_console():execute("—’≈ћј_2")
+    level.add_cam_effector( "camera_effects\\head_shot.anm", 26, false, "" )  --резко болтануло. 
+    --level.add_pp_effector("gar_ambush_hit.ppe", 2002, false)  --сначала двоитс€, потом полностью темнеет
+    local snd_rand = lua_random( 1, 6 )
+    if snd_rand     == 1 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
+    elseif snd_rand == 2 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 3 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
+    elseif snd_rand == 4 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 5 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
+    elseif snd_rand == 6 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
+    end
 end
 
 function scheme_3()
-  level.add_cam_effector( "camera_effects\\surge_02.anm", 27, false, "" )  --хорошо мотонуло
-  --level.add_pp_effector("surge_shock_old.ppe", 2003, false)  --экран двоитс€ и темнеет несколько раз
-  local snd_rand = lua_random( 1, 6 )
-  if snd_rand     == 1 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
-  elseif snd_rand == 2 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 3 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
-  elseif snd_rand == 4 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 5 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
-  elseif snd_rand == 6 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
-  end
-  --get_console():execute("—’≈ћј_3")
+    level.add_cam_effector( "camera_effects\\surge_02.anm", 27, false, "" )  --хорошо мотонуло
+    --level.add_pp_effector("surge_shock_old.ppe", 2003, false)  --экран двоитс€ и темнеет несколько раз
+    local snd_rand = lua_random( 1, 6 )
+    if snd_rand     == 1 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_1]], 1 )
+    elseif snd_rand == 2 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 3 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
+    elseif snd_rand == 4 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 5 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
+    elseif snd_rand == 6 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_9]], 1 )
+    end
 end
 
 function scheme_4()
-  level.add_pp_effector ( "blink.ppe", 2004, false )  --бела€ вспышка
-  level.add_cam_effector( "camera_effects\\dream_1.anm", 28, false, "" )  --отбрасывает назад и укладывает
-  level.add_cam_effector( "camera_effects\\prison_1.anm", 29, false, "" )  --пробуждение ото сна
-  local snd_rand = lua_random( 1, 7 )
-  if snd_rand == 1 then
-    vergas_lib.s_play( [[actor\arts_hit_2]], 1 )
-  elseif snd_rand == 2 then
-    vergas_lib.s_play( [[actor\arts_hit_3]], 1 )
-  elseif snd_rand == 3 then
-    vergas_lib.s_play( [[characters_voice\human_01\military\fight\hit\hit_5]], 1 )
-  elseif snd_rand == 4 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
-  elseif snd_rand == 5 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
-  elseif snd_rand == 6 then
-    vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
-  elseif snd_rand == 7 then
-    vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
-  end
-  --get_console():execute("—’≈ћј_4")
+    level.add_pp_effector ( "blink.ppe", 2004, false )  --бела€ вспышка
+    level.add_cam_effector( "camera_effects\\dream_1.anm", 28, false, "" )   -- отбрасывает назад и укладывает
+    level.add_cam_effector( "camera_effects\\prison_1.anm", 29, false, "" )  -- пробуждение ото сна
+    local snd_rand = lua_random( 1, 7 )
+    if     snd_rand == 1 then vergas_lib.s_play( [[actor\arts_hit_2]], 1 )
+    elseif snd_rand == 2 then vergas_lib.s_play( [[actor\arts_hit_3]], 1 )
+    elseif snd_rand == 3 then vergas_lib.s_play( [[characters_voice\human_01\military\fight\hit\hit_5]], 1 )
+    elseif snd_rand == 4 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_2]], 1 )
+    elseif snd_rand == 5 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_6]], 1 )
+    elseif snd_rand == 6 then vergas_lib.s_play( [[characters_voice\human_01\dolg\fight\hit\hit_8]], 1 )
+    elseif snd_rand == 7 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
+    end
+end
+-- дл€ разр€дки/зар€дки активных артов на по€се
+-- при подн€тии арта
+function change_art_on_belt()
+    if not sak.arts_operate then return end
+    local art_id
+    local flag = false
+    while not flag do
+        for sect, id in pairs( sak_inventory.belt_items ) do
+            if dsh.get_next_random( "vergas_art.rnd" ) > 0.5 then 
+                art_id = id[ 1 ]
+                flag   = true
+                break
+            end
+        end
+    end
+    local amount = dsh.get_next_random( "vergas_art.rnd", 0.07, 0.16 )
+    local cond   = params.get_condition( art_id, 0.9999 )
+    if cond > amount + 0.05 then
+        local new_cond
+        if dsh.get_next_random( "vergas_art.rnd") > 0.7 then
+            new_cond = cond + amount
+            if new_cond > 1 then new_cond = 1 end
+        else
+            new_cond = cond - amount
+        end
+        params.upd_condition( art_id, new_cond )
+    else
+        misc.release_obj( art_id )
+    end
 end
