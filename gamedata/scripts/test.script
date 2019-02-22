@@ -631,8 +631,7 @@ end
 function firemode_switch_try()
     local active_item = db.actor:active_item()
     if active_item then
-        local sect = active_item:section()
-        if str_in_tab( sect, {
+        if str_in_tab( active_item:section(), {
                 "wpn_aps",
                 "wpn_beretta93",
                 "wpn_mp5",
@@ -659,7 +658,7 @@ function firemode_switch_try()
 end
 
 function get_death_count( what )
-    local f = getFS()
+    local f     = getFS()
     local flist = f:file_list_open_ex(
         "$game_stats$", bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
         "*." .. what
@@ -675,7 +674,7 @@ function get_death_count( what )
 end
 
 function set_death_count( what, value )
-    local f = getFS()
+    local f        = getFS()
     local fileName = (
         f:file_list_open_ex( "$game_stats$",
         bit_or( FS.FS_ListFiles, FS.FS_RootOnly ),
@@ -743,7 +742,7 @@ function on_late_init()
 function add_art_to_vars( id )
     if id ~= nil then
         local lname = level.name()
-        local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
+        local tbl   = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
         if tbl[ lname ] == nil then tbl[ lname ] = {} end
         table.insert( tbl[ lname ], id )
         nlc_vars.tbl_bio_art = tbl
@@ -752,7 +751,7 @@ end
 
 function art_is_bio_art( id )
     local lname = level.name()
-    local tbl = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
+    local tbl   = xray_vars.load_table( nlc_vars, "tbl_bio_art", {} )
     if tbl ~= nil then
         for k, v in pairs( tbl ) do
             if k == lname then
