@@ -1,479 +1,443 @@
 -- version_control.reg_changes("task_smart_upd.script", "alpet", "21.11.2010 0:30:15", "Подготовка к релизу")
 
-if task_smart_upd == nil then
-  _G.task_smart_upd = {} 
-end 
+if task_smart_upd == nil then _G.task_smart_upd = {} end 
 
 if db.reg_task_list == nil then
-     ODS("[~T]. #DBG: task_smart_upd - reseting task_list")
-     db.reg_task_list = {} -- внешнее хранение задач
-  end
+    ODS( "[~T]. #DBG: task_smart_upd - reseting task_list" )
+    db.reg_task_list = {} -- внешнее хранение задач
+end
 
 if nil == task_smart_upd.active_task then 
-  task_smart_upd.active_task = nil
-  task_smart_upd.gtco = nil  
-  task_smart_upd.last_exec_list = ""
-  task_smart_upd.max_loop_timeout = 10 -- TODO: можно загрузить из конфига
-  task_smart_upd.g_timers = {}
+    task_smart_upd.active_task      = nil
+    task_smart_upd.gtco             = nil  
+    task_smart_upd.last_exec_list   = ""
+    task_smart_upd.max_loop_timeout = 10 -- TODO: можно загрузить из конфига
+    task_smart_upd.g_timers         = {}
 end
 
-executed = 0
+executed   = 0
 exec_frame = 0
 
-function stored_timer(name)
- if nil == task_smart_upd.g_timers then task_smart_upd.g_timers = {} end
- local tmr = task_smart_upd.g_timers[name]
- if (tmr == nil) or type(tmr) ~= "userdata" then
-    tmr = misc.game_timer(name)
-    task_smart_upd.g_timers[name] = tmr
- end
- return tmr
-end
-
-
-function binder_alive_msg(obj, delta)
- ODS("[~T]. #DBG:~C0F WOW! Binder it's Live! ~C0E :) delta = ~C0D"..tostring(delta).."~C07")
-end
-
-function amk_update(obj, delta)
- --AMK UTILS--
- amk.on_actor_update(delta)
-end
-
-function amk_mod_call(obj, delta, curtime, taskrec)
- amk.mod_call(taskrec.param1)
-end
-
-function dump_con()
- RunCommand("DUMP_CONSOLE_BUFFER")
-end
-
-function FindRegularTask(name)
- for i,task in ipairs(db.reg_task_list) do
-    if task.name == name then
-       return task
+function stored_timer( name )
+    if nil == task_smart_upd.g_timers then task_smart_upd.g_timers = {} end
+    local tmr = task_smart_upd.g_timers[ name ]
+    if tmr == nil or type( tmr ) ~= "userdata" then
+        tmr = misc.game_timer( name )
+        task_smart_upd.g_timers[ name ] = tmr
     end
- end
- 
- return nil
+    return tmr
+end
+
+function binder_alive_msg( obj, delta )
+    ODS( "[~T]. #DBG:~C0F WOW! Binder it's Live! ~C0E :) delta = ~C0D" .. tostring( delta ) .. "~C07" )
+end
+
+function amk_update( obj, delta )
+    --AMK UTILS--
+    amk.on_actor_update( delta )
+end
+
+function amk_mod_call( obj, delta, curtime, taskrec )
+    amk.mod_call( taskrec.param1 )
+end
+
+function dump_con() RunCommand( "DUMP_CONSOLE_BUFFER" ) end
+
+function FindRegularTask( name )
+    for i, task in ipairs( db.reg_task_list ) do
+        if task.name == name then return task end
+    end
+    return nil
 end
 
 _G.FindRegularTask = FindRegularTask
 function foo() end
 
-function AddRegularTask (name, cbfunc, obj_self, max_calls, period, param1, param2, param3)
- name = tostring (name)
-
- local entry = active_task -- для избежания ситуации с появлением дубликатов (!)
- if entry and (entry.name ~= name) then
-    entry = nil
- end
-
- if not entry then
-    entry = FindRegularTask(name)
- end
-
- local exists = false
- if ( entry ~= nil ) then
-   exists = true
- else
-   entry = {}
- end
-
- -- настройка умолчаний
- if period == nil    then period = 500 + lua_random(1, 30) end
- if max_calls == nil then max_calls = 0 end
- 
- max_calls = tonumber (max_calls)
- period = tonumber (period)
- 
- if not cbfunc then
-    SoundMsg("![~T].~C0C #ERROR: callback func for task "..name.." ==~C0F "..DumpVar(cbfunc), 1300, 300)
-    wprintf("~C0A %s~C07", lua_traceback(''))
-    return false
- end
-  
- entry.name = name                      -- имя задачи, для идентификации при отладке, профилировании и перезагружаемого кода
- if type(cbfunc) == "string" then
-    entry.callback  = foo               -- заглушка
-    entry.namespace = cbfunc            -- имя таблицы пространства имен
- else  
-    entry.callback = cbfunc             -- собственно функция обратного вызова 
- end
-    
- local updated = (entry.period or 500) ~= period
-
- entry.obj_self = obj_self              -- вызывать как метод определенного объекта
- entry.max_calls = max_calls            -- сколько вызывать (0 - постоянно)
- entry.period = period                  -- периодичность вызова (в мсек)
- entry.last_call = ElapsedTime(-35)     -- когда последний раз была вызвана
- entry.before = 0                       -- значение таймера до вызова
- entry.elapsed = 0                      -- значение таймера после вызова
- entry.num_calls = 0
- entry.pre_time = 0
- entry.pre_cpu = 0
- entry.cpu_time = 0
- entry.time = 0
- entry.param1 = param1
- entry.param2 = param2
- entry.param3 = param3
-
- if exists then
-    if updated then ODS("[~T]. #DBG: updated regular task~C0A "..name.."~C07") end
- else
-    table.insert(db.reg_task_list, entry) 
-    local msg = "#[~T].~C0F #DBG: registered regular task~C0A %s~C07, cbfunc =~C0D %s~C07, obj =~C0D %s~C07, max_calls =~C0D %d~C07, period =~C0D %d~C07, param1 =~C0A %s~C07, param2 =~C0A %s~C07, param3 =~C0A %s ~C07"    
-    wprintf(msg, name, FormatPtr(cbfunc), FormatPtr(obj_self), max_calls, period, DumpVar(param1), DumpVar(param2), DumpVar(param3))
- end         
- 
- return entry
+function AddRegularTask( name, cbfunc, obj_self, max_calls, period, param1, param2, param3 )
+    name        = tostring( name )
+    local entry = active_task -- для избежания ситуации с появлением дубликатов (!)
+    if entry and entry.name ~= name then entry = nil end
+    if not entry then entry = FindRegularTask( name ) end
+    local exists = false
+    if entry ~= nil then
+        exists = true
+    else
+        entry = {}
+    end
+    -- настройка умолчаний
+    if period == nil then period = 500 + lua_random( 1, 30 ) end
+    if max_calls == nil then max_calls = 0 end
+    max_calls = tonumber( max_calls )
+    period    = tonumber( period )
+    if not cbfunc then
+        SoundMsg(
+            "![~T].~C0C #ERROR: callback func for task "
+            .. name .. " ==~C0F " .. DumpVar( cbfunc ), 1300, 300
+        )
+        wprintf( "~C0A %s~C07", lua_traceback( '' ) )
+        return false
+    end
+    entry.name = name -- имя задачи, для идентификации при отладке, профилировании и перезагружаемого кода
+    if type(cbfunc) == "string" then
+        entry.callback  = foo               -- заглушка
+        entry.namespace = cbfunc            -- имя таблицы пространства имен
+    else  
+        entry.callback  = cbfunc            -- собственно функция обратного вызова 
+    end
+    local updated   = ( entry.period or 500 ) ~= period
+    entry.obj_self  = obj_self              -- вызывать как метод определенного объекта
+    entry.max_calls = max_calls             -- сколько вызывать (0 - постоянно)
+    entry.period    = period                -- периодичность вызова (в мсек)
+    entry.last_call = ElapsedTime( -35 )    -- когда последний раз была вызвана
+    entry.before    = 0                     -- значение таймера до вызова
+    entry.elapsed   = 0                     -- значение таймера после вызова
+    entry.num_calls = 0
+    entry.pre_time  = 0
+    entry.pre_cpu   = 0
+    entry.cpu_time  = 0
+    entry.time      = 0
+    entry.param1    = param1
+    entry.param2    = param2
+    entry.param3    = param3
+    if exists then
+        if updated then ODS( "[~T]. #DBG: updated regular task~C0A "..name.."~C07" ) end
+    else
+        table.insert( db.reg_task_list, entry ) 
+        local msg = "#[~T].~C0F #DBG: registered regular task~C0A %s~C07, cbfunc =~C0D %s~C07, obj =~C0D %s~C07, max_calls =~C0D %d~C07, period =~C0D %d~C07, param1 =~C0A %s~C07, param2 =~C0A %s~C07, param3 =~C0A %s ~C07"    
+        wprintf(
+            msg, name, FormatPtr( cbfunc ), FormatPtr( obj_self ), max_calls,
+            period, DumpVar( param1 ), DumpVar( param2 ), DumpVar( param3 )
+        )
+    end         
+    return entry
 end
 
 function update_6min() -- для редких обновлений в 6 игровых минут
-  gps_habar.on_actor_update()
-  vergas_masks.add_time_dirt_phase()
-  test.fuckup_food()
-  test.fuckup_matches()
+    gps_habar.on_actor_update()
+    vergas_masks.add_time_dirt_phase()
+    test.fuckup_food()
+    test.fuckup_matches()
 end
 
 function episodic()
- local tmr = stored_timer('upd6min')
- if tmr and tmr:elapsed(false) >= 360 then
-    tmr:elapsed(true)
-    update_6min()
-    tmr:save()
- end
+    local tmr = stored_timer( 'upd6min' )
+    if tmr and tmr:elapsed( false ) >= 360 then
+        tmr:elapsed( true )
+        update_6min()
+        tmr:save()
+    end
 end
 
 _G.AddRegularTask = AddRegularTask
 
-function RemoveRegularTask (name)
- for i, entry in pairs(db.reg_task_list) do
-  if entry.name == name then
-     table.remove(db.reg_task_list, i)
-     return
-  end
- end
+function RemoveRegularTask( name )
+    for i, entry in pairs( db.reg_task_list ) do
+        if entry.name == name then
+            table.remove( db.reg_task_list, i )
+            return
+        end
+    end
 end
 
 _G.RemoveRegularTask = RemoveRegularTask
 
-function InitBinderTaskList (clear)
- local fname = getFS():update_path('$mod_dir$', 'performance.ltx')
- 
- local tconf = {} 
- 
- if getFS():exist(fname) then    
-    local ini = ini_file(fname)
-    ini:load(fname)
-    local obj = ini:object()
-    local sect = 'task_periods'
-    if ini:section_exist(sect) then    
-       tconf = obj[sect] or {}
-       tconf.auto_type = true
+function InitBinderTaskList( clear )
+    local fname = getFS():update_path( '$mod_dir$', 'performance.ltx' )
+    local tconf = {} 
+    if getFS():exist( fname ) then    
+        local ini  = ini_file( fname )
+        ini:load( fname )
+        local obj  = ini:object()
+        local sect = 'task_periods'
+        if ini:section_exist( sect ) then    
+            tconf           = obj[ sect ] or {}
+            tconf.auto_type = true
+        else
+            local sc = ini:section_count()
+            wprintf(
+                '[~T].~C0C #ERROR:~C07 not founds section~C0A %s~C07 in~C0F %s~C07, sections =~C0D %d~C07',
+                sect, fname, sc
+            )
+            for i = 1, sc do
+                wprintf( "~C0D %d.~C07 =~C0F %s~C07 ", i, ini:section_name(i) )
+            end
+        end   
+        wprintf( " task_periods =~C0F %s~C07", DumpVar( tconf ) )
     else
-       local sc = ini:section_count()
-       wprintf('[~T].~C0C #ERROR:~C07 not founds section~C0A %s~C07 in~C0F %s~C07, sections =~C0D %d~C07', sect, fname, sc)
-       for i = 1, sc do wprintf("~C0D %d.~C07 =~C0F %s~C07 ", i, ini:section_name(i)) end
-    end   
-    wprintf(" task_periods =~C0F %s~C07", DumpVar(tconf))
-    
- else
-    wprintf("[~T].~C0C #WARN:~C07 not found file~C0F %s~C07", fname)       
- end
-
-
- ODS("[~T]. #DBG: updating regular task list...")
- if clear then
-    db.reg_task_list = {}
- end
- AddRegularTask("dump_console",             dump_con,                  nil, 0, tconf.dump_console or  500)
- AddRegularTask("act_heart",                sak.actor_heart,           nil, 0, tconf.actor_heart or   113)
- AddRegularTask("update_dyn_hud",           vergas_lib.update_dyn_hud, nil, 0, tconf.update_dyn_hud or 43)
- -- апдейт звуковой схемы актера
- AddRegularTask("xr_sound.update_actor",    xr_sound.update_actor,     nil, 0, tconf.update_actor or 47)
- AddRegularTask("sak.nepis_umer",           sak.nepis_umer,            nil, 0, 571)
- AddRegularTask("mod_call.00",              amk_mod_call,              nil, 0, 271, "blowout_phantoms")
- AddRegularTask("mod_call.02",              amk_mod_call,              nil, 0, 927, "check_metka")
- AddRegularTask("mod_call.03",              amk_mod_call,              nil, 0, tconf.weather_man or 331, "weather_manager")
- AddRegularTask("mod_call.04",              amk_mod_call,              nil, 0, tconf.check_armor or 120, "check_armor")
- --AddRegularTask("mod_call.05", amk_mod_call, nil, 0, 121, "firebat_ammo")
- --AddRegularTask("meets", xr_meet.times_dilog, nil, 0, 1351)
- AddRegularTask("timers.check_timers",      _G.timers.check_timers,      nil, 0, tconf.check_timers or 487)
- AddRegularTask("amk_update",               amk_update,                  nil, 0, tconf.amk_update or 47)
- AddRegularTask("vergas_lib.update_2",      vergas_lib.update_2,         nil, 0, tconf.vergas_update2 or 141)
- AddRegularTask("vergas_masks.update_zoom", vergas_masks.update_zoom, nil, 0, tconf.update_zoom or 53)
- AddRegularTask("vergas_masks.mask_update", vergas_masks.mask_update, nil, 0, tconf.mask_update or 500)
- AddRegularTask("amk_mod.on_blowout_hit_actor", amk_mod.on_blowout_hit_actor, nil, 0, 779)
- AddRegularTask("amk_anoms.update",         amk_anoms.update,            nil, 0, tconf.anoms_update or 131)
- AddRegularTask("amk_offline_alife.update", amk_offline_alife.update, nil, 0, tconf.amk_off_update or 17)
- AddRegularTask("episodic",                 episodic,                 nil, 0, 6000) -- 30 игровых секунд
- --AddRegularTask("sak.corp_to_life_update", sak.corp_to_life_update, nil, 0, 411)
- --AddRegularTask("vergas_masks.update_mini_bar", vergas_masks.update_mini_bar, nil, 0, 37)
+        wprintf( "[~T].~C0C #WARN:~C07 not found file~C0F %s~C07", fname )       
+    end
+    ODS( "[~T]. #DBG: updating regular task list..." )
+    if clear then db.reg_task_list = {} end
+    AddRegularTask(
+        "dump_console", dump_con, nil, 0, tconf.dump_console or 500
+    )
+    AddRegularTask(
+        "act_heart", sak.actor_heart, nil, 0, tconf.actor_heart or 113
+    )
+    AddRegularTask(
+        "update_dyn_hud", vergas_lib.update_dyn_hud, nil, 0, tconf.update_dyn_hud or 43
+    )
+    AddRegularTask(
+        "xr_sound.update_actor", xr_sound.update_actor, nil, 0, tconf.update_actor or 47
+    )
+    AddRegularTask(
+        "sak.nepis_umer", sak.nepis_umer, nil, 0, 571
+    )
+    AddRegularTask(
+        "mod_call.00", amk_mod_call, nil, 0, 271, "blowout_phantoms"
+    )
+    AddRegularTask(
+        "mod_call.02", amk_mod_call, nil, 0, 927, "check_metka"
+    )
+    AddRegularTask(
+        "mod_call.03", amk_mod_call, nil, 0, tconf.weather_man or 331, "weather_manager"
+    )
+    AddRegularTask(
+        "mod_call.04", amk_mod_call, nil, 0, tconf.check_armor or 120, "check_armor"
+    )
+    AddRegularTask(
+        "timers.check_timers", _G.timers.check_timers, nil, 0, tconf.check_timers or 487
+    )
+    AddRegularTask(
+        "amk_update", amk_update, nil, 0, tconf.amk_update or 47
+    )
+    AddRegularTask(
+        "vergas_lib.update_2", vergas_lib.update_2, nil, 0, tconf.vergas_update2 or 141
+    )
+    AddRegularTask(
+        "vergas_masks.update_zoom", vergas_masks.update_zoom, nil, 0, tconf.update_zoom or 53
+    )
+    AddRegularTask(
+        "vergas_masks.mask_update", vergas_masks.mask_update, nil, 0, tconf.mask_update or 500
+    )
+    AddRegularTask(
+        "amk_mod.on_blowout_hit_actor", amk_mod.on_blowout_hit_actor, nil, 0, 779
+    )
+    AddRegularTask(
+        "amk_anoms.update", amk_anoms.update, nil, 0, tconf.anoms_update or 131
+    )
+    AddRegularTask(
+        "amk_offline_alife.update", amk_offline_alife.update, nil, 0, tconf.amk_off_update or 17
+    )
+    AddRegularTask(
+        "episodic", episodic, nil, 0, 6000
+    ) -- 30 игровых секунд
 end
 
 task_smart_upd.InitBinderTaskList = InitBinderTaskList
 
-function DoRegularTask(taskrec, delta, curtime)
- ----------------------------- PROFILING AND EXEC --------------------------------------
- -- выполнение одной отдельной задачи из списка
- active_task = taskrec  -- может использоваться для отслеживания активной задачки
- 
-
- --SetDbgVar("previous_task", GetDbgVar("active_task"))
--- SetDbgVar("active_task", taskrec.name, true)
- 
- local cpu_time = CPUTime(-12)
- taskrec.before = ElapsedTime(12)                          -- сколько прошло до вызова, если зависла эта задача
- taskrec.pre_time = taskrec.pre_time + taskrec.before
- taskrec.pre_cpu = taskrec.pre_cpu + cpu_time
- taskrec.last_call = ElapsedTime(-35)
- taskrec.initial   = false
-
- local func = taskrec.callback
- 
- if taskrec.namespace then
-    local ns = _G[taskrec.namespace]
-    func     = ns[taskrec.name]       
- end
-
- func(taskrec.obj_self, delta, curtime, taskrec) -- alternative: taskrec.object:taskrec.callback(...) ?
- cpu_time = CPUTime(-12)      
- taskrec.elapsed = ElapsedTime(12)                         -- сколько мсек длился вызов задачи
- taskrec.time = taskrec.time + taskrec.elapsed
- taskrec.cpu_time = taskrec.cpu_time + cpu_time
- taskrec.num_calls = taskrec.num_calls + 1
- if taskrec.elapsed > 30 then
-    wprintf("[~T/~B]. ~C0B #PERF:~C07 task~C0A %s~C07 elapsed =~C0D %.1f~C07, num_calls =~C0D %d~C07", taskrec.name, taskrec.elapsed, taskrec.num_calls) 
- end
- 
- --SetDbgVar("active_task", "~}"..taskrec.name, true)
- --SetDbgVar("active_task_elapsed", string.format("%.1f", taskrec.elapsed))
- --SetDbgVar("active_task_ncalls", tostring(taskrec.num_calls))
- --SetDbgVar("oau_watchdog", tostring(amk.oau_watchdog))
-
-
- active_task = nil
- 
- -- проверка условий, на завершение задачи
- if (taskrec.max_calls > 0) and (taskrec.num_calls >= taskrec.max_calls) then
-    return nil
- else
-    return taskrec
- end
- 
+function DoRegularTask( taskrec, delta, curtime )
+    ----------------------------- PROFILING AND EXEC --------------------------------------
+    -- выполнение одной отдельной задачи из списка
+    active_task       = taskrec            -- может использоваться для отслеживания активной задачки
+    local cpu_time    = CPUTime( -12 )
+    taskrec.before    = ElapsedTime( 12 )  -- сколько прошло до вызова, если зависла эта задача
+    taskrec.pre_time  = taskrec.pre_time + taskrec.before
+    taskrec.pre_cpu   = taskrec.pre_cpu + cpu_time
+    taskrec.last_call = ElapsedTime( -35 )
+    taskrec.initial   = false
+    local func        = taskrec.callback
+    if taskrec.namespace then
+        local ns = _G[ taskrec.namespace ]
+        func     = ns[ taskrec.name ]       
+    end
+    func( taskrec.obj_self, delta, curtime, taskrec ) -- alternative: taskrec.object:taskrec.callback(...) ?
+    cpu_time          = CPUTime( -12 )      
+    taskrec.elapsed   = ElapsedTime( 12 )             -- сколько мсек длился вызов задачи
+    taskrec.time      = taskrec.time + taskrec.elapsed
+    taskrec.cpu_time  = taskrec.cpu_time + cpu_time
+    taskrec.num_calls = taskrec.num_calls + 1
+    if taskrec.elapsed > 30 then
+        wprintf(
+            "[~T/~B]. ~C0B #PERF:~C07 task~C0A %s~C07 elapsed =~C0D %.1f~C07, num_calls =~C0D %d~C07",
+            taskrec.name, taskrec.elapsed, taskrec.num_calls
+        ) 
+    end
+    active_task = nil
+    -- проверка условий, на завершение задачи
+    if taskrec.max_calls > 0 and taskrec.num_calls >= taskrec.max_calls then
+        return nil
+    else
+        return taskrec
+    end
 end
 
-function ColorizePair(s, key)
-  return ReplaceStr (s, key.."=", "# ~C0F"..key.."~C0B=~C0E")
+function ColorizePair( s, key )
+    return ReplaceStr( s, key .. "=", "# ~C0F" .. key .. "~C0B=~C0E" )
 end
 
-function ms2str(t)
- if t < 100 then
-    return sprintf("~C0D %7.1f~C07 ms ", t)
- else
-    return sprintf("~C0D %7.3f~C07 sec", t * 0.001)
- end    
+function ms2str( t )
+    if t < 100 then
+        return sprintf( "~C0D %7.1f~C07 ms ", t )
+    else
+        return sprintf( "~C0D %7.3f~C07 sec", t * 0.001 )
+    end    
 end
 
-
-
-function task_smart_upd.dump_perf(min_time)
-
- local tmp = {} 
- if min_time == nil then
-    min_time = 0.1
- end
- 
- for i, t in ipairs(db.reg_task_list) do
-   if t.time > min_time then
-      table.insert(tmp, t)
-   end   
- end 
-
- table.sort(tmp, function (a, b) return a.time > b.time end)
-
- for i, t in ipairs(tmp) do  
-  local ct = ms2str (t.cpu_time or 0)
-  local et = ms2str (t.time or 0) 
-  wprintf(" ~C0A %-45s~C07  call_count=~C0D %8d~C07  cpu_time = %s exec_time = %s period =~C0D %5d~C07 ",
-     t.name, t.num_calls, ct, et, t.period)     
- end
+function task_smart_upd.dump_perf( min_time )
+    local tmp = {} 
+    if min_time == nil then min_time = 0.1 end
+    for i, t in ipairs( db.reg_task_list ) do
+        if t.time > min_time then table.insert( tmp, t ) end   
+    end 
+    table.sort( tmp, function( a, b ) return a.time > b.time end )
+    for i, t in ipairs( tmp ) do  
+        local ct = ms2str( t.cpu_time or 0 )
+        local et = ms2str( t.time     or 0 ) 
+        wprintf(
+            " ~C0A %-45s~C07  call_count=~C0D %8d~C07  cpu_time = %s exec_time = %s period =~C0D %5d~C07 ",
+            t.name, t.num_calls, ct, et, t.period
+        )     
+    end
 end
 
 local gc_steps = 0
 
-
-function ExecRegularTasks (delta, binder)
-   gc_steps = 0
-   gtco = xray_dma.get_CObject
-   if registry and registry.process then
-      registry.process()
-   end
-   
-   sak_inventory.need_update_inventory() -- чтобы не было вопросов по инвентарю
-
-
-   local dev = device()     
-   local f_start = dev:frame_elapsed()   
-   if (f_start > 30) then return end
-   
-   
-   local load_complete = (db.init_stage >= 500)
-   local n_loops = 0
-   local s_loops = 0
-   local elps = 0
-   local cnt_task = table.getn(db.reg_task_list) -- #task_list
-   local dta_time, cpu_time = ElapsedTime(19) -- отрицательное значение не сбрасывает таймер
-
-   local curtime = time_global()
-   local exec_list = {}
-   exec_frame = dev.frame
-   -- executed = executed + 1
-   
-   --------------------------------------------------------------------
-   local time_avail = true   
-   local f_elps = 0
-       
-   
-   -- цикл выборки задач из глобального списка
-   while time_avail and (#db.reg_task_list > 0) and (db.reg_task_list[1]) do
-    local taskrec = db.reg_task_list [1]
-    table.remove (db.reg_task_list, 1)  -- удалить использованное, условие ротации задачи!    
-    local from_last = ElapsedTime(-35) - taskrec.last_call
-    
-    if from_last >= taskrec.period then
-       local name = taskrec.name 
-       taskrec = task_smart_upd.DoRegularTask (taskrec, delta, curtime)
-       executed = executed + 1
-       elps = ElapsedTime (-19)  -- время в мс. с начала цикла
-    
-       f_elps = dev:frame_elapsed()   
-       table.insert (exec_list, sprintf("%s:%.1f", name, f_elps)) 
-       
-       n_loops = n_loops + 1
-    else
-       s_loops = s_loops + 1
+function ExecRegularTasks( delta, binder )
+    gc_steps = 0
+    gtco     = xray_dma.get_CObject
+    if registry and registry.process then registry.process() end
+    sak_inventory.need_update_inventory() -- чтобы не было вопросов по инвентарю
+    local dev                = device()     
+    local f_start            = dev:frame_elapsed()   
+    if f_start > 30 then return end
+    local load_complete      = ( db.init_stage >= 500 )
+    local n_loops            = 0
+    local s_loops            = 0
+    local elps               = 0
+    local cnt_task           = table.getn( db.reg_task_list ) -- #task_list
+    local dta_time, cpu_time = ElapsedTime( 19 ) -- отрицательное значение не сбрасывает таймер
+    local curtime            = time_global()
+    local exec_list          = {}
+    exec_frame               = dev.frame
+    --------------------------------------------------------------------
+    local time_avail = true   
+    local f_elps     = 0
+    -- цикл выборки задач из глобального списка
+    while
+        time_avail
+        and ( #db.reg_task_list > 0 )
+        and ( db.reg_task_list[ 1 ] )
+    do
+        local taskrec = db.reg_task_list[ 1 ]
+        table.remove( db.reg_task_list, 1 )  -- удалить использованное, условие ротации задачи!    
+        local from_last = ElapsedTime( -35 ) - taskrec.last_call
+        if from_last >= taskrec.period then
+            local name = taskrec.name 
+            taskrec    = task_smart_upd.DoRegularTask( taskrec, delta, curtime )
+            executed   = executed + 1
+            elps       = ElapsedTime( -19 )  -- время в мс. с начала цикла
+            f_elps     = dev:frame_elapsed()   
+            table.insert( exec_list, sprintf( "%s:%.1f", name, f_elps ) ) 
+            n_loops    = n_loops + 1
+        else
+            s_loops    = s_loops + 1
+        end
+        -- если задача после вызова осталось, добавить её в конец списка
+        if taskrec ~= nil then table.insert( db.reg_task_list, taskrec ) end
+        time_avail = ( n_loops + s_loops <= cnt_task ) and ( elps < max_loop_timeout ) and ( f_elps < 30 )    
     end
-    
-    -- если задача после вызова осталось, добавить её в конец списка
-    if taskrec ~= nil then table.insert (db.reg_task_list, taskrec)  end
-    
-    time_avail = (n_loops + s_loops <= cnt_task) and (elps < max_loop_timeout) and ( f_elps < 30 )    
-   end -- while
-   
-   local fdump = false
-   
-   exec_list = table.concat(exec_list, '; ')   
-
-   -- обработка предыдущего фриза
-   if (delta > 150) and load_complete then
-     wprintf ("~C0C[~T]. #PERF_TASK_UPD: binder delta =~C0D %d~C0C, dta =~C0D %.1f~C0E, cpu =~C0D %.1f~C0F, last_exec_list:\n ~C0A %s~C07\n", 
-                         delta, dta_time, cpu_time, last_exec_list)
-                         
-                                                    
-     ODS (GetDbgVar("~ALL"))                                                  
-     task_smart_upd.dump_perf()
-     fdump = true
-   end
-   
-   -- обработка текущего фриза
-   if (f_elps - f_start > 70) and load_complete then    
-     wprintf("~C0C[~T]. #PERF_TASK_UPD:~C0E f_start =~C0D %.1f~C0E, f_elps =~C0D %.1f~C0F, exec_list:\n~C0A %s~C07", f_start, f_elps, exec_list)
-     wprintf(" n_loops =~C0D %d~C07, s_loops =~C0D %d~C07, cnt_tasks =~C0D %d~C07", n_loops, s_loops, cnt_task)
-     if not fdump then
+    local fdump = false
+    exec_list   = table.concat( exec_list, '; ' )   
+    -- обработка предыдущего фриза
+    if ( delta > 150 ) and load_complete then
+        wprintf (
+            "~C0C[~T]. #PERF_TASK_UPD: binder delta =~C0D %d~C0C, dta =~C0D %.1f~C0E, cpu =~C0D %.1f~C0F, last_exec_list:\n ~C0A %s~C07\n",
+            delta, dta_time, cpu_time, last_exec_list
+        )
+        ODS( GetDbgVar( "~ALL" ) )                                                  
         task_smart_upd.dump_perf()
         fdump = true
-     end
-   end   
-   
-
-   if executed > 0 and executed % 1000 == 0 then
-      wprintf("[~T/~B]. #PERF: task_smart_upd.script executed~C0D %d~C07 tasks, elps =~C0D %.3f~C07, f_elps = ~C0D %.3f~C07", executed, elps, f_elps )
-      if executed % 5000 == 0 then
-        task_smart_upd.dump_perf()
-        fdump = true                    
-      end      
-   end
-      
-   last_exec_list = exec_list
-
-   ---------------------------------------------------------------------
-   --                           вывод предупреждений от профайлера, если биндер долго что-то делал
-   if (elps > 300) and (load_complete) then
-      local task_info = GetDbgVar("~ALL")
-      task_info = ReplaceStr (task_info, "^~^", " ") -- unhide symbols --
-      
-      wprintf("[~T].~C0C #PERF_PROBLEM: completed task %d from %d, elapsed = %.1f msec, CPUTime = %.1f msec ~C07", n_loops, cnt_task, elps, CPUTime(-19))
-      wprintf(" skipped tasks =~C0D %d~C07 ", s_loops )
-      
-      ODS("~C0E     #DBG: dbg_vars dump:~C0A "..task_info.."~C07")
-   end
-
-   
-   ElapsedTime(19) -- сброс таймер после отработки биндера
+    end
+    -- обработка текущего фриза
+    if ( f_elps - f_start > 70 ) and load_complete then    
+        wprintf(
+            "~C0C[~T]. #PERF_TASK_UPD:~C0E f_start =~C0D %.1f~C0E, f_elps =~C0D %.1f~C0F, exec_list:\n~C0A %s~C07",
+            f_start, f_elps, exec_list
+        )
+        wprintf(
+            " n_loops =~C0D %d~C07, s_loops =~C0D %d~C07, cnt_tasks =~C0D %d~C07",
+            n_loops, s_loops, cnt_task
+        )
+        if not fdump then
+            task_smart_upd.dump_perf()
+            fdump = true
+        end
+    end   
+    if executed > 0 and executed % 1000 == 0 then
+        wprintf(
+            "[~T/~B]. #PERF: task_smart_upd.script executed~C0D %d~C07 tasks, elps =~C0D %.3f~C07, f_elps = ~C0D %.3f~C07",
+            executed, elps, f_elps
+        )
+        if executed % 5000 == 0 then
+            task_smart_upd.dump_perf()
+            fdump = true                    
+        end      
+    end
+    last_exec_list = exec_list
+    ---------------------------------------------------------------------
+    -- вывод предупреждений от профайлера, если биндер долго что-то делал
+    if ( elps > 300 ) and ( load_complete ) then
+        local task_info = GetDbgVar( "~ALL" )
+        task_info       = ReplaceStr( task_info, "^~^", " " ) -- unhide symbols --
+        wprintf(
+            "[~T].~C0C #PERF_PROBLEM: completed task %d from %d, elapsed = %.1f msec, CPUTime = %.1f msec ~C07",
+            n_loops, cnt_task, elps, CPUTime( -19 )
+        )
+        wprintf( " skipped tasks =~C0D %d~C07 ", s_loops )
+        ODS( "~C0E     #DBG: dbg_vars dump:~C0A " .. task_info .. "~C07" )
+    end
+    ElapsedTime( 19 ) -- сброс таймер после отработки биндера
 end
 
 task_smart_upd.ExecRegularTasks = ExecRegularTasks
 
-if #db.reg_task_list == 0 then
-   InitBinderTaskList ()
-end
-
+if #db.reg_task_list == 0 then InitBinderTaskList() end
 
 function _G.paused_idle_load()
- local dev = device()
- local count = 0
- local delta = math.abs(dev.frame - task_smart_upd.exec_frame)
- local curtime = dev:time_global() + delta * 16
-
- for i, task in ipairs(db.reg_task_list) do
-  if task and task.initial then
-     DoRegularTask(task, 0, curtime)
-     count = count + 1
-  end
- end -- for
- schedule.run_tasks()
- if (count > 0) then return end
- local elps = dev:frame_elapsed()
-
-
- if (gc_steps < 3) and ( delta > 200 ) then
-   wprintf("[~T/~B].~C0B #PERF: paused_idle_load - performing garbage collection~C0D %d~C07, delta =~C0D %d~C07, elps =~C0D %.1f~C07", gc_steps, delta, elps)
-   collectgarbage("collect")
-   gc_steps = gc_steps + 1
-   --
- else
-   -- простейщий тормоз нагрузки на GPU
-   if elps < 16 then
-      SleepEx(16 - elps)
-   end
-   SleepEx(1)
- end
-
-
-
+    local dev     = device()
+    local count   = 0
+    local delta   = math.abs( dev.frame - task_smart_upd.exec_frame )
+    local curtime = dev:time_global() + delta * 16
+    for i, task in ipairs( db.reg_task_list ) do
+        if task and task.initial then
+            DoRegularTask( task, 0, curtime )
+            count = count + 1
+        end
+    end
+    schedule.run_tasks()
+    if count > 0 then return end
+    local elps = dev:frame_elapsed()
+    if ( gc_steps < 3 ) and ( delta > 200 ) then
+        wprintf(
+            "[~T/~B].~C0B #PERF: paused_idle_load - performing garbage collection~C0D %d~C07, delta =~C0D %d~C07, elps =~C0D %.1f~C07",
+            gc_steps, delta, elps
+        )
+        collectgarbage( "collect" )
+        gc_steps = gc_steps + 1
+    --
+    else
+        -- простейщий тормоз нагрузки на GPU
+        if elps < 16 then
+            SleepEx( 16 - elps )
+        end
+        SleepEx( 1 )
+    end
 end
 
-
-function init_module()
- -- 
-end
-
-function late_init()
-
-end
+function init_module() end
+function late_init() end
 
 function stop_module()
- task_smart_upd.dump_perf()
- -- garbage clean
- for i, entry in ipairs(db.reg_task_list) do
-   entry.obj_self = nil
-   entry.param1   = nil
-   entry.param2   = nil
-   entry.param3   = nil
- end
- db.reg_task_list = {}
+    task_smart_upd.dump_perf()
+    -- garbage clean
+    for i, entry in ipairs( db.reg_task_list ) do
+        entry.obj_self = nil
+        entry.param1   = nil
+        entry.param2   = nil
+        entry.param3   = nil
+    end
+    db.reg_task_list = {}
 end
 
 init_priority  = 500

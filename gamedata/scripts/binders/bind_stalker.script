@@ -1,1246 +1,1117 @@
-version_control.reg_changes("bind_stalker.script", "alpet", "16.01.2016 18:15", "Оптимизация")
+version_control.reg_changes( "bind_stalker.script", "alpet", "16.01.2016 18:15", "Оптимизация" )
 
-function init(obj)
-  xr_motivator.AddToMotivator(obj)
+function init( obj )
+    xr_motivator.AddToMotivator( obj )
 end
 
-function actor_init(npc)
-  npc:bind_object(actor_binder(npc))
+function actor_init( npc )
+    npc:bind_object( actor_binder( npc ) )
 end
 
 local game_difficulty_by_num = {
-  [ 0 ] = "gd_novice",
-  [ 1 ] = "gd_stalker",
-  [ 2 ] = "gd_veteran",
-  [ 3 ] = "gd_master"
+    [ 0 ] = "gd_novice",
+    [ 1 ] = "gd_stalker",
+    [ 2 ] = "gd_veteran",
+    [ 3 ] = "gd_master"
 }
 
+lasthealth       = 0
+lasttime         = 0
+post_process     = 0
+step_str         = ""
+binder_reset     = true
+crash_test       = false
+rtp_clocks       = 0
+binder_ticks     = 0
+binder_loops     = 0
+mw_lock          = false
+db.act_binder    = nil
+taked_items      = {}
+info_events      = {}
+take_events      = 0
+drop_events      = 0
+cont_menu        = true
+db.init_stage    = 0
+debug_take       = false
+handle_take_drop = true
 
-lasthealth                 = 0
-lasttime                   = 0
-post_process               = 0
-step_str                   = ""
-binder_reset               = true
-crash_test                 = false
-rtp_clocks                 = 0
-binder_ticks               = 0
-binder_loops               = 0
-mw_lock                    = false
-db.act_binder              = nil
-taked_items                = {}
-info_events                = {}
-take_events                = 0
-drop_events                = 0
-cont_menu                  = true
-db.init_stage              = 0
-debug_take                 = false
-handle_take_drop           = true
 used_items.set_use_gadget( true ) -- debug override
 
-local weapon_hide          = false
-local level_name           = level.name()
+local weapon_hide = false
+local level_name  = level.name()
+
 spec_item = {
-  [ "razgruzka"          ] = true,
-  [ "podsumok"           ] = true,
-  [ "podsumok_mem"       ] = true,
-  [ "shadow_inventory"   ] = true,
-  [ "shadow_inventory2"  ] = true,
-  -- ["rykzack_feik"]=true,
-  [ "af_dummy_black_tip" ] = true,
-  [ "flask_army_on_belt" ] = true,
-  --["arc_art_box_1basic"]=true,
-  --["arc_art_box_basic"]=true,
-  --["arc_art_box_8basic"]=true,
-  [ "belt_2_art"         ] = true,
-  [ "belt_3_art"         ] = true,
-  [ "belt_4_art"         ] = true,
-  [ "belt_5_art"         ] = true,
-  [ "belt_6_art"         ] = true
+    [ "razgruzka"          ] = true,
+    [ "podsumok"           ] = true,
+    [ "podsumok_mem"       ] = true,
+    [ "shadow_inventory"   ] = true,
+    [ "shadow_inventory2"  ] = true,
+    [ "af_dummy_black_tip" ] = true,
+    [ "flask_army_on_belt" ] = true,
+    [ "belt_2_art"         ] = true,
+    [ "belt_3_art"         ] = true,
+    [ "belt_4_art"         ] = true,
+    [ "belt_5_art"         ] = true,
+    [ "belt_6_art"         ] = true
 }
 
-self_weapon_hide           = false
+self_weapon_hide = false
 
 function mm_stat()
- get_console():execute("stat_memory")
+    get_console():execute( "stat_memory" )
 end
 
 function mw_toggle()
- mw_lock = not mw_lock
- if mw_lock then
-    RunCommand('MW_START_DBG')
-    --ODS('[~T]. #DBG: WriteDMA locked')
- else
-    RunCommand('MW_END_DBG')
-    --ODS('[~T]. #DBG: WriteDMA unlocked')
- end 
+    mw_lock = not mw_lock
+    if mw_lock then
+        RunCommand( 'MW_START_DBG' )
+        --ODS('[~T]. #DBG: WriteDMA locked')
+    else
+        RunCommand( 'MW_END_DBG' )
+        --ODS('[~T]. #DBG: WriteDMA unlocked')
+    end
 end
 
 function is_console_active()
-
- if xr_build_id and xr_build_id > 5500 then
-    return ( get_console().visible == 1 )
- end                           
-
- local cptr = ReadDMA(get_console(), 0, "safe_ptr")
- if cptr ~= nil then  
-    local sc = xray_dma.ReadDMA(cptr, "$480", "int")
-    return ( sc == 1 );     
-    
- end    
-
-
+    if xr_build_id and xr_build_id > 5500 then
+        return ( get_console().visible == 1 )
+    end
+    local cptr = ReadDMA( get_console(), 0, "safe_ptr" )
+    if cptr ~= nil then
+        local sc = xray_dma.ReadDMA( cptr, "$480", "int" )
+        return ( sc == 1 )
+    end
 end
 
-function log_init_stage(ctx)
- db.init_stage = db.init_stage + 1
- if nil == ctx then ctx = "?" end 
- if db.init_stage < 100 then
-    wprintf("[~T/~U/~B].~C0B #PERF:~C07 actor_binder init_stage =~C0D %d~C07, context =~C0A %s~C07", db.init_stage, ctx) -- debug.traceback('  ', 2)
- end   
- -- mm_stat()
+function log_init_stage( ctx )
+    db.init_stage = db.init_stage + 1
+    if nil == ctx then ctx = "?" end
+    if db.init_stage < 100 then
+        wprintf(
+            "[~T/~U/~B].~C0B #PERF:~C07 actor_binder init_stage =~C0D %d~C07, context =~C0A %s~C07",
+            db.init_stage, ctx
+        )
+    end
 end
 
-function close_lost_dialog(dump)
- if dump == DumpVar(windows.active_dialog) then
-    windows.active_dialog:CloseDialog()
- end
+function close_lost_dialog( dump )
+    if dump == DumpVar( windows.active_dialog ) then
+        windows.active_dialog:CloseDialog()
+    end
 end
 
 function _G.on_esc_pressed()
- if windows.active_dialog then
-    local dump = DumpVar(windows.active_dialog)
-    schedule.add("close_lost_dialog", sprintf("bind_stalker.close_lost_dialog('%s')", dump), 800)
- end
- if not db.actor:is_talking() and not level.main_input_receiver() then
-    self_weapon_hide = false
-    used_items.set_use_gadget(true)
- end
+    if windows.active_dialog then
+        local dump = DumpVar( windows.active_dialog )
+        schedule.add(
+            "close_lost_dialog",
+            sprintf( "bind_stalker.close_lost_dialog('%s')", dump ), 800
+        )
+    end
+    if not db.actor:is_talking() and not level.main_input_receiver() then
+        self_weapon_hide = false
+        used_items.set_use_gadget( true )
+    end
 end
 
 function opn_nz()
-  if used_items.can_use_gadget() and self_weapon_hide==false and not db.actor:is_talking() then
-    used_items.used_bag_on_belt(false,true)
-  end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+    then
+        used_items.used_bag_on_belt( false, true )
+    end
 end
 
 function opn_flask()
-  if used_items.can_use_gadget() and self_weapon_hide==false and not db.actor:is_talking() then
-    used_items.used_flask_army(false)
-  end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+    then
+        used_items.used_flask_army( false )
+    end
 end
 
 function inv_cb()
-  if used_items.can_use_gadget() and self_weapon_hide==false and not db.actor:is_talking() and not level.main_input_receiver() then
-    vergas_rucksack.drop_rykzack()
-  end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+        and not level.main_input_receiver()
+    then
+        vergas_rucksack.drop_rykzack()
+    end
 end
 
 function on_off_mask()
-  if used_items.can_use_gadget() and self_weapon_hide==false then
-    vergas_masks.on_off_mask()
-  end
+    if used_items.can_use_gadget() and self_weapon_hide == false then
+        vergas_masks.on_off_mask()
+    end
 end
 
 function use_antirad()
-  if used_items.can_use_gadget() and self_weapon_hide == false and not db.actor:is_talking()  then
-    --local activ = db.actor:active_slot()
-    --if activ == NONE_SID or activ == NONE_CL_SID then
-      vergas_medical_elastic.use_antirad()
-    --end
-  end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+    then
+        vergas_medical_elastic.use_antirad()
+    end
 end
 
 function use_energy()
-  if used_items.can_use_gadget() and self_weapon_hide==false and not db.actor:is_talking()  then
-    --local activ = db.actor:active_slot()
-    --if ( activ == NONE_SID or activ == NONE_CL_SID ) then
-      vergas_medical_elastic.use_energy()
-    --end
-  end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+    then
+        vergas_medical_elastic.use_energy()
+    end
 end
 
 function try_open_inventory()
-  local wnd = windows.get_active()
-  if db.actor:is_talking() or wnd then -- какая-то непрогнозируемая логика с этим сокрытием оружием, из-за неё глючит инвентарь
-     wprintf("[~T]. #DBG: actor is talking or present windows.active_dialog")
-
-     if wnd and not level.main_input_receiver() then
-       wprintf(" lost actve_dialog object detected ~C0A %s~C07 ", DumpVar(wnd))
-       if wnd.CloseDialog then
-          wnd:CloseDialog()
-       elseif wnd.on_quit then
-          wnd:on_quit()
-       else
-          windows.set_active(false)
-       end
-     else
-       return
-     end
-  end
-
-  local gadget = used_items.can_use_gadget()
-
-  if gadget and (not self_weapon_hide) and cont_menu then
-    local activ = db.actor:active_slot()
-    if activ==NONE_SID or activ==NONE_CL_SID then
-		used_items.used_inventory()
-    else
-        ODS("[~T]. #DBG: inventory using disabled - some item in hands")
+    local wnd = windows.get_active()
+    if
+        db.actor:is_talking()
+        or wnd
+    then -- какая-то непрогнозируемая логика с этим сокрытием оружием, из-за неё глючит инвентарь
+        wprintf( "[~T]. #DBG: actor is talking or present windows.active_dialog" )
+        if wnd and not level.main_input_receiver() then
+            wprintf( " lost actve_dialog object detected ~C0A %s~C07 ", DumpVar( wnd ) )
+            if wnd.CloseDialog then
+                wnd:CloseDialog()
+            elseif wnd.on_quit then
+                wnd:on_quit()
+            else
+                windows.set_active( false )
+            end
+        else
+            return
+        end
     end
-  else
-     wprintf("[~T]. #DBG: try_open_inventory() self_weapon_hide =~C0A %s~C07, can use gadget =~C0A %s~C07 ",
-                    DumpVar(self_weapon_hide), DumpVar(gadget))
-  end
+    local gadget = used_items.can_use_gadget()
+    if
+        gadget
+        and ( not self_weapon_hide )
+        and cont_menu
+    then
+        local activ = db.actor:active_slot()
+        if activ == NONE_SID or activ == NONE_CL_SID then
+            used_items.used_inventory()
+        else
+            ODS( "[~T]. #DBG: inventory using disabled - some item in hands" )
+        end
+    else
+        wprintf(
+            "[~T]. #DBG: try_open_inventory() self_weapon_hide =~C0A %s~C07, can use gadget =~C0A %s~C07 ",
+            DumpVar( self_weapon_hide ), DumpVar( gadget )
+        )
+    end
 end
 
 _G.try_open_inventory = try_open_inventory
 
 function use_info()
-  if ( sak_dialog.have_razgruzka() or sak_dialog.podsumok_have() ) and used_items.can_use_gadget() and not db.actor:is_talking() and self_weapon_hide==false then
-     razgruzka.use_info()
-  end
+    if
+        ( sak_dialog.have_razgruzka() or sak_dialog.podsumok_have() )
+        and used_items.can_use_gadget()
+        and not db.actor:is_talking()
+        and self_weapon_hide == false
+    then
+        razgruzka.use_info()
+    end
 end
 
 function use_minimap()
-  if used_items.can_use_gadget() and
-       not db.actor:is_talking() then
-    ui_minimap.toggle()
-  end
+    if
+        used_items.can_use_gadget()
+        and not db.actor:is_talking()
+    then
+        ui_minimap.toggle()
+    end
 end
 
 function use_watch()
-  if vergas_watch.get_flag_watch_open() then
-      LuaSafeCall("ui_cheat_watch.g_dialog:on_quit()", "#code")
-    return
-  end
-  if used_items.can_use_gadget() and self_weapon_hide == false and not db.actor:is_talking() then
-    vergas_watch.use_watch()
-  end
+    if vergas_watch.get_flag_watch_open() then
+        LuaSafeCall( "ui_cheat_watch.g_dialog:on_quit()", "#code" )
+        return
+    end
+    if
+        used_items.can_use_gadget()
+        and self_weapon_hide == false
+        and not db.actor:is_talking()
+    then
+        vergas_watch.use_watch()
+    end
 end
 
-function modes_switch()
-  sak.modes_swith_on()
-end
-function gan_reload()
-  razgruzka.start_gan_reload()
+function modes_switch() sak.modes_swith_on() end
+function gan_reload() razgruzka.start_gan_reload() end
+function firemode_switch() test.firemode_switch_try() end
+
+function snd_volume_get()
+    return get_console():get_float( "snd_volume_eff" )
 end
 
-function snd_volume_get()     
-  return get_console():get_float("snd_volume_eff") 
-end
-function snd_volume_set(vol)  
-  get_console():execute( sprintf("snd_volume_eff %.1f", vol) )
-  --wprintf(" #DBG: sound volume changed to %.1f ", vol) 
-end  
-
-function firemode_switch()
-  test.firemode_switch_try()
+function snd_volume_set( vol )
+    get_console():execute( sprintf( "snd_volume_eff %.1f", vol ) )
 end
 
-function snd_volume_change(delta)
- local value = snd_volume_get () + delta
- if value >= 0.0 and value <= 1.0 then
-    snd_volume_set(value)     
- end                                                             
+function snd_volume_change( delta )
+    local value = snd_volume_get () + delta
+    if value >= 0.0 and value <= 1.0 then
+        snd_volume_set( value )
+    end
 end
 
 function _G.snd_on_off()
- local vol = snd_volume_get()
- if vol > 0 then
-    db.save_volume = vol
-    snd_volume_set(0)    
- else
-    snd_volume_set(db.save_volume or 1.0) 
- end                                        
+    local vol = snd_volume_get()
+    if vol > 0 then
+        db.save_volume = vol
+        snd_volume_set( 0 )
+    else
+        snd_volume_set( db.save_volume or 1.0 )
+    end
 end
 
-function _G.snd_volume_up()
- snd_volume_change(0.1)
-end
+function _G.snd_volume_up() snd_volume_change(  0.1 ) end
+function _G.snd_volume_dn() snd_volume_change( -0.1 )end
 
-function _G.snd_volume_dn()
- snd_volume_change(-0.1) 
-end
-
-
---local a11=1
-function set_w_up()
-lukash_info.dbg_set_w_up()
---a11=a11-1
---if a11<1 then a11=1 end
---local mask="hud_sci_"..a11.."_1"
---vergas_masks.set_mask(mask)
---amk_anoms.pre_blow_off()
---sak.get_yantar_kordon()
---sak.off_testobj()
-end
-function set_w_dn()
-lukash_info.dbg_set_w_dn()
---sak.sleep_hits_treasure_robbing()
---a11=a11+1
---if a11>6 then a11=6 end
---vergas_masks.set_mask("hud_mer_1_1")
---amk_anoms.after_blow_on()
-end
+function set_w_up() lukash_info.dbg_set_w_up() end
+function set_w_dn() lukash_info.dbg_set_w_dn() end
 
 function zoom_wpn_fov()
-local fr = params.get_fov_ratio()
-  if (fr > 0.40) then
-    fr = fr - 0.15
-  else 
-    fr = 0.75
-  end
-  params.set_fov_ratio(fr)
+    local fr = params.get_fov_ratio()
+    if fr > 0.40 then
+        fr = fr - 0.15
+    else
+        fr = 0.75
+    end
+    params.set_fov_ratio( fr )
 end
 
-function XSetBootMsg(msg)
- local g_p = GetProcAddr('xr_3da.exe', '?g_pGamePersistent@@3PAVIGame_Persistent@@A')
- 
- if #g_p <= 9 then
-  g_p = ReadDMA(g_p, 0, 'safe_ptr')  -- g_pGamePersistent
-  local vmt = ReadDMA(g_p, 0, 'safe_ptr')   -- vftable
-  local func = ReadDMA(vmt, 56, 'safe_ptr') -- method  
-  
-  --wprintf('[~T]. #DBG: g_pGamePersistent = %s, vmt = %s, method = %s ', FormatPtr(g_p), FormatPtr(vmt), FormatPtr(func) )  
-  if func ~= nil then 
-     BinThisCall(g_p, func, 'avar='..msg)
-  end    
- end
- 
+function XSetBootMsg( msg )
+    local g_p = GetProcAddr( 'xr_3da.exe', '?g_pGamePersistent@@3PAVIGame_Persistent@@A' )
+    if #g_p <= 9 then
+        g_p        = ReadDMA( g_p, 0,  'safe_ptr' ) -- g_pGamePersistent
+        local vmt  = ReadDMA( g_p, 0,  'safe_ptr' ) -- vftable
+        local func = ReadDMA( vmt, 56, 'safe_ptr' ) -- method
+        --wprintf('[~T]. #DBG: g_pGamePersistent = %s, vmt = %s, method = %s ', FormatPtr(g_p), FormatPtr(vmt), FormatPtr(func) )
+        if func ~= nil then
+            BinThisCall( g_p, func, 'avar=' .. msg )
+        end
+    end
 end
 
-
-function schedule_tasks(object)
-  ODS("[~T/~B]. #DBG: registering bind_stalker regular tasks...")
-  AddRegularTask("minute_tasks",         object.minute_tasks,         object, 0, 60000)
-  AddRegularTask("binder_update_1",      object.binder_update_1,      object, 0, 100)
-  AddRegularTask("binder_update_2",      object.binder_update_2,      object)
-  AddRegularTask("binder_update_3",      object.binder_update_3,      object, 0, 500)
-  AddRegularTask("binder_update_4",      object.binder_update_4,      object)
-  AddRegularTask("binder_update_5",      object.binder_update_5,      object, 0, 100)
-  AddRegularTask("binder_update_6",      object.binder_update_6,      object, 0, 500)
-  AddRegularTask("binder_update_7",      object.binder_update_7,      object)
-  AddRegularTask("binder_update_8",      object.binder_update_8,      object)
-  AddRegularTask("binder_update_9",      object.binder_update_9,      object)
-  AddRegularTask("binder_update_10",     object.binder_update_10,     object) -- обработка удаления постпроцессора
-  AddRegularTask("binder_update_rarely", object.binder_update_rarely, object, 0, 241)
-  AddRegularTask("binder_update_task",   object.binder_update_task,   object, 0, 5999)
+function schedule_tasks( object )
+    ODS( "[~T/~B]. #DBG: registering bind_stalker regular tasks..." )
+    AddRegularTask( "minute_tasks",         object.minute_tasks,         object, 0, 60000 )
+    AddRegularTask( "binder_update_1",      object.binder_update_1,      object, 0, 100   )
+    AddRegularTask( "binder_update_2",      object.binder_update_2,      object           )
+    AddRegularTask( "binder_update_3",      object.binder_update_3,      object, 0, 500   )
+    AddRegularTask( "binder_update_4",      object.binder_update_4,      object           )
+    AddRegularTask( "binder_update_5",      object.binder_update_5,      object, 0, 100   )
+    AddRegularTask( "binder_update_6",      object.binder_update_6,      object, 0, 500   )
+    AddRegularTask( "binder_update_7",      object.binder_update_7,      object           )
+    AddRegularTask( "binder_update_8",      object.binder_update_8,      object           )
+    AddRegularTask( "binder_update_9",      object.binder_update_9,      object           )
+    AddRegularTask( "binder_update_10",     object.binder_update_10,     object           ) -- обработка удаления постпроцессора
+    AddRegularTask( "binder_update_rarely", object.binder_update_rarely, object, 0, 241   )
+    AddRegularTask( "binder_update_task",   object.binder_update_task,   object, 0, 5999  )
 end
-
 
 function bind_stalker.handle_events()
-   if misc.in_process_spawn == "in" then
-      wprintf("[~T].~C0C #WARN:~C07 bind_stalker.handle_events() skipped in level.on_frame reentrance")
-      return
-   end
-
-   local src = bind_stalker.info_events
-   bind_stalker.info_events = {}
-   -- wprintf("[~T]. #DBG: bind_stalker.handle_events: ")
-   -- dump_table(src, "       ")
-   
-   for i, event in ipairs(src) do
-      local npc      = event[1]
-      local info_id  = event[2]
-      amk.on_info(npc, info_id)
-      vergas_lib.inventory_info(info_id)
-   end      
+    if misc.in_process_spawn == "in" then
+        wprintf(
+            "[~T].~C0C #WARN:~C07 bind_stalker.handle_events() skipped in level.on_frame reentrance"
+        )
+        return
+    end
+    local src = bind_stalker.info_events
+    bind_stalker.info_events = {}
+    -- wprintf("[~T]. #DBG: bind_stalker.handle_events: ")
+    -- dump_table(src, "       ")
+    for i, event in ipairs( src ) do
+        local npc      = event[ 1 ]
+        local info_id  = event[ 2 ]
+        amk.on_info( npc, info_id )
+        vergas_lib.inventory_info( info_id )
+    end
 end
 
-
-function bind_stalker.on_item_events(take)
- if take then  else  end
- level_tasks.proceed(db.actor) 
+function bind_stalker.on_item_events( take )
+    if take then else end
+    level_tasks.proceed( db.actor )
 end
 
 function bind_stalker.handle_taked()
-  if not vergas_lib.flag_inventory then return end
-  local src = bind_stalker.taked_items
-  local cnt = #src
-  if cnt == 0 then return end
-  bind_stalker.taked_items = {}    
-  -- wprintf("[~T/~B]. #DBG: handle_taked processing~C0D %d~C07 items ", cnt)    
-  --local pmem = db.actor:object("podsumok_mem")
-  misc.debug_remove = true
-  for i, id in ipairs(src) do      
-      local obj = client_obj(id) -- объект должен существовать !
-      if obj then
-        --SetDbgVar("take_item", DumpVar(obj))
-        local flag = vergas_rucksack.take_item_in_inv(obj) -- попытка схватить предмет в рюкзак/инвентарь или особый предмет.
-        if not spec_item[obj:section()] and flag then
-          -- wprintf(" processing take~C0A %s~C07, r.flag =~C0F %s~C07", obj:name(), DumpVar(razgruzka.open_inv_raz_pod))
-          arc_arts.on_item_take(obj) -- подбирание артефактов, пояса и ряда других вещей  
-          allcore_mayatniks.on_item_take(obj) 
-		  --sak_dialog.fix_prizrak_outfit_take(obj)
-			
-          if  razgruzka.open_inv_raz_pod == true then                                                                        
-              amk.on_item_take(obj)                        -- вызов amk_mod.check_usable_item, проверка на записки и добавление ЧМ          
-              xrs_ai.actor_item_take(obj)                  -- подбор гранат и медицины?
-			        if rx_ai then rx_ai.actor_item_take(obj) end
-              amk_offline_alife.on_item_take(obj)          
-              sak.check_used_item(obj)                     -- проверка предмета на одну из 100+ секций, с совершением индивидуальных обработок
-              razgruzka.open_inv_raz_pod=false
-          end      
-        else
-        
-          
-        end
-      end -- if
-  end
-  misc.debug_remove = false
-   
-  --wprintf("[~T/~B]. #DBG: handle_taked processing end ")
-  get_shadow_inv().need_update = true       
-  take_events = take_events + 1                 
+    if not vergas_lib.flag_inventory then return end
+    local src = bind_stalker.taked_items
+    local cnt = #src
+    if cnt == 0 then return end
+    bind_stalker.taked_items = {}
+    misc.debug_remove        = true
+    for i, id in ipairs( src ) do
+        local obj = client_obj( id ) -- объект должен существовать !
+        if obj then
+            local flag = vergas_rucksack.take_item_in_inv( obj ) -- попытка схватить предмет в рюкзак/инвентарь или особый предмет.
+            if not spec_item[ obj:section() ] and flag then
+                arc_arts.on_item_take( obj ) -- подбирание артефактов, пояса и ряда других вещей
+                allcore_mayatniks.on_item_take( obj )
+                if razgruzka.open_inv_raz_pod == true then
+                    amk.on_item_take( obj ) -- вызов amk_mod.check_usable_item, проверка на записки и добавление ЧМ
+                    xrs_ai.actor_item_take( obj ) -- подбор гранат и медицины?
+                    if rx_ai then rx_ai.actor_item_take( obj ) end
+                    amk_offline_alife.on_item_take( obj )
+                    sak.check_used_item( obj ) -- проверка предмета на одну из 100+ секций, с совершением индивидуальных обработок
+                    razgruzka.open_inv_raz_pod = false
+                end
+            else
+            end
+        end -- if
+    end
+    misc.debug_remove            = false
+    get_shadow_inv().need_update = true
+    take_events                  = take_events + 1
 end
 
-function bind_stalker.handle_dropped(obj)
-	if obj:section()=="sleeping_bag" then
-		sleeping_bag.add_sleep_zone(obj)
-	end
-	if not vergas_lib.flag_inventory then return end
-   if nil == db.actor:object("podsumok_mem") then return end
-   
-   
-   local id = obj:id()
+function bind_stalker.handle_dropped( obj )
+    if obj:section() == "sleeping_bag" then sleeping_bag.add_sleep_zone( obj ) end
+    if not vergas_lib.flag_inventory then return end
+    if nil == db.actor:object( "podsumok_mem" ) then return end
+    local id = obj:id()
     -- надо упредить обратное подбирание предмета через отложенное событие
-   for i, ref_id in ipairs(bind_stalker.taked_items) do
-    if ref_id == id then
-       wprintf("~C09 take disabled for~C0A %-35s~C09 due drop event ~C07", obj:name())
-       --table.remove(bind_stalker.taked_items, i)
-	   bind_stalker.taked_items[i]=nil
-       break
-    end 
-   end
-    
-   local flag = vergas_lib.drop_item(obj)
-   amk.on_item_drop(obj)
-   
-   if flag then
-	  arc_containers.lose_item(obj)
-      arc_arts.on_remove(id) 
-      amk_offline_alife.on_item_drop(obj)
-      amk_utils.actor_item_drop(obj)
-      sak.check_droped_item(obj)      
-      razgruzka.open_inv_raz_pod=false
-      drop_events = drop_events + 1
-   end
-   get_shadow_inv().need_update = true    
+    for i, ref_id in ipairs( bind_stalker.taked_items ) do
+        if ref_id == id then
+            wprintf( "~C09 take disabled for~C0A %-35s~C09 due drop event ~C07", obj:name() )
+            --table.remove(bind_stalker.taked_items, i)
+            bind_stalker.taked_items[i]=nil
+            break
+        end
+    end
+    local flag = vergas_lib.drop_item( obj )
+    amk.on_item_drop( obj )
+    if flag then
+        arc_containers.lose_item( obj )
+        arc_arts.on_remove( id )
+        amk_offline_alife.on_item_drop( obj )
+        amk_utils.actor_item_drop( obj )
+        sak.check_droped_item( obj )
+        razgruzka.open_inv_raz_pod = false
+        drop_events = drop_events + 1
+    end
+    get_shadow_inv().need_update = true
 end
 
-function bind_stalker.init_module()
- return true
-end
+function bind_stalker.init_module() return true end
 
 function bind_stalker.init_kcb()
-  _G.set_w_up = set_w_up
-  SetKbdCallback ("set_w_up", 33)
-  _G.set_w_dn = set_w_dn
-  SetKbdCallback ("set_w_dn", 34)
-  
-   _G.opn_nz = opn_nz
-  local hot_key = vergas_lib.set_key("bind vote_no",15,1)
-  SetKbdCallback ("opn_nz", hot_key)
-  
-  _G.opn_flask = opn_flask
-  local hot_key = vergas_lib.set_key("bind vote_yes",16,1)
-  SetKbdCallback ("opn_flask", hot_key)
-  
-  _G.inv_cb = inv_cb
-  local hot_key = vergas_lib.set_key("bind scores",14,1)
-  SetKbdCallback ("inv_cb", hot_key)
-  
-  _G.on_off_mask = on_off_mask
-  hot_key = vergas_lib.set_key("bind artefact",16,1)
-  SetKbdCallback ("on_off_mask", hot_key)
-  
-  _G.use_antirad = use_antirad
-  hot_key = vergas_lib.set_key("bind chat",12,1)
-  SetKbdCallback ("use_antirad", hot_key)
-  
-  _G.use_energy = use_energy
-  hot_key = vergas_lib.set_key("bind skin_menu",17,1)
-  SetKbdCallback ("use_energy", hot_key)
-  
-  _G.use_info = use_info
-  hot_key = vergas_lib.set_key("bind team_menu",17,1)
-  SetKbdCallback ("use_info", hot_key)
-  
-  _G.use_watch = use_watch
-  hot_key = vergas_lib.set_key("bind chat_team",17,1)
-  SetKbdCallback ("use_watch", hot_key)
-  
-  _G.use_minimap = use_minimap
-  hot_key = vergas_lib.set_key("bind vote_begin",18,1)
-  SetKbdCallback ("use_minimap", hot_key)
-  
-  _G.modes_switch = modes_switch
-  hot_key = vergas_lib.set_key("bind buy_menu",16,1)
-  SetKbdCallback ("modes_switch", hot_key)
-  
-  _G.try_open_inventory = try_open_inventory
-  hot_key = vergas_lib.set_key("bind speech_menu_0",21,1)
-  SetKbdCallback ("try_open_inventory", hot_key)
-
-  _G.firemode_switch = firemode_switch
-  hot_key = vergas_lib.set_key("bind wpn_firemode_next",25,1)
-  SetKbdCallback ("firemode_switch", hot_key)
-
-  SetKbdCallback ("snd_on_off",    0xAD)
-  SetKbdCallback ("snd_volume_dn", 0xAE)
-  SetKbdCallback ("snd_volume_up", 0xAF)
-  SetKbdCallback ("on_esc_pressed", 0x1B)
-
-
-  --[[_G.gan_reload = gan_reload
-  hot_key = vergas_lib.set_key("bind wpn_reload",18,1)
-  SetKbdCallback ("gan_reload", hot_key)
-  hot_key = vergas_lib.set_key("bind_sec wpn_reload",22,1)
-  if hot_key then
-  SetKbdCallback ("gan_reload", hot_key)
-  end
-  hot_key = vergas_lib.set_key("bind wpn_next",16,1)
-  SetKbdCallback ("gan_reload", hot_key)
-  hot_key = vergas_lib.set_key("bind_sec wpn_next",20,1)
-  if hot_key then
-  SetKbdCallback ("gan_reload", hot_key)
-  end
-  
-  SetKbdCallback ("gan_reload", 1)--]]
-    
-  _G.zoom_wpn_fov = zoom_wpn_fov
-   --SetKbdCallback ("zoom_wpn_fov", 90) -- Z key
+    _G.set_w_up           = set_w_up
+    SetKbdCallback        ( "set_w_up", 33 )
+    _G.set_w_dn           = set_w_dn
+    SetKbdCallback        ( "set_w_dn", 34 )
+    _G.opn_nz             = opn_nz
+    local hot_key         = vergas_lib.set_key( "bind vote_no", 15, 1 )
+    SetKbdCallback        ( "opn_nz", hot_key )
+    _G.opn_flask          = opn_flask
+    local hot_key         = vergas_lib.set_key( "bind vote_yes", 16, 1 )
+    SetKbdCallback        ( "opn_flask", hot_key )
+    _G.inv_cb             = inv_cb
+    local hot_key         = vergas_lib.set_key( "bind scores", 14, 1 )
+    SetKbdCallback        ( "inv_cb", hot_key )
+    _G.on_off_mask        = on_off_mask
+    hot_key               = vergas_lib.set_key( "bind artefact", 16, 1 )
+    SetKbdCallback        ( "on_off_mask", hot_key )
+    _G.use_antirad        = use_antirad
+    hot_key               = vergas_lib.set_key( "bind chat", 12, 1 )
+    SetKbdCallback        ( "use_antirad", hot_key )
+    _G.use_energy         = use_energy
+    hot_key               = vergas_lib.set_key( "bind skin_menu", 17, 1 )
+    SetKbdCallback        ( "use_energy", hot_key )
+    _G.use_info           = use_info
+    hot_key               = vergas_lib.set_key( "bind team_menu", 17, 1 )
+    SetKbdCallback        ( "use_info", hot_key )
+    _G.use_watch          = use_watch
+    hot_key               = vergas_lib.set_key( "bind chat_team", 17, 1 )
+    SetKbdCallback        ( "use_watch", hot_key )
+    _G.use_minimap        = use_minimap
+    hot_key               = vergas_lib.set_key( "bind vote_begin", 18, 1 )
+    SetKbdCallback        ( "use_minimap", hot_key )
+    _G.modes_switch       = modes_switch
+    hot_key               = vergas_lib.set_key( "bind buy_menu", 16, 1 )
+    SetKbdCallback        ( "modes_switch", hot_key )
+    _G.try_open_inventory = try_open_inventory
+    hot_key               = vergas_lib.set_key( "bind speech_menu_0", 21, 1 )
+    SetKbdCallback        ( "try_open_inventory", hot_key )
+    _G.firemode_switch    = firemode_switch
+    hot_key               = vergas_lib.set_key( "bind wpn_firemode_next", 25, 1 )
+    SetKbdCallback        ( "firemode_switch", hot_key )
+    SetKbdCallback        ( "snd_on_off",     0xAD )
+    SetKbdCallback        ( "snd_volume_dn",  0xAE )
+    SetKbdCallback        ( "snd_volume_up",  0xAF )
+    SetKbdCallback        ( "on_esc_pressed", 0x1B )
+    _G.zoom_wpn_fov       = zoom_wpn_fov
 end
 
-function bind_stalker.process_net_spawn(data)
-  db.act_binder:safe_net_spawn(data)
+function bind_stalker.process_net_spawn( data )
+    db.act_binder:safe_net_spawn( data )
 end
 
----- ===================================================================  CLASS actor_binder =====================================
-class "actor_binder"(object_binder)
+---------------------------------  CLASS actor_binder  -----------------------------------------
 
-function actor_binder:__init(obj) super(obj)
+class "actor_binder"( object_binder )
+
+function actor_binder:__init( obj ) super( obj )
     log_init_stage()
     db.act_binder = self
-    -- wprintf(" loaded script vars: ")
-    -- misc.dump_table(nlc_vars(true))
-    _G.g_sim = alife()
-    -- _G.xvars = get_stored_vars()
+    _G.g_sim      = alife()
     ui_load_tex.RandomUILoadTex()
-   --ODS("[~T].~C0C #DBG: на запись bind =~C0F "..r_sc.."~C07" )  
-    SetVerbosity(3)
-    --SetBootMsg('Executing actor_binder:__init ')
-    RunCommand("CORE_INIT")
-    RunCommand("GAME_CON_LOG_ON") -- #DEBUG_ONLY разрешение вывода в игровую консолю
+    SetVerbosity( 3 )
+    RunCommand( "CORE_INIT" )
+    RunCommand( "GAME_CON_LOG_ON" ) -- #DEBUG_ONLY разрешение вывода в игровую консолю
     self.sity = NewSingularity()
     if self.sity.hyperinflation < 1000 then
-       abort('Bad extension factor')
+        abort( 'Bad extension factor' )
     end
-    self.bCheckStart = false
+    self.bCheckStart     = false
     self.weather_manager = level_weathers.WeatherManager()
-    self.actor_detector = xr_detector.actor_detector()
-    RunCommand("SHOW_PULSE")
-    
+    self.actor_detector  = xr_detector.actor_detector()
+    RunCommand( "SHOW_PULSE" )
     if savemgmt and savemgmt.init_module then
-      --ODS('[~T]. #DBG: save manager found')
-    end 
-    
-    log_init_stage() 
+        --ODS('[~T]. #DBG: save manager found')
+    end
+    log_init_stage()
     _flushlog()
 end
 
-function actor_binder:net_spawn(data)
-  log_init_stage()
-  _G.g_sim = alife()
-  db.sim = g_sim
-  db.act_binder = self
-  --SetBootMsg('Executing actor_binder:net_spawn ')
-  
-  local mask = tonumber ('0'.. ReadIni("$mod_dir$\\performance.ltx", "low_level", "main_thread_mask"))
-  if mask and mask > 0 then
-     SetThreadAM(mask)
-  end
-  
+function actor_binder:net_spawn( data )
+    log_init_stage()
+    _G.g_sim      = alife()
+    db.sim        = g_sim
+    db.act_binder = self
+    local mask    = tonumber(
+        '0' .. ReadIni( "$mod_dir$\\performance.ltx", "low_level", "main_thread_mask" )
+    )
+    if mask and mask > 0 then SetThreadAM( mask ) end
+    level.show_indicators()
+    self.bCheckStart = true
+    self.weapon_hide = false
+    weapon_hide      = false
+    if object_binder.net_spawn( self, data ) == false then
+        return false
+    end
+    db.add_actor( self.object ) -- до этого этапа db.actor == nil!
+    --LuaSafeCall("bind_stalker.process_net_spawn", "#func:^dbg", data)
+    log_init_stage()
+    self:safe_net_spawn( data )
+end
 
-  level.show_indicators()
-
-  self.bCheckStart = true
-  self.weapon_hide = false
-  weapon_hide = false
-
-  if object_binder.net_spawn(self, data)==false then
-    return false
-  end
-  
-  db.add_actor(self.object) -- до этого этапа db.actor == nil!
-  --LuaSafeCall("bind_stalker.process_net_spawn", "#func:^dbg", data)
-  log_init_stage()
-  self:safe_net_spawn(data)  
-end  
-  
-function actor_binder:safe_net_spawn(data)
-  InstallSEH(-1)
-
-  if db.actor then
-     wprintf("[~T/~B]. #DBG: db.actor present ")
-  else
-     abort("actor_binder:safe_net_spawn db.actor == nil " )
-  end     
-  _G.AddRegularTask = task_smart_upd.AddRegularTask
-  task_smart_upd.InitBinderTaskList(true)
-  class_info.update_class_map()
-  log_init_stage()  
-  modmgmt.check_scripts(false)
-  log_init_stage()
-  ExplodeSingularity (self.sity) 
-  log_init_stage()    
-  watcher_act.on_load()   
-                   
-  RunCommand("HIDE_PULSE")
-  level.set_load_title("#init_registry")
-  registry.init(false, 'net_spawn')
-  log_init_stage()
-    
-  local se_objs = registry.offline_objects(true, server_obj)
-  for id, se_obj in pairs(se_objs) do
-      local cid = se_obj:clsid()
-      if amk_anoms.check_is_anom(se_obj) or (cid == clsid.space_restrictor) then         
-         local rt = cse_get_restrictor_type(se_obj)
-         if rt == 2 then
-            wprintf(" found problem restrictor~C0F %s~C07 with type == 2, trying remove", se_obj:name())
-            misc.release_obj(se_obj, "restrictor remove", true)
-         end
-      end
-  end
-  -- wprintf("[~T/~U]. #DBG: actor_binder:net_spawn() - adjusting objects ")
-  -- registry.adjust_spawned_objects(80000) -- не более 80 секунд на выравнивание                
-  version_control.dump_file_versions()
-  
-  log_init_stage()
-  
-  if self.st.disable_input_time==nil then level.enable_input() end
-  --self.weather_manager:reset()
-  if (actor_stats.add_to_ranking~=nil) then actor_stats.add_to_ranking(self.object:id()) end
-
-  death_manager.init_drop_settings()
-
-  ActivateCheatProtection()
-  SetAtPanicHandler()
-  schedule_tasks(self)
-  level.disable_input()
-  ElapsedTime (35)
-  SetDbgVar("active_task_elapsed", "0")
-  SetDbgVar("active_task_ncalls", "0")
-  SetDbgVar("previous_task", "none")
-  _G.lsc_threads = {}
-  xrs_ai.actor_net_spawn(self)
-  if rx_ai then rx_ai.actor_net_spawn() end
-  _G.RegularTimerProc = RegularTimerProc
-  _G.g_actor_binder = self
-  _G.rtp_clocks = 0
-  modmgmt.init_modules()
-  --modmgmt.set_all_kcb()  -- переназначение всех колбеков клавиатуры
-  RunCommand("START_PARSE_LOG")
-  binder_reset = true
-  -- InstallSEH (1) -- #DEBUG_ONLY установить обработчик исключений, в качестве последнего в цепочке
-  SetUpdTimeout(300000, "net_spawn")
-  -- _flushlog()
-  --
-  RunCommand("MM_FREE_BUFF")
-  log_init_stage()
-  level.set_load_title("#after_init")  
-  modmgmt.invoke_all('after_init', 1, true)       
-  --ag_mayatnik.onLoad()--
-  wprintf("[~T/~B]. #DBG: safe_net_spawn end ")
-  level.set_load_title("#after actor_binder:net_spawn")
-  return true
+function actor_binder:safe_net_spawn( data )
+    InstallSEH( -1 )
+    if db.actor then
+        wprintf( "[~T/~B]. #DBG: db.actor present " )
+    else
+        abort( "actor_binder:safe_net_spawn db.actor == nil " )
+    end
+    _G.AddRegularTask = task_smart_upd.AddRegularTask
+    task_smart_upd.InitBinderTaskList( true )
+    class_info.update_class_map()
+    log_init_stage()
+    modmgmt.check_scripts( false )
+    log_init_stage()
+    ExplodeSingularity( self.sity )
+    log_init_stage()
+    watcher_act.on_load()
+    RunCommand( "HIDE_PULSE" )
+    level.set_load_title( "#init_registry" )
+    registry.init( false, 'net_spawn' )
+    log_init_stage()
+    local se_objs = registry.offline_objects( true, server_obj )
+    for id, se_obj in pairs( se_objs ) do
+        local cid = se_obj:clsid()
+        if amk_anoms.check_is_anom( se_obj ) or ( cid == clsid.space_restrictor ) then
+            local rt = cse_get_restrictor_type( se_obj )
+            if rt == 2 then
+                wprintf(
+                    " found problem restrictor~C0F %s~C07 with type == 2, trying remove",
+                    se_obj:name()
+                )
+                misc.release_obj( se_obj, "restrictor remove", true )
+            end
+        end
+    end
+    version_control.dump_file_versions()
+    log_init_stage()
+    if self.st.disable_input_time == nil then level.enable_input() end
+    if actor_stats.add_to_ranking ~= nil then
+        actor_stats.add_to_ranking( self.object:id() )
+    end
+    death_manager.init_drop_settings()
+    ActivateCheatProtection()
+    SetAtPanicHandler()
+    schedule_tasks( self )
+    level.disable_input()
+    ElapsedTime( 35 )
+    SetDbgVar( "active_task_elapsed", "0" )
+    SetDbgVar( "active_task_ncalls", "0" )
+    SetDbgVar( "previous_task", "none" )
+    _G.lsc_threads = {}
+    xrs_ai.actor_net_spawn( self )
+    if rx_ai then rx_ai.actor_net_spawn() end
+    _G.RegularTimerProc = RegularTimerProc
+    _G.g_actor_binder   = self
+    _G.rtp_clocks       = 0
+    modmgmt.init_modules()
+    RunCommand( "START_PARSE_LOG" )
+    binder_reset        = true
+    SetUpdTimeout( 300000, "net_spawn" )
+    RunCommand( "MM_FREE_BUFF" )
+    log_init_stage()
+    level.set_load_title( "#after_init" )
+    modmgmt.invoke_all( 'after_init', 1, true )
+    wprintf( "[~T/~B]. #DBG: safe_net_spawn end " )
+    level.set_load_title( "#after actor_binder:net_spawn" )
+    return true
 end
 
 function actor_binder:early_init()
- -- инциализация по первым тикам биндера (большая часть объектов онлайн)
- if binder_loops == 2 then   
-   level.set_load_title("#actor_binder:early_init")
-   campmgr.awake_flame_anoms()
- elseif binder_loops == 7 then   
-   campmgr.init_level_camps()
- end    
+    -- инциализация по первым тикам биндера (большая часть объектов онлайн)
+    if binder_loops == 2 then
+        level.set_load_title( "#actor_binder:early_init" )
+        campmgr.awake_flame_anoms()
+    elseif binder_loops == 7 then
+        campmgr.init_level_camps()
+    end
 end
 
 function late_init_impl()
-  task_smart_upd.InitBinderTaskList() -- отладочное переобновление
-  schedule_tasks(db.act_binder)
-  -- InstallSEH(-1)
-  UpdateRegistry()
-  RunCommand("MM_FREE_BUFF")
-  -- get_console():execute("stat_memory")
-  -- InstallSEH(1)
-  razgruzka.check_detectors()
-  log_init_stage()
-  amk.on_game_load(obj)
-  sak.add_tail()
-  modmgmt.late_init_all()
-  ui_mm_opt_main.update_keys()
-  ui_mm_opt_main.save_config()  -- restore keys
-  level.set_load_title("#actor_binder:late_init")
-  level.enable_input()
-  escape_raid.dbg_clean()
-  test.on_late_init()
-  allcore_mayatniks.on_late_init()
+    task_smart_upd.InitBinderTaskList() -- отладочное переобновление
+    schedule_tasks( db.act_binder )
+    UpdateRegistry()
+    RunCommand( "MM_FREE_BUFF" )
+    razgruzka.check_detectors()
+    log_init_stage()
+    amk.on_game_load( obj )
+    sak.add_tail()
+    modmgmt.late_init_all()
+    ui_mm_opt_main.update_keys()
+    ui_mm_opt_main.save_config()  -- restore keys
+    level.set_load_title( "#actor_binder:late_init" )
+    level.enable_input()
+    escape_raid.dbg_clean()
+    test.on_late_init()
+    allcore_mayatniks.on_late_init()
 end
 
 function actor_binder:late_init()
-    --SetBootMsg('Executing actor_binder:late__init ')
-  wprintf("[~T/~U/~B]. #DBG: actor_binder:late_init(), db.actor = %s", DumpVar(db.actor))
-  db.act_binder = self
-  ProcessCommands()
-  LuaSafeCall("bind_stalker.late_init_impl", "#func")
+    wprintf(
+        "[~T/~U/~B]. #DBG: actor_binder:late_init(), db.actor = %s",
+        DumpVar( db.actor )
+    )
+    db.act_binder = self
+    ProcessCommands()
+    LuaSafeCall( "bind_stalker.late_init_impl", "#func" )
 end
 
-function actor_binder:test_method(param)
-  ODS("[~T]. #test_method: param = "..tostring(param)..", self = "..DumpVar(self))
+function actor_binder:test_method( param )
+    ODS( "[~T]. #test_method: param = "..tostring(param)..", self = "..DumpVar(self) )
 end
 
 function actor_binder:net_destroy()
-  ODS('[~T].~CF0 #DBG: actor_binder:net_destroy() processing ...~C07')
-  local sname = (amk_vars.level_on_save or "")
-  if
-    ( level.name() == sname or sname == "" )
-    and time_global() > 300000
-    and db.actor:alive()
-  then
-    test.set_death_count( "p_stor", test.get_death_count( "p_stor" ) + 1 )
-  end
-  modmgmt.stop_modules() 
-  xr_s.on_event("net_destroy")
-  SetVerbosity( 1 )
-  texman.ret_tex_trees()
-  LuaCleanup( 255 ) 
-  DebugDumpAll()
-  SetVerbosity( 3 )
-  self:clear_callbacks()
-  db.del_actor( self.object ) 
-  object_binder.net_destroy( self )
-  SetVerbosity( 3 )
-  SleepEx( 200 ) 
-  db.sim    = nil
-  xvars.nlc = nil
-  xvars.amk = nil
-  xvars     = nil
+    ODS( '[~T].~CF0 #DBG: actor_binder:net_destroy() processing ...~C07' )
+    local sname = amk_vars.level_on_save or ""
+    if
+        ( level.name() == sname or sname == "" )
+        and time_global() > 300000
+        and db.actor:alive()
+    then
+        test.set_death_count( "p_stor", test.get_death_count( "p_stor" ) + 1 )
+    end
+    modmgmt.stop_modules()
+    xr_s.on_event( "net_destroy" )
+    SetVerbosity( 1 )
+    texman.ret_tex_trees()
+    LuaCleanup( 255 )
+    DebugDumpAll()
+    SetVerbosity( 3 )
+    self:clear_callbacks()
+    db.del_actor( self.object )
+    object_binder.net_destroy( self )
+    SetVerbosity( 3 )
+    SleepEx( 200 )
+    db.sim    = nil
+    xvars.nlc = nil
+    xvars.amk = nil
+    xvars     = nil
 end
 
 function actor_binder:clear_callbacks()
- self.object:set_callback(callback.inventory_info, nil)
- self.object:set_callback(callback.article_info, nil)
- self.object:set_callback(callback.on_item_drop, nil)
- self.object:set_callback(callback.on_item_take, nil)
-
- --self.object:set_callback(callback.actor_sleep, nil)
- self.object:set_callback(callback.task_state, nil)
- self.object:set_callback(callback.level_border_enter,  nil)
- self.object:set_callback(callback.level_border_exit,   nil)
- self.object:set_callback(callback.take_item_from_box,  nil)
- self.object:set_callback(callback.use_object,      nil) --/#+#
- self.object:set_callback(callback.saw_object,      nil)
- self.object:set_callback(callback.death,        nil) --/#+#
- self.object:set_callback(callback.on_before_save,      nil)
+    self.object:set_callback( callback.inventory_info,     nil )
+    self.object:set_callback( callback.article_info,       nil )
+    self.object:set_callback( callback.on_item_drop,       nil )
+    self.object:set_callback( callback.on_item_take,       nil )
+    self.object:set_callback( callback.task_state,         nil )
+    self.object:set_callback( callback.level_border_enter, nil )
+    self.object:set_callback( callback.level_border_exit,  nil )
+    self.object:set_callback( callback.take_item_from_box, nil )
+    self.object:set_callback( callback.use_object,         nil )
+    self.object:set_callback( callback.saw_object,         nil )
+    self.object:set_callback( callback.death,              nil )
+    self.object:set_callback( callback.on_before_save,     nil )
 end
 
 function actor_binder:reinit()
-  object_binder.reinit(self)
-  local npc_id = self.object:id()
-  db.storage[npc_id] = {}
-  self.st = db.storage[npc_id]
-  self.st.pstor = nil
-  self.next_restrictors_update_time = -10000
-  self.object:set_callback(callback.inventory_info, self.info_callback, self)
-  self.object:set_callback(callback.article_info, self.article_callback, self)
-  self.object:set_callback(callback.on_item_drop, self.on_item_drop, self)
-  self.object:set_callback(callback.on_item_take, self.on_item_take, self)
-  --self.object:set_callback(callback.trade_sell_buy_item, self.on_trade, self) -- for game stats
-  --self.object:set_callback(callback.actor_sleep, self.sleep_callback, self)
-  self.object:set_callback(callback.task_state, self.task_callback, self)
-  --self.object:set_callback(callback.map_location_added, self.map_location_added_callback, self)
-  self.object:set_callback(callback.level_border_enter, self.level_border_enter, self)
-  self.object:set_callback(callback.level_border_exit, self.level_border_exit, self)
-  self.object:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
-  self.object:set_callback(callback.use_object, self.on_use_object, self)
-  self.object:set_callback(callback.saw_object, self.on_saw_object, self)
-  self.object:set_callback(callback.death,self.death_callback,    self)
-  self.object:set_callback(callback.on_before_save, self.on_before_save, self) 
+    object_binder.reinit( self )
+    local npc_id         = self.object:id()
+    db.storage[ npc_id ] = {}
+    self.st              = db.storage[ npc_id ]
+    self.st.pstor        = nil
+    self.next_restrictors_update_time = -10000
+    self.object:set_callback( callback.inventory_info,     self.info_callback,      self )
+    self.object:set_callback( callback.article_info,       self.article_callback,   self )
+    self.object:set_callback( callback.on_item_drop,       self.on_item_drop,       self )
+    self.object:set_callback( callback.on_item_take,       self.on_item_take,       self )
+    self.object:set_callback( callback.task_state,         self.task_callback,      self )
+    self.object:set_callback( callback.level_border_enter, self.level_border_enter, self )
+    self.object:set_callback( callback.level_border_exit,  self.level_border_exit,  self )
+    self.object:set_callback( callback.take_item_from_box, self.take_item_from_box, self )
+    self.object:set_callback( callback.use_object,         self.on_use_object,      self )
+    self.object:set_callback( callback.saw_object,         self.on_saw_object,      self )
+    self.object:set_callback( callback.death,              self.death_callback,     self )
+    self.object:set_callback( callback.on_before_save,     self.on_before_save,     self )
 end
 
-function actor_binder:take_item_from_box(box, item)
-  --wprintf(" actor_binder:take_item_from_box, item = %s ", DumpVar(item))
-  amk_offline_alife.take_item_from_box(box, item)
-  local story_id = box:story_id()
-  if story_id==nil then
-    return
-  end
-  treasure_manager.take_item_from_box(box, story_id)
-  amk.on_item_take_from_box(box,item)
+function actor_binder:take_item_from_box( box, item )
+    amk_offline_alife.take_item_from_box( box, item )
+    local story_id = box:story_id()
+    if story_id == nil then return end
+    treasure_manager.take_item_from_box( box, story_id )
+    amk.on_item_take_from_box( box, item )
 end
 
-function actor_binder:level_border_enter(npc, info_id)
-  self.actor_detector:actor_enter()
+function actor_binder:level_border_enter( npc, info_id )
+    self.actor_detector:actor_enter()
 end
 
-function actor_binder:level_border_exit(npc, info_id)
-  self.actor_detector:actor_exit()
+function actor_binder:level_border_exit( npc, info_id )
+    self.actor_detector:actor_exit()
 end
 
-function actor_binder:info_callback(npc, info_id)
-  level_tasks.proceed(self.object)                        
-  level_tasks.process_info_portion(info_id)
-  table.insert(bind_stalker.info_events, { npc, info_id })
-  LuaSafeCall("bind_stalker.handle_events",   "#func")  
+function actor_binder:info_callback( npc, info_id )
+    level_tasks.proceed( self.object )
+    level_tasks.process_info_portion( info_id )
+    table.insert( bind_stalker.info_events, { npc, info_id } )
+    LuaSafeCall( "bind_stalker.handle_events", "#func" )
 end
 
-function actor_binder:on_trade(item, sell_bye, money)
-  --[[if sell_bye==true then
-    game_stats.money_trade_update(money)
-  else      
-    game_stats.money_trade_update(-money) 
-  end--]]
-end
+function actor_binder:on_trade( item, sell_bye, money ) end
 
-function actor_binder:article_callback(npc, group, name)
-  if device().precache_frame >1 then return end
-  if group=="Diary" then
-    news_manager.send_encyclopedy("diary", group)
-  else
-    news_manager.send_encyclopedy("encyclopedy", group)
-  end
-  amk.on_info(npc,info_id)
+function actor_binder:article_callback( npc, group, name )
+    if device().precache_frame > 1 then return end
+    if group == "Diary" then
+        news_manager.send_encyclopedy( "diary", group )
+    else
+        news_manager.send_encyclopedy( "encyclopedy", group )
+    end
+    amk.on_info( npc, info_id )
 end
 
 function actor_binder:on_before_save()
-    wprintf(" Подготовка к сохранению объектов...")
+    wprintf( " Подготовка к сохранению объектов..." )
     modmgmt.on_before_save_game()
-    local fname = sprintf('$logs$\\nlc_vars_%s.dump', FormatDate('yymmdd'))   
-    misc.switch_output(fname)
-    misc.xprintf('%s', InfoFmt('[~T]. #DBG: on_before_save'))
-    misc.dump_table(nlc_vars(true), ' ', fname)
-    misc.switch_output(false)    
+    local fname = sprintf( '$logs$\\nlc_vars_%s.dump', FormatDate( 'yymmdd' ) )
+    misc.switch_output( fname )
+    misc.xprintf( '%s', InfoFmt( '[~T]. #DBG: on_before_save' ) )
+    misc.dump_table( nlc_vars( true ), ' ', fname )
+    misc.switch_output( false )
     local mgr = get_resource_manager()
-    
     if mgr and mgr.get_unused_textures then
-       local tlist = mgr:get_unused_textures(128 * 1024) -- unload treshold 128k
-       wprintf("[~T]. #DBG: unused textures list size =~C0D %d~C07 ", misc.table_size(tlist))
-       local map = {}
-       for name, hash in pairs(tlist) do
-         map[tonumber(hash)] = 1
-       end -- for               
-              
-       xvars.unused_textures = map  
+        local tlist = mgr:get_unused_textures( 128 * 1024 ) -- unload treshold 128k
+        wprintf(
+            "[~T]. #DBG: unused textures list size =~C0D %d~C07 ",
+            misc.table_size( tlist )
+        )
+        local map = {}
+        for name, hash in pairs( tlist ) do
+            map[ tonumber( hash ) ] = 1
+        end
+        xvars.unused_textures = map
     end
-    reset_interactive(1)
-	if rx_ai then rx_ai.actor_save() end
-  local sname = (amk_vars.level_on_save or "")
-  if ( level.name() == sname or sname == "" ) and time_global() > 300000 then
-    test.set_death_count( "p_help", test.get_death_count( "p_stor" ) )
-  end
-  allcore_mayatniks.on_before_actor_save()
+    reset_interactive( 1 )
+    if rx_ai then rx_ai.actor_save() end
+    local sname = amk_vars.level_on_save or ""
+    if
+        ( level.name() == sname or sname == "" )
+        and time_global() > 300000
+    then
+        test.set_death_count( "p_help", test.get_death_count( "p_stor" ) )
+    end
+    allcore_mayatniks.on_before_actor_save()
 end
 
-function actor_binder:on_item_take(obj)
-  if debug_take then
-     wprintf(" on_item_take obj =~C0A %s~C07, sak.dog_psy = %d, allow =~C0A %s~C07 ", obj:name(), sak.dog_psy, DumpVar(handle_take_drop))
-  end   
-  if sak.dog_psy == 0 then return end
-       
-  if handle_take_drop then  
-     table.insert (bind_stalker.taked_items, obj:id()) -- чтобы обработать кучно за пределами CLevel::OnFrame
-  end   
-  if #bind_stalker.taked_items >= 100 then
-      LuaSafeCall("bind_stalker.handle_taked",   "#func") 
-  end
-  xr_s.on_event("on_item_take", obj)
+function actor_binder:on_item_take( obj )
+    if debug_take then
+        wprintf(
+            " on_item_take obj =~C0A %s~C07, sak.dog_psy = %d, allow =~C0A %s~C07 ",
+            obj:name(), sak.dog_psy, DumpVar( handle_take_drop )
+        )
+    end
+    if sak.dog_psy == 0 then return end
+    if handle_take_drop then
+        table.insert( bind_stalker.taked_items, obj:id() ) -- чтобы обработать кучно за пределами CLevel::OnFrame
+    end
+    if #bind_stalker.taked_items >= 100 then
+        LuaSafeCall( "bind_stalker.handle_taked",   "#func" )
+    end
+    xr_s.on_event( "on_item_take", obj )
 end
 
-function actor_binder:on_item_drop(obj)
-  if handle_take_drop then
-    --ODS("[~T]. #DBG: отдаем ~C0A"..obj:name().."   "..obj:section().."~C07")
-    LuaSafeCall("bind_stalker.handle_dropped", "#func", obj)
-  end          
+function actor_binder:on_item_drop( obj )
+    if handle_take_drop then
+        --ODS("[~T]. #DBG: отдаем ~C0A"..obj:name().."   "..obj:section().."~C07")
+        LuaSafeCall( "bind_stalker.handle_dropped", "#func", obj )
+    end
 end
 
-function actor_binder:task_callback(_task, _objective, _state)
-  task_manager.task_callback(_task:get_id(), _objective:get_idx(), _state)
-  if _objective:get_idx()==0 then
-    if _state==task.completed then
-      task_manager.reward_by_task(_task)
-      news_manager.send_task(db.actor, "complete", _task, _objective)
-    elseif _state==task.fail then
-      --if not string.find(_task:get_id(),"monster_part",1,true) and not string.find(_task:get_id(), "artefact",1,true) then
-      --news_manager.send_task(db.actor, "fail", _task, _objective)
-      --else
-      --news_manager.send_task(db.actor, "refused", _task, _objective)
-      --end
+function actor_binder:task_callback( _task, _objective, _state )
+    task_manager.task_callback( _task:get_id(), _objective:get_idx(), _state )
+    if _objective:get_idx() == 0 then
+        if     _state == task.completed then
+            task_manager.reward_by_task( _task )
+            news_manager.send_task( db.actor, "complete", _task, _objective )
+        elseif _state == task.fail then
+        else
+            news_manager.send_task( db.actor, "new", _task, _objective )
+        end
     else
-      news_manager.send_task(db.actor, "new", _task, _objective)
+        if _task:get_objective( 0 ):get_state() == task.in_progress then
+            if not string.find( _task:get_id(), "courier", 1, true ) then
+                news_manager.send_task( db.actor, "update", _task, _objective )
+            end
+        end
     end
-  else
-    if _task:get_objective(0):get_state()==task.in_progress then
-      if not string.find(_task:get_id(), "courier",1,true) then
-         news_manager.send_task(db.actor, "update", _task, _objective)
-      end
-    end
-  end
 end
 
-function actor_binder:map_location_added_callback(spot_type_str, object_id)
-  if (false==app_ready()) or (device().precache_frame>1) then return end
-  --'news_manager.send_task(db.actor, "new")
-end
-function actor_binder:death_callback(oVictim, oWho)
-  if oVictim:id() == 0 then
-    test.set_death_count( "d_stor", test.get_death_count( "d_stor" ) + 1 )
-  end
-  --self.object:activate_slot(0)
-  --m_call("on_actor_death", oWho) --/#+#
+function actor_binder:map_location_added_callback( spot_type_str, object_id )
+    if 
+        false == app_ready()
+        or device().precache_frame > 1
+    then
+        return
+    end
 end
 
-consol_flag=false
+function actor_binder:death_callback( oVictim, oWho )
+    if oVictim:id() == 0 then
+        test.set_death_count( "d_stor", test.get_death_count( "d_stor" ) + 1 )
+    end
+end
+
+consol_flag = false
+
 function bind_stalker.process_kbd()
-  local active = is_console_active()    
-    
-  if active and not consol_flag then
-     params.offs_huds()            
-  end             
-    consol_flag = active    
-  ProcessKeyboard(not consol_flag)
- 
-  --if binder_ticks % 10000 == 0 then
-  --   wprintf("[~T]. #DBG: actor_binder:process_kbd() consol_flag = %s ", DumpVar(consol_flag))  
-  --end
+    local active = is_console_active()
+    if active and not consol_flag then
+        params.offs_huds()
+    end
+    consol_flag = active
+    ProcessKeyboard( not consol_flag )
 end
 
-local stack_info = {}
+local stack_info      = {}
 local m_elapsed_start = 0
 local m_elapsed_end   = 0
 local m_last_update   = 0
 
-
-function actor_binder:update(delta)
-  binder_loops = binder_loops + 1
-  bind_stalker.process_binder_update(self, delta)
-  SetUpdTimeout(50000)
+function actor_binder:update( delta )
+    binder_loops = binder_loops + 1
+    bind_stalker.process_binder_update( self, delta )
+    SetUpdTimeout( 50000 )
 end
 
-function bind_stalker.process_binder_update(self, delta) -- выделенная функция, для обновления перезагрузкой файла
-  if binder_reset then
-     binder_reset = false
-  end
-  if misc.in_process_spawn == "in" then
-     wprintf("[~T].~C0E #DBG: process_binder_update ignored inside ~C0F misc.process_spawn~C07")
-     return      
-  end
-      
-  local dev =  device()
-  local elps = dev:frame_elapsed()
-  m_elapsed_start = m_elapsed_start * 0.99 + elps * 0.01
-
-  local gt = level.get_time_minutes()
-  if m_last_update ~= gt and (0 == gt % 5) then
-     m_last_update = gt
-     wprintf("[~T/~B]. #ACTOR_BINDER: game time =~C0F %s~C07, binder_ticks =~C0D %d~C07, binder_loops =~C0D %d~C07",
-          game.get_game_time():timeToString(game.CTime.TimeToSeconds), binder_ticks, binder_loops)
-  end
-  _G.last_upd_time = InfoFmt("~T") -- точное время обновление
-
-  
-  if mw_lock then
-     RunCommand('MW_DISABLE', 'mw_lock')
-  end
- 
-  if db.actor == nil then
-     abort('db.actor == nil')
-  end 
-  
-  if g_lua_stack_top and g_lua_stack_top > 0 then
-     table.insert(stack_info, g_lua_stack_top)
-     if table.getn(stack_info) >= 1000 then
-        wprintf("[~T]. #DBG: stack info:\n~C0E %s~C07", table.concat(stack_info, ","))
-        stack_info = {}
-     end 
-  end    
-  xr_s.on_event("update", delta)
-  sak.fly_up()
-  local init_loop = 10
-  if binder_ticks % 10 == 0 then
-    ProcessCommands() -- первый кандидат на долгое выполнение
-  end
-  
-  bind_stalker.process_kbd()
- 
-  if binder_loops == init_loop then
-    self:late_init()
-    db.init_stage = 100 -- complete
-  elseif binder_loops < init_loop then     
-    self:early_init()        
-  end
-
-  if (binder_loops > init_loop) and (elps < 20) then    
-    LuaSafeCall("task_smart_upd.ExecRegularTasks", "#func:^mad^", delta, self)
-  end
-
-  local elps_mid = dev:frame_elapsed()
-  binder_ticks = binder_ticks + 1 
-  
-  if (elps_mid > 50) and (binder_loops > 1) then
-    wprintf("[~T/~B].~C0C #PERF_WARN:~C07 frame~C0D %d~C07 elapsed on start =~C0D %.1f~C07 ms, after reg-tasks =~C0D %.1f~C07 ms, ema_start =~C0D %.1f~C07 ms, ema_end =~C0D %.1f~C07, ticks =~C0D %d~C07",
-                     dev.frame,  elps, elps_mid, m_elapsed_start, m_elapsed_end, binder_ticks)                    
-    return                                            
-  end
-
-  -- wprintf("[~T/~B].~C0B #PERF:~C07 binder_ticks =~C0D %d~C07, trying fast update registry ", binder_ticks)
-  if binder_ticks % 10000 == 5 then
-     schedule.late_init()
-  end
-    
-   if #bind_stalker.taked_items > 0 then
-       LuaSafeCall("bind_stalker.handle_taked",   "#func") 
-   end
-   if #bind_stalker.info_events > 0 then
-       LuaSafeCall("bind_stalker.handle_events",   "#func") 
-   end     
-   
-   local inv = get_shadow_inv()
-   if inv.need_update then   
-      inv:update_quantity()
-      inv.need_update = false
-   end             
-   
-   if take_events > 0 then
-      take_events = 0
-      bind_stalker.on_item_events(true)
-   end
-   if drop_events > 0 then
-      drop_events = 0
-      bind_stalker.on_item_events(false)
-   end
-      
-      
-   local elps_end = dev:frame_elapsed()   
-   if (elps_end - elps > 90) then
-     wprintf("[~T/~B].~C0C #PERF_WARN:~C07 frame~C0D %d~C07 elapsed mid_update =~C0D %.1f~C07 ms, end update =~C0D %.1f~C07 ms, ema_start =~C0D %.1f~C07 ms, ema_end =~C0D %.1f~C07, ticks=~C0D %d~C07",
-                 dev.frame, elps_mid, elps_end, m_elapsed_start, m_elapsed_end, binder_ticks)   
-   end
-   
-   m_elapsed_end = m_elapsed_end * 0.99 + elps_end * 0.01
-   if elps_end < 50 and nil == level.main_input_receiver() then
-      -- collectgarbage("step", (50 - elps_end) * 10) -- немного прибрать мусор
-   end
-   allcore_mayatniks.on_actor_update()
- -- task_smart_upd.ExecRegularTasks(delta, binder) -- CALL UPDATE ALL TASK DISTRIBUTED
-end
-
-function actor_binder:minute_tasks(delta, time)
-  --ActivateCheatProtection()
-end
-
-function actor_binder:binder_update_rarely(delta, time)
-  bind_restrictor.actor_update(delta)
-end
-
-function actor_binder:binder_update_task(delta, time)
-  task_manager.actor_update()
-  --sak.corp_to_life_update()
-end
-
-function actor_binder:binder_update_1 (delta, time)
-  object_binder.update(self, delta)
-  --game_stats.update(delta, self.object)
-end
-
-function actor_binder:binder_update_2 (delta, time)
-  if sleep_manager.is_sleep_active() and xr_conditions.actor_dead() then
-    xr_logic.issue_event(db.actor, db.storage[db.actor:id()]["ar_sleep"], "update")
-  end
-end
-
-function actor_binder:binder_update_3 (delta, time)
-  --self.weather_manager:update()
-  self.actor_detector:update()
-end
-
-function actor_binder:binder_update_4 (delta, time)
-  if self.st.disable_input_time~=nil and
-    game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle
-  then
-    level.enable_input()
-    self.st.disable_input_time = nil
-  end
-end
-
-function actor_binder:binder_update_5 ()
-  if weapon_hide or self.object:is_talking() then
-    if self.weapon_hide==false then
-      self.object:hide_weapon()
-      self.weapon_hide = true      
+function bind_stalker.process_binder_update( self, delta ) -- выделенная функция, для обновления перезагрузкой файла
+    if binder_reset then binder_reset = false end
+    if misc.in_process_spawn == "in" then
+        wprintf( "[~T].~C0E #DBG: process_binder_update ignored inside ~C0F misc.process_spawn~C07" )
+        return
     end
-  else
-    if self.weapon_hide then
-      self.object:restore_weapon()
-      self.weapon_hide = false      
+    local dev       = device()
+    local elps      = dev:frame_elapsed()
+    m_elapsed_start = m_elapsed_start * 0.99 + elps * 0.01
+    local gt        = level.get_time_minutes()
+    if m_last_update ~= gt and ( 0 == gt % 5 ) then
+        m_last_update = gt
+        wprintf(
+            "[~T/~B]. #ACTOR_BINDER: game time =~C0F %s~C07, binder_ticks =~C0D %d~C07, binder_loops =~C0D %d~C07",
+            game.get_game_time():timeToString( game.CTime.TimeToSeconds ), binder_ticks, binder_loops
+        )
     end
-  end
-  self_weapon_hide = self.weapon_hide
+    _G.last_upd_time = InfoFmt( "~T" ) -- точное время обновление
+    if mw_lock then RunCommand( 'MW_DISABLE', 'mw_lock' ) end
+    if db.actor == nil then abort( 'db.actor == nil' ) end
+    if g_lua_stack_top and g_lua_stack_top > 0 then
+        table.insert( stack_info, g_lua_stack_top )
+        if table.getn( stack_info ) >= 1000 then
+            wprintf(
+                "[~T]. #DBG: stack info:\n~C0E %s~C07", table.concat( stack_info, "," )
+            )
+            stack_info = {}
+        end
+    end
+    xr_s.on_event( "update", delta )
+    sak.fly_up()
+    local init_loop = 10
+    if binder_ticks % 10 == 0 then
+        ProcessCommands() -- первый кандидат на долгое выполнение
+    end
+    bind_stalker.process_kbd()
+    if binder_loops == init_loop then
+        self:late_init()
+        db.init_stage = 100 -- complete
+    elseif binder_loops < init_loop then
+        self:early_init()
+    end
+    if binder_loops > init_loop and elps < 20 then
+        LuaSafeCall( "task_smart_upd.ExecRegularTasks", "#func:^mad^", delta, self )
+    end
+    local elps_mid = dev:frame_elapsed()
+    binder_ticks   = binder_ticks + 1
+    if elps_mid > 50 and binder_loops > 1 then
+        wprintf(
+            "[~T/~B].~C0C #PERF_WARN:~C07 frame~C0D %d~C07 elapsed on start =~C0D %.1f~C07 ms, after reg-tasks =~C0D %.1f~C07 ms, ema_start =~C0D %.1f~C07 ms, ema_end =~C0D %.1f~C07, ticks =~C0D %d~C07",
+            dev.frame, elps, elps_mid, m_elapsed_start, m_elapsed_end, binder_ticks
+        )
+        return
+    end
+    if binder_ticks % 10000 == 5 then schedule.late_init() end
+    if #bind_stalker.taked_items > 0 then
+        LuaSafeCall( "bind_stalker.handle_taked", "#func" )
+    end
+    if #bind_stalker.info_events > 0 then
+        LuaSafeCall( "bind_stalker.handle_events", "#func" )
+    end
+    local inv = get_shadow_inv()
+    if inv.need_update then
+        inv:update_quantity()
+        inv.need_update = false
+    end
+    if take_events > 0 then
+        take_events = 0
+        bind_stalker.on_item_events( true )
+    end
+    if drop_events > 0 then
+        drop_events = 0
+        bind_stalker.on_item_events( false )
+    end
+    local elps_end = dev:frame_elapsed()
+    if ( elps_end - elps > 90 ) then
+        wprintf(
+            "[~T/~B].~C0C #PERF_WARN:~C07 frame~C0D %d~C07 elapsed mid_update =~C0D %.1f~C07 ms, end update =~C0D %.1f~C07 ms, ema_start =~C0D %.1f~C07 ms, ema_end =~C0D %.1f~C07, ticks=~C0D %d~C07",
+            dev.frame, elps_mid, elps_end, m_elapsed_start, m_elapsed_end, binder_ticks
+        )
+    end
+    m_elapsed_end = m_elapsed_end * 0.99 + elps_end * 0.01
+    if elps_end < 50 and nil == level.main_input_receiver() then
+        -- collectgarbage("step", (50 - elps_end) * 10) -- немного прибрать мусор
+    end
+    allcore_mayatniks.on_actor_update()
+    -- task_smart_upd.ExecRegularTasks(delta, binder) -- CALL UPDATE ALL TASK DISTRIBUTED
 end
 
-function actor_binder:binder_update_6 (delta, time)
-  sak.health_handle()
-  mike.tools_have()
+function actor_binder:minute_tasks( delta, time )
+    --ActivateCheatProtection()
 end
 
-function actor_binder:binder_update_7 (delta, time)
-  if self.bCheckStart then
-    if not has_alife_info("storyline_actor_start") and
-      (level_name=="l01_escape")
+function actor_binder:binder_update_rarely( delta, time )
+    bind_restrictor.actor_update( delta )
+end
+
+function actor_binder:binder_update_task( delta, time )
+    task_manager.actor_update()
+end
+
+function actor_binder:binder_update_1( delta, time )
+    object_binder.update( self, delta )
+end
+
+function actor_binder:binder_update_2( delta, time )
+    if sleep_manager.is_sleep_active() and xr_conditions.actor_dead() then
+        xr_logic.issue_event(
+            db.actor, db.storage[ db.actor:id() ][ "ar_sleep" ], "update"
+        )
+    end
+end
+
+function actor_binder:binder_update_3( delta, time )
+    self.actor_detector:update()
+end
+
+function actor_binder:binder_update_4( delta, time )
+    if
+        self.st.disable_input_time ~= nil
+        and game.get_game_time():diffSec( self.st.disable_input_time ) >= self.st.disable_input_idle
     then
-      self.object:give_info_portion("storyline_actor_start")
+        level.enable_input()
+        self.st.disable_input_time = nil
     end
-    if not has_alife_info("global_dialogs") then
-      self.object:give_info_portion("global_dialogs")
+end
+
+function actor_binder:binder_update_5()
+    if weapon_hide or self.object:is_talking() then
+        if self.weapon_hide == false then
+            self.object:hide_weapon()
+            self.weapon_hide = true
+        end
+    else
+        if self.weapon_hide then
+            self.object:restore_weapon()
+            self.weapon_hide = false
+        end
     end
-    if not has_alife_info("level_changer_icons") then
-      self.object:give_info_portion("level_changer_icons")
+    self_weapon_hide = self.weapon_hide
+end
+
+function actor_binder:binder_update_6( delta, time )
+    sak.health_handle()
+    mike.tools_have()
+end
+
+function actor_binder:binder_update_7( delta, time )
+    if self.bCheckStart then
+        if
+            not has_alife_info( "storyline_actor_start" )
+            and level_name == "l01_escape"
+        then
+            self.object:give_info_portion( "storyline_actor_start" )
+        end
+        if not has_alife_info( "global_dialogs" ) then
+            self.object:give_info_portion( "global_dialogs" )
+        end
+        if not has_alife_info( "level_changer_icons" ) then
+            self.object:give_info_portion( "level_changer_icons" )
+        end
+        self.bCheckStart = false
     end
-    self.bCheckStart = false
-  end
 end
 
-function actor_binder:binder_update_8 (delta, time)
-  xrs_ai.actor_update(delta)
-	if rx_ai then rx_ai.actor_update() end
+function actor_binder:binder_update_8( delta, time )
+    xrs_ai.actor_update( delta )
+    if rx_ai then rx_ai.actor_update() end
 end
 
-function actor_binder:binder_update_9 (delta, time)
-  amk_offline_alife.actor_update(delta)
+function actor_binder:binder_update_9( delta, time )
+    amk_offline_alife.actor_update( delta )
 end
 
-function actor_binder:binder_update_10 (delta, time)
-  if post_process ~= 0 then
-    if post_process:update() == true then
-       post_process = 0
+function actor_binder:binder_update_10( delta, time )
+    if post_process ~= 0 then
+        if post_process:update() == true then
+            post_process = 0
+        end
     end
-  end
 end
 
-function actor_binder:save(packet)
-  wprintf("[~T/~U/~B].~C0F #DBG: actor_binder:save begins, packet size =~C0D %d~C07", packet:w_tell())
-  LuaSafeCall("sak.drop_weapon", "#func")
-  LuaSafeCall("vergas_lib.game_save", "#func")
-  sak.save_gg_community()
-  LuaSafeCall("timers.save_timers", "#func")
-  self:save_old(packet)
-  self.wt = time_global()
-  sak_box_move.OnActorSave()
+function actor_binder:save( packet )
+    wprintf(
+        "[~T/~U/~B].~C0F #DBG: actor_binder:save begins, packet size =~C0D %d~C07",
+        packet:w_tell()
+    )
+    LuaSafeCall( "sak.drop_weapon", "#func" )
+    LuaSafeCall( "vergas_lib.game_save", "#func" )
+    sak.save_gg_community()
+    LuaSafeCall( "timers.save_timers", "#func" )
+    self:save_old( packet )
+    self.wt = time_global()
+    sak_box_move.OnActorSave()
 end
 
-
-function actor_binder:save_old(packet)
-  local save_treasure_manager = true
-  --object_binder.save(self, packet)
-  wprintf('[~T/~B]. #DBG: saved difficulty =~C0D %d~C07', level.get_game_difficulty())  
-  
-  if save_treasure_manager==true then
-    packet:w_u8(level.get_game_difficulty() + 128)
-  else
-    packet:w_u8(level.get_game_difficulty())
-  end
-  if self.st.disable_input_time==nil then
-    packet:w_bool(false)
-  else
-    packet:w_bool(true)
-    utils.w_CTime(packet, self.st.disable_input_time)
-  end
-  xr_logic.pstor_save_all(self.object, packet)
-  self.weather_manager:save(packet)
-  sr_psy_antenna.save(packet)
-  if save_treasure_manager==true then
-    treasure_manager.save(packet)      
-  end                                  
-  task_manager.save(packet)
-  self.actor_detector:save(packet)
-  wprintf('[~T/~U/~B].~C0F #DBG: save_old complete, packet size =~C0D %d~C07', packet:w_tell())
+function actor_binder:save_old( packet )
+    local save_treasure_manager = true
+    wprintf( '[~T/~B]. #DBG: saved difficulty =~C0D %d~C07', level.get_game_difficulty() )
+    if save_treasure_manager == true then
+        packet:w_u8( level.get_game_difficulty() + 128 )
+    else
+        packet:w_u8( level.get_game_difficulty() )
+    end
+    if self.st.disable_input_time == nil then
+        packet:w_bool( false )
+    else
+        packet:w_bool( true )
+        utils.w_CTime( packet, self.st.disable_input_time )
+    end
+    xr_logic.pstor_save_all( self.object, packet )
+    self.weather_manager:save( packet )
+    sr_psy_antenna.save( packet )
+    if save_treasure_manager == true then
+        treasure_manager.save( packet )
+    end
+    task_manager.save( packet )
+    self.actor_detector:save( packet )
+    wprintf(
+        '[~T/~U/~B].~C0F #DBG: save_old complete, packet size =~C0D %d~C07',
+        packet:w_tell()
+    )
 end
 
-function actor_binder:load(reader)   
-    
-  RunCommand("SET_LOG_CB")
-  wprintf('[~T/~B]. #DBG: actor_binder:load start, packet pos = %d, elapsed = %d ', reader:r_tell(), reader:r_elapsed())
-  if reader:r_eof() then
-    abort("SAVE FILE IS CORRUPT!!! net_packed is void ")
-  end
-
-  object_binder.load(self, reader)
-  local game_difficulty = reader:r_u8()
-  
-  local load_treasure_manager = false      
-  if game_difficulty >= 128 then          
-    game_difficulty = game_difficulty - 128
-    load_treasure_manager = true          
-  end    
-  get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
-  if reader:r_eof() then
-    abort("SAVE FILE IS CORRUPT")
-  end
-  local stored_input_time = reader:r_u8()
-  if stored_input_time==true then
-     self.st.disable_input_time = utils.r_CTime(reader)
-  end
-
-  xr_logic.pstor_load_all(self.object, reader)
-  self.weather_manager:load(reader)
-  --if level_name=="l10_radar" then
-  sr_psy_antenna.load(reader)
-  --end
-  if load_treasure_manager==true then
-    treasure_manager.load(reader)      
-  end                                  
-  task_manager.load(reader)
-  self.actor_detector:load(reader)
-  wprintf('[~T/~B]. #DBG: actor_binder:load end')
-  --[[if xr_logic.pstor_retrieve(self.object,"emerg",false) then
-    self.warning=true
-    self.critical=2
-    self.wt=time_global()+60000
-  end--]]
+function actor_binder:load( reader )
+    RunCommand( "SET_LOG_CB" )
+    wprintf(
+        '[~T/~B]. #DBG: actor_binder:load start, packet pos = %d, elapsed = %d ',
+        reader:r_tell(), reader:r_elapsed()
+    )
+    if reader:r_eof() then
+        abort( "SAVE FILE IS CORRUPT!!! net_packed is void " )
+    end
+    object_binder.load( self, reader )
+    local game_difficulty       = reader:r_u8()
+    local load_treasure_manager = false
+    if game_difficulty >= 128 then
+        game_difficulty       = game_difficulty - 128
+        load_treasure_manager = true
+    end
+    get_console():execute(
+        "g_game_difficulty " .. game_difficulty_by_num[ game_difficulty ]
+    )
+    if reader:r_eof() then abort( "SAVE FILE IS CORRUPT" ) end
+    local stored_input_time = reader:r_u8()
+    if stored_input_time == true then
+        self.st.disable_input_time = utils.r_CTime( reader )
+    end
+    xr_logic.pstor_load_all( self.object, reader )
+    self.weather_manager:load( reader )
+    sr_psy_antenna.load( reader )
+    if load_treasure_manager == true then treasure_manager.load( reader ) end
+    task_manager.load( reader )
+    self.actor_detector:load( reader )
+    wprintf( '[~T/~B]. #DBG: actor_binder:load end' )
 end
 
-function hide_weapon()
-  weapon_hide = true
-    -- wprintf("[~T].~C0C #WARN:~C07 weapon_hide~C0F set~C07 from\n %s ", lua_traceback(' ')) 
-end
-function restore_weapon()
-  weapon_hide = false
-    -- wprintf("[~T].~C0C #WARN:~C07 weapon_hide~C0E reset~C07 from\n %s ", lua_traceback(' '))
-end
+function hide_weapon()    weapon_hide = true  end
+function restore_weapon() weapon_hide = false end
 
-local function test_section_iteration(file_name, section_name)
-  local    file = ini_file(file_name)
-  local    n = file:line_count(section_name)
-  local    id, value = "", "", result
-  for i=0,n-1 do
-    result, id, value = file:r_line(section_name,i,"","")
-  end
+local function test_section_iteration( file_name, section_name )
+    local file      = ini_file( file_name )
+    local n         = file:line_count( section_name )
+    local id, value = "", "", result
+    for i = 0, n - 1 do
+        result, id, value = file:r_line( section_name,i, "", "" )
+    end
 end
 
-test_section_iteration("system.ltx","space_restrictor")
+test_section_iteration( "system.ltx","space_restrictor" )
 
-function actor_binder:on_saw_object(obj)
-	if obj:section()=="rucksack" then
-	obj:set_tip_text("st_saw_ruckzak")
-	end
-  wprintf(" actor saw~C0A %s~C0D %d~C07", obj:name(), obj:id()) 
+function actor_binder:on_saw_object( obj )
+    if obj:section() == "rucksack" then
+        obj:set_tip_text( "st_saw_ruckzak" )
+    end
+    wprintf( " actor saw~C0A %s~C0D %d~C07", obj:name(), obj:id() )
 end
 
 
-function actor_binder:on_use_object(obj)
-  --local activ = db.actor:active_slot()
-  --if activ ~= NONE_SID and activ ~= NONE_CL_SID then return end
-  test.anim_eat_start( obj )
-  vergas_lib.used_item(obj)
-  amk_mod.used_item(obj)
+function actor_binder:on_use_object( obj )
+    test.anim_eat_start ( obj )
+    vergas_lib.used_item( obj )
+    amk_mod.used_item   ( obj )
 end
