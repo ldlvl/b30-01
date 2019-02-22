@@ -158,7 +158,7 @@ function generic_physics_binder:hit_callback(obj, amount, local_direction, who, 
 	if obj:clsid() == CLID_VEHICLE_BTR then
 		if actor then
 			local active_item = actor:active_item()
-    		if  active_item and strposx( active_item:section(), "wpn_rpg7" ) then
+    		if  active_item and active_item:section() == "wpn_rpg7" then
     			obj:kill( actor )
     		else
    				obj:get_car():SetfHealth( 1 )
