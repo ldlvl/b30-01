@@ -3,719 +3,742 @@ Respawner. Схема обновления популяции всего всего всего в симуляции.
 by Stohe(Диденко Руслан)
 --------------------------------------------------------------------------------------------------------------------]]
 
---function printf() 
---end
-
-local section_name = "respawn"
-local i,k,v = 0,0,0
+local section_name  = "respawn"
+local i, k, v       = 0, 0, 0
 local total_respawn = 0
-
 -- Таблица ограничений на спаун: всего в симуляции не должно быть больше, чем указано.
-local simMaxCount = {
-  stalker_novice = 26, stalker_experienced = 24, stalker_veteran = 22, stalker_master = 10,
-  monolith_novice = 20, monolith_experienced = 15, monolith_veteran = 17, monolith_master = 15,
-  military_novice = 20, military_experienced = 16, military_veteran = 22, military_master = 20,
-  killer_novice = 20, killer_experienced = 15, killer_veteran = 15, killer_master = 20,
-  ecolog_novice = 15, ecolog_experienced = 20, ecolog_veteran = 20, ecolog_master = 10,
-  dolg_novice = 20, dolg_experienced = 17, dolg_veteran = 18, dolg_master = 8,
-  freedom_novice = 25, freedom_experienced = 10, freedom_veteran = 13, freedom_master = 10,
-  bandit_novice = 15, bandit_experienced = 20, bandit_veteran = 19, bandit_master = 15,
-    zombie_normal = 30, zombie_trup = 33,
-  zombied_novice = 10, zombied_experienced = 7, zombied_veteran = 5, zombied_master = 5,
-    sniper_novice = 20, sniper_experienced = 17, sniper_veteran = 15, sniper_master = 15,
-    green_novice = 15, green_experienced = 25, green_veteran = 25, green_master = 15,
-  
-  rat_weak = 600, rat_normal = 600, rat_strong = 600,
-  tushkano_weak = 500, tushkano_normal = 800, tushkano_strong = 500,
-  flesh_weak = 250, flesh_normal = 250, flesh_strong = 200,
-  boar_weak = 500, boar_normal = 500, boar_strong = 250,
-  dog_weak = 500, dog_normal = 600, dog_strong = 500,
-  pseudodog_weak = 250, pseudodog_normal = 250, pseudodog_strong = 610,
-  psy_dog_weak = 150, psy_dog_normal = 150, psy_dog_strong = 150,
-  zombie_weak = 250, zombie_normal = 250, zombie_strong = 250,
-  snork_weak = 400, snork_normal = 400, snork_strong = 200,
-  poltergeist_weak = 100,m_poltergeist_normal_tele = 200,m_poltergeist_normal_flame = 200,m_poltergeist_dark_flame = 50,
-  pseudo_gigant_weak = 43,pseudo_gigant_normal = 43,pseudo_gigant_strong = 43,
-  controller_weak = 36,controller_normal = 36,controller_strong = 36,
-  burer_weak = 100,burer_normal = 100,burer_strong = 100,
-  bloodsucker_weak = 100, bloodsucker_normal = 100, bloodsucker_strong = 100
+local simMaxCount   = {
+    stalker_novice             = 26,
+    stalker_experienced        = 24,
+    stalker_veteran            = 22,
+    stalker_master             = 10,
+    monolith_novice            = 20,
+    monolith_experienced       = 15,
+    monolith_veteran           = 17,
+    monolith_master            = 15,
+    military_novice            = 20,
+    military_experienced       = 16,
+    military_veteran           = 22,
+    military_master            = 20,
+    killer_novice              = 20,
+    killer_experienced         = 15,
+    killer_veteran             = 15,
+    killer_master              = 20,
+    ecolog_novice              = 15,
+    ecolog_experienced         = 20,
+    ecolog_veteran             = 20,
+    ecolog_master              = 10,
+    dolg_novice                = 20,
+    dolg_experienced           = 17,
+    dolg_veteran               = 18,
+    dolg_master                = 8,
+    freedom_novice             = 25,
+    freedom_experienced        = 10,
+    freedom_veteran            = 13,
+    freedom_master             = 10,
+    bandit_novice              = 15,
+    bandit_experienced         = 20,
+    bandit_veteran             = 19,
+    bandit_master              = 15,
+    zombie_normal              = 30,
+    zombie_trup                = 33,
+    zombied_novice             = 10,
+    zombied_experienced        = 7,
+    zombied_veteran            = 5,
+    zombied_master             = 5,
+    sniper_novice              = 20,
+    sniper_experienced         = 17,
+    sniper_veteran             = 15,
+    sniper_master              = 15,
+    green_novice               = 15,
+    green_experienced          = 25,
+    green_veteran              = 25,
+    green_master               = 15,
+    rat_weak                   = 600,
+    rat_normal                 = 600,
+    rat_strong                 = 600,
+    tushkano_weak              = 500,
+    tushkano_normal            = 800,
+    tushkano_strong            = 500,
+    flesh_weak                 = 250,
+    flesh_normal               = 250,
+    flesh_strong               = 200,
+    boar_weak                  = 500,
+    boar_normal                = 500,
+    boar_strong                = 250,
+    dog_weak                   = 500,
+    dog_normal                 = 600,
+    dog_strong                 = 500,
+    pseudodog_weak             = 250,
+    pseudodog_normal           = 250,
+    pseudodog_strong           = 610,
+    psy_dog_weak               = 150,
+    psy_dog_normal             = 150,
+    psy_dog_strong             = 150,
+    zombie_weak                = 250,
+    zombie_normal              = 250,
+    zombie_strong              = 250,
+    snork_weak                 = 400,
+    snork_normal               = 400,
+    snork_strong               = 200,
+    poltergeist_weak           = 100,
+    m_poltergeist_normal_tele  = 200,
+    m_poltergeist_normal_flame = 200,
+    m_poltergeist_dark_flame   = 50,
+    pseudo_gigant_weak         = 43,
+    pseudo_gigant_normal       = 43,
+    pseudo_gigant_strong       = 43,
+    controller_weak            = 36,
+    controller_normal          = 36,
+    controller_strong          = 36,
+    burer_weak                 = 100,
+    burer_normal               = 100,
+    burer_strong               = 100,
+    bloodsucker_weak           = 100,
+    bloodsucker_normal         = 100,
+    bloodsucker_strong         = 100
 }
-
 -- периоды респавна в секундах
 local idle_spawn_preset = {
-  seldom = 60*60*120,      -- 120 игровых часов
-  medium = 60*60*18,       -- 18 игровых часов
-  often  = 60*60*6,        -- 6 игровых часов
-  once   = -100000
+    seldom = 60 * 60 * 120,      -- 120 игровых часов
+    medium = 60 * 60 * 18,       --  18 игровых часов
+    often  = 60 * 60 * 6,        --   6 игровых часов
+    once   = -100000
 }
 
-local respawners = {}
+local respawners           = {}
 local respawners_by_parent = {}
 
-function r_bool(spawn_ini, section, line, default)
-  if spawn_ini:line_exist(section, line) then
-    return spawn_ini:r_bool(section, line)
-  else
-    return default
-  end
-end
-
-function r_str(spawn_ini, section, line, default)
-  if spawn_ini:line_exist(section, line) then
-    return spawn_ini:r_string(section, line)
-  else
-    return default
-  end
-end
-
-function r_num(spawn_ini, section, line, default)
-  if spawn_ini:line_exist(section, line) then
-    return spawn_ini:r_float(section, line)
-  else
-    return default
-  end
-end
-
-function r_2nums(spawn_ini, section, line, def1, def2)
-  if spawn_ini:line_exist(section, line) then
-    local t = parse_names(spawn_ini:r_string(section, line))
-    local n = table.getn(t)
-
-    if n==0 then
-      return def1, def2
-    elseif n==1 then
-      return t[1], def2
+function r_bool( spawn_ini, section, line, default )
+    if spawn_ini:line_exist( section, line ) then
+        return spawn_ini:r_bool( section, line )
     else
-      return t[1], t[2]
+        return default
     end
-  else
-    return def1, def2
-  end
 end
 
-function parse_names(s)
+function r_str( spawn_ini, section, line, default )
+    if spawn_ini:line_exist( section, line ) then
+        return spawn_ini:r_string( section, line )
+    else
+        return default
+    end
+end
+
+function r_num( spawn_ini, section, line, default )
+    if spawn_ini:line_exist( section, line ) then
+        return spawn_ini:r_float( section, line )
+    else
+        return default
+    end
+end
+
+function r_2nums( spawn_ini, section, line, def1, def2 )
+    if spawn_ini:line_exist( section, line ) then
+        local t = parse_names( spawn_ini:r_string( section, line ) )
+        local n = table.getn( t )
+        if     n == 0 then
+            return def1, def2
+        elseif n == 1 then
+            return t[ 1 ], def2
+        else
+            return t[ 1 ], t[ 2 ]
+        end
+    else
+        return def1, def2
+    end
+end
+
+function parse_names( s )
     local t = {}
-    for name in string.gfind(s, "([%w_%-.\\]+)%p*") do
-        table.insert(t, name)
+    for name in string.gfind( s, "([%w_%-.\\]+)%p*" ) do
+        table.insert( t, name )
     end
     return t
 end
 
-function r_spawns(spawn_ini, section, line, sectSpawnProps)
-  if spawn_ini:line_exist(section, line) then
-    local t = parse_names(spawn_ini:r_string(section, line))
-    local n = table.getn(t)
-    
-    local ret_table = {}
-    local k = 1
-    while k <= n do
-      local spawn = {}
-      spawn.section = t[k]
-      if t[k+1]~=nil then
-        local p = tonumber(t[k+1])
-        if p then
-          spawn.prob = p
-          k = k + 2
-        else
-          spawn.prob = 1
-          k = k + 1
-        end
-      else
-        spawn.prob = 1
-        k = k + 1
-      end
-      table.insert(ret_table, spawn)
-      if sectSpawnProps[spawn.section]==nil then
-        local respawn_ini = system_ini()
-
-        local community = r_str(respawn_ini, spawn.section, "community", "nil")
-        local rank = r_str(respawn_ini, spawn.section, "spec_rank", "nil")
-        local check = true
-        local custom_data = r_str(respawn_ini, spawn.section, "custom_data")
-        if custom_data~=nil then
-          local custom_data_ltx = ini_file(custom_data)
-          if custom_data_ltx:section_exist("smart_terrains") then
-            if custom_data_ltx:line_exist("smart_terrains", "none") then
-              if r_str(custom_data_ltx, "smart_terrains", "none")=="true" then
-                check = false
-              end 
+function r_spawns( spawn_ini, section, line, sectSpawnProps )
+    if spawn_ini:line_exist( section, line ) then
+        local t         = parse_names( spawn_ini:r_string( section, line ) )
+        local n         = table.getn( t )
+        local ret_table = {}
+        local k         = 1
+        while k <= n do
+            local spawn   = {}
+            spawn.section = t[ k ]
+            if t[ k + 1 ] ~= nil then
+                local p = tonumber( t[ k + 1 ] )
+                if p then
+                    spawn.prob = p
+                    k = k + 2
+                else
+                    spawn.prob = 1
+                    k = k + 1
+                end
+            else
+                spawn.prob = 1
+                k = k + 1
             end
-            if custom_data_ltx:line_exist("smart_terrains", "respawn_check") then
-              if r_str(custom_data_ltx, "smart_terrains", "respawn_check")=="false" then
-                check = false
-              end
-            end                        
-          end
+            table.insert( ret_table, spawn )
+            if sectSpawnProps[ spawn.section ] == nil then
+                local respawn_ini = system_ini()
+                local community   = r_str( respawn_ini, spawn.section, "community", "nil" )
+                local rank        = r_str( respawn_ini, spawn.section, "spec_rank", "nil" )
+                local check       = true
+                local custom_data = r_str( respawn_ini, spawn.section, "custom_data" )
+                if custom_data ~= nil then
+                    local custom_data_ltx = ini_file( custom_data )
+                    if custom_data_ltx:section_exist( "smart_terrains" ) then
+                        if custom_data_ltx:line_exist( "smart_terrains", "none" ) then
+                            if r_str( custom_data_ltx, "smart_terrains", "none" ) == "true" then
+                                check = false
+                            end
+                        end
+                        if custom_data_ltx:line_exist( "smart_terrains", "respawn_check" ) then
+                            if r_str( custom_data_ltx, "smart_terrains", "respawn_check" ) == "false" then
+                                check = false
+                            end
+                        end
+                    end
+                end
+                sectSpawnProps[ spawn.section ] = { community = community, rank = rank, check = check }
+            end
         end
-        
-        sectSpawnProps[spawn.section] = {community = community, rank = rank, check = check}
-      end
-            
+        return ret_table
     end
-    return ret_table
-  end
-  return nil
+    return nil
 end
 
-class "se_respawn"(cse_alife_smart_zone)
-function se_respawn:__init(section) super(section)
-  self.spawned_obj = {}
-  self.sectSpawnProps = {}
-  self.rt_read = false
-  self.proxy_initialized = false
-  self.upd_count = 0
+------------------------------------------------------------------------------------------
+
+class "se_respawn"( cse_alife_smart_zone )
+
+function se_respawn:__init( section ) super( section )
+    self.spawned_obj       = {}
+    self.sectSpawnProps    = {}
+    self.rt_read           = false
+    self.proxy_initialized = false
+    self.upd_count         = 0
 end
 
-function se_respawn:STATE_Write(packet)
-  cse_alife_smart_zone.STATE_Write(self, packet)
-  local table_size = table.getn(self.spawned_obj)
-  packet:w_u8(table_size)
-  for i = 1, table_size do
-    packet:w_u16(self.spawned_obj[i])
-  end
-  utils.w_CTime(packet, self.respawn_time)
-  if self.respawn_time==nil then
-     self.respawn_time = game.CTime()
-  end
+function se_respawn:STATE_Write( packet )
+    cse_alife_smart_zone.STATE_Write( self, packet )
+    local table_size = table.getn( self.spawned_obj )
+    packet:w_u8( table_size )
+    for i = 1, table_size do
+        packet:w_u16( self.spawned_obj[ i ] )
+    end
+    utils.w_CTime( packet, self.respawn_time )
+    if self.respawn_time == nil then
+        self.respawn_time = game.CTime()
+    end
 end
 
-function se_respawn:STATE_Read(packet, size)
-  cse_alife_smart_zone.STATE_Read(self, packet, size)
-  if editor() then
-    return
-  end
-  local table_size = packet:r_u8()
+function se_respawn:STATE_Read( packet, size )
+    cse_alife_smart_zone.STATE_Read( self, packet, size )
+    if editor() then return end
+    local table_size = packet:r_u8()
     --wprintf("[~T]. #SE_RESPAWN: %s table_size = %d ", tostring(self:name()), table_size)
- 
-  for i=1, table_size do
-    table.insert(self.spawned_obj, packet:r_u16())
-  end
-
-  if not packet:r_eof() then
-    self.respawn_time = utils.r_CTime(packet)
-    self.rt_read = true
-    -- wprintf ("%s read respawn_time %s %s", tostring(self:name()), self.respawn_time:dateToString(0), self.respawn_time:timeToString(1))
-  end
-
-  local spawned = #self.spawned_obj
-  if spawned > 0 and self.spawn_once then
-     wprintf("[~T]. #SE_RESPAWN: ~C0F %s~C07 loaded with completed spawn_once work", self:name())
-     self.already_once_spawned = true
-  end
-
+    for i = 1, table_size do
+        table.insert( self.spawned_obj, packet:r_u16() )
+    end
+    if not packet:r_eof() then
+        self.respawn_time = utils.r_CTime( packet )
+        self.rt_read      = true
+        -- wprintf ("%s read respawn_time %s %s", tostring(self:name()), self.respawn_time:dateToString(0), self.respawn_time:timeToString(1))
+    end
+    local spawned = #self.spawned_obj
+    if spawned > 0 and self.spawn_once then
+        wprintf( "[~T]. #SE_RESPAWN: ~C0F %s~C07 loaded with completed spawn_once work", self:name() )
+        self.already_once_spawned = true
+    end
 end
 
 function se_respawn:on_register()
-  cse_alife_smart_zone.on_register(self)
-  init_respawn_params(self)
+    cse_alife_smart_zone.on_register( self )
+    init_respawn_params( self )
 end
 
-function se_respawn:create(prob)
-  if tostring(prob)=="true" then
-    prob=80
-  elseif tostring(prob)=="false" then
-    prob=0
-  end
-  if tonumber(prob)==nil then  
-    print_table(self.conditions)
-    prob = 0
-  end
-
-    prob = tonumber(prob)
+function se_respawn:create( prob )
+    if     tostring( prob ) == "true"  then prob = 80
+    elseif tostring( prob ) == "false" then prob = 0
+    end
+    if tonumber( prob ) == nil then
+        print_table( self.conditions )
+        prob = 0
+    end
+    prob = tonumber( prob )
     local dist2a = 1000
-
     if prob > 0 and db.actor then
-      dist2a = db.actor:position():distance_to(self.position)
-      dist2a = dist2a * (1 + level.get_game_difficulty())
-      -- 100: dist = 50, prob = 50
-      -- 100: dist = 20, prob = 20
-      if prob > dist2a then
-         prob = dist2a
-      end
-    end      
-
-  if lua_random(100) <= prob then
-      -- spawn allowed!
+        dist2a = db.actor:position():distance_to( self.position )
+        dist2a = dist2a * ( 1 + level.get_game_difficulty() )
+        -- 100: dist = 50, prob = 50
+        -- 100: dist = 20, prob = 20
+        if prob > dist2a then prob = dist2a end
+    end
+    if lua_random( 100 ) <= prob then
+        -- spawn allowed!
     else
-      if bind_stalker.binder_ticks > 1 then     
-         wprintf ("[~T]. #SE_RESPAWN: disabled for~C0F %s~C07 dist2a =~C0D %.2f~C07", self:name(), dist2a)
-      end   
-      return
+        if bind_stalker.binder_ticks > 1 then
+            wprintf ( "[~T]. #SE_RESPAWN: disabled for~C0F %s~C07 dist2a =~C0D %.2f~C07", self:name(), dist2a )
+        end
+        return
     end
-  
-  local spawn_section = ""
-  local sum = 0
-  for k,v in pairs(self.respawn_section) do
-    sum = sum + v.prob
-
-  end
-  sum = lua_random(0, sum)
-  for k,v in pairs(self.respawn_section) do
---'    local tt = self.sectSpawnProps[v.section]
---'    local community_rank = tt.community.."_"..tt.rank
---'    local s_count = simMaxCount[community_rank]
---'    if s_count==nil then
---'      s_count = 0
---'    end    
---'    if tt.check==false or
---'        self.item_spawn==true or
---'        sim_statistic.simNpcCount(tt.community, tt.rank) < s_count 
---'    then  
-    sum = sum - v.prob      
-    if sum <= 0 then
-      spawn_section = v.section
-      break
+    local spawn_section = ""
+    local sum           = 0
+    for k, v in pairs( self.respawn_section ) do sum = sum + v.prob end
+    sum = lua_random( 0, sum )
+    for k, v in pairs( self.respawn_section ) do
+        --'    local tt = self.sectSpawnProps[v.section]
+        --'    local community_rank = tt.community.."_"..tt.rank
+        --'    local s_count = simMaxCount[community_rank]
+        --'    if s_count==nil then
+        --'      s_count = 0
+        --'    end
+        --'    if tt.check==false or
+        --'        self.item_spawn==true or
+        --'        sim_statistic.simNpcCount(tt.community, tt.rank) < s_count
+        --'    then
+        sum = sum - v.prob
+        if sum <= 0 then
+            spawn_section = v.section
+            break
+        end
+        --'    end
     end
---'    end
-  end
-  
-  if spawn_section=="" then
-    return false
-  end
-  
-  local parent_id = nil
-  if self.parent~=nil then
-    local s_obj = alife():story_object(self.parent)
-    if s_obj==nil then
-      abort("SPAWNING [%s], cant find parent with SID [%s]", self:name(), self.parent)
-      return
+    if spawn_section == "" then return false end
+    local parent_id = nil
+    if self.parent ~= nil then
+        local s_obj = alife():story_object( self.parent )
+        if s_obj == nil then
+            abort( "SPAWNING [%s], cant find parent with SID [%s]", self:name(), self.parent )
+            return
+        end
+        parent_id = s_obj.id
     end
-    parent_id = s_obj.id
-  end
-  local obj
-  _G.g_sim = alife()
-  if parent_id==nil then
-     total_respawn = total_respawn + 1
-     if total_respawn > 100 and g_sim.loaded_save_name and g_sim.loaded_save_name ~= "" then 
-        wprintf("[~T]. #SE_RESPAWN: spawning ~C0A %-40s~C07 at ~C0F %s~C07, total respawn =~C0D %5d~C07, save_game =~C0A %s~C07",
-                       spawn_section, misc.pos2str(self.position), total_respawn, g_sim.loaded_save_name)
-     end    
-     obj = g_sim:create(spawn_section, self.position, self.m_level_vertex_id, self.m_game_vertex_id)
-  else
-     obj = g_sim:create(spawn_section, self.position, self.m_level_vertex_id, self.m_game_vertex_id, parent_id)
-  end
-  --if self.amk_name and self.amk_name=="dsc_dogs1" and obj then ODS("[~T/~B]. #DBG: спавн объекта = "..obj:name().." в "..tostring(self.amk_name).." "..tostring(self:name())) sak.zver=obj.id end
-  amk.on_REspawn(obj,self)
-  
-  local tt = self.sectSpawnProps[spawn_section]
- 
-  if self.item_spawn==false then        
-    if tt.check==true and not self.amk_name then
-      obj:brain():update()
-      local smart_terrain_id = obj:smart_terrain_id()
-        --wprintf ("SPAWN [%s] move_offline [%s], interactive [%s], smart_terrain_id [%s]", tostring(self:name()), tostring(self:move_offline()), tostring(self:interactive()), smart_terrain_id)
-      if smart_terrain_id ~= BAD_OBJ_ID then  
-        table.insert(self.spawned_obj ,obj.id)
-        local pos = obj.position
-        local sm_obj = alife():object(smart_terrain_id)
-          return true
-      else
-        alife():release(obj, true)
-        return false
-      end
+    local obj
+    _G.g_sim = alife()
+    if parent_id == nil then
+        total_respawn = total_respawn + 1
+        if
+            total_respawn > 100
+            and g_sim.loaded_save_name
+            and g_sim.loaded_save_name ~= ""
+        then
+            wprintf(
+                "[~T]. #SE_RESPAWN: spawning ~C0A %-40s~C07 at ~C0F %s~C07, total respawn =~C0D %5d~C07, save_game =~C0A %s~C07",
+                spawn_section, misc.pos2str( self.position ), total_respawn, g_sim.loaded_save_name
+            )
+        end
+        obj = g_sim:create( spawn_section, self.position, self.m_level_vertex_id, self.m_game_vertex_id )
+    else
+        obj = g_sim:create( spawn_section, self.position, self.m_level_vertex_id, self.m_game_vertex_id, parent_id )
     end
-  end
-  table.insert(self.spawned_obj ,obj.id)
-  return true
-  
+    --if self.amk_name and self.amk_name=="dsc_dogs1" and obj then ODS("[~T/~B]. #DBG: спавн объекта = "..obj:name().." в "..tostring(self.amk_name).." "..tostring(self:name())) sak.zver=obj.id end
+    amk.on_REspawn( obj,self )
+    local tt = self.sectSpawnProps[ spawn_section ]
+    if self.item_spawn == false then
+        if tt.check == true and not self.amk_name then
+            obj:brain():update()
+            local smart_terrain_id = obj:smart_terrain_id()
+            --wprintf ("SPAWN [%s] move_offline [%s], interactive [%s], smart_terrain_id [%s]", tostring(self:name()), tostring(self:move_offline()), tostring(self:interactive()), smart_terrain_id)
+            if smart_terrain_id ~= BAD_OBJ_ID then
+                table.insert( self.spawned_obj ,obj.id )
+                local pos    = obj.position
+                local sm_obj = alife():object( smart_terrain_id )
+                return true
+            else
+                alife():release( obj, true )
+                return false
+            end
+        end
+    end
+    table.insert( self.spawned_obj ,obj.id )
+    return true
 end
-lilled_monstr={}
+
+lilled_monstr = {}
 
 function se_respawn:spawn()
-  local name = tostring(self:name())
-  if strpos(name, "zombie_trup") then
-     wprintf ("[~T/~B]. #SE_RESPAWN: спавн объекта =~C0A %s~C07", name)
-  end
-
-  if not self.spawn_once then
-    for k,v in pairs(self.spawned_obj) do
-      local obj = client_obj(v)
-      if obj==nil then
-        obj = alife():object(v)
-      end
-      if obj~=nil then
-        --ODS("[~T/~B]. #DBG: заспавлено в = "..tostring(self:name()).." "..tostring(obj:name()))
-        if (IsStalker(obj) or IsMonster(obj)) and obj:alive() ~= true then
-           table.remove(self.spawned_obj, k) -- приборка мертвяка
+    local name = tostring( self:name() )
+    if strpos( name, "zombie_trup" ) then
+        wprintf( "[~T/~B]. #SE_RESPAWN: спавн объекта =~C0A %s~C07", name )
+    end
+    -- changed by DSH for a better control in amk-respawners
+    -- если объект не принадлежит к тому, что респаунит этот респаунер, он будет удален
+    if not self.spawn_once then
+        local our_sections = {}
+        for _, v in ipairs( self.respawn_section ) do
+            our_sections[ v.section ] = true
         end
-      else
-        table.remove(self.spawned_obj, k) -- объект удален вообще из игры
-      end
+        -- Пробегаемся по списку уже заспавненных объектов и удаляем из
+        -- них мертвые либо уничтоженные.
+        local filtered = {}
+        for _, v in ipairs( self.spawned_obj ) do
+            local obj = alife():object( v )
+            if obj and our_sections[ obj:section_name() ] then
+                if IsStalker( obj ) or IsMonster( obj ) then
+                    if obj:alive() then
+                        table.insert( filtered, v )
+                    end
+                else
+                    table.insert( filtered, v )
+                end
+            end
+        end
+        self.spawned_obj = filtered
     end
-  end
-
-  if xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions)=="0" then
-    sim_statistic.respawn_enabled(self, false)
-    return
-  end
-  sim_statistic.respawn_enabled(self, true)
-
-  local population = #self.spawned_obj
- 
-  if population < self.min_count then
-       wprintf(" ~C0A %s~C07 restoring minimum population~C0D %d~C07 from~C0D %d~C07 ", self:name(),  self.min_count or 0, population or 0)
-    
-       for i = 1, 50 do       
-         if #self.spawned_obj < self.min_count then
-           if self:create(100)==false then
-              return
-           end
-         end
-       end    
-     return
-  end
-
-  for i = 1, self.max_spawn do  
-    if self.max_count ~= -1 and table.getn(self.spawned_obj) >= self.max_count then
-      return
-    end  
-    if self:create(xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.conditions)) == false then
-      return
+    if xr_logic.pick_section_from_condlist( db.actor_proxy, self, self.conditions ) == "0" then
+        sim_statistic.respawn_enabled( self, false )
+        return
     end
-  end -- for    
+    sim_statistic.respawn_enabled( self, true )
+    local population = #self.spawned_obj
+    if population < self.min_count then
+        wprintf(
+            " ~C0A %s~C07 restoring minimum population~C0D %d~C07 from~C0D %d~C07 ",
+            self:name(), self.min_count or 0, population or 0
+        )
+        for i = 1, 50 do
+            if #self.spawned_obj < self.min_count then
+                if self:create( 100 ) == false then
+                    return
+                end
+            end
+        end
+        return
+    end
+    for i = 1, self.max_spawn do
+        if self.max_count ~= -1 and table.getn( self.spawned_obj ) >= self.max_count then
+            return
+        end
+        if self:create( xr_logic.pick_section_from_condlist( db.actor_proxy, self, self.conditions ) ) == false then
+            return
+        end
+    end
 end
 
-function se_respawn:remove_spawned(id)
-  for k,v in pairs(self.spawned_obj) do
-    if id == v then
-      table.remove(self.spawned_obj, k)
-    end      
-  end 
+function se_respawn:remove_spawned( id )
+    for k, v in pairs( self.spawned_obj ) do
+        if id == v then
+            table.remove(self.spawned_obj, k)
+        end
+    end
 end
 
 function se_respawn:execute()
-  local spawned = #self.spawned_obj
-
-  if spawned > 0 and self.spawn_once then
-     self.already_once_spawned = true
-  end
-
-  if self.already_once_spawned == true then return end
-  if self.idle_spawn_min       == -1   then return end
-  
-  --[[ODS("[~T/~B]. #DBG: время запуска спавнеров = "..tostring(self:name()).." "..self.respawn_time:dateToString(0).." "..tostring(self.respawn_time:timeToString(1)))
-  amk.add_spot_on_map(self.id,'level_changer_self',self:name())
+    local spawned = #self.spawned_obj
+    if spawned > 0 and self.spawn_once then
+        self.already_once_spawned = true
+    end
+    if self.already_once_spawned == true then return end
+    if self.idle_spawn_min       == -1   then return end
+    --[[ODS("[~T/~B]. #DBG: время запуска спавнеров = "..tostring(self:name()).." "..self.respawn_time:dateToString(0).." "..tostring(self.respawn_time:timeToString(1)))
+    amk.add_spot_on_map(self.id,'level_changer_self',self:name())
     for k,v in pairs(self.spawned_obj) do
-      local obj = client_obj(v)
-      if obj==nil then
-        obj = alife():object(v)
-      end
-      if obj~=nil then
-      ODS("[~T/~B]. #DBG: заспавлено в = "..tostring(self:name()).." "..tostring(obj:name()))
-      amk.add_spot_on_map(obj.id,'red_location',obj:name())
-      end
+    local obj = client_obj(v)
+    if obj==nil then
+    obj = alife():object(v)
+    end
+    if obj~=nil then
+    ODS("[~T/~B]. #DBG: заспавлено в = "..tostring(self:name()).." "..tostring(obj:name()))
+    amk.add_spot_on_map(obj.id,'red_location',obj:name())
+    end
     end--]]
-    
-  local name = tostring (self:name())
-
-  if self.respawn_time < game.get_game_time() then
-    local idle_time = game.CTime()
-    local now = game.get_game_time()
-    local max = self.idle_spawn_max        
-    if max <= self.idle_spawn_min then max = max * 2 end -- чтобы не было массированного спавна сразу        
-    local delta = lua_random(self.idle_spawn_min, max)
-    local hr = math.floor(delta / 3600)
-    local mn = ( delta - hr * 3600 ) / 60
-    mn = math.floor(mn)
-    idle_time:setHMSms(hr, mn, delta % 60, 0)    
-    self.respawn_time = now + idle_time
-    -- delta = self.respawn_time:diffSec(now)                                                                                                                    
-    -- misc.dump_table(self.respawn_section,  '    ')        
-
-    self:spawn()
-
-    if #self.spawned_obj > spawned then -- только если отработал
-      if self.spawn_once then
-         self.already_once_spawned = true
-         name = name .. ":once"
-      end                                         
-        
-      wprintf("[~T].~CF0 #SE_RESPAWN:~C07 respawner ~C0E %s~C07 at~C0A %s~C07 next attempt planed after~C0F %02d:%02d (~C0D %d~C07 seconds )~C07, idle_spawn_max=~C0D %d~C07", 
-                           name, self.level_name or 'nil', hr, mn, delta, max)                                                            
-                           
-      local dump = ''                                                                                                  
-      for i, tab in ipairs(self.respawn_section) do
-        dump = sprintf("%s~C0A %s~C0B:~C0D%d~C07", dump, tab.section, tab.prob)          
-      end                 
-      wprintf(" spawn_objs =~C0F{ %s }~C07  what respawn:  %s", table.concat(self.spawned_obj or {}, ','), dump)
-    end -- after real spawn
-  end -- if self
- 
-  if spawned > 0 and self.spawn_once then
-     wprintf("[~T]. ~CE0 #SE_RESPAWN:~C0F  already_once_spawned~C07 from spawner~C0A %s~C07 !", self:name())
-     self.idle_spawn_min = -1
-     -- schedule.add('remove_spawner_'..tostring(self.id), sprintf("misc.release_obj(%d, 'se_respawn.script')", self.id), 5000)
-     --wprintf(" executed from:\n~C0A %s~C07", lua_traceback('  '))
-     --fatal_error("detection")
-  end
-end -- execute
+    local name = tostring( self:name() )
+    if self.respawn_time < game.get_game_time() then
+        local idle_time = game.CTime()
+        local now       = game.get_game_time()
+        local max       = self.idle_spawn_max
+        if max <= self.idle_spawn_min then max = max * 2 end -- чтобы не было массированного спавна сразу
+        local delta = lua_random(self.idle_spawn_min, max)
+        local hr = math.floor(delta / 3600)
+        local mn = ( delta - hr * 3600 ) / 60
+        mn = math.floor(mn)
+        idle_time:setHMSms(hr, mn, delta % 60, 0)
+        self.respawn_time = now + idle_time
+        -- delta = self.respawn_time:diffSec(now)
+        -- misc.dump_table(self.respawn_section,  '    ')
+        self:spawn()
+        if #self.spawned_obj > spawned then -- только если отработал
+            if self.spawn_once then
+                self.already_once_spawned = true
+                name = name .. ":once"
+            end
+            wprintf(
+                "[~T].~CF0 #SE_RESPAWN:~C07 respawner ~C0E %s~C07 at~C0A %s~C07 next attempt planed after~C0F %02d:%02d (~C0D %d~C07 seconds )~C07, idle_spawn_max=~C0D %d~C07",
+                name, self.level_name or 'nil', hr, mn, delta, max
+            )
+            local dump = ''
+            for i, tab in ipairs( self.respawn_section ) do
+                dump = sprintf( "%s~C0A %s~C0B:~C0D%d~C07", dump, tab.section, tab.prob )
+            end
+            wprintf(
+                " spawn_objs =~C0F{ %s }~C07  what respawn:  %s",
+                table.concat( self.spawned_obj or {}, ',' ), dump
+            )
+        end
+    end
+    if spawned > 0 and self.spawn_once then
+        wprintf(
+            "[~T]. ~CE0 #SE_RESPAWN:~C0F  already_once_spawned~C07 from spawner~C0A %s~C07 !",
+            self:name()
+        )
+        self.idle_spawn_min = -1
+        -- schedule.add('remove_spawner_'..tostring(self.id), sprintf("misc.release_obj(%d, 'se_respawn.script')", self.id), 5000)
+        --wprintf(" executed from:\n~C0A %s~C07", lua_traceback('  '))
+        --fatal_error("detection")
+    end
+end
 
 function se_respawn:update()
-  if (bind_stalker.binder_loops < 1000) or (bind_stalker.binder_loops % 10 < 5) then
-     return
-  end
-
-  cse_alife_smart_zone.update(self)
-  self:execute()
-  self.upd_count = self.upd_count + 1
-  if (level.name() ~= self.level_name) then
-     -- wprintf("[~T/~I/~B]. #PERF: updated outside~C0A %35s~C07 at level ~C0F %s~C07, update count =~C0D %d~C07", self:name(), self.level_name, self.upd_count)
-  end
+    if
+        ( bind_stalker.binder_loops < 1000 )
+        or ( bind_stalker.binder_loops % 10 < 5 )
+    then
+        return
+    end
+    cse_alife_smart_zone.update( self )
+    self:execute()
+    self.upd_count = self.upd_count + 1
+    if level.name() ~= self.level_name then
+        -- wprintf("[~T/~I/~B]. #PERF: updated outside~C0A %35s~C07 at level ~C0F %s~C07, update count =~C0D %d~C07", self:name(), self.level_name, self.upd_count)
+    end
 end
 
 function se_respawn:update_online()
-  if self.respawn_radius==-1 then
-    sim_statistic.respawn_enabled(self, false)
-    return
-  end
-  
-  if nil == db.actor then 
-     abort(" actor == nil")
-     return
-  end
-  
-    local dist2a = db.actor:position():distance_to(self.position) or 50 
- 
-  if dist2a >= self.respawn_radius or 100 then
-    self:execute()
-  else
-    sim_statistic.respawn_enabled(self, false)
-  end
-end
-
-function spawn(name)
-  local spawner = respawners[name]
-  if spawner==nil then
-    return
-  end
-  for i=1,spawner.max_spawn do
-    if spawner.max_count~=-1 and table.getn(spawner.spawned_obj) >= spawner.max_count then
-      return
-    end  
-    if spawner:create(xr_logic.pick_section_from_condlist(db.actor_proxy, spawner, spawner.conditions))==false then
-      return
+    if self.respawn_radius == -1 then
+        sim_statistic.respawn_enabled( self, false )
+        return
     end
-  end  
+    if nil == db.actor then
+        abort( " actor == nil" )
+        return
+    end
+    local dist2a = db.actor:position():distance_to( self.position ) or 50
+    if dist2a >= self.respawn_radius or 100 then
+        self:execute()
+    else
+        sim_statistic.respawn_enabled( self, false )
+    end
 end
 
-function get_respawner_by_parent(parent_id)
-  return respawners_by_parent[parent_id]
+function spawn( name )
+    local spawner = respawners[name]
+    if spawner == nil then return end
+    for i = 1,spawner.max_spawn do
+        if
+            spawner.max_count ~= -1
+            and table.getn( spawner.spawned_obj ) >= spawner.max_count
+        then
+            return
+        end
+        if spawner:create(
+                xr_logic.pick_section_from_condlist( db.actor_proxy, spawner, spawner.conditions )
+            ) == false
+        then
+            return
+        end
+    end
+end
+
+function get_respawner_by_parent( parent_id )
+    return respawners_by_parent[ parent_id ]
 end
 
 -- Сбор статистики
 function stats()
-  local total_spawned = 0
-  local total_avail = 0
-  local total = 0
-  --printf("***************** RESPAWN STATISTIC *********************")
-  for k,v in pairs(respawners) do
-    local s = xr_logic.pick_section_from_condlist(db.actor_proxy, v, v.conditions)
-    local pops = "DISABLE"
-    if s~="nil" and s~="0" then
-      pops = table.getn(v.spawned_obj)
+    local total_spawned = 0
+    local total_avail   = 0
+    local total         = 0
+    --printf("***************** RESPAWN STATISTIC *********************")
+    for k, v in pairs( respawners ) do
+        local s    = xr_logic.pick_section_from_condlist( db.actor_proxy, v, v.conditions )
+        local pops = "DISABLE"
+        if s ~= "nil" and s ~= "0" then
+            pops = table.getn( v.spawned_obj )
+        end
+        local str_pops
+        if v.max_count == pops then
+            str_pops = "FULL " .. tostring( pops )
+        else
+            str_pops = tostring( pops )
+        end
+        print_table( v.respawn_section )
+        -- Увеличиваем общие счетчики
+        total = total + v.max_count
+        if pops ~= "DISABLE" then
+            total_avail   = total_avail + v.max_count
+            total_spawned = total_spawned + pops
+        end
     end
-    local str_pops
-    if v.max_count==pops then
-      str_pops = "FULL "..tostring(pops)
-    else
-      str_pops = tostring(pops)
-    end
-    --printf("[%s] spawns [%s] object", tostring(v:name()), str_pops)
-    print_table(v.respawn_section)
-    -- Увеличиваем общие счетчики
-    total = total + v.max_count
-    if pops~="DISABLE" then
-      total_avail = total_avail + v.max_count
-      total_spawned = total_spawned + pops
-    end
-  end
-  --printf("*** SUMMARY ***")
-  --printf("  total = %s", total)
-  --printf("  total_avail = %s", total_avail)
-  --printf("  total_spawned = %s", total_spawned)
-  --printf("***************")
 end
-
-
 
 -- Сбор продвинутой статистики статистики по лимитам
 function lstats()
-  local can_spawn = {}
-  --printf("***************** LIMITS STATISTIC *********************")
-  for k,v in pairs(respawners) do
-    -- Запоминаем максимальное количество весов для данного респавнера
-    local wage = 0
-    for kk,vv in pairs(v.respawn_section) do
-      wage = wage + vv.prob
+    local can_spawn = {}
+    --printf("***************** LIMITS STATISTIC *********************")
+    for k, v in pairs( respawners ) do
+        -- Запоминаем максимальное количество весов для данного респавнера
+        local wage = 0
+        for kk, vv in pairs( v.respawn_section ) do
+            wage = wage + vv.prob
+        end
+        -- Заносим максимальное количество всех типов чуваков, которые данный респавнер может наспаунить.
+        for kk, vv in pairs( v.respawn_section ) do
+            local tt             = v.sectSpawnProps[vv.section]
+            local community_rank = tt.community .. "_" .. tt.rank
+            if can_spawn[ community_rank ] == nil then
+                can_spawn[community_rank] = { community = tt.community, rank = tt.rank }
+            end
+        end
     end
-    
-    -- Заносим максимальное количество всех типов чуваков, которые данный респавнер может наспаунить.
-    for kk,vv in pairs(v.respawn_section) do
-      local tt = v.sectSpawnProps[vv.section]
-      local community_rank = tt.community.."_"..tt.rank
-      if can_spawn[community_rank]==nil then
-        can_spawn[community_rank] = {community = tt.community, rank = tt.rank}
-      end
+    -- Выводим все это в общей статистике
+    local total_max, total_prob, total_current, total_limit = 0, 0, 0, 0
+    for k, v in pairs( can_spawn ) do
+        local cs = sim_statistic.simNpcCount( v.community, v.rank )
+        local gl = simMaxCount[ k ]
+        if gl == nil then gl = 0 end
+        total_current = total_current + cs
+        total_limit   = total_limit   + gl
+        --printf("%s current=%s limit=%s", k, cs, gl)
     end
-  end 
-  -- Выводим все это в общей статистике
-  local total_max, total_prob, total_current, total_limit = 0,0,0,0
-  for k,v in pairs(can_spawn) do
-    local cs = sim_statistic.simNpcCount(v.community, v.rank)
-    local gl = simMaxCount[k]
-    
-    if gl==nil then gl = 0 end
-
-    total_current = total_current + cs
-    total_limit = total_limit + gl
-    
-    --printf("%s current=%s limit=%s", k, cs, gl)
-  end
-  --printf("TOTAL: current=%s limit=%s", total_current, total_limit)
+    --printf("TOTAL: current=%s limit=%s", total_current, total_limit)
 end
-
 
 -- Сбор статистики по ненастроенным объектам
 function estats()
-  --printf("***************** SPAWN ERROR STATISTIC *********************")
-  for k,v in pairs(respawners) do
-    -- Заносим максимальное количество всех типов чуваков, которые данный респавнер может наспаунить.
-    for kk,vv in pairs(v.respawn_section) do
-      local tt = v.sectSpawnProps[vv.section]
-      if tt.community=="nil" or tt.rank=="nil" then
-        --printf("respawner [%s]", tostring(v:name()))
-        --printf("Section [%s] community[%s] rank [%s]", vv.section, tt.community, tt.rank)
-      end
+    --printf("***************** SPAWN ERROR STATISTIC *********************")
+    for k, v in pairs( respawners ) do
+        -- Заносим максимальное количество всех типов чуваков, которые данный респавнер может наспаунить.
+        for kk, vv in pairs( v.respawn_section ) do
+            local tt = v.sectSpawnProps[ vv.section ]
+            if tt.community == "nil" or tt.rank == "nil" then
+            --printf("respawner [%s]", tostring(v:name()))
+            --printf("Section [%s] community[%s] rank [%s]", vv.section, tt.community, tt.rank)
+            end
+        end
     end
-  end 
 end
 
-
-
-function create_ammo(section, position, lvi, gvi, pid, num)
-  local ini = system_ini()
-  local num_in_box = ini:r_u32(section, "box_size")
-  while num > num_in_box do
-    --alife():create_ammo(section, position, lvi, gvi, pid, num_in_box)
-    misc.spawn_obj(section, position, pid, num_in_box)
-    num = num - num_in_box
-  end
-  misc.spawn_obj(section, position, pid, num)
-  --alife():create_ammo(section, position, lvi, gvi, pid, num)
+function create_ammo( section, position, lvi, gvi, pid, num )
+    local ini        = system_ini()
+    local num_in_box = ini:r_u32( section, "box_size" )
+    while num > num_in_box do
+        --alife():create_ammo(section, position, lvi, gvi, pid, num_in_box)
+        misc.spawn_obj( section, position, pid, num_in_box )
+        num = num - num_in_box
+    end
+    misc.spawn_obj( section, position, pid, num )
+    --alife():create_ammo(section, position, lvi, gvi, pid, num)
 end
 
-local amk_respawner_control={}
-local amk_named_respawner_control={}
+local amk_respawner_control       = {}
+local amk_named_respawner_control = {}
 
-function init_respawn_params(obj)
-  amk_respawner_control[obj:name()] = obj
-  local ini = obj:spawn_ini()
-  if not ini:section_exist(section_name) then
-    return  
-  end
-  
-  obj.respawn_section = r_spawns(ini, section_name, "respawn_section", obj.sectSpawnProps)  
-  if obj.respawn_section==nil then
-    abort("RESPAWN: [%s] field 'respawn_section' doesn't exist.", obj:name())
-  end
-
-  obj.spawned_goes_online = r_bool(ini, section_name, "spawned_goes_online", nil)
-  
-  obj.spawn_once = r_bool(ini, section_name, "spawn_once", false)
-  
-  obj.amk_name = r_str(ini, section_name, "amk_name", nil)
-  if obj.amk_name then amk_named_respawner_control[obj.amk_name] = obj end
-  
-  obj.min_count = r_num(ini, section_name, "min_count", 0)
-  obj.max_count = r_num(ini, section_name, "max_count", -1)
-  if obj.min_count > obj.max_count and
-    obj.max_count~=-1 
-  then
-    abort("RESPAWN: [%s] min_count > max_count", obj:name())
-  end
-  --'if obj.max_count > 0 then
-  --' obj.min_count = obj.max_count
-  --'end
-  
-  obj.max_spawn = r_num(ini, section_name, "max_spawn", 1)
-  obj.idle_spawn_min, obj.idle_spawn_max = r_2nums(ini, section_name, "idle_spawn", 36000, 36000)
-  if obj.idle_spawn_min==nil then
-    abort("RESPAWN: [%s] field 'idle_spawn' doesn't exist.", obj:name())
-  end
-  if obj.idle_spawn_max==nil then
-    obj.idle_spawn_max = obj.idle_spawn_min
-  end
-    
-
-  --' Вычитка пресетов
-  if idle_spawn_preset[obj.idle_spawn_min]~=nil then
-    obj.idle_spawn_min = idle_spawn_preset[obj.idle_spawn_min]
-  else
-    obj.idle_spawn_min = tonumber(obj.idle_spawn_min)
-  end
-  if idle_spawn_preset[obj.idle_spawn_max]~=nil then
-    obj.idle_spawn_max = idle_spawn_preset[obj.idle_spawn_max]
-  else
-    obj.idle_spawn_max = tonumber(obj.idle_spawn_max)
-  end
-
-    if balance.respawn == nil then 
-       balance.load_config()
+function init_respawn_params( obj )
+    amk_respawner_control[ obj:name() ] = obj
+    local ini = obj:spawn_ini()
+    if not ini:section_exist( section_name ) then return end
+    obj.respawn_section = r_spawns(
+        ini, section_name, "respawn_section", obj.sectSpawnProps
+    )
+    if obj.respawn_section == nil then
+        abort( "RESPAWN: [%s] field 'respawn_section' doesn't exist.", obj:name() )
     end
- 
+    obj.spawned_goes_online = r_bool( ini, section_name, "spawned_goes_online", nil )
+    obj.spawn_once          = r_bool( ini, section_name, "spawn_once", false )
+    obj.amk_name            = r_str ( ini, section_name, "amk_name", nil )
+    if obj.amk_name then
+        amk_named_respawner_control[ obj.amk_name ] = obj
+    end
+    obj.min_count           = r_num ( ini, section_name, "min_count", 0 )
+    obj.max_count           = r_num ( ini, section_name, "max_count", -1 )
+    if
+        obj.min_count > obj.max_count
+        and obj.max_count ~= -1
+    then
+        abort( "RESPAWN: [%s] min_count > max_count", obj:name() )
+    end
+    --'if obj.max_count > 0 then
+    --' obj.min_count = obj.max_count
+    --'end
+    obj.max_spawn = r_num( ini, section_name, "max_spawn", 1 )
+    obj.idle_spawn_min, obj.idle_spawn_max = r_2nums( ini, section_name, "idle_spawn", 36000, 36000 )
+    if obj.idle_spawn_min == nil then
+        abort( "RESPAWN: [%s] field 'idle_spawn' doesn't exist.", obj:name() )
+    end
+    if obj.idle_spawn_max == nil then
+        obj.idle_spawn_max = obj.idle_spawn_min
+    end
+    --' Вычитка пресетов
+    if idle_spawn_preset[ obj.idle_spawn_min ] ~= nil then
+        obj.idle_spawn_min = idle_spawn_preset[ obj.idle_spawn_min ]
+    else
+        obj.idle_spawn_min = tonumber( obj.idle_spawn_min )
+    end
+    if idle_spawn_preset[ obj.idle_spawn_max ] ~= nil then
+        obj.idle_spawn_max = idle_spawn_preset[ obj.idle_spawn_max ]
+    else
+        obj.idle_spawn_max = tonumber( obj.idle_spawn_max )
+    end
+    if balance.respawn == nil then balance.load_config() end
     obj.idle_spawn_min = obj.idle_spawn_min * balance.respawn.idle_coef_min
     obj.idle_spawn_max = obj.idle_spawn_max * balance.respawn.idle_coef_max
-    
-    if (obj.idle_spawn_min < 3600) and (not obj.spawn_once) then      
-    
-       wprintf("[~T].~C0C #WARN:~C07 respawner~C0A %s~C07 on level~C0A %s~C07 idle_spawn_min =~C0D %d~C07", obj:name(), obj.level_name or 'nil', obj.idle_spawn_min)
-       -- wprintf(" spawn_once =~C0F %s~C07", DumpVar(obj.spawn_once))
-       
-       misc.dump_table (obj.respawn_section, '  ')
-       
-       obj.idle_spawn_min = lua_random(60, 240) * 60 
-       
-       local sid = obj.m_story_id or -1
-       if sid > 0 and sid < BAD_OBJ_ID then
-         wprintf (" respawner story_id =~C0D %d~C07, spawn_id =~C0D %d~C07", sid, g_sim:spawn_id(sid))
-       else
-         local e = InvokeRegistry("SPAWN_ENTITY", "GAME_ID", obj.id)
-         if e then
-            wprintf(" respawner spawn_id = ~C0D %d~C07", e.spawn_id or -1)   
-         end  
-         
-       end
-       obj.idle_spawn_max = obj.idle_spawn_min * 4                          
-       wprintf(" init from:\n ~C0A %s~C07", lua_traceback('  '))       
+    if
+        obj.idle_spawn_min < 3600
+        and not obj.spawn_once
+    then
+        wprintf(
+            "[~T].~C0C #WARN:~C07 respawner~C0A %s~C07 on level~C0A %s~C07 idle_spawn_min =~C0D %d~C07",
+            obj:name(), obj.level_name or 'nil', obj.idle_spawn_min
+        )
+        -- wprintf(" spawn_once =~C0F %s~C07", DumpVar(obj.spawn_once))
+        misc.dump_table( obj.respawn_section, '  ' )
+        obj.idle_spawn_min = lua_random( 60, 240 ) * 60
+        local sid = obj.m_story_id or -1
+        if sid > 0 and sid < BAD_OBJ_ID then
+            wprintf(
+                " respawner story_id =~C0D %d~C07, spawn_id =~C0D %d~C07",
+                sid, g_sim:spawn_id(sid)
+            )
+        else
+            local e = InvokeRegistry( "SPAWN_ENTITY", "GAME_ID", obj.id )
+            if e then
+                wprintf( " respawner spawn_id = ~C0D %d~C07", e.spawn_id or -1 )
+            end
+        end
+        obj.idle_spawn_max = obj.idle_spawn_min * 4
+        wprintf( " init from:\n ~C0A %s~C07", lua_traceback('  ') )
     end
-    
- 
-  obj.str_conditions = r_str(ini, section_name, "conditions", 100) 
-  obj.conditions = xr_logic.parse_condlist(obj, section_name, "conditions", obj.str_conditions)
-  obj.respawn_radius = r_num(ini, section_name, "respawn_radius", -1)
-  if obj:name()=="mil_freedom_barier_respawn_1" then
-    obj.respawn_radius = -1
-  end
-  obj.parent = r_num(ini, section_name, "parent", nil)
-  obj.item_spawn = r_bool(ini, section_name, "item_spawn", false)
-  if obj.rt_read==false then
-    obj.respawn_time = game.CTime()
-  end
-  respawners[obj:name()] = obj
-  if obj.parent~=nil then
-    respawners_by_parent[obj.parent] = obj
-  end
-  sim_statistic.register_respawn(obj)
+    obj.str_conditions = r_str( ini, section_name, "conditions", 100 )
+    obj.conditions     = xr_logic.parse_condlist(
+                            obj, section_name, "conditions", obj.str_conditions
+                         )
+    obj.respawn_radius = r_num( ini, section_name, "respawn_radius", -1 )
+    if obj:name() == "mil_freedom_barier_respawn_1" then
+        obj.respawn_radius = -1
+    end
+    obj.parent     = r_num(  ini, section_name, "parent", nil )
+    obj.item_spawn = r_bool( ini, section_name, "item_spawn", false )
+    if obj.rt_read == false then
+        obj.respawn_time = game.CTime()
+    end
+    respawners[ obj:name() ] = obj
+    if obj.parent ~= nil then
+        respawners_by_parent[ obj.parent ] = obj
+    end
+    sim_statistic.register_respawn( obj )
 end
 
-function reinit_spawner_params(name)
-  if amk_respawner_control[name] then
-    init_respawn_params(amk_respawner_control[name])
-  end
+function reinit_spawner_params( name )
+    if amk_respawner_control[ name ] then
+        init_respawn_params( amk_respawner_control[ name ] )
+    end
 end
 
-function get_respawner_by_name(name)
-  if amk_named_respawner_control[name] then
-    return alife():object(amk_named_respawner_control[name].id)
-  end
+function get_respawner_by_name( name )
+    if amk_named_respawner_control[ name ] then
+        return alife():object( amk_named_respawner_control[ name ].id )
+    end
 end
