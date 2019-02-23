@@ -7624,10 +7624,10 @@ function add_gen_mil_items()
   local obj= g_sim:story_object(story_ids.gen_inventory_box_military)
   if obj then
     misc.spawn_to("af_compass_dyn5d", obj)
-    for a=1,5 do
-      misc.spawn_to("medkit_scientic", obj)
-      misc.spawn_to("antirad", obj)
-    end
+    -- for a=1,5 do
+    --   misc.spawn_to("medkit_scientic", obj)
+    --   misc.spawn_to("antirad", obj)
+    -- end
   end
   obj= g_sim:story_object(story_ids.gen_ecolog_body_2)
   if obj then
