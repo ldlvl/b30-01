@@ -3075,8 +3075,7 @@ function consum_artefact( hour )
     params.satiety_add( hangr )
 end
 
-local nv_on             = 0
-local loka_on           = 1
+local nv_on, loka_on    = 0, 1
 local tmr_discharge_akb = misc.game_timer()
 
 function get_accum() return db.actor:item_in_slot( 11 ) end
@@ -3107,10 +3106,10 @@ function sak.discharge_accum( flag, quiet )
             consumption = consumption * 2       -- не делает, потому сделаем лучше наоборот, в 2 раза больше разряд
         end
         consumption = consumption + coef * diff_t * 0.01   -- плюс разряд светодиодами пояса
-        local cond = params.get_condition( accum_id, 0.9999 ) + ( 0.5 - lua_random()) * coef * diff_t -- погрешность
+        local cond  = params.get_condition( accum_id, 0.9999 ) + ( 0.5 - lua_random() ) * coef * diff_t -- погрешность
         -- wprintf( "[~T].C0F #DBG: accum power =~C0D %.5f~C07, consumption =~C0D %.5f~C0F, diff_t =~C0D %.3f~C0F, nvd power =~C0F %d~C07~C07", cond, consumption, diff_t, nv_on )
         -- wprintf( "~C0A %s~C07", lua_traceback('    '));
-        if ( cond <= 0.13 ) and ( diff_t >= 1.0 ) then
+        if cond <= 0.13 and diff_t >= 1.0 then
             local act   = db.actor
             local sound = sound_object( "ambient\\special\\marsh_beep_1" )
             sound:play_at_pos( act, act:position(), 0 )
@@ -3118,8 +3117,8 @@ function sak.discharge_accum( flag, quiet )
         if cond >= 0.07 then
             arts_operate   = true
             local new_cond = cond - consumption                       -- разряд батареи текущим током
-            params.upd_condition ( accum_id, new_cond )
-            arts_operate = true
+            params.upd_condition( accum_id, new_cond )
+            arts_operate   = true
             nvd_params.enable_NVD() -- есть заряд, можно включать
         else
             if arts_operate == true then
@@ -3128,7 +3127,7 @@ function sak.discharge_accum( flag, quiet )
                     "Аккумулятор", 2, 10, "pribor", "pda_news", "red"
                 )
                 nvd_params.disable_NVD()
-                arts_operate = false
+                arts_operate               = false
                 razgruzka.open_inv_raz_pod = false
             end
         end 
@@ -3332,7 +3331,7 @@ function corp_to_life_update()
         data.upd.health     = 0.1
         data.skeleton_flags = 0
         pk:set( data )
-        need_update = 0
+        need_update         = 0
     end
 end
 
@@ -3491,11 +3490,8 @@ function trup1_sanek_near()
     if ( obj1 and IsStalker( obj1 ) and not obj1:alive()) then
         local posobj1  = obj1.position
         local actorpos = db.actor:position()
-        if posobj1:distance_to( actorpos ) < 2 then
-            return true
-        else
-            return false
-        end
+        if posobj1:distance_to( actorpos ) < 2 then return true
+        else return false end
     else
         return false
     end
@@ -4153,297 +4149,42 @@ local repair_sound = {
 }
 
 local outfit_proc = {
-    [ "novice_outfit"                        ] = 0.2,
-    [ "novice_q_outfit"                      ] = 0.1,
-    [ "outfit_novice_m1"                     ] = 0.2,
-    [ "outfit_q_novice_q_m1"                 ] = 0.1,
-    [ "neytral_novice_outfit_m1"             ] = 0.2,
-    [ "neytral_q_novice_q_outfit_q_m1"       ] = 0.1,
-    [ "neytral_novice_gaz_outfit_m1"         ] = 0.2,
-    [ "neytral_q_novice_q_gaz_q_outfit_q_m1" ] = 0.1,
-    [ "stalker_outfit"                       ] = 0.18,
-    [ "stalker_q_outfit"                     ] = 0.09,
-    [ "neytral_gaz_outfit_m1"                ] = 0.16,
-    [ "neytral_q_gaz_q_outfit_q_m1"          ] = 0.08,
-    [ "neytral_gaz_outfit_m2"                ] = 0.14,
-    [ "neytral_q_gaz_q_outfit_q_m2"          ] = 0.07,
-    [ "outfit_stalker_m1"                    ] = 0.14,
-    [ "outfit_q_stalker_q_m1"                ] = 0.07,
-    [ "outfit_stalker_m2"                    ] = 0.14,
-    [ "outfit_q_stalker_q_m2"                ] = 0.07,
-    [ "stalker_outfit_m3"                    ] = 0.14,
-    [ "stalker_q_outfit_q_m3"                ] = 0.07,
-    [ "scientific_outfit"                    ] = 0.12,
-    [ "scientific_q_outfit"                  ] = 0.06,
-    [ "exo_outfit"                           ] = 0.08,
-    [ "exo_q_outfit"                         ] = 0.04,
-    [ "exo_outfit_m1"                        ] = 0.08,
-    [ "exo_q_outfit_q_m1"                    ] = 0.04,
-    [ "outfit_exo_m1"                        ] = 0.08,
-    [ "outfit_q_exo_q_m1"                    ] = 0.04,
-    [ "neytral_exo_antigas_outfit"           ] = 0.08,
-    [ "neytral_q_exo_q_antigas_q_outfit"     ] = 0.04,
-    [ "bandit_outfit"                        ] = 0.18,
-    [ "bandit_q_outfit"                      ] = 0.09,
-    [ "outfit_bandit_m1"                     ] = 0.16,
-    [ "outfit_q_bandit_q_m1"                 ] = 0.08,
-    [ "bandit_gaz_outfit_m1"                 ] = 0.16,
-    [ "bandit_q_gaz_q_outfit_q_m1"           ] = 0.08,
-    [ "bandit_veteran_outfit"                ] = 0.1,
-    [ "bandit_q_veteran_q_outfit"            ] = 0.1,
-    [ "bandit_veteran_outfit_gas"            ] = 0.1,
-    [ "bandit_q_veteran_q_outfit_q_gas"      ] = 0.1,
-    [ "bandit_veteran_outfit_m1"             ] = 0.1,
-    [ "bandit_q_veteran_q_outfit_q_m1"       ] = 0.1,
-    [ "bandit_master_outfit"                 ] = 0.1,
-    [ "bandit_q_master_q_outfit"             ] = 0.1,
-    [ "bandit_master_outfit_gas"             ] = 0.1,
-    [ "bandit_q_master_q_outfit_q_gas"       ] = 0.1,
-    [ "bandit_master_outfit_m1"              ] = 0.1,
-    [ "bandit_q_master_q_outfit_q_m1"        ] = 0.1,
-    [ "exo_bandit_outfit"                    ] = 0.08,
-    [ "exo_q_bandit_q_outfit"                ] = 0.04,
-    [ "killer_outfit"                        ] = 0.16,
-    [ "killer_q_outfit"                      ] = 0.08,
-    [ "killer_gaz_outfit_m1"                 ] = 0.14,
-    [ "killer_q_gaz_q_outfit_q_m1"           ] = 0.07,
-    [ "outfit_killer_m1"                     ] = 0.12,
-    [ "outfit_q_killer_q_m1"                 ] = 0.06,
-    [ "merc_scientific_outfit"               ] = 0.1,
-    [ "merc_q_scientific_q_outfit"           ] = 0.05,
-    [ "killer_blue_exoskeleton"              ] = 0.08,
-    [ "killer_q_blue_q_exoskeleton"          ] = 0.04,
-    [ "monolit_outfit"                       ] = 0.14,
-    [ "monolit_q_outfit"                     ] = 0.07,
-    [ "monolit_gaz_outfit_m1"                ] = 0.12,
-    [ "monolit_q_gaz_q_outfit_q_m1"          ] = 0.06,
-    [ "monolit_scientific_outfit"            ] = 0.1,
-    [ "monolit_q_scientific_q_outfit"        ] = 0.05,
-    [ "monolit_exoskeleton"                  ] = 0.08,
-    [ "monolit_q_exoskeleton"                ] = 0.04,
-    [ "specops_outfit"                       ] = 0.1,
-    [ "specops_q_outfit"                     ] = 0.05,
-    [ "outfit_specnaz_m1"                    ] = 0.08,
-    [ "outfit_q_specnaz_q_m1"                ] = 0.04,
-    [ "military_outfit"                      ] = 0.16,
-    [ "military_q_outfit"                    ] = 0.08,
-    [ "militaryspec_outfit"                  ] = 0.12,
-    [ "militaryspec_q_outfit"                ] = 0.06,
-    [ "stalker_guard_outfit"                 ] = 0.12,
-    [ "stalker_q_guard_q_outfit"             ] = 0.06,
-    [ "svoboda_light_outfit"                 ] = 0.14,
-    [ "svoboda_q_light_q_outfit"             ] = 0.07,
-    [ "outfit_svoboda_m1"                    ] = 0.14,
-    [ "outfit_q_svoboda_q_m1"                ] = 0.07,
-    [ "svoboda_gaz_outfit_m1"                ] = 0.14,
-    [ "svoboda_q_gaz_q_outfit_q_m1"          ] = 0.07,
-    [ "svoboda_heavy_outfit"                 ] = 0.12,
-    [ "svoboda_q_heavy_q_outfit"             ] = 0.06,
-    [ "svoboda_heavy_gaz_outfit_m1"          ] = 0.12,
-    [ "svoboda_q_heavy_q_gaz_q_outfit_q_m1"  ] = 0.06,
-    [ "freedom_scientific_outfit"            ] = 0.1,
-    [ "freedom_q_scientific_q_outfit"        ] = 0.05,
-    [ "svoboda_yellow_exo_outfit_m1"         ] = 0.08,
-    [ "svoboda_q_yellow_q_exo_q_outfit_q_m1" ] = 0.04,
-    [ "svoboda_exoskeleton"                  ] = 0.08,
-    [ "svoboda_q_exoskeleton"                ] = 0.04,
-    [ "dolg_outfit"                          ] = 0.14,
-    [ "dolg_q_outfit"                        ] = 0.07,
-    [ "outfit_dolg_m1"                       ] = 0.12,
-    [ "outfit_q_dolg_q_m1"                   ] = 0.06,
-    [ "dolg_gaz_outfit_m1"                   ] = 0.12,
-    [ "dolg_q_gaz_q_outfit_q_m1"             ] = 0.06,
-    [ "dolg_scientific_outfit"               ] = 0.1,
-    [ "dolg_q_scientific_q_outfit"           ] = 0.05,
-    [ "dolg_black_exoskeleton"               ] = 0.08,
-    [ "dolg_q_black_q_exoskeleton"           ] = 0.04,
-    [ "ecolog_outfit"                        ] = 0.08,
-    [ "ecolog_q_outfit"                      ] = 0.04,
-    [ "ecolog_outfit_m1"                     ] = 0.06,
-    [ "ecolog_q_outfit_q_m1"                 ] = 0.03,
-    [ "protection_outfit"                    ] = 0.04,
-    [ "protection_q_outfit"                  ] = 0.02,
-    [ "broken_exoskeleton"                   ] = 0.05,
-    [ "broken_q_exoskeleton"                 ] = 0.025,
-    [ "outfit_soldier_m1"                    ] = 0.18,
-    [ "outfit_q_soldier_q_m1"                ] = 0.09,
-    [ "soldier_outfit"                       ] = 0.18,
-    [ "soldier_q_outfit"                     ] = 0.09,
-    [ "cs_light_outfit"                      ] = 0.12,
-    [ "cs_q_light_q_outfit"                  ] = 0.06,
-    [ "cs_heavy_outfit"                      ] = 0.08,
-    [ "cs_q_heavy_q_outfit"                  ] = 0.04,
-    [ "military_stalker_outfit"              ] = 0.1,
-    [ "military_commander_outfit"            ] = 0.1,
-    [ "super_scientific_outfit"              ] = 0.08,
-    [ "super_q_scientific_q_outfit"          ] = 0.04
+    [ "exo"        ] = 0.06,
+    [ "scientific" ] = 0.08,
+    [ "ecolog"     ] = 0.08,
+    [ "protection" ] = 0.08,
+    [ "soldier"    ] = 0.12,
+    [ "military"   ] = 0.12,
+    [ "specops"    ] = 0.12
 }
 
-local wpn_proc = {
-    [ "wpn_pm" ]                 = 0.2,
-    [ "wpn_pb" ]                 = 0.18,
-    [ "wpn_fort" ]               = 0.18,
-    [ "wpn_fort_m1" ]            = 0.18,
-    [ "wpn_glock" ]              = 0.12,
-    [ "wpn_beretta" ]            = 0.13,
-    [ "wpn_colt1911" ]           = 0.1,
-    [ "wpn_desert_eagle" ]       = 0.1,
-    [ "wpn_eagle_m1" ]           = 0.1,
-    [ "wpn_walther" ]            = 0.15,
-    [ "wpn_gungauss" ]           = 0.02,
-    [ "wpn_sig220" ]             = 0.15,
-    [ "wpn_usp" ]                = 0.17,
-    [ "wpn_beretta93" ]          = 0.1,
-    [ "wpn_aps" ]                = 0.18,
-    [ "wpn_ak74u" ]              = 0.2,
-    [ "wpn_ak74u_old" ]          = 0.2,
-    [ "wpn_ak74" ]               = 0.2,
-    [ "wpn_ak74_old" ]           = 0.2,
-    [ "wpn_ak47" ]               = 0.2,
-    [ "wpn_ak47_old" ]           = 0.2,
-    [ "wpn_aks47" ]              = 0.2,
-    [ "wpn_akm" ]                = 0.2,
-    [ "wpn_ak74pbn" ]            = 0.2,
-    [ "wpn_ak74pbn_1pso" ]       = 0.2,
-    [ "wpn_ak74pbn_cobra" ]      = 0.2,
-    [ "wpn_ak74pbn_1p78" ]       = 0.2,
-    [ "wpn_ak74m" ]              = 0.2,
-    [ "wpn_ak74m_1pso" ]         = 0.2,
-    [ "wpn_ak74m_cobra" ]        = 0.2,
-    [ "wpn_ak74m_1p78" ]         = 0.2,
-    [ "wpn_ak104" ]              = 0.2,
-    [ "wpn_ak104_cobra" ]        = 0.2,
-    [ "wpn_ak104_1p78" ]         = 0.2,
-    [ "wpn_ak104_1pso" ]         = 0.2,
-    [ "wpn_ak107" ]              = 0.2,
-    [ "wpn_ak107_cobra" ]        = 0.2,
-    [ "wpn_ak107_1p78" ]         = 0.2,
-    [ "wpn_ak107_1pso" ]         = 0.2,
-    [ "wpn_ak108" ]              = 0.2,
-    [ "wpn_ak108_cobra" ]        = 0.2,
-    [ "wpn_ak108_1p78" ]         = 0.2,
-    [ "wpn_ak108_1pso" ]         = 0.2,
-    [ "wpn_saiga12c_m2" ]        = 0.2,
-    [ "wpn_saiga12c_m2_1pso" ]   = 0.2,
-    [ "wpn_saiga12c_m2_1p78" ]   = 0.2,
-    [ "wpn_saiga12c_m2_cobra" ]  = 0.2,
-    [ "wpn_rpk74" ]              = 0.2,
-    [ "wpn_rpk74_1p78" ]         = 0.2,
-    [ "wpn_rpk74_cobra" ]        = 0.2,
-    [ "wpn_rpk74_1pso" ]         = 0.2,
-    [ "wpn_abakan" ]             = 0.13,
-    [ "wpn_abakan_1pso" ]        = 0.13,
-    [ "wpn_abakan_cobra" ]       = 0.13,
-    [ "wpn_abakan_1p78" ]        = 0.13,
-    [ "wpn_saiga12c" ]           = 0.12,
-    [ "wpn_saiga12c_1p78" ]      = 0.12,
-    [ "wpn_saiga12c_1pso" ]      = 0.12,
-    [ "wpn_saiga12c_cobra" ]     = 0.12,
-    [ "wpn_saiga12c_m1" ]        = 0.15,
-    [ "wpn_saiga12c_m1_acog" ]   = 0.15,
-    [ "wpn_saiga12c_m1_eotech" ] = 0.15,
-    [ "wpn_saiga12c_m1_mt" ]     = 0.15,
-    [ "wpn_vintorez" ]           = 0.08,
-    [ "wpn_vintorez_1pso" ]      = 0.08,
-    [ "wpn_vintorez_cobra" ]     = 0.08,
-    [ "wpn_vintorez_1p78" ]      = 0.08,
-    [ "wpn_vintorez_m1" ]        = 0.08,
-    [ "wpn_vintorez_m1_1pso" ]   = 0.08,
-    [ "wpn_vintorez_m1_cobra" ]  = 0.08,
-    [ "wpn_vintorez_m1_1p78" ]   = 0.08,
-    [ "wpn_val" ]                = 0.08,
-    [ "wpn_val_1pso" ]           = 0.08,
-    [ "wpn_val_cobra" ]          = 0.08,
-    [ "wpn_val_1p78" ]           = 0.08,
-    [ "wpn_ak74_m1" ]            = 0.15,
-    [ "wpn_ak74_m1_acog" ]       = 0.15,
-    [ "wpn_ak74_m1_eotech" ]     = 0.15,
-    [ "wpn_ak74_m1_mt" ]         = 0.15,
-    [ "wpn_ak74_m2" ]            = 0.15,
-    [ "wpn_ak74_m2_acog" ]       = 0.15,
-    [ "wpn_ak74_m2_eotech" ]     = 0.15,
-    [ "wpn_ak74_m2_mt" ]         = 0.15,
-    [ "wpn_groza" ]              = 0.13,
-    [ "wpn_groza_po" ]           = 0.13,
-    [ "wpn_bizon" ]              = 0.15,
-    [ "wpn_bizon_cobra" ]        = 0.15,
-    [ "wpn_bizon_1p78" ]         = 0.15,
-    [ "wpn_bizon_1pso" ]         = 0.15,
-    [ "wpn_pp19" ]               = 0.15,
-    [ "wpn_pp19_1p78" ]          = 0.15,
-    [ "wpn_pp19_1pso" ]          = 0.15,
-    [ "wpn_pp19_cobra" ]         = 0.15,
-    [ "wpn_ump45" ]              = 0.1,
-    [ "wpn_ump45_acog" ]         = 0.1,
-    [ "wpn_ump45_eotech" ]       = 0.1,
-    [ "wpn_ump45_mt" ]           = 0.1,
-    [ "wpn_lr300" ]              = 0.1,
-    [ "wpn_lr300_eotech" ]       = 0.1,
-    [ "wpn_lr300_acog" ]         = 0.1,
-    [ "wpn_lr300_m1" ]           = 0.1,
-    [ "wpn_lr300_m1_eotech" ]    = 0.1,
-    [ "wpn_lr300_m1_acog" ]      = 0.1,
-    [ "wpn_mp5" ]                = 0.1,
-    [ "wpn_mp5_m1" ]             = 0.1,
-    [ "wpn_sig550" ]             = 0.12,
-    [ "wpn_sig550_acog" ]        = 0.12,
-    [ "wpn_sig550_eotech" ]      = 0.12,
-    [ "wpn_sig550_mt" ]          = 0.12,
-    [ "wpn_g36" ]                = 0.08,
-    [ "wpn_g36_g36l" ]           = 0.08,
-    [ "wpn_g36c" ]               = 0.08,
-    [ "wpn_g36c_eotech" ]        = 0.08,
-    [ "wpn_g36c_acog" ]          = 0.08,
-    [ "wpn_g36c_mt" ]            = 0.08,
-    [ "wpn_m16a4" ]              = 0.1,
-    [ "wpn_m16a4_acog" ]         = 0.1,
-    [ "wpn_m16a4_eotech" ]       = 0.1,
-    [ "wpn_m16a4_mt" ]           = 0.1,
-    [ "wpn_fn2000" ]             = 0.07,
-    [ "wpn_fn2000_eotech" ]      = 0.07,
-    [ "wpn_fn2000_acog" ]        = 0.07,
-    [ "wpn_fn2000_mt" ]          = 0.07,
-    [ "wpn_gm94" ]               = 0.05,
-    [ "wpn_rpg7" ]               = 0.05,
-    [ "wpn_pkm" ]                = 0.15,
-    [ "wpn_svd" ]                = 0.08,
-    [ "wpn_svd_cobra" ]          = 0.08,
-    [ "wpn_svd_1pso" ]           = 0.08,
-    [ "wpn_svd_1p78" ]           = 0.08,
-    [ "wpn_svu" ]                = 0.08,
-    [ "wpn_svu_cobra" ]          = 0.08,
-    [ "wpn_svu_1p78" ]           = 0.08,
-    [ "wpn_svu_1pso" ]           = 0.08,
-    [ "wpn_awm" ]                = 0.05,
-    [ "wpn_awm_eotech" ]         = 0.05,
-    [ "wpn_awm_acog" ]           = 0.05,
-    [ "wpn_awm_mt" ]             = 0.05,
-    [ "wpn_sv98" ]               = 0.05,
-    [ "wpn_sv98_eotech" ]        = 0.05,
-    [ "wpn_sv98_acog" ]          = 0.05,
-    [ "wpn_sv98_mt" ]            = 0.05,
-    [ "wpn_m110" ]               = 0.08,
-    [ "wpn_m110_eotech" ]        = 0.08,
-    [ "wpn_m110_acog" ]          = 0.08,
-    [ "wpn_m110_mt" ]            = 0.08,
-    [ "wpn_mosin" ]              = 0.1,
-    [ "wpn_mosin_pe" ]           = 0.1,
-    [ "wpn_toz34" ]              = 0.15,
-    [ "wpn_toz34_m1" ]           = 0.15,
-    [ "wpn_hunters_toz_new" ]    = 0.15,
-    [ "wpn_bm16" ]               = 0.15,
-    [ "wpn_bm16_full" ]          = 0.15,
-    [ "wpn_spas12" ]             = 0.1,
-    [ "wpn_wincheaster1300" ]    = 0.12,
-    [ "wpn_winchester_m1" ]      = 0.12,
-    [ "wpn_mp153" ]              = 0.09,
-    [ "wpn_mp153_m1" ]           = 0.09,
-    [ "wpn_flame" ]              = 0.02,
-    [ "wpn_gauss" ]              = 0.01,
-    [ "wpn_gauss_auto" ]         = 0.01,
-    [ "wpn_knife" ]              = 0.01,
-    [ "wpn_binoc" ]              = 0.01
+local wpn_proc = { 
+    [ "wpn_v"      ] = 0.07, -- вал, винторез
+    [ "wpn_sv"     ] = 0.04, -- свд, сву, св98
+    [ "wpn_awm"    ] = 0.04,
+    [ "wpn_abakan" ] = 0.06,
+    [ "wpn_p"      ] = 0.16, -- пм, пб, пп19
+    [ "wpn_bizon"  ] = 0.16,
+    [ "wpn_fort"   ] = 0.14, -- форт12, форт17
+    [ "wpn_aps"    ] = 0.08,
+    [ "wpn_rpk"    ] = 0.07,
+    [ "wpn_groza"  ] = 0.07,
+    [ "wpn_lr300"  ] = 0.06,
+    [ "wpn_sig550" ] = 0.07,
+    [ "wpn_g36"    ] = 0.06,
+    [ "wpn_m16a4"  ] = 0.06,
+    [ "wpn_rpg7"   ] = 0.04,
+    [ "wpn_m110"   ] = 0.04,
+    [ "wpn_flame"  ] = 0.02
 }
+
+function check_repair_percent_by_tbl( sect, tbl )
+    local percent = 0.1
+    for k, v in pairs( tbl ) do
+        if strposx( sect , k ) then percent = v end
+    end
+    return percent
+end
 
 function repair_box_repair( obj )
     if obj then
@@ -4460,25 +4201,30 @@ function repair_box_repair( obj )
                 or ( slot_2 and slot_2:condition() >= 0.87 and slot_2:condition() < 0.985 )
             then
                 actor_hide_weapon()
+                level.add_cam_effector( "camera_effects\\item_use.anm", 9008, false, "" )
+                level.add_pp_effector( "fade_to_black_9_sec.ppe", 9009, false )
+                schedule.add( "tmp_rep_123", "level.remove_pp_effector(9009)", 8500 )
                 if ( slot_1 and slot_1:condition() >= 0.87 and slot_1:condition() < 0.985 ) then
-                    rep_percent     = wpn_proc[ slot_1:section() ] or 0.02
+                    local wpn_sect  = slot_1:section()
+                    rep_percent     = check_repair_percent_by_tbl( wpn_sect, wpn_proc ) or 0.1
                     local rep_point = slot_1:condition() + rep_percent
                     if rep_point > 1 then rep_point = 1 end
                     slot_1:set_condition( rep_point )
-                    sound   = repair_sound[ 1 ] .. sounds
-                    snd_obj = xr_sound.get_safe_sound_object( sound )
+                    snd_obj = xr_sound.get_safe_sound_object( repair_sound[ 1 ] .. sounds )
                     snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-                    send_tip( "Оружие немного приведено в порядок", nil, 12, 5, "g_g", "no", "green" )
                 elseif ( slot_2 and slot_2:condition() >= 0.87 and slot_2:condition() <0.985 ) then
-                    rep_percent     = wpn_proc[ slot_2:section() ] or 0.02
+                    local wpn_sect  = slot_2:section()
+                    rep_percent     = check_repair_percent_by_tbl( wpn_sect, wpn_proc ) or 0.1
                     local rep_point = slot_2:condition() + rep_percent
                     if rep_point > 1 then rep_point = 1 end
                     slot_2:set_condition( rep_point )
-                    sound   = repair_sound[ 2 ] .. sounds
-                    snd_obj = xr_sound.get_safe_sound_object( sound )
+                    snd_obj = xr_sound.get_safe_sound_object( repair_sound[ 2 ] .. sounds )
                     snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-                    send_tip( "Оружие немного подремонтировано", nil, 12, 5, "g_g", "no", "green" )
                 end
+                send_tip(
+                        "Оружие отремонтировано на %c[255,0,255,0]"..tostring(math.ceil(rep_percent*100)) .. "%",
+                        nil, 12, 5, "g_g", "no", "green"
+                    )
                 timers.start_timer( "time_rep", 13, "sak.restore_weap()" )
             elseif ( slot_1 and slot_1:condition() <0.87 ) or ( slot_2 and slot_2:condition() < 0.87 ) then
                 send_tip( "Слишком сильное повреждение оружия!", nil, 2, 5, "g_g", "no", "red" )
@@ -4493,17 +4239,27 @@ function repair_box_repair( obj )
                     send_tip( "Для кожаного плаща не подходит!", nil, 2, 5, "g_g", "no", "yellow" )
                     misc.spawn_to( obj:section().."_feik", actor )
                 else
-                    rep_percent = outfit_proc[ armor:section() ] or 0.02
-                    if armor:condition() >= 0.87 and armor:condition() <0.985 then
+                    if armor:condition() >= 0.87 and armor:condition() < 0.985 then
                         actor_hide_weapon()
+                        level.add_cam_effector( "camera_effects\\item_use.anm", 9008, false, "" )
+                        level.add_pp_effector( "fade_to_black_9_sec.ppe", 9009, false )
+                        schedule.add( "tmp_rep_123", "level.remove_pp_effector(9009)", 8500 )
                         vergas_masks.set_flag_minimap( false )
+                        local arm_sect = armor:section()
+                        rep_percent = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
+                        if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
+                            rep_percent = rep_percent * 0.5
+                        end
                         local rep_point = armor:condition() + rep_percent
-                        if ( rep_point > 1 ) then rep_point = 1 end
+                        if rep_point > 1 then rep_point = 1 end
                         amk_mod.repair_armor( rep_point )
                         sound   = repair_sound[ 3 ] .. sounds
                         snd_obj = xr_sound.get_safe_sound_object( sound )
                         snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-                        send_tip( "Броня отремонтирована.", nil, 12, 5, "g_g", "no", "green" )
+                        send_tip(
+                            "Броня отремонтирована на %c[255,0,255,0]"..tostring(math.ceil(rep_percent*100)) .. "%",
+                            nil, 12, 5, "g_g", "no", "green"
+                        )
                         schedule.add( "tm_rep", "sak.return_mask()", 12500 )
                     elseif  armor:condition() < 0.87 then
                         send_tip( "Слишком сильное повреждение брони!", nil, 2, 5, "g_g", "no", "red" )
@@ -4564,6 +4320,7 @@ function repair_on()
         end
     end
     actor_hide_weapon()
+    level.add_cam_effector( "camera_effects\\item_use.anm", 9008, false, "" )
     if tiski ~= nil then
         if slot_1 ~= nil and slot_1:condition() < 0.985 then slot = 1 end
         if slot_2 ~= nil and slot_2:condition() < 0.985 then
@@ -4646,125 +4403,10 @@ function repair_on()
         restore_weap()
     end
 end
-
+-- была прописана в логике 2х тисков в all.spawn, переписал фиксом их на repair_on()
 function repair_2_on()
-    local snd_obj
-    local sounds   = lua_random( 1, 3 )
-    local sound
-    local slot     = 0
-    local slot_obj
-    local slot_1   = db.actor:item_in_slot( 1 )
-    local slot_2   = db.actor:item_in_slot( 2 )
-    local armor    = db.actor:item_in_slot( 6 )
-    local r_box_id = sak_inventory.eatable[ "repair_boxoutfit" ][ 1 ]
-    local rem      = {}
-    local r_box    = alife():object( r_box_id )
-    local pk       = get_netpk( r_box, 1 )
-    local data     = pk:get()
-    local str      = data.custom_data
-    rem            = vergas_lib.str_explode( ",", str, true )
-    local repiout  = tonumber( rem[ 1 ] ) or 0
-    local repiweap = tonumber( rem[ 2 ] ) or 0
-    local tiski    = nil
-    local ltx      = system_ini()
-    local m        = "visual"
-    for a, i in pairs( db.storage ) do
-        local objg = client_obj( a )
-        if objg then
-            if
-                ( objg and strpos( objg:name(), "_tiski_repair", 1, true )
-                and objg:position():distance_to( db.actor:position() ) < 3
-                and objg:position():distance_to( db.actor:position() ) > 0.9 )
-            then
-                tiski = objg
-                break
-            end
-        end
-    end
-    actor_hide_weapon()
-    if tiski ~= nil then
-        if slot_1 ~= nil and slot_1:condition() < 0.985 then slot = 1 end
-        if slot_2 ~= nil and slot_2:condition() < 0.985 then
-            if slot == 0 then
-                slot = 2
-            elseif slot == 1 then
-                if slot_1:condition() > slot_2:condition() then slot = 2 end
-            end
-        end
-        if armor ~= nil and armor:condition() < 0.985 then
-            if slot == 0 then
-                slot = 6
-            elseif slot == 1 then
-                if slot_1:condition() > armor:condition() then slot = 6 end
-            elseif slot == 2 then
-                if slot_2:condition() > armor:condition() then slot = 6 end
-            end
-        end
-        if slot == 1 then
-            local a   = slot_1:section()
-            local vis = tostring( ltx:r_string( a, m ) )
-            create_physic_object( vis,
-                v3f(
-                    tiski:position().x + 0.09,
-                    tiski:position().y + 0.20,
-                    tiski:position().z
-                ),
-                tiski:level_vertex_id(), tiski:game_vertex_id()
-            )
-            sound   = repair_sound[ 1 ] .. sounds
-            snd_obj = xr_sound.get_safe_sound_object( sound )
-            snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-            slot_obj = slot_1:id()
-            schedule.add( "tm_rep",
-                "sak.repair_tiski_do("..slot..","..slot_obj..","..r_box_id..","..repiout..","..repiweap..")", 12500
-            )
-        elseif slot == 2 then
-            local a = slot_2:section()
-            local vis = tostring( ltx:r_string( a, m ))
-            create_physic_object( vis,
-                v3f(
-                    tiski:position().x + 0.09,
-                    tiski:position().y + 0.20,
-                    tiski:position().z - 0.1
-                    ),
-                tiski:level_vertex_id(), tiski:game_vertex_id()
-            )
-            sound   = repair_sound[ 2 ] .. sounds
-            snd_obj = xr_sound.get_safe_sound_object( sound )
-            snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-            slot_obj = slot_2:id()
-            schedule.add( "tm_rep",
-                "sak.repair_tiski_do("..slot..","..slot_obj..","..r_box_id..","..repiout..","..repiweap..")", 12500
-            )
-        elseif slot == 6 then
-            local a   = armor:section()
-            local vis = tostring( ltx:r_string( a, m ) )
-            create_physic_object( vis,
-                v3f(
-                    tiski:position().x,
-                    tiski:position().y + 0.28,
-                    tiski:position().z
-                    ),
-                tiski:level_vertex_id(), tiski:game_vertex_id()
-            )
-            sound   = repair_sound[ 3 ] .. sounds
-            snd_obj = xr_sound.get_safe_sound_object( sound )
-            snd_obj:play_no_feedback( db.actor, sound_object.s2d, 0, vector(), 1.0 )
-            slot_obj = armor:id()
-            vergas_masks.set_flag_minimap( false )
-            schedule.add( "tm_rep",
-                "sak.repair_tiski_do("..slot..","..slot_obj..","..r_box_id..","..repiout..","..repiweap..")", 12500
-            )
-        else
-            send_tip( "Нечего ремонтировать...", nil, 0, 5, "g_g", "no", "sky_blue" )
-            restore_weap()
-        end
-        tiski = nil
-    else
-        send_tip( "Неудобно работать! Нужно немного отойти...", nil, 2, 5, "g_g", "no", "sky_blue" )
-        restore_weap()
-    end
-end
+    --tiski:position().x + 0.09, -- всё, чем отличалась от repair_on() 
+ end
 
 function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
     local slot_obj = client_obj( slot_obj_id )
@@ -4772,11 +4414,15 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
         if slot == 1 then
             if repiweap ~= 0 then
                 if slot_obj:condition() >= 0.75 then
-                    rep_percent_tiski = ( wpn_proc[ slot_obj:section() ] or 0.02 ) * 1.5
+                    local wpn_sect    = slot_obj:section()
+                    rep_percent_tiski = ( check_repair_percent_by_tbl( wpn_sect, wpn_proc ) or 0.1 ) * 1.5
                     local rep_point   = slot_obj:condition() + rep_percent_tiski
                     if rep_point > 1 then rep_point = 1 end
                     slot_obj:set_condition( rep_point )
-                    send_tip( "Оружие отремонтировано", nil, 2, 5, "g_g", "no", "green" )
+                    send_tip(
+                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                        nil, 2, 5, "g_g", "no", "green"
+                    )
                     repiweap = repiweap - 1
                 else
                     send_tip( "Оружие слишком повреждено", nil, 2, 5, "g_g", "no", "red" )
@@ -4787,11 +4433,15 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
         elseif slot == 2 then
             if repiweap ~= 0 then
                 if slot_obj:condition() >= 0.75 then
-                    rep_percent_tiski = ( wpn_proc[ slot_obj:section() ] or 0.02 ) * 1.5
+                    local wpn_sect    = slot_obj:section()
+                    rep_percent_tiski = ( check_repair_percent_by_tbl( wpn_sect, wpn_proc ) or 0.1 ) * 1.5
                     local rep_point   = slot_obj:condition() + rep_percent_tiski
                     if ( rep_point > 1 ) then rep_point = 1 end
                     slot_obj:set_condition( rep_point )
-                    send_tip( "Оружие отремонтировано", nil, 2, 5, "g_g", "no", "green" )
+                    send_tip(
+                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                        nil, 2, 5, "g_g", "no", "green"
+                    )
                     repiweap = repiweap-1
                 else
                     send_tip( "Оружие слишком повреждено", nil, 2, 5, "g_g", "no", "red" )
@@ -4805,11 +4455,19 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                     send_tip( "Для кожаного плаща не подходит!", nil, 2, 5, "g_g", "no", "yellow" )
                 else
                     if slot_obj:condition() >= 0.75 then
-                        rep_percent_tiski = ( outfit_proc[ slot_obj:section() ] or 0.02 ) * 1.5
+                        local arm_sect = slot_obj:section()
+                        rep_percent_tiski = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
+                        if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
+                            rep_percent_tiski = rep_percent_tiski * 0.5
+                        end
+                        rep_percent_tiski = rep_percent_tiski * 1.5
                         local rep_point   = slot_obj:condition() + rep_percent_tiski
-                        if ( rep_point > 1 ) then rep_point = 1 end
+                        if rep_point > 1 then rep_point = 1 end
                         amk_mod.repair_armor( rep_point )
-                        send_tip( "Ну вот, подлатали...", nil, 2, 5, "g_g", "no", "green" )
+                        send_tip(
+                            "Ну вот, подлатали на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                            nil, 2, 5, "g_g", "no", "green"
+                        )
                         repiout = repiout - 1
                     else
                         send_tip( "Слишком поврежден костюмчик-то", nil, 2, 5, "g_g", "no", "red" )
@@ -5303,7 +4961,6 @@ function set_community()
 end
 
 function red_community() db.actor:set_character_community( "stranger", 0, 0 ) end
-
 function set_community_actor() db.actor:set_character_community( "actor", 0, 0 ) end
 
 local flag_drink = true
