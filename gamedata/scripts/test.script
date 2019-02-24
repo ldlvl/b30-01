@@ -1330,3 +1330,44 @@ function move_tolik()
     if not sobj then return end
     g_sim:teleport_object( sobj.id, 76, 186568, sak.v3f( -80.888, -4.891, -74.827 ) )
 end
+-- ïîëó÷èòü èìÿ óğîâíÿ ïî ãåéì-âåğòåêñó
+function get_level_from_gv( num )
+    local name = "???"
+    for k, v in pairs( const.game_vertices ) do
+        if num >= v[ 1 ] and num <= v[ 2 ] then
+            name = k
+            break
+        end
+    end
+    return name
+end
+-- äëÿ ñïàâíà â ïîäçåìêàõ ïî òàáëèöå êîîğäèíàò
+function spawn_docs_tbl( name, tbl, visual, c_data, ph_type, mass )
+    for n = 1, #tbl do
+        local rand = lua_random( 2, 9 )
+        local obj  = amk.spawn_item(
+            tostring( name ), v3f( tbl[ n ][ 1 ], tbl[ n ][ 2 ], tbl[ n ][ 3 ] ),
+            tbl[ n ][ 5 ], tbl[ n ][ 4 ]
+        )
+        if obj then
+            local pk   = get_netpk( obj, 1 )
+            local data = pk:get()
+            if visual then
+                if  type( visual ) == "string" then
+                    data.visual_name = visual
+                else
+                    data.visual_name = "new_item\\" .. tostring( visual[ lua_random( #visual ) ] )
+                end
+            else
+                data.visual_name = "new_item\\documents_" .. rand
+            end
+            if c_data  then data.custom_data = tostring( c_data  ) end
+            if ph_type then data.physic_type = tonumber( ph_type ) end
+            if mass    then data.mass        = tonumber( mass    ) end
+            pk:set( data )
+            -- wprintf( "@------ item spawned: name = %s, visual = %s, level = %s, data:",
+            --     name, data.visual_name, get_level_from_gv( tbl[ n ][ 5 ] ) )
+            -- misc.dump_table( data )
+        end
+    end
+end
