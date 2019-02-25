@@ -705,6 +705,7 @@ function actor_binder:info_callback( npc, info_id )
     level_tasks.process_info_portion( info_id )
     table.insert( bind_stalker.info_events, { npc, info_id } )
     LuaSafeCall( "bind_stalker.handle_events", "#func" )
+    if _sdata.GlobalEnable then _sdata.infos( npc, info_id ) end
 end
 
 function actor_binder:on_trade( item, sell_bye, money ) end
