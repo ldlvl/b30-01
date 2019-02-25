@@ -745,6 +745,10 @@ function check_af_drop( af_id ) -- варка артефактов?
         and not strposx( section, "_capsule" )
     then
         local id, pos, radius, dist = amk_anoms.get_nearest_anomaly( obj )
+        local u_tbl = xray_vars.load_table( nlc_vars, "used_anomz", {} )
+        if u_tbl[ id ] then
+            wprintf( "[amk_mod.script]: anomaly # " .. id .. " is depleted, sorry. Try other anomaly. Sincerely yours, THE MONOLITH." )
+            return end -- чтобы не варилось в аномалии больше 1 раза
         if id and radius - dist > 1 then
             local anom_sect = client_obj( id ):section()
             check_af_transform( obj, id, anom_sect )
@@ -855,6 +859,7 @@ function check_af_transform( af, anom_id, anom_sect )
                         "[~T].~C0F #AMK_MOD:~C07 starting cooking~C0A %s~C07 with %s~C0F %s:%02d~C07, prob =~C0E %s, %s (%s)~C07",
                         new_sect, time_index, hh, mm, p1, p2, sc.probability or 'nil'
                     )
+                    sak.store_anom_id( anom_id )
                     return af_start_transform_timer( tr, pos, 0, tonumber( hh ), tonumber( mm ), desc )
                 else
                     wprintf(
@@ -1120,7 +1125,10 @@ function Blowout_pp( num )
         amk_anoms.after_blow_on()
         sak.off_testobj()
         -- обновление таблицы id природных артов для статистики
-        if nlc_vars.tbl_bio_art then nlc_vars.tbl_bio_art = nil end    
+        if nlc_vars.tbl_bio_art then nlc_vars.tbl_bio_art = nil end
+        -- обновление таблицы id использованных для варок аномалий
+        if nlc_vars.used_anomz then misc.dump_table( nlc_vars.used_anomz ) end
+        if nlc_vars.used_anomz then nlc_vars.used_anomz = nil end
         amk_vars.blowout = 3
         timers.start_timer( "blowout", 0, 0, 3, "amk_mod.Blowout_pp(4)" )
     elseif phase == 4 then
