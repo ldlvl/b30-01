@@ -32,14 +32,6 @@ function subscribe()
 	GlobalEnable = true
 	--AddRegularTask( "_sdata.on_info", this.infos, nil, 0, 500 )
 	AddRegularTask( "_sdata.on_update", this.vis_int, nil, 0, 500 )
-	-- ogse_benchmark.subscribe()
-	-- subscribed = {
-		-- { signal = "on_info",   fun = this.infos },
-		-- { signal = "on_update", fun = this.vis_int },
-	-- }
-	-- for _, s in ipairs( subscribed ) do
-		-- ogse_signals.get_mgr():subscribe( s )
-	-- end
 end
 
 function unsubscribe()
@@ -163,9 +155,7 @@ end
 
 local zones_time = 0
 function zones()
-
     local ZonesText
-	
 	local ZoneCS = hud:GetCustomStatic("gul_debug")
 	if ZoneCS == nil then
 		hud:AddCustomStatic("gul_debug",true)
@@ -427,18 +417,16 @@ function vis_int()
 			hud:AddCustomStatic("cs_debug",true)
 			PosCS = hud:GetCustomStatic("cs_debug")
 		end
-		local lvid,gvid = db.actor:level_vertex_id(),db.actor:game_vertex_id()
+		local lvid,gvid      = db.actor:level_vertex_id(),db.actor:game_vertex_id()
 		local pos,dir,campos = db.actor:position(),device().cam_dir,device().cam_pos
-		local valid = game_graph():valid_vertex_id( gvid )
-		local accessible = game_graph():accessible( gvid )
+		local valid          = level.vertex_position(lvid):distance_to(pos) <= 0.7
  		--local fps_check = ogse_benchmark.get_fps()
 		local PosText = string.format("pos: %1.3f, %1.3f, %1.3f\\n",pos.x,pos.y,pos.z)..	-- позици€ √√ (x,y,z)
 						string.format("cam_pos: %1.3f, %1.3f, %1.3f\\n",campos.x,campos.y,campos.z)..	-- позици€ камеры (x,y,z)
 						string.format("dir: %1.3f, %1.3f, %1.3f\\n",dir.x,dir.y,dir.z)..	-- поворот √√ вокруг осей (x,y,z) (гонит)
 		                string.format("lvid: %d\\n",lvid)..								-- левел вертекс
 						string.format("gvid: %d\\n",gvid)..								-- гейм вертекс
-						string.format("valid: %s\\n",tostring(valid))..					-- наличие AI-сетки в данной координате
-						string.format("accessible: %s\\n",tostring(accessible))
+						string.format("valid: %s\\n",tostring(valid))				-- наличие AI-сетки в данной координате
 						--string.format("fps: %d\\n",fps_check)							-- наличие AI-сетки в данной координате
 		if PosCS ~= nil then PosCS:wnd():SetText(PosText) end
 	end
