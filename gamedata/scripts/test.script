@@ -1371,3 +1371,31 @@ function spawn_docs_tbl( name, tbl, visual, c_data, ph_type, mass )
         end
     end
 end
+
+-- для поиска/удаления предмета(ов) в рюкзаке автора с состоянием не ниже заданного
+function have_with_cond( sect, need_amount, condition, flag_to_release )
+    local have_tbl, num = {}, 0
+    local amnt  = tonumber(need_amount)
+    local items = get_shadow_inv():get_content( true )
+    for i, rec in items:ipairs() do
+        if sak_inventory.dyn_art_base( rec.sect ) == sect then
+            if rec.obj:condition() >= tonumber( condition ) then
+                if num < amnt then
+                    table.insert( have_tbl, rec.id )
+                    num = num + 1
+                end
+            end
+        end
+    end
+    if #have_tbl >= amnt then
+        if not flag_to_release then
+            return true
+        else
+            for _, v in ipairs( have_tbl ) do
+                local obj1 = g_sim:object( v )
+                if obj1 then g_sim:release( obj1, true ) end
+            end
+            sak.relocate_item( db.actor, "out", sect, #have_tbl )
+        end
+    end
+end
