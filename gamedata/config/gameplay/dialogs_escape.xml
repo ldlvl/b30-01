@@ -1266,7 +1266,7 @@
 			</phrase>
 			<phrase id="6">
 				<text>escape_trader_done_blockpost_box_6</text>
-				<action>sak_dialog.take_blockpost_case</action>
+				<action>test.add_to_actor("quest_case_01",1)</action>
 				<give_info>esc_reward_case_start</give_info>
 				<next>7</next>
 			</phrase>
@@ -1546,7 +1546,7 @@
 				<next>142</next>
 			</phrase>
 			<phrase id="133">
-				<precondition>sak_dialog.redcatcher_albom_have</precondition>
+				<precondition>sak.have_items_count("redcatcher_albom",1)</precondition>
 				<text>escape_trader_jobs_133</text>
 				<next>1331</next>
 			</phrase>
@@ -1555,9 +1555,9 @@
 				<next>1332</next>
 			</phrase>
 			<phrase id="1332">
-				<precondition>sak_dialog.redcatcher_albom_have</precondition>
+				<precondition>sak.have_items_count("redcatcher_albom",1)</precondition>
 				<text>escape_trader_jobs_1332</text>
-				<action>sak_dialog.give_redcatcher_albom</action>
+				<action>sak_inventory.release_actor_items("redcatcher_albom",1)</action>
 				<next>143</next>
 			</phrase>
 			<phrase id="143">
@@ -1582,9 +1582,9 @@
 				<next>1512</next>
 			</phrase>
 			<phrase id="1511">
-				<precondition>sak_dialog.redcatcher_albom_have</precondition>
+				<precondition>sak.have_items_count("redcatcher_albom",1)</precondition>
 				<text>escape_trader_jobs_1511</text>
-				<action>sak_dialog.give_redcatcher_albom</action>
+				<action>sak_inventory.release_actor_items("redcatcher_albom",1)</action>
 				<next>143</next>
 			</phrase>
 			<phrase id="1512">
@@ -2059,8 +2059,8 @@
 			</phrase>
 			<phrase id="14">
 				<text>esc_bridge_soldiers_start_14</text>
-				<precondition>sak_dialog.has_soldiers_bribe</precondition>
-				<action>sak_dialog.give_soldiers_bribe</action>
+				<precondition>sak.have_items_count("vodka",1)</precondition>
+				<action>sak_inventory.release_actor_items("vodka",1)</action>
 				<give_info>esc_bridge_pass_on</give_info>
 				<next>15</next>
 			</phrase>

@@ -63,9 +63,9 @@
 			<next>1092</next>
 		</phrase>
 		<phrase id="10822">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 			<text>barmen_kill_stalker_1_dlg_10822</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
@@ -162,7 +162,7 @@
 		<phrase id="1092">
 			<text>barmen_kill_stalker_2_dlg_1092</text>
 			<give_info>barmen_kill_stalker_2_done</give_info>
-			<action>sak_dialog.add_barmen_kill_stalker_2</action>
+			<action>test.add_to_actor("af_unknown_8_new",1)</action>
 			<next>1102</next>
 		</phrase>
 		<phrase id="1102">
@@ -245,9 +245,9 @@
 			<text>barmen_kill_stalker_3_dlg_1081</text>
 		</phrase>
 		<phrase id="1082">
-			<precondition>sak_dialog.gg_2_aart_have</precondition>
+			<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>barmen_kill_stalker_3_dlg_1082</text>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
@@ -278,9 +278,9 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="2041">
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>barmen_kill_stalker_3_dlg_2041</text>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="301">
@@ -430,15 +430,15 @@
 			<text>barmen_kill_stalker_5_dlg_1081</text>
 		</phrase>
 		<phrase id="1082">
-			<precondition>sak_dialog.gg_2_bart_have</precondition>
+			<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 			<text>barmen_kill_stalker_5_dlg_1082</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>barmen_kill_stalker_5_dlg_1092</text>
 			<give_info>barmen_kill_stalker_5_done</give_info>
-			<action>sak_dialog.take_5_drink_new</action>
+			<action>test.add_to_actor("energy_drink_new",5)</action>
 			<next>1102</next>
 		</phrase>
 		<phrase id="1102">
@@ -454,9 +454,9 @@
 			<text>barmen_kill_stalker_5_dlg_2021</text>
 		</phrase>
 		<phrase id="2022">
-			<precondition>sak_dialog.gg_2_bart_have</precondition>
+			<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 			<text>barmen_kill_stalker_5_dlg_2022</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="301">
@@ -651,7 +651,7 @@
 		<phrase id="1092">
 			<text>dolg_kill_stalker_1_dlg_1092</text>
 			<give_info>dolg_kill_stalker_1_done</give_info>
-			<action>sak_dialog.add_doc_blood</action>
+			<action>test.add_to_actor("doc_blood",11)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -672,7 +672,7 @@
 		<phrase id="2092">
 			<text>dolg_kill_stalker_1_dlg_2092</text>
 			<give_info>dolg_kill_stalker_1_done</give_info>
-			<action>sak_dialog.add_doc_blood</action>
+			<action>test.add_to_actor("doc_blood",11)</action>
 			<next>210</next>
 		</phrase>
 		<phrase id="210">
@@ -776,9 +776,9 @@
 			<text>lisiy_kill_stalker_1_dlg_1091</text>
 		</phrase>
 		<phrase id="10821">
-		<precondition>sak_dialog.sak_gold_fish_have</precondition>
+		<precondition>sak.have_items_count("af_gold_fish",1,false,true)</precondition>
 			<text>lisiy_kill_stalker_1_dlg_10821</text>
-			<action>sak_dialog.give_sak_gold_fish</action>
+			<action>sak_inventory.release_actor_items("af_gold_fish",1)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="10822">
@@ -788,9 +788,9 @@
 			<next>1092</next>
 		</phrase>
 		<phrase id="10823">
-		<precondition>sak_dialog.soul_have</precondition>
+		<precondition>sak.have_items_count("af_soul",1,false,true)</precondition>
 			<text>lisiy_kill_stalker_1_dlg_10823</text>
-			<action>sak_dialog.give_soul</action>
+			<action>sak_inventory.release_actor_items("af_soul",1)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
@@ -903,15 +903,15 @@
 			<text>lisiy_kill_stalker_2_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.actor_35000_have</precondition>
+		<precondition>sak_dialog.actor_have(35000)</precondition>
 			<text>lisiy_kill_stalker_2_dlg_1082</text>
-			<action>sak_dialog.give_35000_money</action>
+			<action>sak_dialog.give_money(35000,1)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>lisiy_kill_stalker_2_dlg_1092</text>
 			<give_info>lisiy_kill_stalker_2_done</give_info>
-			<action>sak_dialog.add_bearer_cheque</action>
+			<action>test.add_to_actor("bearer_cheque",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -1019,7 +1019,7 @@
 	<phrase id="3">
 		<text>lisiy_kill_stalker_3_2dlg_3</text>
 		<give_info>lisiy_kill_stalker_3_done</give_info>
-		<action>sak_dialog.add_mayatnik_lysyi</action>
+		<action>test.add_to_actor("af_gold_fish_dyn2d",2)</action>
 		<next>4</next>
 	</phrase>
 	<phrase id="4">
@@ -1098,15 +1098,15 @@
 			<text>lisiy_kill_stalker_4_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.have_10_ammo_545x39</precondition>
+		<precondition>vergas_lib.search_items("ammo_5.45x39",300,1)</precondition>
 			<text>lisiy_kill_stalker_4_dlg_1082</text>
-			<action>sak_dialog.give_10_ammo_545x39</action>
+			<action>vergas_lib.search_items("ammo_5.45x39",300,2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>lisiy_kill_stalker_4_dlg_1092</text>
 			<give_info>lisiy_kill_stalker_4_done</give_info>
-			<action>sak_dialog.add_militaryspec_outfit</action>
+			<action>test.add_to_actor("military_outfit",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -1206,7 +1206,7 @@
 		<phrase id="1092">
 			<text>lisiy_kill_stalker_5_dlg_1092</text>
 			<give_info>lisiy_kill_stalker_5_done</give_info>
-			<action>sak_dialog.add_foto_lisyi</action>
+			<action>test.add_to_actor("foto_lisyi",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -1926,7 +1926,7 @@
 		<phrase id="111">
 			<text>freedom_kill_stalker_1_dlg_111</text>
 			<give_info>freedom_kill_stalker_1_done</give_info>
-			<action>sak_dialog.add_bes_pda</action>
+			<action>test.add_to_actor("bes_pda",1)</action>
 			<next>112</next>
 		</phrase>
 		<phrase id="112">
@@ -2108,9 +2108,9 @@
 			<text>freedom_kill_stalker_3_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 			<text>freedom_kill_stalker_3_dlg_1082</text>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
@@ -2297,7 +2297,7 @@
 		<phrase id="1092">
 			<text>freedom_kill_stalker_5_dlg_1092</text>
 			<give_info>freedom_kill_stalker_5_done</give_info>
-			<action>sak_dialog.take_5_drink_new</action>
+			<action>test.add_to_actor("energy_drink_new",5)</action>
 			<next>1102</next>
 		</phrase>
 		<phrase id="1102">
@@ -2724,7 +2724,7 @@
 		<phrase id="1092">
 			<text>volkodav_kill_stalker_5_dlg_1092</text>
 			<give_info>volkodav_kill_stalker_5_done</give_info>
-			<action>sak_dialog.take_5_drink_new</action>
+			<action>test.add_to_actor("energy_drink_new",5)</action>
 			<next>1102</next>
 		</phrase>
 		<phrase id="1102">
@@ -2813,9 +2813,9 @@
 			<text>tm_kill_stalker_1_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.have_50_ammo_dart</precondition>
+		<precondition>vergas_lib.search_items("ammo_12x76_dart",50,1)</precondition>
 			<text>tm_kill_stalker_1_dlg_1082</text>
-			<action>sak_dialog.give_50_ammo_dart</action>
+			<action>vergas_lib.search_items("ammo_12x76_dart",50,2)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
@@ -2908,15 +2908,15 @@
 			<text>tm_kill_stalker_2_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.have_3_mutant_flesh_eye</precondition>
+		<precondition>sak.have_items_count("mutant_flesh_eye",3)</precondition>
 			<text>tm_kill_stalker_2_dlg_1082</text>
-			<action>sak_dialog.give_3_mutant_flesh_eye</action>
+			<action>sak_inventory.release_actor_items("mutant_flesh_eye",3)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>tm_kill_stalker_2_dlg_1092</text>
 			<give_info>tm_kill_stalker_2_done</give_info>
-			<action>sak_dialog.add_dolg_outfit</action>
+			<action>test.add_to_actor("dolg_outfit",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -3004,17 +3004,17 @@
 			<text>tm_kill_stalker_3_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<!--<precondition>sak_dialog.gg_2_bart_have</precondition>-->
+		<!--<precondition>sak_dialog.gg_n_bart_have(2)</precondition>-->
 		<precondition>sak_dialog.have_any_bart</precondition>
 			<text>tm_kill_stalker_3_dlg_1082</text>
-			<!--<action>sak_dialog.give_2_bart</action>-->
+			<!--<action>sak_dialog.give_n_bart(2)</action>-->
 			<action>sak_dialog.transfer_any_bart</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>tm_kill_stalker_3_dlg_1092</text>
 			<give_info>tm_kill_stalker_3_done</give_info>
-			<action>sak_dialog.add_skryaga_foto</action>
+			<action>test.add_to_actor("skryaga_foto",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -3110,7 +3110,7 @@
 		<phrase id="1092">
 			<text>tm_kill_stalker_4_dlg_1092</text>
 			<give_info>tm_kill_stalker_4_done</give_info>
-			<action>sak_dialog.add_tm_conserva</action>
+			<action>test.add_to_actor("conserva_tm",5)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -3293,15 +3293,15 @@
 			<text>tm_kill_stalker_6_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.batt_torch_have</precondition>
+		<precondition>sak.have_items_count("batt_torch",10)</precondition>
 			<text>tm_kill_stalker_6_dlg_1082</text>
-			<action>sak_dialog.give_batt_torch</action>
+			<action>sak_inventory.release_actor_items("batt_torch",10)</action>
 			<next>1092</next>
 		</phrase>
 		<phrase id="1092">
 			<text>tm_kill_stalker_6_dlg_1092</text>
 			<give_info>tm_kill_stalker_6_done</give_info>
-			<action>sak_dialog.add_video_casset</action>
+			<action>test.add_to_actor("video_casset",1)</action>
 			<next>110</next>
 		</phrase>
 		<phrase id="110">
@@ -3433,9 +3433,9 @@
 			<text>tm_kill_stalker_dlg_1091</text>
 		</phrase>
 		<phrase id="1082">
-		<precondition>sak_dialog.have_50_ammo_dart</precondition>
+		<precondition>vergas_lib.search_items("ammo_12x76_dart",50,1)</precondition>
 			<text>tm_kill_stalker_dlg_1082</text>
-			<action>sak_dialog.give_50_ammo_dart</action>
+			<action>vergas_lib.search_items("ammo_12x76_dart",50,2)</action>
 			<give_info>tm_kill_stalker_1_yes</give_info>
 			<next>1092</next>
 		</phrase>
@@ -3707,21 +3707,21 @@
 		<precondition>sak_dialog.rand_1_dialog</precondition>
 			<text>mercenary_baloon_done_71</text>
 			<give_info>mercenary_baloon_done</give_info>
-			<action>sak_dialog.add_dummy_pellicle</action>
+			<action>test.add_to_actor("af_dummy_pellicle",1)</action>
 			<next>8</next>
 		</phrase>
 		<phrase id="72">
 		<precondition>sak_dialog.rand_2_dialog</precondition>
 			<text>mercenary_baloon_done_72</text>
 			<give_info>mercenary_baloon_done</give_info>
-			<action>sak_dialog.add_dummy_glassbeads</action>
+			<action>test.add_to_actor("af_dummy_glassbeads",1)</action>
 			<next>8</next>
 		</phrase>
 		<phrase id="73">
 		<precondition>sak_dialog.rand_3_dialog</precondition>
 			<text>mercenary_baloon_done_73</text>
 			<give_info>mercenary_baloon_done</give_info>
-			<action>sak_dialog.add_dummy_battery</action>
+			<action>test.add_to_actor("af_dummy_battery",1)</action>
 			<next>8</next>
 		</phrase>
 		<phrase id="8">
@@ -3779,7 +3779,7 @@
 </dialog>
 
 <dialog id="borov_kill_stalker_done">
-<precondition>sak_dialog.have_borov_kurjer_pda</precondition>
+<precondition>sak.have_items_count("borov_kurjer_pda",1)</precondition>
 <has_info>new_borov_kill_stalker_dlg3_done</has_info>
 <dont_has_info>new_borov_kill_stalker_done</dont_has_info>
 	<phrase_list>
@@ -3801,7 +3801,7 @@
 		</phrase>
 		<phrase id="4">
 			<text>borov_kill_stalker_done_4</text>
-			<action>sak_dialog.give_borov_kurjer_pda</action>
+			<action>sak_inventory.release_actor_items("borov_kurjer_pda",1)</action>
 			<next>51</next>
 			<next>52</next>
 		</phrase>
@@ -3961,7 +3961,7 @@
 </dialog>
 
 <dialog id="borov_kill_stalker_dlg3">
-<precondition>sak_dialog.have_200_ammo_buck</precondition>
+<precondition>vergas_lib.search_items("ammo_12x70_buck",200,1)</precondition>
 <has_info>new_borov_kill_stalker_dlg2_start</has_info>
 <dont_has_info>new_borov_kill_stalker_dlg3_done</dont_has_info>
 	<phrase_list>
@@ -3975,12 +3975,12 @@
 		</phrase>
 		<phrase id="2">
 			<text>borov_kill_stalker_dlg3_2</text>
-			<action>sak_dialog.give_200_ammo_buck</action>
+			<action>vergas_lib.search_items("ammo_12x70_buck",200,2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
 			<text>borov_kill_stalker_dlg3_3</text>
-			<action>sak_dialog.add_borov_kurjer_pda</action>
+			<action>test.add_to_actor("borov_kurjer_pda",1)</action>
 			<action>sak_dialog.take_psih_food</action>
 			<give_info>new_borov_kill_stalker_dlg3_done</give_info>
 			<next>4</next>

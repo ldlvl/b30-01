@@ -1,3 +1,4 @@
+-- "bandit_pda_trading" - по этому инфо у Жилы ПДА в продаже появляются. Надо ли это в условие включать??
 _dialog        = level.main_input_receiver()
 
 local tbl_translate_arts = {
@@ -585,11 +586,11 @@ function barter_screen_ui:DoBarter( ind )
             end
             misc.process_spawn()
             if self.b_name == "fuel_bar" then
-                sak_dialog.take_2000_money()
+                sak_dialog.give_money(2000,"in")
                 sak_dialog.bar_kanistra_add()
                 self:on_quit()
             elseif self.b_name == "fuel_esc" then
-                sak_dialog.take_2000_money()
+                sak_dialog.give_money(2000,"in")
                 sak_dialog.esc_kanistra_add()
                 self:on_quit()
             end
@@ -852,6 +853,7 @@ function init_module()
     _dialog = nil
 end
 
+-- универсальная ф-ция для поиска артов у ГГ по входящей таблице
 function gg_n_artof_m_have( n, table, flag )
     local amount = 0
     for a = 1, #table do
@@ -868,7 +870,7 @@ function gg_n_artof_m_have( n, table, flag )
         return amount
     end
 end
-
+-- универсальная ф-ция для отбора артов у ГГ по входящей таблице
 function give_n_artof_m( n, table )
     local amount
     local art_kol = n
@@ -883,7 +885,7 @@ function give_n_artof_m( n, table )
                         if obj then
                             g_sim:release( obj, true )
                         end
-                        amount = amount + 1
+                        amount  = amount + 1
                         art_kol = art_kol - 1
                     end
                 end

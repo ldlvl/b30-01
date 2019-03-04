@@ -44,7 +44,7 @@
 
 
 <dialog id="shustriy_outfit_reward">
-<precondition>sak_dialog.esc_shustryi_outfit_have</precondition>
+<precondition>sak.have_items_count("outfit_bandit_m1",1)</precondition>
 <has_info>esc_shustryi_outfit_start</has_info>
 <dont_has_info>esc_shustryi_outfit_done</dont_has_info>
 <phrase_list>
@@ -58,9 +58,9 @@
 		<next>22</next>
 	</phrase>
 	<phrase id="2">
-	<precondition>sak_dialog.esc_shustryi_outfit_have</precondition>
+	<precondition>sak.have_items_count("outfit_bandit_m1",1)</precondition>
 		<text>shustriy_outfit_reward_2</text>
-		<action>sak_dialog.give_esc_shustryi_outfit</action>
+		<action>sak_inventory.release_actor_items("outfit_bandit_m1",1)</action>
 		<next>3</next>
 	</phrase>
 	<phrase id="22">
@@ -79,7 +79,7 @@
 	</phrase>
 	<phrase id="51">
 		<text>shustriy_outfit_reward_51</text>
-		<action>sak_dialog.take_item_esc_shustryi_outfit</action>
+		<action>test.add_to_actor("detector_simple",1)</action>
 		<next>6</next>
 	</phrase>
 	<phrase id="42">
@@ -88,7 +88,7 @@
 	</phrase>
 	<phrase id="52">
 		<text>shustriy_outfit_reward_52</text>
-		<action>sak_dialog.take_3000_money</action>
+		<action>sak_dialog.give_money(3000,"in")</action>
 		<next>6</next>
 	</phrase>
 	<phrase id="43">
@@ -162,7 +162,7 @@
 	</phrase_list>
 </dialog>
 <dialog id="sidor_dollars_change">
-	<precondition>sak_dialog.actor_115000_have</precondition>
+	<precondition>sak_dialog.actor_have(115000)</precondition>
 	<has_info>dollars_have_done</has_info>
 	<phrase_list>
 		<phrase id="0">
@@ -176,18 +176,18 @@
 			<next>23</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.actor_115000_have</precondition>
+		<precondition>sak_dialog.actor_have(115000)</precondition>
 			<text>sidor_dollars_change_21</text>
-			<action>sak_dialog.give_115000_money</action>
+			<action>sak_dialog.give_money(115000,1)</action>
 			<next>31</next>
 		</phrase>
 		<phrase id="31">
 			<text>sidor_dollars_change_31</text>
-			<action>sak_dialog.add_bearer_cheque</action>
+			<action>test.add_to_actor("bearer_cheque",1)</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="22">
-		<precondition>sak_dialog.actor_115000_have</precondition>
+		<precondition>sak_dialog.actor_have(115000)</precondition>
 			<text>sidor_dollars_change_22</text>
 			<next>32</next>
 		</phrase>
@@ -280,7 +280,7 @@
 <dialog id="bar_bar_barman_esc_reward_case">
     <dont_has_info>esc_reward_case_done</dont_has_info>
 	<has_info>esc_reward_case_start</has_info>
-	<precondition>sak_dialog.blockpost_case_have</precondition>
+	<precondition>sak.have_items_count("quest_case_01",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>bar_bar_barman_esc_reward_case_0</text>
@@ -296,135 +296,11 @@
 		</phrase>
 		<phrase id="3">
 			<text>bar_bar_barman_esc_reward_case_3</text>
-			<action>sak_dialog.give_blockpost_case</action>
+			<action>sak_inventory.release_actor_items("quest_case_01",1)</action>
 			<give_info>esc_reward_case_done</give_info>
 			<action>sak.add_new_mil_110</action>
 			<action>sak.add_new_aver_td_136</action>
 			<!--<action>sak.add_new_darkvalley_111</action>-->
-		</phrase>
-	</phrase_list>
-</dialog>
-
-<dialog id="sak_hello_dialog">
-	<phrase_list>
-		<phrase id="21">
-			<text>sak_hello_dialog_21</text>
-		</phrase>
-		<phrase id="3">
-			<text>sak_hello_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="5">
-			<text />
-			<has_info>sak_repair_box_done</has_info>
-			<has_info>sak_gold_fish_done</has_info>
-			<has_info>sak_find_seif_done</has_info>
-			<has_info>sak_reward_outfit_done</has_info>
-			<next>1</next>
-		</phrase>
-		<phrase id="6">
-			<text />
-			<precondition>sak_dialog.sak_have_start</precondition>
-			<next>3</next>
-		</phrase>
-		<phrase id="7">
-			<text />
-			<dont_has_info>sak_reward_outfit_done</dont_has_info>
-			<dont_has_info>sak_repair_box_have</dont_has_info>
-			<dont_has_info>sak_gold_fish_have</dont_has_info>
-			<dont_has_info>sak_find_seif_have</dont_has_info>
-			<dont_has_info>sak_reward_outfit_have</dont_has_info>
-			<dont_has_info>sak_repair_box_start</dont_has_info>
-			<dont_has_info>sak_gold_fish_start</dont_has_info>
-			<dont_has_info>sak_find_seif_start</dont_has_info>
-			<dont_has_info>sak_reward_outfit_start</dont_has_info>
-			<next>2</next>
-		</phrase>
-		<phrase id="4">
-			<text>sak_hello_dialog_4</text>
-		</phrase>
-		<phrase id="1">
-			<text>sak_hello_dialog_0</text>
-		</phrase>
-		<phrase id="9">
-			<text>sak_hello_dialog_2</text>
-			<next>10</next>
-		</phrase>
-		<phrase id="10">
-			<text>sak_hello_dialog_5</text>
-		</phrase>
-		<phrase id="2">
-			<text>sak_hello_dialog_1</text>
-		</phrase>
-		<phrase id="8">
-			<text />
-			<precondition>sak_dialog.sak_have_have</precondition>
-			<next>9</next>
-		</phrase>
-		<phrase id="0">
-		<text />
-			<next>5</next>
-			<next>6</next>
-			<next>7</next>
-			<next>8</next>
-		</phrase>
-	</phrase_list>
-</dialog>
-
-<dialog id="sak_repair">
-	<precondition>sak_dialog.sak_repair_precond</precondition>
-	<has_info>sak_repair_box_done</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>sak_repair_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>sak_repair_1</text>
-			<action>sak_dialog.uniform_repair_cost(6, r_dolgovjaz)</action>
-			<next>4</next>
-			<next>5</next>
-		</phrase>
-		<phrase id="4">
-			<precondition>sak_dialog.uniform_check_money(6, r_dolgovjaz)</precondition>
-			<text>sak_repair_4</text>
-			<action>sak_dialog.uniform_repair_start(6, r_dolgovjaz)</action>
-			<next>7</next>
-		</phrase>
-		<phrase id="5">
-			<text>sak_repair_5</text>
-		</phrase>
-		<phrase id="7">
-			<text>sak_repair_7</text>
-			<next>9</next>
-		</phrase>
-		<phrase id="9">
-			<text>sak_repair_9</text>
-		</phrase>
-	</phrase_list>
-</dialog>
-
-<dialog id="esc_provodnik_groza">
-	<precondition>sak_dialog.esc_find_groza_have</precondition>
-	<has_info>esc_find_groza_start</has_info>
-	<dont_has_info>esc_find_groza_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>esc_provodnik_groza_0</text>
-			<action>sak_dialog.give_find_groza</action>
-			<give_info>esc_find_groza_done</give_info>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>esc_provodnik_groza_1</text>
-			<action>sak.add_new_agroprom_101</action>
-			<action>sak.add_new_lost_esc_182</action>
-			<give_info>esc_find_doctor_start</give_info>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>esc_provodnik_groza_2</text>
-			<action>dialogs.break_dialog</action>
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -536,7 +412,7 @@
 		<phrase id="2">
 			<text>playboy2_dialog_2</text>
 			<give_info>bar_ivancov_playboy_done</give_info>
-			<action>sak_dialog.give_bar_ivancov_playboy</action>
+			<action>sak_inventory.release_actor_items("playboy10",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -587,7 +463,7 @@
 </dialog>
 
 <dialog id="freedom_dinamit_have">
-	<precondition>sak_dialog.mil_lukash_find_dinamit_have</precondition>
+	<precondition>sak.have_items_count("dynamite",1)</precondition>
 	<dont_has_info>mil_lukash_find_dinamit_done</dont_has_info>
 	<has_info>mil_lukash_find_dinamit_start</has_info>
 	<phrase_list>
@@ -601,10 +477,10 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_dialog.mil_lukash_find_dinamit_have</precondition>
+		<precondition>sak.have_items_count("dynamite",1)</precondition>
 			<text>freedom_dinamit_have_2</text>
 			<give_info>mil_lukash_find_dinamit_done</give_info>
-			<action>sak_dialog.give_find_dinamit</action>
+			<action>sak_inventory.release_actor_items("dynamite",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -659,9 +535,9 @@
 		<next>612</next>
 	</phrase>
 	<phrase id="611">
-	<precondition>sak_dialog.have_1_mutant_psevdogigant_hand</precondition>
+	<precondition>sak.have_items_count("mutant_psevdogigant_hand",1)</precondition>
 		<text>freedom_dinamit_need_611</text>
-		<action>sak_dialog.give_1_mutant_psevdogigant_hand</action>
+		<action>sak_inventory.release_actor_items("mutant_psevdogigant_hand",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="52">
@@ -672,9 +548,9 @@
 		<next>622</next>
 	</phrase>
 	<phrase id="621">
-	<precondition>sak_dialog.have_1_mutant_hand_kontroler</precondition>
+	<precondition>sak.have_items_count("mutant_hand_kontroler",1)</precondition>
 		<text>freedom_dinamit_need_621</text>
-		<action>sak_dialog.give_1_mutant_hand_kontroler</action>
+		<action>sak_inventory.release_actor_items("mutant_hand_kontroler",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="53">
@@ -685,14 +561,14 @@
 		<next>632</next>
 	</phrase>
 	<phrase id="631">
-	<precondition>sak_dialog.have_1_mutant_poltergeist_glas</precondition>
+	<precondition>sak.have_items_count("mutant_poltergeist_glas",1)</precondition>
 		<text>freedom_dinamit_need_631</text>
-		<action>sak_dialog.give_1_mutant_poltergeist_glas</action>
+		<action>sak_inventory.release_actor_items("mutant_poltergeist_glas",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="7">
 		<text>freedom_dinamit_need_7</text>
-		<action>sak_dialog.add_dinamit</action>
+		<action>test.add_to_actor("dynamite",1)</action>
 		<give_info>mil_lukash_find_dinamit_have</give_info>
 	</phrase>
 	<phrase id="612">
@@ -728,9 +604,9 @@
 		<next>612</next>
 	</phrase>
 	<phrase id="611">
-	<precondition>sak_dialog.have_1_mutant_psevdogigant_hand</precondition>
+	<precondition>sak.have_items_count("mutant_psevdogigant_hand",1)</precondition>
 		<text>freedom_dinamit2_need_611</text>
-		<action>sak_dialog.give_1_mutant_psevdogigant_hand</action>
+		<action>sak_inventory.release_actor_items("mutant_psevdogigant_hand",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="12">
@@ -740,9 +616,9 @@
 		<next>622</next>
 	</phrase>
 	<phrase id="621">
-	<precondition>sak_dialog.have_1_mutant_hand_kontroler</precondition>
+	<precondition>sak.have_items_count("mutant_hand_kontroler",1)</precondition>
 		<text>freedom_dinamit2_need_621</text>
-		<action>sak_dialog.give_1_mutant_hand_kontroler</action>
+		<action>sak_inventory.release_actor_items("mutant_hand_kontroler",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="13">
@@ -752,14 +628,14 @@
 		<next>632</next>
 	</phrase>
 	<phrase id="631">
-	<precondition>sak_dialog.have_1_mutant_poltergeist_glas</precondition>
+	<precondition>sak.have_items_count("mutant_poltergeist_glas",1)</precondition>
 		<text>freedom_dinamit2_need_631</text>
-		<action>sak_dialog.give_1_mutant_poltergeist_glas</action>
+		<action>sak_inventory.release_actor_items("mutant_poltergeist_glas",1)</action>
 		<next>7</next>
 	</phrase>
 	<phrase id="7">
 		<text>freedom_dinamit2_need_7</text>
-		<action>sak_dialog.add_dinamit</action>
+		<action>test.add_to_actor("dynamite",1)</action>
 		<give_info>mil_lukash_find_dinamit_have</give_info>
 	</phrase>
 	<phrase id="612">
@@ -1046,9 +922,9 @@
 			<next>62</next>
 		</phrase>
 		<phrase id="61">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 			<text>esc_trader_2_flame_dialog_61</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<next>7</next>
 		</phrase>
 		<phrase id="7">
@@ -1255,27 +1131,27 @@
 			<next>5</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_dialog.conserva2_have</precondition>
+		<precondition>sak.have_items_count("conserva",2)</precondition>
 			<text>jila_dialog_2_2</text>
-			<action>sak_dialog.give_2conserva</action>
+			<action>sak_inventory.release_actor_items("conserva",2)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="3">
-		<precondition>sak_dialog.kolbasa_2have</precondition>
+		<precondition>sak.have_items_count("kolbasa",2)</precondition>
 			<text>jila_dialog_2_3</text>
-			<action>sak_dialog.give_2kolbasa</action>
+			<action>sak_inventory.release_actor_items("kolbasa",2)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="4">
-		<precondition>sak_dialog.bread_3have</precondition>
+		<precondition>sak.have_items_count("bread",3)</precondition>
 			<text>jila_dialog_2_4</text>
-			<action>sak_dialog.give_3bread</action>
+			<action>sak_inventory.release_actor_items("bread",3)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="7">
-		<precondition>sak_dialog.drink2_have</precondition>
+		<precondition>vergas_lib.search_items("energy_drink",2,1)</precondition>
 			<text>jila_dialog_2_7</text>
-			<action>sak_dialog.give_2drink</action>
+			<action>vergas_lib.search_items("energy_drink",2,2)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="5">
@@ -1756,7 +1632,7 @@
 		</phrase>
 		<phrase id="111">
 			<text>escape_trader_new_start_dialog_111</text>
-			<action>sak_dialog.give_knife</action>
+			<action>test.add_to_actor("wpn_knife",1)</action>
 			<give_info>new_start_medusa_start</give_info>
 			<next>112</next>
 		</phrase>
@@ -1940,7 +1816,7 @@
 		</phrase>
 		<phrase id="209">
 			<text>escape_trader_new_start_dialog_209</text>
-			<action>sak_dialog.add_belt_2_art</action>
+			<action>test.add_to_actor("belt_2_art",1)</action>
 			<next>210</next>
 		</phrase>
 		<phrase id="210">
@@ -2035,7 +1911,7 @@
 			<next>4022</next>
 		</phrase>
 		<phrase id="4021">
-			<precondition>sak_dialog.kontainer_have</precondition>
+			<precondition>sak.have_items_count("arc_art_box_1basic",1)</precondition>
 			<text>escape_trader_new_start_dialog_4021</text>
 			<next>40311</next>
 		</phrase>
@@ -2065,7 +1941,7 @@
 		<phrase id="40412">
 		<precondition>sak_dialog.podsumok_not_have</precondition>
 			<text>escape_trader_new_start_dialog_40412</text>
-			<action>sak_dialog.add_podsumok</action>
+			<action>test.add_to_actor("podsumok",1)</action>
 			<action>sak_dialog.out_podsumok</action>
 			<next>4041</next>
 		</phrase>
@@ -2093,7 +1969,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="4024">
-			<precondition>sak_dialog.kontainer_have</precondition>
+			<precondition>sak.have_items_count("arc_art_box_1basic",1)</precondition>
 			<text>escape_trader_new_start_dialog_4024</text>
 			<next>4034</next>
 		</phrase>
@@ -2243,12 +2119,12 @@
 		</phrase>
 		<phrase id="603">
 			<text>escape_trader_new_start_dialog_603</text>
-			<action>sak_dialog.add_4ammo_5_45_fmj</action>
+			<action>test.add_to_actor("ammo_5.45x39_ap",4)</action>
 			<action>sak_dialog.add_5vodka</action>
 		</phrase>
 		<phrase id="6031">
 			<text>escape_trader_new_start_dialog_6031</text>
-			<action>sak_dialog.add_razgruzka</action>
+			<action>test.add_to_actor("razgruzka",1)</action>
 		</phrase>
 		<phrase id="6022">
 			<text>escape_trader_new_start_dialog_6022</text>
@@ -2264,7 +2140,7 @@
 		</phrase>
 		<phrase id="604">
 			<text>escape_trader_new_start_dialog_604</text>
-			<action>sak_dialog.add_razgruzka</action>
+			<action>test.add_to_actor("razgruzka",1)</action>
 			<next>605</next>
 		</phrase>
 		<phrase id="605">
@@ -2300,7 +2176,7 @@
 		</phrase>
 		<phrase id="6041">
 			<text>escape_trader_new_start_dialog_6041</text>
-			<action>sak_dialog.add_ammo_5_45_fmj</action>
+			<action>test.add_to_actor("ammo_5.45x39_fmj",1)</action>
 			<action>sak_dialog.add_2vodka</action>
 			<next>605</next>
 		</phrase>
@@ -3039,9 +2915,9 @@
 			<next>142</next>
 		</phrase>
 		<phrase id="141">
-		<precondition>sak_dialog.has_soldiers_bribe3</precondition>
+		<precondition>sak.have_items_count("vodka",3)</precondition>
 			<text>esc_bridge_soldiers_new_start_141</text>
-			<action>sak_dialog.give_soldiers_bribe3</action>
+			<action>sak_inventory.release_actor_items("vodka",3)</action>
 			<next>151</next>
 		</phrase>
 		<phrase id="151">
@@ -3098,9 +2974,9 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="2612">
-		<precondition>sak_dialog.has_soldiers_bribe2</precondition>
+		<precondition>sak.have_items_count("vodka",2)</precondition>
 			<text>esc_bridge_soldiers_new_start_2612</text>
-			<action>sak_dialog.give_soldiers_bribe2</action>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
 			<next>27</next>
 		</phrase>
 		<phrase id="27">
@@ -3126,7 +3002,7 @@
 			<next>33</next>
 		</phrase>
 		<phrase id="322">
-		<precondition>sak_dialog.has_soldiers_bribe2</precondition>
+		<precondition>sak.have_items_count("vodka",2)</precondition>
 			<text>esc_bridge_soldiers_new_start_322</text>
 			<next>323</next>
 		</phrase>
@@ -3139,9 +3015,9 @@
 			<next>342</next>
 		</phrase>
 		<phrase id="341">
-		<precondition>sak_dialog.has_soldiers_bribe2</precondition>
+		<precondition>sak.have_items_count("vodka",2)</precondition>
 			<text>esc_bridge_soldiers_new_start_341</text>
-			<action>sak_dialog.give_soldiers_bribe2</action>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
 			<next>35</next>
 		</phrase>
 		<phrase id="342">
@@ -3168,7 +3044,7 @@
 			<next>353</next>
 		</phrase>
 		<phrase id="3522">
-		<precondition>sak_dialog.has_soldiers_bribe3</precondition>
+		<precondition>sak.have_items_count("vodka",3)</precondition>
 			<text>esc_bridge_soldiers_new_start_3522</text>
 			<next>3523</next>
 		</phrase>
@@ -3181,9 +3057,9 @@
 			<next>3542</next>
 		</phrase>
 		<phrase id="3541">
-		<precondition>sak_dialog.has_soldiers_bribe3</precondition>
+		<precondition>sak.have_items_count("vodka",3)</precondition>
 			<text>esc_bridge_soldiers_new_start_3541</text>
-			<action>sak_dialog.give_soldiers_bribe3</action>
+			<action>sak_inventory.release_actor_items("vodka",3)</action>
 			<next>35</next>
 		</phrase>
 		<phrase id="3542">
@@ -3242,9 +3118,9 @@
 			<next>462</next>
 		</phrase>
 		<phrase id="461">
-		<precondition>sak_dialog.has_soldiers_bribe</precondition>
+		<precondition>sak.have_items_count("vodka",1)</precondition>
 			<text>esc_bridge_soldiers_new_start_461</text>
-			<action>sak_dialog.give_soldiers_bribe</action>
+			<action>sak_inventory.release_actor_items("vodka",1)</action>
 			<next>47</next>
 		</phrase>
 		<phrase id="47">
@@ -3401,15 +3277,15 @@
 			<next>864</next>
 		</phrase>
 		<phrase id="861">
-		<precondition>sak_dialog.conserva4_have</precondition>
+		<precondition>sak.have_items_count("conserva",4)</precondition>
 			<text>esc_bridge_soldiers_new_start_861</text>
-			<action>sak_dialog.give_4conserva</action>
+			<action>sak_inventory.release_actor_items("conserva",4)</action>
 			<next>87</next>
 		</phrase>
 		<phrase id="862">
-		<precondition>sak_dialog.has_soldiers_bribe2</precondition>
+		<precondition>sak.have_items_count("vodka",2)</precondition>
 			<text>esc_bridge_soldiers_new_start_862</text>
-			<action>sak_dialog.give_soldiers_bribe2</action>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
 			<next>87</next>
 		</phrase>
 		<phrase id="863">
@@ -3481,15 +3357,15 @@
 			<next>164</next>
 		</phrase>
 		<phrase id="161">
-		<precondition>sak_dialog.conserva_have</precondition>
+		<precondition>sak.have_items_count("conserva",1)</precondition>
 			<text>esc_bridge_soldiers_sold_161</text>
-			<action>sak_dialog.give_conserva</action>
+			<action>sak_inventory.release_actor_items("conserva",1)</action>
 			<next>17</next>
 		</phrase>
 		<phrase id="162">
-		<precondition>sak_dialog.kolbasa_2have</precondition>
+		<precondition>sak.have_items_count("kolbasa",2)</precondition>
 			<text>esc_bridge_soldiers_sold_162</text>
-			<action>sak_dialog.give_2kolbasa</action>
+			<action>sak_inventory.release_actor_items("kolbasa",2)</action>
 			<next>17</next>
 		</phrase>
 		<phrase id="163">
@@ -3594,10 +3470,10 @@
 		</phrase>
 		<phrase id="21">
 		<!--<precondition>sak_dialog.medusa_have</precondition>-->
-		<precondition>sak_dialog.actor_3000_have</precondition>
+		<precondition>sak_dialog.actor_have(3000)</precondition>
 			<text>esc_bridge_soldiers_sub_new_start_21</text>
 			<!--<action>sak_dialog.give_medusa</action>-->
-			<action>sak_dialog.give_3000_money</action>
+			<action>sak_dialog.give_money(3000,1)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="22">
@@ -3980,7 +3856,7 @@
 
 		<phrase id="301">
 			<text>escape_fox_new_hello_dialog_301</text>
-			<action>sak_dialog.fox_pay_money</action>
+			<action>test.add_rnd_art_to_actor(1,4)</action>
 			<give_info>esc_fox_thanks</give_info>
 			<next>302</next>
 		</phrase>
@@ -4310,7 +4186,7 @@
 		</phrase>
 		<phrase id="1">
 			<text>doctor_rygyi3_dialog_1</text>
-			<action>sak_dialog.take_2_rygyi</action>
+			<action>test.add_to_actor("rygyi_med_r",1)</action>
 			<give_info>agr_find_rygyi_3have</give_info>
 			<give_info>esc_dogs_stay_home</give_info>
 			<next>2</next>
@@ -6029,12 +5905,13 @@
 		<phrase id="4">
 		<precondition>sak_dialog.gar_sakbox_have</precondition>
 			<text>gar_flame_3_dialog_4</text>
-			<action>sak_dialog.give_box_gar_flame</action>
+			<action>sak_inventory.release_actor_items("inventory_sakbox_gar_flame",1)</action>
 			<next>5</next>
 		</phrase>
 		<phrase id="5">
 			<text>gar_flame_3_dialog_5</text>
-			<action>sak_dialog.take_gar_flame</action>
+			<action>test.add_to_actor("wpn_flame",1)</action>
+			<action>test.add_to_actor("vodka",2)</action>
 			<give_info>gar_flame_have</give_info>
 			<next>6</next>
 		</phrase>
@@ -6281,9 +6158,9 @@
 			<next>2</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.have_2_mutant_dog_tail</precondition>
+		<precondition>sak.have_items_count("mutant_dog_tail",2)</precondition>
 			<text>esc_green_dan_21</text>
-			<action>sak_dialog.give_2_mutant_dog_tail</action>
+			<action>sak_inventory.release_actor_items("mutant_dog_tail",2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="211">
@@ -6293,81 +6170,81 @@
 			<next>3</next>
 		</phrase>
 		<phrase id="212">
-		<precondition>sak_dialog.have_2_mutant_tail_cat</precondition>
+		<precondition>sak.have_items_count("mutant_tail_cat",1)</precondition>
 			<text>esc_green_dan_212</text>
-			<action>sak_dialog.give_2_mutant_tail_cat</action>
+			<action>sak_inventory.release_actor_items("mutant_tail_cat",2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="213">
-		<precondition>sak_dialog.have_1_mutant_zombie_hand</precondition>
+		<precondition>sak.have_items_count("mutant_zombie_hand",1)</precondition>
 			<text>esc_green_dan_213</text>
-			<action>sak_dialog.give_1_mutant_zombie_hand</action>
+			<action>sak_inventory.release_actor_items("mutant_zombie_hand",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
-		<precondition>sak_dialog.have_2_mutant_boar_leg</precondition>
+		<precondition>sak.have_items_count("mutant_boar_leg",2)</precondition>
 			<text>esc_green_dan_22</text>
-			<action>sak_dialog.give_2_mutant_boar_leg</action>
+			<action>sak_inventory.release_actor_items("mutant_boar_leg",2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="23">
-		<precondition>sak_dialog.have_1_mutant_psevdodog_tail</precondition>
+		<precondition>sak.have_items_count("mutant_psevdodog_tail",1)</precondition>
 			<text>esc_green_dan_23</text>
-			<action>sak_dialog.give_1_mutant_psevdodog_tail</action>
+			<action>sak_inventory.release_actor_items("mutant_psevdodog_tail",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="24">
-		<precondition>sak_dialog.have_1_mutant_flesh_eye</precondition>
+		<precondition>sak.have_items_count("mutant_flesh_eye",1)</precondition>
 			<text>esc_green_dan_24</text>
-			<action>sak_dialog.give_1_mutant_flesh_eye</action>
+			<action>sak_inventory.release_actor_items("mutant_flesh_eye",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="25">
-		<precondition>sak_dialog.have_1_mutant_krovosos_jaw</precondition>
+		<precondition>sak.have_items_count("mutant_krovosos_jaw",1)</precondition>
 			<text>esc_green_dan_25</text>
-			<action>sak_dialog.give_1_mutant_krovosos_jaw</action>
+			<action>sak_inventory.release_actor_items("mutant_krovosos_jaw",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="26">
-		<precondition>sak_dialog.have_1_mutant_burer_hand</precondition>
+		<precondition>sak.have_items_count("mutant_burer_hand",1)</precondition>
 			<text>esc_green_dan_26</text>
-			<action>sak_dialog.give_1_mutant_burer_hand</action>
+			<action>sak_inventory.release_actor_items("mutant_burer_hand",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="27">
-		<precondition>sak_dialog.have_1_mutant_psevdogigant_hand</precondition>
+		<precondition>sak.have_items_count("mutant_psevdogigant_hand",1)</precondition>
 			<text>esc_green_dan_27</text>
-			<action>sak_dialog.give_1_mutant_psevdogigant_hand</action>
+			<action>sak_inventory.release_actor_items("mutant_psevdogigant_hand",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="28">
-		<precondition>sak_dialog.have_1_mutant_hand_kontroler</precondition>
+		<precondition>sak.have_items_count("mutant_hand_kontroler",1)</precondition>
 			<text>esc_green_dan_28</text>
-			<action>sak_dialog.give_1_mutant_hand_kontroler</action>
+			<action>sak_inventory.release_actor_items("mutant_hand_kontroler",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="29">
-		<precondition>sak_dialog.have_1_mutant_chimera_kogot</precondition>
+		<precondition>sak.have_items_count("mutant_chimera_kogot",1)</precondition>
 			<text>esc_green_dan_29</text>
-			<action>sak_dialog.give_1_mutant_chimera_kogot</action>
+			<action>sak_inventory.release_actor_items("mutant_chimera_kogot",1)</action>
 			<next>3</next>
 			</phrase>
 		<phrase id="291">
-		<precondition>sak_dialog.have_1_mutant_poltergeist_glas</precondition>
+		<precondition>sak.have_items_count("mutant_poltergeist_glas",1)</precondition>
 			<text>esc_green_dan_291</text>
-			<action>sak_dialog.give_1_mutant_poltergeist_glas</action>
+			<action>sak_inventory.release_actor_items("mutant_poltergeist_glas",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="292">
-		<precondition>sak_dialog.have_1_mutant_flesh_shkura</precondition>
+		<precondition>sak.have_items_count("mutant_flesh_shkura",1)</precondition>
 			<text>esc_green_dan_292</text>
-			<action>sak_dialog.give_1_mutant_flesh_shkura</action>
+			<action>sak_inventory.release_actor_items("mutant_flesh_shkura",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="293">
-		<precondition>sak_dialog.have_1_mutant_snork_leg</precondition>
+		<precondition>sak.have_items_count("mutant_snork_leg",1)</precondition>
 			<text>esc_green_dan_293</text>
-			<action>sak_dialog.give_1_mutant_snork_leg</action>
+			<action>sak_inventory.release_actor_items("mutant_snork_leg",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="2">
@@ -6376,7 +6253,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>esc_green_dan_3</text>
-			<action>sak_dialog.add_som_ammo_20_buck</action>
+			<action>sak_dialog.add_some_ammo_to_actor(20,"ammo_12x70_buck")</action>
 			<give_info>esc_dram_pass_on</give_info>
 		</phrase>
 		<phrase id="31">
@@ -6401,169 +6278,19 @@
 		<phrase id="1">
 			<text>esc_green_dan_ammo_1</text>
 			<next>21</next>
-<!-- 			<next>22</next>
-			<next>211</next>
-			<next>212</next>
-			<next>213</next>
-			<next>23</next>
-			<next>24</next>
-			<next>25</next>
-			<next>26</next>
-			<next>27</next>
-			<next>28</next>
-			<next>29</next>
-			<next>291</next>
-			<next>292</next>
-			<next>293</next> -->
+
 			<next>2</next>
 		</phrase>
 		<phrase id="21">
-		<!-- <precondition>sak_dialog.have_1_mutant_dog_tail</precondition> -->
 			<text>esc_green_dan_ammo_21</text>
 			<action>ui_barter_new.barter_screen("dan")</action>
 			<action>dialogs.break_dialog</action>
-			<!-- <next>31</next> -->
-		</phrase>
-		<phrase id="22">
-		<precondition>sak_dialog.have_1_mutant_boar_leg</precondition>
-			<text>esc_green_dan_ammo_22</text>
-			<action>sak_dialog.give_1_mutant_boar_leg</action>
-			<next>32</next>
-		</phrase>
-		<phrase id="211">
-		<precondition>sak_dialog.have_1_mutant_tail_cat</precondition>
-			<text>esc_green_dan_ammo_211</text>
-			<action>sak_dialog.give_1_mutant_tail_cat</action>
-			<next>321</next>
-		</phrase>
-		<phrase id="212">
-		<precondition>sak_dialog.have_3_mutant_face_tushkano</precondition>
-			<text>esc_green_dan_ammo_212</text>
-			<action>sak_dialog.give_3_mutant_face_tushkano</action>
-			<next>32</next>
-		</phrase>
-		<phrase id="213">
-		<precondition>sak_dialog.have_1_mutant_zombie_hand</precondition>
-			<text>esc_green_dan_ammo_213</text>
-			<action>sak_dialog.give_1_mutant_zombie_hand</action>
-			<next>32</next>
-		</phrase>
-		<phrase id="23">
-		<precondition>sak_dialog.have_1_mutant_psevdodog_tail</precondition>
-			<text>esc_green_dan_ammo_23</text>
-			<action>sak_dialog.give_1_mutant_psevdodog_tail</action>
-			<next>33</next>
-		</phrase>
-		<phrase id="24">
-		<precondition>sak_dialog.have_1_mutant_flesh_eye</precondition>
-			<text>esc_green_dan_ammo_24</text>
-			<action>sak_dialog.give_1_mutant_flesh_eye</action>
-			<next>34</next>
-		</phrase>
-		<phrase id="25">
-		<precondition>sak_dialog.have_1_mutant_krovosos_jaw</precondition>
-			<text>esc_green_dan_ammo_25</text>
-			<action>sak_dialog.give_1_mutant_krovosos_jaw</action>
-			<next>35</next>
-		</phrase>
-		<phrase id="26">
-		<precondition>sak_dialog.have_1_mutant_burer_hand</precondition>
-			<text>esc_green_dan_ammo_26</text>
-			<action>sak_dialog.give_1_mutant_burer_hand</action>
-			<next>36</next>
-		</phrase>
-		<phrase id="27">
-		<precondition>sak_dialog.have_1_mutant_psevdogigant_hand</precondition>
-			<text>esc_green_dan_ammo_27</text>
-			<action>sak_dialog.give_1_mutant_psevdogigant_hand</action>
-			<next>37</next>
-		</phrase>
-		<phrase id="28">
-		<precondition>sak_dialog.have_1_mutant_hand_kontroler</precondition>
-			<text>esc_green_dan_ammo_28</text>
-			<action>sak_dialog.give_1_mutant_hand_kontroler</action>
-			<next>38</next>
-		</phrase>
-		<phrase id="29">
-		<precondition>sak_dialog.have_1_mutant_chimera_kogot</precondition>
-			<text>esc_green_dan_ammo_29</text>
-			<action>sak_dialog.give_1_mutant_chimera_kogot</action>
-			<next>39</next>
-		</phrase>
-		<phrase id="291">
-		<precondition>sak_dialog.have_1_mutant_poltergeist_glas</precondition>
-			<text>esc_green_dan_ammo_291</text>
-			<action>sak_dialog.give_1_mutant_poltergeist_glas</action>
-			<next>391</next>
-		</phrase>
-		<phrase id="292">
-		<precondition>sak_dialog.have_1_mutant_flesh_shkura</precondition>
-			<text>esc_green_dan_ammo_292</text>
-			<action>sak_dialog.give_1_mutant_flesh_shkura</action>
-			<next>392</next>
-		</phrase>
-		<phrase id="293">
-		<precondition>sak_dialog.have_1_mutant_snork_leg</precondition>
-			<text>esc_green_dan_ammo_293</text>
-			<action>sak_dialog.give_1_mutant_snork_leg</action>
-			<next>393</next>
 		</phrase>
 		<phrase id="2">
 			<text>esc_green_dan_ammo_2</text>
 			<next>3</next>
 		</phrase>
-		<phrase id="31">
-			<text>esc_green_dan_ammo_31</text>
-			<action>sak_dialog.add_som_ammo_10_buck</action>
-		</phrase>
-		<phrase id="32">
-			<text>esc_green_dan_ammo_32</text>
-			<action>sak_dialog.add_som_ammo_10_buck</action>
-		</phrase>
-		<phrase id="321">
-			<text>esc_green_dan_ammo_321</text>
-			<action>sak_dialog.add_som_ammo_20_buck</action>
-		</phrase>
-		<phrase id="33">
-			<text>esc_green_dan_ammo_33</text>
-			<action>sak_dialog.add_som_ammo_20_buck</action>
-		</phrase>
-		<phrase id="34">
-			<text>esc_green_dan_ammo_34</text>
-			<action>sak_dialog.add_som_ammo_30_buck</action>
-		</phrase>
-		<phrase id="35">
-			<text>esc_green_dan_ammo_35</text>
-			<action>sak_dialog.add_som_ammo_80_buck</action>
-		</phrase>
-		<phrase id="36">
-			<text>esc_green_dan_ammo_36</text>
-			<action>sak_dialog.add_som_ammo_50_buck</action>
-		</phrase>
-		<phrase id="37">
-			<text>esc_green_dan_ammo_37</text>
-			<action>sak_dialog.add_som_ammo_140_buck</action>
-		</phrase>
-		<phrase id="38">
-			<text>esc_green_dan_ammo_38</text>
-			<action>sak_dialog.add_som_ammo_120_buck</action>
-		</phrase>
-		<phrase id="39">
-			<text>esc_green_dan_ammo_39</text>
-			<action>sak_dialog.add_som_ammo_60_buck</action>
-		</phrase>
-		<phrase id="391">
-		    <text>esc_green_dan_ammo_391</text>
-			<action>sak_dialog.add_som_ammo_100_buck</action>
-		</phrase>
-		<phrase id="392">
-		    <text>esc_green_dan_ammo_392</text>
-			<action>sak_dialog.add_som_ammo_40_buck</action>
-		</phrase>
-		<phrase id="393">
-		    <text>esc_green_dan_ammo_393</text>
-			<action>sak_dialog.add_som_ammo_30_buck</action>
-		</phrase>
+
 		<phrase id="3">
 			<text>esc_green_dan_ammo_3</text>
 		</phrase>
@@ -6616,9 +6343,9 @@
 			<next>1082</next>
 		</phrase>
 		<phrase id="1081">
-		<precondition>sak_dialog.actor_5000_have</precondition>
+		<precondition>sak_dialog.actor_have(5000)</precondition>
 			<text>esc_zoneguard_actor_21</text>
-			<action>sak_dialog.give_5000_money</action>
+			<action>sak_dialog.give_money(5000,1)</action>
 			<next>109</next>
 		</phrase>
 		<phrase id="1082">
@@ -6685,57 +6412,57 @@
 			<next>2</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.have_1_mutant_dog_tail</precondition>
+		<precondition>sak.have_items_count("mutant_dog_tail",1)</precondition>
 			<text>esc_zoneguard_start_221</text>
-			<action>sak_dialog.give_1_mutant_dog_tail</action>
+			<action>sak_inventory.release_actor_items("mutant_dog_tail",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="22">
-		<precondition>sak_dialog.have_1_mutant_boar_leg</precondition>
+		<precondition>sak.have_items_count("mutant_boar_leg",1)</precondition>
 			<text>esc_zoneguard_start_222</text>
-			<action>sak_dialog.give_1_mutant_boar_leg</action>
+			<action>sak_inventory.release_actor_items("mutant_boar_leg",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="23">
-		<precondition>sak_dialog.have_1_mutant_psevdodog_tail</precondition>
+		<precondition>sak.have_items_count("mutant_psevdodog_tail",1)</precondition>
 			<text>esc_zoneguard_start_223</text>
-			<action>sak_dialog.give_1_mutant_psevdodog_tail</action>
+			<action>sak_inventory.release_actor_items("mutant_psevdodog_tail",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="24">
-		<precondition>sak_dialog.have_1_mutant_flesh_eye</precondition>
+		<precondition>sak.have_items_count("mutant_flesh_eye",1)</precondition>
 			<text>esc_zoneguard_start_224</text>
-			<action>sak_dialog.give_1_mutant_flesh_eye</action>
+			<action>sak_inventory.release_actor_items("mutant_flesh_eye",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="25">
-		<precondition>sak_dialog.have_1_mutant_krovosos_jaw</precondition>
+		<precondition>sak.have_items_count("mutant_krovosos_jaw",1)</precondition>
 			<text>esc_zoneguard_start_225</text>
-			<action>sak_dialog.give_1_mutant_krovosos_jaw</action>
+			<action>sak_inventory.release_actor_items("mutant_krovosos_jaw",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="26">
-		<precondition>sak_dialog.have_1_mutant_burer_hand</precondition>
+		<precondition>sak.have_items_count("mutant_burer_hand",1)</precondition>
 			<text>esc_zoneguard_start_226</text>
-			<action>sak_dialog.give_1_mutant_burer_hand</action>
+			<action>sak_inventory.release_actor_items("mutant_burer_hand",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="27">
-		<precondition>sak_dialog.have_1_mutant_psevdogigant_hand</precondition>
+		<precondition>sak.have_items_count("mutant_psevdogigant_hand",1)</precondition>
 			<text>esc_zoneguard_start_227</text>
-			<action>sak_dialog.give_1_mutant_psevdogigant_hand</action>
+			<action>sak_inventory.release_actor_items("mutant_psevdogigant_hand",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="28">
-		<precondition>sak_dialog.have_1_mutant_hand_kontroler</precondition>
+		<precondition>sak.have_items_count("mutant_hand_kontroler",1)</precondition>
 			<text>esc_zoneguard_start_228</text>
-			<action>sak_dialog.give_1_mutant_hand_kontroler</action>
+			<action>sak_inventory.release_actor_items("mutant_hand_kontroler",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="29">
-		<precondition>sak_dialog.have_1_mutant_chimera_kogot</precondition>
+		<precondition>sak.have_items_count("mutant_chimera_kogot",1)</precondition>
 			<text>esc_zoneguard_start_229</text>
-			<action>sak_dialog.give_1_mutant_chimera_kogot</action>
+			<action>sak_inventory.release_actor_items("mutant_chimera_kogot",1)</action>
 			<next>230</next>
 		</phrase>
 		<phrase id="2">
@@ -6789,9 +6516,9 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.actor_5000_have</precondition>
+		<precondition>sak_dialog.actor_have(5000)</precondition>
 			<text>esc_zoneguard_actor_21</text>
-			<action>sak_dialog.give_5000_money</action>
+			<action>sak_dialog.give_money(5000,1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
@@ -7183,10 +6910,10 @@
 			<next>62</next>
 		</phrase>
 		<phrase id="61">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 		<precondition>sak_dialog.have_actor_any_ak</precondition>
 			<text>ivan_dialog_61</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<action>sak_dialog.transfer_any_ak_from_actor</action>
 			<give_info>gar_dm_bandits_2have</give_info>
 			<next>7</next>
@@ -7220,11 +6947,11 @@
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>ivan_dialog_81</text>
-			<action>sak_dialog.give_2_bart</action>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<action>sak_dialog.add_ak_for_ivan</action>
 			<next>9</next>
 		</phrase>
@@ -7267,10 +6994,10 @@
 			<next>62</next>
 		</phrase>
 		<phrase id="61">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 		<precondition>sak_dialog.have_actor_any_ak</precondition>
 			<text>ivan_dialog_61</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<action>sak_dialog.transfer_any_ak_from_actor</action>
 			<next>7</next>
 		</phrase>
@@ -7308,11 +7035,11 @@
 			<next>82</next>
 		</phrase>
 		<phrase id="81">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>ivan_dialog_81</text>
-			<action>sak_dialog.give_2_bart</action>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>9</next>
 		</phrase>
 		<phrase id="9">
@@ -7387,32 +7114,16 @@
 		<phrase id="1">
 			<text>ivan_cs_dialog2_1</text>
 			<next>21</next>
-			<next>23</next>
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<!--<precondition>sak_dialog.have_10_ammo_545x39_ok</precondition>-->
-		<precondition>sak_dialog.have_nebov_ammo_762x39</precondition>
+		<precondition>vergas_lib.search_items("ammo_7.62x39_fmj",300,1)</precondition>
 			<text>ivan_cs_dialog2_21</text>
-			<!--<action>sak_dialog.give_10_ammo_545x39</action>-->
-			<action>sak_dialog.give_nebov_ammo_762x39</action>
+			<action>vergas_lib.search_items("ammo_7.62x39_fmj",300,2)</action>
 			<next>3</next>
-		</phrase>
-		<phrase id="23">
-		<precondition>sak_dialog.have_10_ammo_545x39_fake</precondition>
-			<text>ivan_cs_dialog2_23</text>
-			<next>33</next>
 		</phrase>
 		<phrase id="22">
 			<text>ivan_cs_dialog2_22</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="33">
-			<text>ivan_cs_dialog2_33</text>
-			<next>43</next>
-		</phrase>
-		<phrase id="43">
-			<text>ivan_cs_dialog2_43</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="3">
@@ -7437,7 +7148,7 @@
 </dialog>
 
 <dialog id="ivan_dialog2">
-<precondition>sak_dialog.gg_2_bart_have</precondition>
+<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 <precondition>sak_dialog.have_actor_any_ak</precondition>
 <dont_has_info>gar_dm_bandits_2have</dont_has_info>
 <dont_has_info>gar_dm_bandits_done</dont_has_info>
@@ -7453,10 +7164,10 @@
 			<next>62</next>
 		</phrase>
 		<phrase id="61">
-		<precondition>sak_dialog.gg_2_bart_have</precondition>
+		<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 		<precondition>sak_dialog.have_actor_any_ak</precondition>
 			<text>ivan_dialog2_61</text>
-			<action>sak_dialog.give_2_bart</action>
+			<action>sak_dialog.give_n_bart(2)</action>
 			<action>sak_dialog.transfer_any_ak_from_actor</action>
 			<next>7</next>
 		</phrase>
@@ -7473,7 +7184,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_5">
-<precondition>sak_dialog.have_1_dm_bandits</precondition>
+<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
 <dont_has_info>gar_dm_bandits_done</dont_has_info>
 <dont_has_info>gar_dm_bandits_wait</dont_has_info>
 	<phrase_list>
@@ -7505,7 +7216,7 @@
 			<next>612</next>
 		</phrase>
 		<phrase id="611">
-		<precondition>sak_dialog.have_1_dm_bandits</precondition>
+		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
 			<text>gar_dm_bandits_dialog_5_611</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
@@ -7531,7 +7242,7 @@
 			<next>422</next>
 		</phrase>
 		<phrase id="421">
-		<precondition>sak_dialog.have_1_dm_bandits</precondition>
+		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
 			<text>gar_dm_bandits_dialog_5_421</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
@@ -7550,7 +7261,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_6">
-<precondition>sak_dialog.have_1_dm_bandits</precondition>
+<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
 	<dont_has_info>gar_dm_bandits_done</dont_has_info>
 	<dont_has_info>gar_dm_bandits_failed</dont_has_info>
 	<has_info>gar_dm_bandits_wait</has_info>
@@ -7565,7 +7276,7 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.have_1_dm_bandits</precondition>
+		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
 			<text>gar_dm_bandits_dialog_6_21</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
@@ -7614,7 +7325,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_8">
-<precondition>sak_dialog.flesh_2leather_have</precondition>
+<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 	<has_info>gar_dm_bandits_secret</has_info>
 	<dont_has_info>gar_dm_bandits_secret_info</dont_has_info>
 	<phrase_list>
@@ -7640,11 +7351,11 @@
 			<next>412</next>
 		</phrase>
 		<phrase id="411">
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 		<precondition>sak_dialog.have_any_cart</precondition>
 			<text>gar_dm_bandits_dialog_8_411</text>
 			<action>sak_dialog.transfer_any_cart</action>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<give_info>gar_dm_bandits_secret_done</give_info>
 			<next>51</next>
 		</phrase>
@@ -7676,9 +7387,9 @@
 			<next>422</next>
 		</phrase>
 		<phrase id="421">
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 			<text>gar_dm_bandits_dialog_8_421</text>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<give_info>gar_dm_bandits_secret_done</give_info>
 			<next>52</next>
 		</phrase>
@@ -7711,10 +7422,10 @@
 		</phrase>
 		<phrase id="431">
 		<precondition>sak_dialog.have_vodka</precondition>
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 			<text>gar_dm_bandits_dialog_8_431</text>
 			<action>sak_dialog.give_vodka</action>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<give_info>gar_dm_bandits_secret_done</give_info>
 			<next>53</next>
 		</phrase>
@@ -7743,7 +7454,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_91">
-<precondition>sak_dialog.flesh_2leather_have</precondition>
+<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 <precondition>sak_dialog.rand_game_1</precondition>
 	<has_info>gar_dm_bandits_secret_info</has_info>
 	<dont_has_info>gar_dm_bandits_secret_done</dont_has_info>
@@ -7758,11 +7469,11 @@
 			<next>412</next>
 		</phrase>
 		<phrase id="411">
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 		<precondition>sak_dialog.have_any_cart</precondition>
 			<text>gar_dm_bandits_dialog_8_411</text>
 			<action>sak_dialog.transfer_any_cart</action>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<give_info>gar_dm_bandits_secret_done</give_info>
 			<next>51</next>
 		</phrase>
@@ -7791,7 +7502,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_93">
-<precondition>sak_dialog.flesh_2leather_have</precondition>
+<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 <precondition>sak_dialog.rand_game_3</precondition>
 	<has_info>gar_dm_bandits_secret_info</has_info>
 	<dont_has_info>gar_dm_bandits_secret_done</dont_has_info>
@@ -7807,10 +7518,10 @@
 		</phrase>
 		<phrase id="431">
 		<precondition>sak_dialog.have_2vodka</precondition>
-		<precondition>sak_dialog.flesh_2leather_have</precondition>
+		<precondition>sak.have_items_count("flesh_leather",2)</precondition>
 			<text>gar_dm_bandits_dialog_8_431</text>
 			<action>sak_dialog.give_2vodka</action>
-			<action>sak_dialog.give_flesh_2leather</action>
+			<action>sak_inventory.release_actor_items("flesh_leather",2)</action>
 			<give_info>gar_dm_bandits_secret_done</give_info>
 			<next>53</next>
 		</phrase>
@@ -8080,7 +7791,6 @@
 		<phrase id="421">
 		<precondition>sak_dialog.have_amk_kanistra</precondition>
 			<text>esc_lager_generator_421</text>
-			<!-- <action>sak_dialog.give_amk_kanistra</action> -->
 			<next>4311</next>
 			<next>4411</next>
 		</phrase>
@@ -8145,7 +7855,7 @@
 					<next>4312</next>
 				</phrase>
 					<phrase id="4312">
-						<action>sak_dialog.take_2000_money</action>
+						<action>sak_dialog.give_money(2000,"in")</action>
 						<action>sak_dialog.esc_kanistra_add</action>
 						<text>esc_lager_generator_4312</text>
 						<next>4313</next>
@@ -8157,7 +7867,7 @@
 			<phrase id="4411">
 			<precondition>sak_dialog.no_need_amk_kanistra</precondition>
 				<text>esc_lager_generator_4411</text>
-				<!-- <action>sak_dialog.add_kanistra</action> -->
+				<!-- <action>test.add_to_actor("amk_kanistra",1)</action> -->
 				<next>4412</next>
 			</phrase>
 					<phrase id="4412">
@@ -8174,14 +7884,14 @@
 			<next>4422</next>
 		</phrase>
 		<phrase id="4421">
-		<precondition>sak_dialog.actor_2000_have</precondition>
+		<precondition>sak_dialog.actor_have(2000)</precondition>
 			<text>esc_lager_generator_4421</text>
-			<action>sak_dialog.give_2000_money</action>
+			<action>sak_dialog.give_money(2000,1)</action>
 			<next>452</next>
 		</phrase>
 		<phrase id="452">
 			<text>esc_lager_generator_452</text>
-			<action>sak_dialog.take_kanistra</action>
+			<action>test.add_to_actor("kanistra",1)</action>
 			<next>462</next>
 		</phrase>
 		<phrase id="462">
@@ -8226,7 +7936,7 @@
 			<next>424111</next>
 		</phrase>
 		<phrase id="42412">
-		<precondition>sak_dialog.has_soldiers_bribe</precondition>
+		<precondition>sak.have_items_count("vodka",1)</precondition>
 			<text>esc_lager_generator_42412</text>
 			<action>sak.precondition_50_percent</action>
 			<next>42421</next>
@@ -8247,9 +7957,9 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="424211">
-		<precondition>sak_dialog.has_soldiers_bribe</precondition>
+		<precondition>sak.have_items_count("vodka",1)</precondition>
 			<text>esc_lager_generator_424211</text>
-			<action>sak_dialog.give_soldiers_bribe</action>
+			<action>sak_inventory.release_actor_items("vodka",1)</action>
 			<next>424111</next>
 		</phrase>
 		<phrase id="424111">
@@ -8262,7 +7972,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="42413">
-		<precondition>sak_dialog.drink_have</precondition>
+		<precondition>vergas_lib.search_items("energy_drink",1,1)</precondition>
 			<text>esc_lager_generator_42413</text>
 			<action>sak.precondition_25_percent</action>
 			<next>424131</next>
@@ -8275,9 +7985,9 @@
 			<next>424312</next>
 		</phrase>
 		<phrase id="424311">
-		<precondition>sak_dialog.drink_have</precondition>
+		<precondition>vergas_lib.search_items("energy_drink",1,1)</precondition>
 			<text>esc_lager_generator_424311</text>
-			<action>sak_dialog.give_drink</action>
+			<action>vergas_lib.search_items("energy_drink",1,2)</action>
 			<next>424111</next>
 		</phrase>
 		<phrase id="424312">
@@ -8491,7 +8201,7 @@
 		</phrase>
 		<phrase id="31">
 			<text>sidor_capsule_have_dialog_31</text>
-			<action>sak_dialog.sidor_capsule_time</action>
+			<action>sak_dialog.start_time("time_start_sidor_capsule")</action>
 			<give_info>capsule_not_ready</give_info>
 		</phrase>
 		<phrase id="33">
@@ -8508,15 +8218,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_sidor_capsule</precondition>
+		<precondition>sak_dialog.not_ready_time("time_start_sidor_capsule",65)</precondition>
 			<text>sidor_capsule_already_dialog_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_sidor_capsule</precondition>
+		<precondition>sak_dialog.is_ready_time("time_start_sidor_capsule",65)</precondition>
 			<text>sidor_capsule_already_dialog_12</text>
 			<action>sak_dialog.add_art_capsule</action>
-			<action>sak_dialog.clear_ready_time_sidor_capsule</action>
+			<action>sak_dialog.clear_ready_time("time_start_sidor_capsule")</action>
 			<give_info>capsule_ready</give_info>
 		</phrase>
 		<phrase id="2">
@@ -8527,7 +8237,6 @@
 </dialog>
 <dialog id="sidor_flame_load_have_dialog">
 <precondition>sak_dialog.gar_flame_have</precondition>
-<!--<has_info>gar_flame_new_have</has_info>-->
 	<phrase_list>
 		<phrase id="0">
 			<text>sidor_flame_load_have_dialog_0</text>
@@ -8567,7 +8276,7 @@
 		</phrase>
 		<phrase id="31">
 			<text>sidor_flame_load_have_dialog_31</text>
-			<action>sak_dialog.sidor_flame_load_time</action>
+			<action>sak_dialog.start_time("sidor_flame_load_time")</action>
 			<give_info>gar_flame_not_ready</give_info>
 		</phrase>
 		<phrase id="33">
@@ -8584,15 +8293,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_sidor_flame_load</precondition>
+		<precondition>sak_dialog.not_ready_time("sidor_flame_load_time",300)</precondition>
 			<text>sidor_flame_load_already_dialog_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_sidor_flame_load</precondition>
+		<precondition>sak_dialog.is_ready_time("sidor_flame_load_time",300)</precondition>
 			<text>sidor_flame_load_already_dialog_12</text>
-			<action>sak_dialog.take3_gar_flame</action>
-			<action>sak_dialog.clear_ready_time_sidor_flame_load</action>
+			<action>test.add_to_actor("wpn_flame",1)</action>
+			<action>sak_dialog.clear_ready_time("sidor_flame_load_time")</action>
 			<give_info>gar_flame_ready</give_info>
 		</phrase>
 		<phrase id="2">
@@ -9212,7 +8921,7 @@
 		</phrase>
 		<phrase id="51">
 			<text>vergas_razgruzka_51</text>
-			<action>sak_dialog.add_razgruzka</action>
+			<action>test.add_to_actor("razgruzka",1)</action>
 			<next>61</next>
 		</phrase>
 		<phrase id="61">
@@ -9234,14 +8943,14 @@
 		</phrase>
 		<phrase id="62">
 		<precondition>sak_dialog.not_have_razgruzka</precondition>
-			<precondition>sak_dialog.actor_10000_have</precondition>
+			<precondition>sak_dialog.actor_have(10000)</precondition>
 			<text>vergas_razgruzka_62</text>
-			<action>sak_dialog.give_10000_money</action>
+			<action>sak_dialog.give_money(10000,1)</action>
 			<next>72</next>
 		</phrase>
 		<phrase id="72">
 			<text>vergas_razgruzka_72</text>
-			<action>sak_dialog.add_razgruzka</action>
+			<action>test.add_to_actor("razgruzka",1)</action>
 		</phrase>
 		<phrase id="43">
 			<text>vergas_razgruzka_43</text>
@@ -9387,68 +9096,7 @@
 		</phrase>
 	</phrase_list>
 </dialog>
-<dialog id="vergas_rep_item_have">
-	<has_info>vergas_rep_item</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>vergas_rep_item_have_0</text>
-			<next>12</next>
-			<next>13</next>
-		</phrase>
-		<phrase id="13">
-		<precondition>sak_dialog.not_klava_done</precondition>
-			<text>vergas_rep_item_have_13</text>
-		</phrase>
-		<phrase id="12">
-		<precondition>sak_dialog.klava_done</precondition>
-			<text></text>
-			<next>14</next>
-		</phrase>
-		<phrase id="14">
-			<text></text>
-			<next>1</next>
-			<next>11</next>
-		</phrase>
-		<phrase id="11">
-		<precondition>sak_dialog.vergas_rep_not_have</precondition>
-			<text>vergas_rep_item_have_11</text>
-		</phrase>
-		<phrase id="1">
-		<precondition>sak_dialog.vergas_rep_have</precondition>
-			<text>vergas_rep_item_have_1</text>
-			<action>sak_dialog.text_money_item_dialog</action>
-			<next>21</next>
-			<next>22</next>
-			<next>23</next>
-		</phrase>
-		<phrase id="21">
-		<precondition>sak_dialog.itemoutfit_money_have</precondition>
-			<text>vergas_rep_item_have_21</text>
-			<action>sak_dialog.give_itemoutfit_money</action>
-			<next>31</next>
-		</phrase>
-		<phrase id="31">
-			<text>vergas_rep_item_have_31</text>
-			<action>sak.add_repair_itemoutfit</action>
-			<action>sak_dialog.vergas_rep_add</action>
-		</phrase>
-		<phrase id="22">
-		<precondition>sak_dialog.item_weapon_money_have</precondition>
-			<text>vergas_rep_item_have_22</text>
-			<action>sak_dialog.give_item_weapon_money</action>
-			<next>32</next>
-		</phrase>
-		<phrase id="32">
-			<text>vergas_rep_item_have_32</text>
-			<action>sak.add_repair_item_weapon</action>
-			<action>sak_dialog.vergas_rep_add</action>
-		</phrase>
-		<phrase id="23">
-			<text>vergas_rep_item_have_23</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
+
 <dialog id="kuznezov_blockpost_case">
 <dont_has_info>escape_blockpost_case_done</dont_has_info>
 <dont_has_info>escape_blockpost_case_have</dont_has_info>
@@ -9501,7 +9149,7 @@
 <dont_has_info>escape_blockpost_case_have</dont_has_info>
 <dont_has_info>kuznezov_blockpost_case_have</dont_has_info>
 <has_info>kuznezov_blockpost_case_ok</has_info>
-<precondition>sak_dialog.same_case_have</precondition>
+<precondition>sak.have_items_count("same_quest_case",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>kuznezov_blockpost_case_have_0</text>
@@ -9533,9 +9181,9 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="42">
-		<precondition>sak_dialog.same_case_have</precondition>
+		<precondition>sak.have_items_count("same_quest_case",1)</precondition>
 			<text>kuznezov_blockpost_case_have_42</text>
-			<action>sak_dialog.give_same_case</action>
+			<action>sak_inventory.release_actor_items("same_quest_case",1)</action>
 			<next>52</next>
 		</phrase>
 		<phrase id="52">
@@ -9718,7 +9366,7 @@
 		</phrase>
 		<phrase id="3051">
 			<text>private_blockpost_case_3051</text>
-			<action>sak_dialog.add_ammo_5_45_fmj2</action>
+			<action>test.add_to_actor("ammo_5.45x39_fmj",2)</action>
 			<next>3041</next>
 			<next>3042</next>
 			<next>3043</next>
@@ -9739,7 +9387,7 @@
 		</phrase>
 		<phrase id="3052">
 			<text>private_blockpost_case_3052</text>
-			<action>sak_dialog.add_ammo_7_62_fmj</action>
+			<action>test.add_to_actor("ammo_7.62x39_fmj",1)</action>
 			<next>3041</next>
 			<next>3042</next>
 			<next>3043</next>
@@ -10049,7 +9697,7 @@
 		<phrase id="5">
 			<text>sidor_klava_rep_5</text>
 			<give_info>sidor_klava_rep_ok</give_info>
-			<action>sak_dialog.sidor_klava_rep_time</action>
+			<action>sak_dialog.start_time("time_start_sidor_klava_rep")</action>
 		</phrase>
 		<phrase id="42">
 			<text>sidor_klava_rep_42</text>
@@ -10069,15 +9717,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_sidor_klava_rep</precondition>
+		<precondition>sak_dialog.not_ready_time("time_start_sidor_klava_rep",540)</precondition>
 			<text>sidor_klava_done_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_sidor_klava_rep</precondition>
+		<precondition>sak_dialog.is_ready_time("time_start_sidor_klava_rep",540)</precondition>
 			<text>sidor_klava_done_12</text>
-			<action>sak_dialog.add_akkum</action>
-			<action>sak_dialog.clear_ready_time_sidor_klava_rep</action>
+			<action>test.add_to_actor("item_battery_02",1)</action>
+			<action>sak_dialog.clear_ready_time("time_start_sidor_klava_rep")</action>
 			<give_info>sidor_klava_rep_done</give_info>
 		</phrase>
 		<phrase id="2">
@@ -10089,7 +9737,7 @@
 
 
 <dialog id="vergas_klava_rep">
-<precondition>sak_dialog.have_klava_feik</precondition>
+<precondition>sak.have_items_count("klava_feik",1)</precondition>
 	<dont_has_info>new_vergas_klava_rep</dont_has_info>
 	<phrase_list>
 		<phrase id="0">
@@ -10101,9 +9749,9 @@
 			<next>2</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_dialog.have_klava_feik</precondition>
+		<precondition>sak.have_items_count("klava_feik",1)</precondition>
 			<text>vergas_klava_rep_2</text>
-			<action>sak_dialog.give_klava_feik</action>
+			<action>sak_inventory.release_actor_items("klava_feik",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -10144,7 +9792,7 @@
 		<phrase id="11">
 			<text>vergas_klava_rep_11</text>
 			<give_info>new_vergas_klava_rep</give_info>
-			<action>sak_dialog.vergas_klava_time</action>
+			<action>sak_dialog.start_time("time_start_vergas_klava")</action>
 			<next>12</next>
 		</phrase>
 		<phrase id="12">
@@ -10189,15 +9837,15 @@
 			<next>23</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.have_akkum</precondition>
+		<precondition>sak.have_items_count("item_battery_02",1)</precondition>
 			<text>vergas_klava_done_21</text>
-			<action>sak_dialog.give_akkum</action>
+			<action>sak_inventory.release_actor_items("item_battery_02",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
-		<precondition>sak_dialog.docent_5pda_have</precondition>
+		<precondition>sak.have_items_count("device_pda_npc",5)</precondition>
 			<text>vergas_klava_done_22</text>
-			<action>sak_dialog.give_docent_5pda</action>
+			<action>sak_inventory.release_actor_items("device_pda_npc",5)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="24">
@@ -10228,15 +9876,15 @@
 			<next>23</next>
 		</phrase>
 		<phrase id="212">
-		<precondition>sak_dialog.have_akkum</precondition>
+		<precondition>sak.have_items_count("item_battery_02",1)</precondition>
 			<text>vergas_klava_done_21</text>
-			<action>sak_dialog.give_akkum</action>
+			<action>sak_inventory.release_actor_items("item_battery_02",1)</action>
 			<next>32</next>
 		</phrase>
 		<phrase id="222">
-		<precondition>sak_dialog.docent_5pda_have</precondition>
+		<precondition>sak.have_items_count("device_pda_npc",5)</precondition>
 			<text>vergas_klava_done_22</text>
-			<action>sak_dialog.give_docent_5pda</action>
+			<action>sak_inventory.release_actor_items("device_pda_npc",5)</action>
 			<next>32</next>
 		</phrase>
 		<phrase id="242">
@@ -10247,7 +9895,7 @@
 		</phrase>
 		<phrase id="32">
 			<text>vergas_klava_done_32</text>
-			<action>sak_dialog.add_klava</action>
+			<action>test.add_to_actor("klava",1)</action>
 			<give_info>vergas_klava_done</give_info>
 		</phrase>
 		<phrase id="4">
@@ -10286,15 +9934,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_vergas_klava</precondition>
+		<precondition>sak_dialog.not_ready_time("time_start_vergas_klava",26)</precondition>
 			<text>vergas_klava_done_ok_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_vergas_klava</precondition>
+		<precondition>sak_dialog.is_ready_time("time_start_vergas_klava",26)</precondition>
 			<text>vergas_klava_done_ok_12</text>
-			<action>sak_dialog.add_klava</action>
-			<action>sak_dialog.clear_ready_time_vergas_klava</action>
+			<action>test.add_to_actor("klava",1)</action>
+			<action>sak_dialog.clear_ready_time("time_start_vergas_klava")</action>
 			<give_info>vergas_klava_done_ok</give_info>
 			<next>2</next>
 		</phrase>
@@ -10310,7 +9958,7 @@
 </dialog>
 <dialog id="vergas_has_akkum_dialog">
 <has_info>vergas_klava_done_ok</has_info>
-<precondition>sak_dialog.have_akkum</precondition>
+<precondition>sak.have_items_count("item_battery_02",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>vergas_has_akkum_dialog_0</text>
@@ -10323,9 +9971,9 @@
 			<next>23</next>
 		</phrase>
 		<phrase id="21">
-			<precondition>sak_dialog.have_akkum</precondition>
+			<precondition>sak.have_items_count("item_battery_02",1)</precondition>
 			<text>vergas_has_akkum_dialog_21</text>
-			<action>sak_dialog.give_akkum</action>
+			<action>sak_inventory.release_actor_items("item_battery_02",1)</action>
 			<next>31</next>
 		</phrase>
 		<phrase id="31">
@@ -10333,9 +9981,9 @@
 			<action>sak.add_repair_itemoutfit</action>
 		</phrase>
 		<phrase id="22">
-			<precondition>sak_dialog.have_akkum</precondition>
+			<precondition>sak.have_items_count("item_battery_02",1)</precondition>
 			<text>vergas_has_akkum_dialog_22</text>
-			<action>sak_dialog.give_akkum</action>
+			<action>sak_inventory.release_actor_items("item_battery_02",1)</action>
 			<next>32</next>
 		</phrase>
 		<phrase id="32">
@@ -10675,14 +10323,13 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="42">
-		<precondition>sak_dialog.drink_have</precondition>
+		<precondition>vergas_lib.search_items("energy_drink",1,1)</precondition>
 			<text>esc_container_dialog_42</text>
-			<action>sak_dialog.give_drink</action>
+			<action>vergas_lib.search_items("energy_drink",1,2)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="51">
 			<text>esc_container_dialog_53</text>
-			<action>sak_dialog.neumeha_container_spot</action>
 			<give_info>neumeha_container</give_info>
 			<next>6</next>
 		</phrase>
@@ -10754,7 +10401,7 @@
 		</phrase>
 		<phrase id="201">
 			<text>dolgman_postmens_dialog_201</text>
-			<action>sak_dialog.dolgman_postmens_remove</action>
+			<action>sak_dialog.remove_npc_from_npc_targets("postmen")</action>
 			<next>202</next>
 		</phrase>
 		<phrase id="202">
@@ -10765,7 +10412,7 @@
 </dialog>
 
 <dialog id="soldier_postmens_dialog">
-<precondition>sak_dialog.postmens_bag_have</precondition>
+<precondition>sak.have_items_count("postmens_bag",1)</precondition>
 <precondition>dialogs.is_military</precondition>
 	<phrase_list>
 		<phrase id="0">
@@ -10778,7 +10425,7 @@
 		</phrase>
 		<phrase id="2">
 			<text>soldier_postmens_dialog_2</text>
-			<action>sak_dialog.give_postmens_bag</action>
+			<action>sak_inventory.release_actor_items("postmens_bag",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
@@ -10804,7 +10451,7 @@
 		</phrase>
 		<phrase id="71">
 			<text>soldier_postmens_dialog_71</text>
-			<action>sak_dialog.add_3ammo_545x39_ap</action>
+			<action>test.add_to_actor("ammo_5.45x39_ap",3)</action>
 			<next>81</next>
 		</phrase>
 		<phrase id="62">
@@ -10868,7 +10515,7 @@
 		</phrase>
 		<phrase id="107">
 			<text>scarman_dialog_107</text>
-			<action>sak_dialog.add_scarman_2_dialog</action>
+			<action>sak_dialog.search_npc("mil_Svoboda_regular","tomber_scarman_dialog","tomber2")</action>
 			<next>108</next>
 		</phrase>
 		<phrase id="108">
@@ -10877,7 +10524,7 @@
 		</phrase>
 		<phrase id="109">
 			<text>scarman_dialog_109</text>
-			<action>sak_dialog.scarman_2_show</action>
+			<action>sak_dialog.stalker_show("tomber2")</action>
 			<give_info>tomber_scarman_start</give_info>
 			<next>110</next>
 		</phrase>
@@ -10887,7 +10534,7 @@
 		</phrase>
 		<phrase id="201">
 			<text>scarman_dialog_201</text>
-			<action>sak_dialog.scarman_1_remove</action>
+			<action>sak_dialog.remove_npc_from_npc_targets("tomber")</action>
 		</phrase>
 		<phrase id="202">
 			<text>scarman_dialog_202</text>
@@ -10956,7 +10603,7 @@
 		</phrase>
 		<phrase id="201">
 			<text>tomber_scarman_dialog_201</text>
-			<action>sak_dialog.scarman_2_remove</action>
+			<action>sak_dialog.remove_npc_from_npc_targets("tomber2")</action>
 			<next>202</next>
 		</phrase>
 		<phrase id="202">
@@ -11076,9 +10723,9 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="3022">
-		<precondition>sak_dialog.atp_bandit_pda_have</precondition>
+		<precondition>sak.have_items_count("bar_lucky_pda",1)</precondition>
 			<text>atp_bandit_leader_dialog_3022</text>
-			<action>sak_dialog.give_atp_bandit_pda</action>
+			<action>sak_inventory.release_actor_items("bar_lucky_pda",1)</action>
 			<next>303</next>
 		</phrase>
 		<phrase id="303">
@@ -11296,8 +10943,8 @@
 		<phrase id="53">
 		<give_info>volk_prisoner_start</give_info>
 			<text>volk_prisoner_53</text>
-			<action>sak_dialog.take_5000_money</action>
-			<action>sak_dialog.add_ammo_5_45_fmj2</action>
+			<action>sak_dialog.give_money(5000,"in")</action>
+			<action>test.add_to_actor("ammo_5.45x39_fmj",2)</action>
 			<next>63</next>
 		</phrase>
 		<phrase id="63">
@@ -11494,7 +11141,7 @@
 			<text>vergas_charge_pda_11</text>
 			<action>test.show_pda_recharge_price(vergas)</action>
 			<give_info>vergas_charge_pda_not_ready</give_info>
-			<action>sak_dialog.vergas_charge_pda_time</action>
+			<action>sak_dialog.start_time("vergas_charge_pda_time")</action>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
@@ -11544,12 +11191,12 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_vergas_charge_pda</precondition>
+		<precondition>sak_dialog.not_ready_time("vergas_charge_pda_time",30)</precondition>
 			<text>vergas_charge_pda_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_vergas_charge_pda</precondition>
+		<precondition>sak_dialog.is_ready_time("vergas_charge_pda_time",30)</precondition>
 			<text>vergas_charge_pda_end_12</text>
 			<action>test.show_pda_recharge_price(vergas)</action>
 			<next>221</next>
@@ -11560,7 +11207,7 @@
 			<text>vergas_charge_pda_end_221</text>
 			<action>test.give_money_pda(vergas)</action>
 			<action>sak_dialog.charging_pda</action>
-			<action>sak_dialog.clear_ready_time_vergas_charge_pda</action>
+			<action>sak_dialog.clear_ready_time("vergas_charge_pda_time")</action>
 			<give_info>vergas_charge_pda_ready</give_info>
 			<next>3</next>
 		</phrase>
@@ -11980,7 +11627,7 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="22">
-		<precondition>sak_dialog.gg_3_cart_have</precondition>
+		<precondition>sak_dialog.gg_n_cart_have(3)</precondition>
 			<text>krysyk_14_dialog_22</text>
 			<next>32</next>
 		</phrase>
@@ -11996,9 +11643,9 @@
 			<next>51</next>
 		</phrase>
 		<phrase id="412">
-		<precondition>sak_dialog.gg_3_cart_have</precondition>
+		<precondition>sak_dialog.gg_n_cart_have(3)</precondition>
 			<text>krysyk_14_dialog_41</text>
-			<action>sak_dialog.give_3_cart</action>
+			<action>sak_dialog.give_n_cart(3)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="42">
@@ -12246,14 +11893,14 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>sidor_shkura_1_dialog_41</text>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="51">
 			<text>sidor_shkura_1_dialog_51</text>
-			<action>sak_dialog.add_meshok</action>
+			<action>test.add_to_actor("solt_bag",1)</action>
 			<give_info>sidor_meshok_give</give_info>
 			<next>6</next>
 		</phrase>
@@ -12289,7 +11936,7 @@
 </dialog>
 
 <dialog id="sidor_shkura_2_dialog">
-<precondition>sak_dialog.gg_2_aart_have</precondition>
+<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 <has_info>sidor_shkura_info</has_info>
 <dont_has_info>sidor_meshok_give</dont_has_info>
 	<phrase_list>
@@ -12304,14 +11951,14 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>sidor_shkura_2_dialog_41</text>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="51">
 			<text>sidor_shkura_2_dialog_51</text>
-			<action>sak_dialog.add_meshok</action>
+			<action>test.add_to_actor("solt_bag",1)</action>
 			<give_info>sidor_meshok_give</give_info>
 		</phrase>
 		<phrase id="42">
@@ -12352,7 +11999,7 @@
 		</phrase>
 		<phrase id="51">
 			<text>kuznezov_shkura_1_dialog_51</text>
-			<action>sak_dialog.kuznezov_shkura_time</action>
+			<action>sak_dialog.start_time("kuznezov_shkura_time")</action>
 			<give_info>kuznezov_shkura_ok</give_info>
 			<next>6</next>
 		</phrase>
@@ -12394,7 +12041,7 @@
 		</phrase>
 		<phrase id="51">
 			<text>kuznezov_shkura_2_dialog_51</text>
-			<action>sak_dialog.kuznezov_shkura_time</action>
+			<action>sak_dialog.start_time("kuznezov_shkura_time")</action>
 			<give_info>kuznezov_shkura_ok</give_info>
 			<next>6</next>
 		</phrase>
@@ -12423,15 +12070,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_kuznezov_shkura</precondition>
+		<precondition>sak_dialog.not_ready_time("kuznezov_shkura_time",160)</precondition>
 			<text>kuznezov_shkura_done_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_kuznezov_shkura</precondition>
+		<precondition>sak_dialog.is_ready_time("kuznezov_shkura_time",160)</precondition>
 			<text>kuznezov_shkura_done_12</text>
-			<action>sak_dialog.add_acid_banka</action>
-			<action>sak_dialog.clear_ready_time_kuznezov_shkura</action>
+			<action>test.add_to_actor("acid_banka",1)</action>
+			<action>sak_dialog.clear_ready_time("kuznezov_shkura_time")</action>
 			<give_info>kuznezov_shkura_done</give_info>
 		</phrase>
 		<phrase id="2">
@@ -12475,7 +12122,7 @@
 
 <dialog id="neumeha_container_2_dialog">
 <precondition>dialogs.is_not_wounded</precondition>
-<precondition>sak_dialog.neumeha_drags_have</precondition>
+<precondition>sak.have_items_count("neum_drags",1)</precondition>
 <has_info>neumeha_container_start</has_info>
 <dont_has_info>neumeha_container_done</dont_has_info>
 	<phrase_list>
@@ -12497,12 +12144,12 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.actor_1000_have</precondition>
-		<precondition>sak_dialog.neumeha_drags_have</precondition>
+		<precondition>sak_dialog.actor_have(1000)</precondition>
+		<precondition>sak.have_items_count("neum_drags",1)</precondition>
 			<text>neumeha_container_2_dialog_41</text>
 			<give_info>neumeha_container_done</give_info>
-			<action>sak_dialog.give_1000_money</action>
-			<action>sak_dialog.give_neumeha_drags</action>
+			<action>sak_dialog.give_money(1000,1)</action>
+			<action>sak_inventory.release_actor_items("neum_drags",1)</action>
 			<next>7</next>
 		</phrase>
 		<phrase id="42">
@@ -12515,16 +12162,16 @@
 			<next>6</next>
 		</phrase>
 		<phrase id="6">
-		<precondition>sak_dialog.neumeha_drags_have</precondition>
+		<precondition>sak.have_items_count("neum_drags",1)</precondition>
 			<text>neumeha_container_2_dialog_6</text>
 			<give_info>neumeha_container_done</give_info>
 			<action>sak_dialog.neum_out_all_money</action>
-			<action>sak_dialog.give_neumeha_drags</action>
+			<action>sak_inventory.release_actor_items("neum_drags",1)</action>
 			<next>7</next>
 		</phrase>
 		<phrase id="7">
 			<text>neumeha_container_2_dialog_7</text>
-			<action>sak_dialog.add_neumeha_container</action>
+			<action>test.add_to_actor("arc_art_box_8basic",1)</action>
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -12549,7 +12196,7 @@
 		<phrase id="3">
 			<text>neumeha_container_3_dialog_3</text>
 			<give_info>neumeha_container_have</give_info>
-			<action>sak_dialog.add_neumeha_drags</action>
+			<action>test.add_to_actor("neum_drags",1)</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -12795,9 +12442,9 @@
 				<next>63</next>
 			</phrase>
 			<phrase id="62">
-			<precondition>sak_dialog.medkit_scientic10_have</precondition>
+			<precondition>vergas_lib.search_items("medkit_scientic",10,1)</precondition>
 				<text>meelofon_room_1_dialog_62</text>
-				<action>sak_dialog.give_10medkit_scientic</action>
+				<action>vergas_lib.search_items("medkit_scientic",10,2)</action>
 				<give_info>meelofon_room_done</give_info>
 				<next>71</next>
 				<next>72</next>
@@ -12810,9 +12457,9 @@
 				<next>79</next>
 			</phrase>
 			<phrase id="63">
-			<precondition>sak_dialog.medkit20_army_have</precondition>
+			<precondition>vergas_lib.search_items("medkit_army",20,1)</precondition>
 				<text>meelofon_room_1_dialog_63</text>
-				<action>sak_dialog.give_20medkit_army</action>
+				<action>vergas_lib.search_items("medkit_army",20,2)</action>
 				<give_info>meelofon_room_done</give_info>
 				<next>71</next>
 				<next>72</next>
@@ -12913,9 +12560,9 @@
 				<next>63</next>
 			</phrase>
 			<phrase id="62">
-			<precondition>sak_dialog.have_500_ammo_buck</precondition>
+			<precondition>vergas_lib.search_items("ammo_12x70_buck",500,1)</precondition>
 				<text>meelofon_room_2_dialog_62</text>
-				<action>sak_dialog.give_500_ammo_buck</action>
+				<action>vergas_lib.search_items("ammo_12x70_buck",500,2)</action>
 				<give_info>meelofon_room_done</give_info>
 				<next>71</next>
 				<next>72</next>
@@ -12928,9 +12575,9 @@
 				<next>79</next>
 			</phrase>
 			<phrase id="63">
-			<precondition>sak_dialog.have_200_ammo_zhekan</precondition>
+			<precondition>vergas_lib.search_items("ammo_12x76_zhekan",200,1)</precondition>
 				<text>meelofon_room_2_dialog_63</text>
-				<action>sak_dialog.give_200_ammo_zhekan</action>
+				<action>vergas_lib.search_items("ammo_12x76_zhekan",200,2)</action>
 				<give_info>meelofon_room_done</give_info>
 				<next>71</next>
 				<next>72</next>
@@ -13117,7 +12764,7 @@
 			<phrase id="171">
 				<text>tesla_provodnik_1_dialog_171</text>
 				<give_info>tesla_provodnik_2_info</give_info>
-				<action>sak_dialog.tesla_provodnik_drunk_time</action>
+				<action>sak_dialog.start_time("tesla_provodnik_drunk_time")</action>
 				<next>18</next>
 			</phrase>
 			<phrase id="18">
@@ -13201,7 +12848,7 @@
 			<phrase id="171">
 				<text>tesla_provodnik_1_dialog_171</text>
 				<give_info>tesla_provodnik_2_info</give_info>
-				<action>sak_dialog.tesla_provodnik_drunk_time</action>
+				<action>sak_dialog.start_time("tesla_provodnik_drunk_time")</action>
 				<next>18</next>
 			</phrase>
 			<phrase id="18">
@@ -13225,7 +12872,7 @@
 				<next>12</next>
 			</phrase>
 			<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_tesla_provodnik_drunk</precondition>
+			<precondition>sak_dialog.not_ready_time("tesla_provodnik_drunk_time",130)</precondition>
 				<text>tesla_provodnik_3_dialog_11</text>
 				<next>21</next>
 			</phrase>
@@ -13234,13 +12881,13 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_tesla_provodnik_drunk</precondition>
+			<precondition>sak_dialog.is_ready_time("tesla_provodnik_drunk_time",130)</precondition>
 				<text>tesla_provodnik_3_dialog_12</text>
 				<next>22</next>
 			</phrase>
 			<phrase id="22">
 				<text>tesla_provodnik_3_dialog_22</text>
-				<action>sak_dialog.clear_ready_time_tesla_provodnik_drunk</action>
+				<action>sak_dialog.clear_ready_time("tesla_provodnik_drunk_time")</action>
 				<next>3</next>
 			</phrase>
 			<phrase id="3">
@@ -13262,7 +12909,7 @@
 			<precondition>sak_dialog.have_10vodka</precondition>
 				<text>tesla_provodnik_3_dialog_61</text>
 				<action>sak_dialog.give_10vodka</action>
-				<action>sak_dialog.tesla_provodnik_drunk_time</action>
+				<action>sak_dialog.start_time("tesla_provodnik_drunk_time")</action>
 				<next>71</next>
 			</phrase>
 			<phrase id="71">
@@ -13316,7 +12963,7 @@
 			<precondition>sak_dialog.have_10vodka</precondition>
 				<text>tesla_provodnik_35_dialog_61</text>
 				<action>sak_dialog.give_10vodka</action>
-				<action>sak_dialog.tesla_provodnik_drunk_time</action>
+				<action>sak_dialog.start_time("tesla_provodnik_drunk_time")</action>
 				<next>71</next>
 			</phrase>
 			<phrase id="71">
@@ -13352,7 +12999,7 @@
 				<next>12</next>
 			</phrase>
 			<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_tesla_provodnik_drunk</precondition>
+			<precondition>sak_dialog.not_ready_time("tesla_provodnik_drunk_time",130)</precondition>
 				<text>tesla_provodnik_4_dialog_11</text>
 				<next>21</next>
 			</phrase>
@@ -13361,13 +13008,13 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_tesla_provodnik_drunk</precondition>
+			<precondition>sak_dialog.is_ready_time("tesla_provodnik_drunk_time",130)</precondition>
 				<text>tesla_provodnik_4_dialog_12</text>
 				<next>22</next>
 			</phrase>
 			<phrase id="22">
 				<text>tesla_provodnik_4_dialog_22</text>
-				<action>sak_dialog.clear_ready_time_tesla_provodnik_drunk</action>
+				<action>sak_dialog.clear_ready_time("tesla_provodnik_drunk_time")</action>
 				<give_info>tesla_provodnik_done</give_info>
 				<action>sak.spawn_metki</action>
 				<next>3</next>
@@ -13450,7 +13097,7 @@
 			<phrase id="2052">
 				<text>gar_flamethrower_dialog_2052</text>
 				<give_info>find_815</give_info>
-				<action>sak_dialog.add_trubka</action>
+				<action>test.add_to_actor("trubka",1)</action>
 			</phrase>
 			<phrase id="301">
 				<text>gar_flamethrower_dialog_301</text>
@@ -13473,7 +13120,7 @@
 			</phrase>
 			<phrase id="3032">
 				<text>gar_flamethrower_dialog_3032</text>
-				<action>sak_dialog.add_trubka</action>
+				<action>test.add_to_actor("trubka",1)</action>
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -14430,13 +14077,13 @@
 </dialog>
 
 <dialog id="sidr_strelok_flash_dialog">
-	<precondition>sak_dialog.have_strelok_flash</precondition>
+	<precondition>sak.have_items_count("gunslinger_flash",1)</precondition>
 	<dont_has_info>sidr_strelok_flash_info</dont_has_info>
 	<precondition>dialogs.is_not_wounded</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>sidr_strelok_flash_dialog_0</text>
-			<action>sak_dialog.give_strelok_flash</action>
+			<action>sak_inventory.release_actor_items("gunslinger_flash",1)</action>
 			<next>1</next>
 		</phrase>
 		<phrase id="1">
@@ -14451,7 +14098,7 @@
 		<phrase id="3">
 			<text>sidr_strelok_flash_dialog_3</text>
 			<give_info>sidr_strelok_flash_info</give_info>
-			<action>sak_dialog.add_strelok_flash</action>
+			<action>test.add_to_actor("gunslinger_flash",1)</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -14493,7 +14140,7 @@
 		<phrase id="5">
 			<text>sidor_dinamit_find_start_dialog_5</text>
 			<give_info>sidor_dinamit_find_start_info</give_info>
-			<action>sak_dialog.sidor_dinamit_find_start_time</action>
+			<action>sak_dialog.start_time("time_start_sidor_dinamit_find")</action>
 		</phrase>
 		<phrase id="42">
 			<text>sidor_dinamit_find_start_dialog_42</text>
@@ -14514,15 +14161,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_sidor_dinamit_find</precondition>
+		<precondition>sak_dialog.not_ready_time("time_start_sidor_dinamit_find",1500)</precondition>
 			<text>sidor_dinamit_find_done_dialog_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_sidor_dinamit_find</precondition>
+		<precondition>sak_dialog.is_ready_time("time_start_sidor_dinamit_find",1500)</precondition>
 			<text>sidor_dinamit_find_done_dialog_12</text>
 			<action>sak_dialog.add_sidor_dinamit</action>
-			<action>sak_dialog.clear_ready_time_sidor_dinamit_find</action>
+			<action>sak_dialog.clear_ready_time("time_start_sidor_dinamit_find")</action>
 			<give_info>sidor_dinamit_find_done_info</give_info>
 		</phrase>
 		<phrase id="2">
@@ -14553,9 +14200,9 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.gg_2_aart_have</precondition>
+		<precondition>sak_dialog.gg_n_aart_have(2)</precondition>
 			<text>sidor_new_pda_dialog_41</text>
-			<action>sak_dialog.give_2_aart</action>
+			<action>sak_dialog.give_n_aart(2)</action>
 			<next>5</next>
 		</phrase>
 		<phrase id="5">
@@ -14657,7 +14304,7 @@
 		</phrase>
 		<phrase id="11">
 			<text>sidor_opt_food_find_start_dialog_11</text>
-			<action>sak_dialog.sidor_opt_food_time</action>
+			<action>sak_dialog.start_time("time_start_sidor_opt_food")</action>
 			<give_info>opt_food_not_ready</give_info>
 			<next>12</next>
 		</phrase>
@@ -14700,7 +14347,7 @@
 		</phrase>
 		<phrase id="5">
 			<text>sidor_opt_food_have_dialog_5</text>
-			<action>sak_dialog.sidor_opt_food_time</action>
+			<action>sak_dialog.start_time("time_start_sidor_opt_food")</action>
 			<give_info>opt_food_not_ready</give_info>
 		</phrase>
 		<phrase id="42">
@@ -14719,26 +14366,26 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.not_ready_time_sidor_opt_food</precondition>
+		<precondition>sak_dialog.not_ready_time("time_start_sidor_opt_food",1400)</precondition>
 			<text>sidor_opt_food_already_dialog_11</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.is_ready_time_sidor_opt_food</precondition>
+		<precondition>sak_dialog.is_ready_time("time_start_sidor_opt_food",1400)</precondition>
 			<text>sidor_opt_food_already_dialog_12</text>
 			<next>41</next>
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.actor_45000_have</precondition>
+		<precondition>sak_dialog.actor_have(45000)</precondition>
 			<text>sidor_opt_food_already_dialog_41</text>
-			<action>sak_dialog.give_45000_money</action>
+			<action>sak_dialog.give_money(45000,1)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="51">
 			<text>sidor_opt_food_already_dialog_51</text>
 			<action>sak_dialog.add_art_opt_food</action>
-			<action>sak_dialog.clear_ready_time_sidor_opt_food</action>
+			<action>sak_dialog.clear_ready_time("time_start_sidor_opt_food")</action>
 			<give_info>opt_food_ready</give_info>
 		</phrase>
 		<phrase id="42">
@@ -14798,7 +14445,7 @@
 	</phrase>
 
 	<phrase id="2">
-    <precondition>sak_dialog.have_notebook_of_artist</precondition>
+    <precondition>sak.have_items_count("notebook_of_artist",1)</precondition>
 		<text>voron_artist_dialog_2</text>
 		<next>21</next>
 	</phrase>
@@ -14812,7 +14459,6 @@
 	</phrase>
         <phrase id="23">
 	    <text>voron_artist_dialog_23</text>
- 		<!-- <next>24</next> -->
         <next>25</next>
 		<next>8</next>
 	</phrase>
@@ -14821,52 +14467,22 @@
 		<text>voron_artist_dialog_8</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
-
-	<phrase id="24">
-	    <text>voron_artist_dialog_24</text>
-        <next>26</next>
-	</phrase>
-	<phrase id="26">
-		<text>voron_artist_dialog_26</text>
-        <action>flamethrower.good_notebook_of_artist</action>
-        <action>sak_dialog.add_good_rand_bart</action>
-		<next>9</next>
-	</phrase>
 	<phrase id="25">
 		<text>voron_artist_dialog_25</text>
 	    <next>27</next>
-	    <!-- <next>28</next> -->
-	    <!-- <next>29</next> -->
 	</phrase>
 	<phrase id="27">
-		<!-- <precondition>sak_dialog.rand_1_dialog</precondition> -->
 		<text>voron_artist_dialog_27</text>
         <action>flamethrower.good_notebook_of_artist</action>
 		<action>test.make_shron_voron("notebook_of_artist")</action>
 		<next>9</next>
 	</phrase>
-	<phrase id="28">
-		<precondition>sak_dialog.rand_2_dialog</precondition>
-		<text>voron_artist_dialog_28</text>
-        <action>flamethrower.good_notebook_of_artist</action>
-		<action>sak_dialog.add_voron_treasure2</action>
-		<next>9</next>
-	</phrase>
-	<phrase id="29">
-		<precondition>sak_dialog.rand_3_dialog</precondition>
-		<text>voron_artist_dialog_29</text>
-        <action>flamethrower.good_notebook_of_artist</action>
-		<action>sak_dialog.add_voron_treasure3</action>
-		<next>9</next>
-	</phrase>
-
 	<phrase id="9">
 		<text>voron_artist_dialog_9</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
-
 	<phrase id="3">
-	    <precondition>sak_dialog.bandit_master_outfit_m1_have</precondition>
+	    <precondition>sak.have_items_count("bandit_master_outfit_m1",1)</precondition>
 		<text>voron_artist_dialog_3</text>
 		<next>31</next>
 	</phrase>
@@ -14877,7 +14493,7 @@
 	</phrase>
 	<phrase id="32">
 		<text>voron_artist_dialog_32</text>
-		<action>sak_dialog.give_bandit_master_outfit_m1</action>
+		<action>sak_inventory.release_actor_items("bandit_master_outfit_m1",1)</action>
 		<next>33</next>
 	</phrase>
 	<phrase id="33">
@@ -14887,7 +14503,7 @@
     </phrase>
 
 	<phrase id="4">
-	    <precondition>sak_dialog.outfit_stalker_m1_have</precondition>
+	    <precondition>sak.have_items_count("outfit_stalker_m1",1)</precondition>
 		<text>voron_artist_dialog_4</text>
 		<next>41</next>
 	</phrase>
@@ -14898,7 +14514,7 @@
 	</phrase>
 	<phrase id="42">
 		<text>voron_artist_dialog_42</text>
-		<action>sak_dialog.give_outfit_stalker_m1</action>
+		<action>sak_inventory.release_actor_items("outfit_stalker_m1",1)</action>
 		<next>43</next>
 	</phrase>
 	<phrase id="43">
@@ -14908,7 +14524,7 @@
 	</phrase>
 
 	<phrase id="5">
-	    <precondition>sak_dialog.have_klava_vergas</precondition>
+	    <precondition>sak.have_items_count("klava",1)</precondition>
 		<text>voron_artist_dialog_5</text>
 		<next>51</next>
 	</phrase>
@@ -14919,7 +14535,7 @@
 	</phrase>
 	<phrase id="52">
 		<text>voron_artist_dialog_52</text>
-		<action>sak_dialog.give_klava_vergas</action>
+		<action>sak_inventory.release_actor_items("klava",1)</action>
 		<next>53</next>
 	</phrase>
 	<phrase id="53">
@@ -14929,7 +14545,7 @@
 	</phrase>
 
 	<phrase id="6">
-	    <precondition>sak_dialog.outfit_specnaz_m1_have</precondition>
+	    <precondition>sak.have_items_count("outfit_specnaz_m1",1)</precondition>
 		<text>voron_artist_dialog_6</text>
 		<next>61</next>
 	</phrase>
@@ -14940,7 +14556,7 @@
 	</phrase>
 	<phrase id="62">
 		<text>voron_artist_dialog_62</text>
-		<action>sak_dialog.give_outfit_specnaz_m1</action>
+		<action>sak_inventory.release_actor_items("outfit_specnaz_m1",1)</action>
 		<next>63</next>
 	</phrase>
 	<phrase id="63">
@@ -14950,7 +14566,7 @@
 	</phrase>
 
 	<phrase id="7">
-	    <precondition>sak_dialog.soldier_outfit_have</precondition>
+	    <precondition>sak.have_items_count("soldier_outfit",2)</precondition>
 		<text>voron_artist_dialog_7</text>
 		<next>71</next>
 	</phrase>
@@ -14961,7 +14577,7 @@
 	</phrase>
 	<phrase id="72">
 		<text>voron_artist_dialog_72</text>
-		<action>sak_dialog.give_soldier_outfit</action>
+		<action>sak_inventory.release_actor_items("soldier_outfit",2)</action>
 		<next>73</next>
 	</phrase>
 	<phrase id="73">
@@ -14971,7 +14587,7 @@
 	</phrase>
 
 	<phrase id="88">
-	    <precondition>sak_dialog.ventilator_01_have</precondition>
+	    <precondition>sak.have_items_count("ventilator_01",1)</precondition>
 		<text>voron_artist_dialog_88</text>
 		<next>881</next>
 	</phrase>
@@ -14982,7 +14598,7 @@
 	</phrase>
 	<phrase id="882">
 		<text>voron_artist_dialog_882</text>
-		<action>sak_dialog.give_ventilator_01</action>
+		<action>sak_inventory.release_actor_items("ventilator_01",1)</action>
 		<next>883</next>
 	</phrase>
 	<phrase id="883">
@@ -14992,7 +14608,7 @@
 	</phrase>
 
 	<phrase id="99">
-	    <precondition>sak_dialog.kartina04_have</precondition>
+	    <precondition>sak.have_items_count("kartina04",1)</precondition>
 		<text>voron_artist_dialog_99</text>
 		<next>991</next>
 	</phrase>
@@ -15003,7 +14619,7 @@
 	</phrase>
 	<phrase id="992">
 		<text>voron_artist_dialog_992</text>
-		<action>sak_dialog.give_kartina04</action>
+		<action>sak_inventory.release_actor_items("kartina04",1)</action>
 		<next>993</next>
 	</phrase>
 	<phrase id="993">
@@ -15013,7 +14629,7 @@
 	</phrase>
 
 	<phrase id="100">
-	    <precondition>sak_dialog.item_psi_helmet_01_have</precondition>
+	    <precondition>sak.have_items_count("item_psi_helmet_01",1)</precondition>
 		<text>voron_artist_dialog_100</text>
 		<next>1001</next>
 	</phrase>
@@ -15024,7 +14640,7 @@
 	</phrase>
 	<phrase id="1002">
 		<text>voron_artist_dialog_1002</text>
-		<action>sak_dialog.give_item_psi_helmet_01</action>
+		<action>sak_inventory.release_actor_items("item_psi_helmet_01",1)</action>
 		<next>1003</next>
 	</phrase>
 	<phrase id="1003">
@@ -15037,7 +14653,7 @@
 </dialog>
 
 <dialog id="sidor_mayat_capsule_dialog">
-<precondition>sak_dialog.gg_1_mayat_caps_have</precondition>
+<precondition>sak_dialog.gg_n_mayat_caps_have(1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>sidor_mayat_capsule_dialog_0</text>
@@ -15085,7 +14701,7 @@
 </dialog>
 
 <dialog id="sidor_conserv_done">
-<precondition>sak_dialog.have_box_conserv</precondition>
+<precondition>sak.have_items_count("box_conserv",1)</precondition>
 <dont_has_info>info_box_conserv_done</dont_has_info>
 	<phrase_list>
 		<phrase id="0">
@@ -15094,7 +14710,7 @@
 		</phrase>
 		<phrase id="1">
 			<text>sidor_conserv_done_1</text>
-			<action>sak_dialog.give_box_conserv</action>
+			<action>sak_inventory.release_actor_items("box_conserv",1)</action>
 			<give_info>info_box_conserv_done</give_info>
 			<action>sak_dialog.add_sidor_med</action>
 			<next>2</next>
@@ -15253,7 +14869,7 @@
 		<text>ignat_kishka_start_6</text>
 		<give_info>info_ignat_kishka_done</give_info>
 		<action>sak_dialog.give_gravi</action>
-		<action>sak_dialog.add_greens_kolbasa10</action>
+		<action>test.add_to_actor("green_kolbasa",10)</action>
 		<give_info>info_sidor_nagrad_min</give_info>
 		<next>7</next>
 	</phrase>
@@ -15281,7 +14897,7 @@
 	    <phrase id="11">
 		<text>ignat_kishka_start_11</text>
 		<give_info>info_ignat_kishka_start</give_info>
-		<action>sak_dialog.add_paper_box</action>
+		<action>test.add_to_actor("paper_box_green",1)</action>
 		<next>12</next>
 	</phrase>
 	    <phrase id="12">
@@ -15292,7 +14908,7 @@
 </dialog>
 
 <dialog id="hunter_nikitin_dialog">
-<precondition>sak_dialog.have_paper_box</precondition>
+<precondition>sak.have_items_count("paper_box_green",1)</precondition>
 <has_info>info_ignat_kishka_start</has_info>
 <dont_has_info>info_hunter_nikitin_done</dont_has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -15307,7 +14923,7 @@
 	</phrase>
 	    <phrase id="2">
 		<text>hunter_nikitin_dialog_2</text>
-		<action>sak_dialog.give_paper_box</action>
+		<action>sak_inventory.release_actor_items("paper_box_green",1)</action>
 		<next>3</next>
 	</phrase>
 	    <phrase id="3">
@@ -15353,7 +14969,7 @@
 	</phrase>
 	    <phrase id="5">
 		<text>ignat_kishka_done_5</text>
-		<action>sak_dialog.add_greens_kolbasa10</action>
+		<action>test.add_to_actor("green_kolbasa",10)</action>
 		<give_info>info_sidor_nagrad_max</give_info>
 		<next>6</next>
 	</phrase>
@@ -15380,7 +14996,7 @@
 	</phrase>
     <phrase id="2">
 		<text>sidor_kishka_done_2</text>
-		<action>sak_dialog.give_10green_kolbasa</action>
+		<action>sak_inventory.release_actor_items("green_kolbasa",10)</action>
 		<next>3</next>
 	</phrase>
 	    <phrase id="3">

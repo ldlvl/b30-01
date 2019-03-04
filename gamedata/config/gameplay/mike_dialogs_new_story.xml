@@ -405,7 +405,7 @@
 
 <dialog id="docent_x10_dialog">
 <dont_has_info>docent_x10docs_done</dont_has_info>
-<precondition>sak_dialog.x10_document2_have</precondition>
+<precondition>sak.have_items_count("x10_document2",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>docent_x10_dialog_0</text>
@@ -421,7 +421,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>docent_x10_dialog_3</text>
-			<action>sak_dialog.give_x10_document2</action>
+			<action>sak_inventory.release_actor_items("x10_document2",1)</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -3201,9 +3201,9 @@
 			<next>22</next>
 		</phrase>		
 		<phrase id="21">
-			<precondition>sak_dialog.gg_2_cart_have</precondition>
+			<precondition>sak_dialog.gg_n_cart_have(2)</precondition>
 			<text>docent_2_tonnel_dialog_21</text>
-			<action>sak_dialog.give_2_cart</action>			
+			<action>sak_dialog.give_n_cart(2)</action>			
 			<next>3</next>
 		</phrase>		
 		<phrase id="22">
@@ -5114,7 +5114,7 @@
 		<phrase id="3">
 			<text>ass_marker_dialog_3</text>
 			<give_info>ass_marker_done_info</give_info>
-			<action>sak_dialog.add_2medkit_scientic</action>
+			<action>test.add_to_actor("medkit_scientic",1)</action>
 			<next>4</next>
 		</phrase>		
 		<phrase id="4">
@@ -5243,7 +5243,7 @@
 		</phrase>				
 		<phrase id="16">
 			<text>assistant_bar_dialog_16</text>
-			<action>sak_dialog.add_ammo_12x70_buck5</action>
+			<action>test.add_to_actor("ammo_12x70_buck",5)</action>
 			<next>17</next>
 		</phrase>				
 		<phrase id="17">
@@ -7280,7 +7280,7 @@
 		<phrase id="7">
 			<text>voronin_killzombi_done_dialog_7</text>
 			<give_info>voronin_killzombi_done</give_info>
-			<action>sak_dialog.add_4ammo_5_45_fmj</action>
+			<action>test.add_to_actor("ammo_5.45x39_ap",4)</action>
 		    <give_info>info_artmod_rusty_sea-urchin_mosquito_bald</give_info>
 		    <action>sak.info_artmod</action>			
 			<next>8</next>
@@ -8253,7 +8253,7 @@
 		<phrase id="615">
 			<text>aver_klyk_615</text>
 			<give_info>klyk_gun_info</give_info>
-			<action>sak_dialog.add_wpn_gungauss</action>
+			<action>test.add_to_actor("wpn_gungauss",1)</action>
 			<next>616</next>
 		</phrase>
 		<phrase id="616">

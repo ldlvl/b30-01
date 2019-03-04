@@ -3,7 +3,7 @@
 	<dialog id="flame_reload">
 		<precondition>sak_dialog.have_info_flamethrower</precondition>
 		<dont_has_info>flamethrower_start</dont_has_info>
-		<precondition>sak_dialog.have_flamethrower</precondition>
+		<precondition>sak.have_items_count("wpn_flame",1)</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>flame_reload_0</text>
@@ -20,19 +20,19 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="22">
-				<precondition>sak_dialog.have_flamethrower</precondition>
+				<precondition>sak.have_items_count("wpn_flame",1)</precondition>
 				<precondition>sak_dialog.have_reload_fuel</precondition>
 				<precondition>sak_dialog.have_any_aart</precondition>
 				<text>flame_reload_22</text>
 				<action>sak_dialog.transfer_any_aart</action>
 				<action>sak_dialog.give_reload_fuel</action>
-				<action>sak_dialog.give_flamethrower</action>
+				<action>sak_inventory.release_actor_items("wpn_flame",1)</action>
 				<next>32</next>
 			</phrase>
 			<phrase id="32">
 				<text>flame_reload_32</text>
 				<give_info>flamethrower_start</give_info>
-				<action>sak_dialog.screw_flame_load_time</action>
+				<action>sak_dialog.start_time("screw_flame_load_time")</action>
 				<next>42</next>
 			</phrase>
 			<phrase id="42">
@@ -50,25 +50,25 @@
 				<next>433</next>
 			</phrase>
 			<phrase id="432">
-				<precondition>sak_dialog.have_flamethrower</precondition>
+				<precondition>sak.have_items_count("wpn_flame",1)</precondition>
 				<precondition>sak_dialog.have_any_cart</precondition>
 				<text>flame_reload_432</text>
 				<action>sak_dialog.transfer_any_cart</action>
-				<action>sak_dialog.give_flamethrower</action>
+				<action>sak_inventory.release_actor_items("wpn_flame",1)</action>
 				<next>5</next>
 			</phrase>
 			<phrase id="433">
-				<precondition>sak_dialog.have_flamethrower</precondition>
-				<precondition>sak_dialog.gg_2_bart_have</precondition>
+				<precondition>sak.have_items_count("wpn_flame",1)</precondition>
+				<precondition>sak_dialog.gg_n_bart_have(2)</precondition>
 				<text>flame_reload_433</text>
-				<action>sak_dialog.give_2_bart</action>
-				<action>sak_dialog.give_flamethrower</action>
+				<action>sak_dialog.give_n_bart(2)</action>
+				<action>sak_inventory.release_actor_items("wpn_flame",1)</action>
 				<next>5</next>
 			</phrase>
 			<phrase id="5">
 				<text>flame_reload_5</text>
 				<give_info>flamethrower_start</give_info>
-				<action>sak_dialog.screw_flame_load_time</action>
+				<action>sak_dialog.start_time("screw_flame_load_time")</action>
 				<next>6</next>
 			</phrase>
 			<phrase id="6">
@@ -90,10 +90,10 @@
 				<next>12</next>
 			</phrase>
 			<phrase id="11">
-				<precondition>sak_dialog.is_ready_time_screw_flame_load</precondition>
+				<precondition>sak_dialog.is_ready_time("screw_flame_load_time",12)</precondition>
 				<text>flame_reload_status_11</text>
-				<action>sak_dialog.take3_gar_flame</action>
-			 	<action>sak_dialog.clear_ready_time_screw_flame_load</action>
+				<action>test.add_to_actor("wpn_flame",1)</action>
+			 	<action>sak_dialog.clear_ready_time("screw_flame_load_time")</action>
 				<disable_info>flamethrower_start</disable_info>
 				<next>21</next>
 			</phrase>
@@ -102,7 +102,7 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="12">
-				<precondition>sak_dialog.not_ready_time_screw_flame_load</precondition>
+				<precondition>sak_dialog.not_ready_time("screw_flame_load_time",12)</precondition>
 				<text>flame_reload_status_12</text>
 				<next>22</next>
 			</phrase>

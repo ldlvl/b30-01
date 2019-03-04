@@ -68,7 +68,7 @@
 		</phrase>
 		<phrase id="25">
 			<text>teleport_yantar_dialog_25</text>
-			<action>sak_dialog.saharov_teleport_start_time</action>
+			<action>sak_dialog.start_time("saharov_teleport_time")</action>
 			<give_info>saharov_teleport_not_ready</give_info>
 			<next>27</next>
 		</phrase>
@@ -116,7 +116,7 @@
 		</phrase>
 		<phrase id="35">
 			<text>teleport_yantar_dialog_35</text>
-			<action>sak_dialog.saharov_teleport_start_time</action>
+			<action>sak_dialog.start_time("saharov_teleport_time")</action>
 			<give_info>saharov_teleport_not_ready</give_info>
 			<next>37</next>
 		</phrase>
@@ -164,7 +164,7 @@
 		</phrase>
 		<phrase id="45">
 			<text>teleport_yantar_dialog_45</text>
-			<action>sak_dialog.saharov_teleport_start_time</action>
+			<action>sak_dialog.start_time("saharov_teleport_time")</action>
 			<give_info>saharov_teleport_not_ready</give_info>
 			<next>47</next>
 		</phrase>
@@ -185,18 +185,18 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_saharov_teleport</precondition>
+			<precondition>sak_dialog.not_ready_time("saharov_teleport_time",10)</precondition>
 			<text>saharov_teleport_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_saharov_teleport</precondition>
+			<precondition>sak_dialog.is_ready_time("saharov_teleport_time",10)</precondition>
 			<text>saharov_teleport_end_12</text>
 			<next>22</next>
 		</phrase>
 		<phrase id="22">
 			<text>saharov_teleport_end_22</text>
-			<action>sak_dialog.clear_ready_time_saharov_teleport</action>
+			<action>sak_dialog.clear_ready_time("saharov_teleport_time")</action>
 			<disable_info>saharov_teleport_not_ready</disable_info>
 			<next>3</next>
 		</phrase>
@@ -286,7 +286,7 @@
 		</phrase>
 		<phrase id="25">
 			<text>teleport_escape_dialog_25</text>
-			<action>sak_dialog.fanat_teleport_start_time</action>
+			<action>sak_dialog.start_time("fanat_teleport_time")</action>
 			<give_info>fanat_teleport_not_ready</give_info>
 			<next>27</next>
 		</phrase>
@@ -339,7 +339,7 @@
 		</phrase>
 		<phrase id="35">
 			<text>teleport_escape_dialog_35</text>
-			<action>sak_dialog.fanat_teleport_start_time</action>
+			<action>sak_dialog.start_time("fanat_teleport_time")</action>
 			<give_info>fanat_teleport_not_ready</give_info>
 			<next>37</next>
 		</phrase>
@@ -387,7 +387,7 @@
 		</phrase>
 		<phrase id="45">
 			<text>teleport_escape_dialog_45</text>
-			<action>sak_dialog.fanat_teleport_start_time</action>
+			<action>sak_dialog.start_time("fanat_teleport_time")</action>
 			<give_info>fanat_teleport_not_ready</give_info>
 			<next>47</next>
 		</phrase>
@@ -431,7 +431,7 @@
 		</phrase>
 		<phrase id="55">
 			<text>teleport_escape_dialog_55</text>
-			<action>sak_dialog.fanat_teleport_start_time</action>
+			<action>sak_dialog.start_time("fanat_teleport_time")</action>
 			<give_info>fanat_teleport_not_ready</give_info>
 			<next>57</next>
 		</phrase>
@@ -504,18 +504,18 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_fanat_teleport</precondition>
+			<precondition>sak_dialog.not_ready_time("fanat_teleport_time",10)</precondition>
 			<text>fanat_teleport_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_fanat_teleport</precondition>
+			<precondition>sak_dialog.is_ready_time("fanat_teleport_time",10)</precondition>
 			<text>fanat_teleport_end_12</text>
 			<next>22</next>
 		</phrase>
 		<phrase id="22">
 			<text>fanat_teleport_end_22</text>
-			<action>sak_dialog.clear_ready_time_fanat_teleport</action>
+			<action>sak_dialog.clear_ready_time("fanat_teleport_time")</action>
 			<disable_info>fanat_teleport_not_ready</disable_info>
 			<next>3</next>
 		</phrase>
@@ -526,204 +526,6 @@
 		<phrase id="21">
 			<text>fanat_teleport_end_21</text>
 			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-	
-<dialog id="doctor_take_teleport"> 
-	<has_info>doktor_teleport_10_done</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>doctor_take_teleport_0</text>
-			<next>1</next>
-			<next>11</next>
-		</phrase>
-		<phrase id="11">
-		<precondition>sak_dialog.actor_doktor_teleport_have</precondition>
-			<text>doctor_take_teleport_11</text>
-		</phrase>
-		<phrase id="1">
-		<precondition>sak_dialog.actor_doktor_teleport_not_have</precondition>
-			<text>doctor_take_teleport_1</text>
-			<next>2</next>
-			<next>3</next>
-			<next>4</next>
-		</phrase>
-		<phrase id="2">
-			<text>doctor_take_teleport_2</text>
-			<next>21</next>
-		</phrase>
-		<phrase id="3">
-		<has_info>doktor_teleport_11_done</has_info>
-			<text>doctor_take_teleport_3</text>
-			<next>31</next>
-		</phrase>
-		<phrase id="4">
-		<has_info>doktor_teleport_12_done</has_info>
-			<text>doctor_take_teleport_4</text>
-			<next>41</next>
-		</phrase>
-		<phrase id="21">
-			<text>doctor_take_teleport_21</text>
-			<next>22</next>
-			<next>23</next>
-		</phrase>
-		<phrase id="22">
-		<precondition>sak_dialog.have_capsule</precondition>
-			<text>doctor_take_teleport_22</text>
-			<next>221</next>
-		</phrase>
-		<phrase id="23">
-			<text>doctor_take_teleport_23</text>
-		</phrase>
-		<phrase id="221">
-			<text>doctor_take_teleport_221</text>
-			<next>222</next>
-		</phrase>
-		<phrase id="222">
-			<text>doctor_take_teleport_222</text>
-			<next>223</next>
-		</phrase>
-		<phrase id="223">
-			<text>doctor_take_teleport_223</text>
-			<next>224</next>
-			<next>225</next>
-			<next>226</next>
-		</phrase>
-		<phrase id="224">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_30000_have</precondition>
-			<text>doctor_take_teleport_224</text>
-			<action>sak_dialog.give_30000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>25</next>
-		</phrase>
-		<phrase id="225">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_10000_have</precondition>
-			<text>doctor_take_teleport_225</text>
-			<action>sak_dialog.give_10000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>26</next>
-		</phrase>
-		<phrase id="226">
-			<text>doctor_take_teleport_226</text>
-		</phrase>
-		<phrase id="25">
-			<text>doctor_take_teleport_25</text>
-			<action>sak.get_pripyat_kordon</action>
-		</phrase>
-		<phrase id="26">
-			<text>doctor_take_teleport_26</text>
-			<action>sak.get_pripyat_kordonr</action>
-		</phrase>
-		<phrase id="31">
-			<text>doctor_take_teleport_31</text>
-			<next>32</next>
-			<next>33</next>
-		</phrase>
-		<phrase id="32">
-		<precondition>sak_dialog.have_capsule</precondition>
-			<text>doctor_take_teleport_32</text>
-			<next>321</next>
-		</phrase>
-		<phrase id="33">
-			<text>doctor_take_teleport_33</text>
-		</phrase>
-		<phrase id="321">
-			<text>doctor_take_teleport_321</text>
-			<next>322</next>
-		</phrase>
-		<phrase id="322">
-			<text>doctor_take_teleport_322</text>
-			<next>323</next>
-		</phrase>
-		<phrase id="323">
-			<text>doctor_take_teleport_323</text>
-			<next>324</next>
-			<next>325</next>
-			<next>326</next>
-		</phrase>
-		<phrase id="324">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_15000_have</precondition>
-			<text>doctor_take_teleport_324</text>
-			<action>sak_dialog.give_15000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>35</next>
-		</phrase>
-		<phrase id="325">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_5000_have</precondition>
-			<text>doctor_take_teleport_325</text>
-			<action>sak_dialog.give_5000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>36</next>
-		</phrase>
-		<phrase id="326">
-			<text>doctor_take_teleport_326</text>
-		</phrase>
-		<phrase id="35">
-			<text>doctor_take_teleport_35</text>
-			<action>sak.get_pripyat_yantar</action>
-		</phrase>
-		<phrase id="36">
-			<text>doctor_take_teleport_36</text>
-			<action>sak.get_pripyat_yantarr</action>
-		</phrase>
-		<phrase id="41">
-			<text>doctor_take_teleport_41</text>
-			<next>42</next>
-			<next>43</next>
-		</phrase>
-		<phrase id="42">
-		<precondition>sak_dialog.have_capsule</precondition>
-			<text>doctor_take_teleport_42</text>
-			<next>421</next>
-		</phrase>
-		<phrase id="43">
-			<text>doctor_take_teleport_43</text>
-		</phrase>
-		<phrase id="421">
-			<text>doctor_take_teleport_421</text>
-			<next>422</next>
-		</phrase>
-		<phrase id="422">
-			<text>doctor_take_teleport_422</text>
-			<next>423</next>
-		</phrase>
-		<phrase id="423">
-			<text>doctor_take_teleport_423</text>
-			<next>424</next>
-			<next>425</next>
-			<next>426</next>
-		</phrase>
-		<phrase id="424">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_10000_have</precondition>
-			<text>doctor_take_teleport_424</text>
-			<action>sak_dialog.give_10000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>45</next>
-		</phrase>
-		<phrase id="425">
-		<precondition>sak_dialog.have_capsule</precondition>
-		<precondition>sak_dialog.actor_5000_have</precondition>
-			<text>doctor_take_teleport_425</text>
-			<action>sak_dialog.give_5000_money</action>
-			<action>sak_dialog.transfer_any_capsule</action>
-			<next>46</next>
-		</phrase>
-		<phrase id="426">
-			<text>doctor_take_teleport_426</text>
-		</phrase>
-		<phrase id="45">
-			<text>doctor_take_teleport_45</text>
-			<action>sak.get_pripyat_military</action>
-		</phrase>
-		<phrase id="46">
-			<text>doctor_take_teleport_46</text>
-			<action>sak.get_pripyat_militaryr</action>
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -779,7 +581,7 @@
 		</phrase>
 		<phrase id="25">
 			<text>teleport_skraga_dialog_25</text>
-			<action>sak_dialog.skraga_teleport_start_time</action>
+			<action>sak_dialog.start_time("skraga_teleport_time")</action>
 			<give_info>skraga_teleport_not_ready</give_info>
 			<next>27</next>
 		</phrase>
@@ -804,18 +606,18 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_skraga_teleport</precondition>
+			<precondition>sak_dialog.not_ready_time("skraga_teleport_time",15)</precondition>
 			<text>skraga_teleport_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_skraga_teleport</precondition>
+			<precondition>sak_dialog.is_ready_time("skraga_teleport_time",15)</precondition>
 			<text>skraga_teleport_end_12</text>
 			<next>22</next>
 		</phrase>
 		<phrase id="22">
 			<text>skraga_teleport_end_22</text>
-			<action>sak_dialog.clear_ready_time_skraga_teleport</action>
+			<action>sak_dialog.clear_ready_time("skraga_teleport_time")</action>
 			<disable_info>skraga_teleport_not_ready</disable_info>
 			<next>3</next>
 		</phrase>
@@ -881,7 +683,7 @@
 		</phrase>
 		<phrase id="25">
 			<text>teleport_max_dialog_25</text>
-			<action>sak_dialog.max_teleport_start_time</action>
+			<action>sak_dialog.start_time("max_teleport_time")</action>
 			<give_info>max_teleport_not_ready</give_info>
 			<next>27</next>
 		</phrase>
@@ -906,18 +708,18 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_max_teleport</precondition>
+			<precondition>sak_dialog.not_ready_time("max_teleport_time",12)</precondition>
 			<text>max_teleport_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_max_teleport</precondition>
+			<precondition>sak_dialog.is_ready_time("max_teleport_time",12)</precondition>
 			<text>max_teleport_end_12</text>
 			<next>22</next>
 		</phrase>
 		<phrase id="22">
 			<text>max_teleport_end_22</text>
-			<action>sak_dialog.clear_ready_time_max_teleport</action>
+			<action>sak_dialog.clear_ready_time("max_teleport_time")</action>
 			<disable_info>max_teleport_not_ready</disable_info>
 			<next>3</next>
 		</phrase>
@@ -989,7 +791,7 @@
 		</phrase>
 		<phrase id="25">
 			<text>teleport_povar_dialog_25</text>
-			<action>sak_dialog.povar_teleport_start_time</action>
+			<action>sak_dialog.start_time("povar_teleport_time")</action>
 			<give_info>povar_teleport_not_ready</give_info>
 			<next>27</next>
 		</phrase>
@@ -1014,18 +816,18 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_povar_teleport</precondition>
+			<precondition>sak_dialog.not_ready_time("povar_teleport_time",22)</precondition>
 			<text>povar_teleport_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_povar_teleport</precondition>
+			<precondition>sak_dialog.is_ready_time("povar_teleport_time",22)</precondition>
 			<text>povar_teleport_end_12</text>
 			<next>22</next>
 		</phrase>
 		<phrase id="22">
 			<text>povar_teleport_end_22</text>
-			<action>sak_dialog.clear_ready_time_povar_teleport</action>
+			<action>sak_dialog.clear_ready_time("povar_teleport_time")</action>
 			<disable_info>povar_teleport_not_ready</disable_info>
 			<next>3</next>
 		</phrase>
@@ -1344,7 +1146,7 @@
 		<phrase id="3">
 			<text>teleport_042_dialog_3</text>
 			<give_info>fanat_teleport_04_done_ok</give_info>
-			<action>sak_dialog.start_time_fanat_teleport_04</action>
+			<action>sak_dialog.start_time("fanat_teleport_04_time")</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -1365,13 +1167,13 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.is_ready_time_fanat_teleport_04</precondition>
+		<precondition>sak_dialog.is_ready_time("fanat_teleport_04_time",1100)</precondition>
 			<text>teleport_043_dialog_11</text>
 			<!--<action>sak_dialog.time_yan_psy</action>-->
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.not_ready_time_fanat_teleport_04</precondition>
+		<precondition>sak_dialog.not_ready_time("fanat_teleport_04_time",1100)</precondition>
 			<text>teleport_043_dialog_12</text>
 			<next>6</next>
 		</phrase>
@@ -1381,7 +1183,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>teleport_043_dialog_3</text>
-			<action>sak_dialog.clear_ready_time_fanat_teleport_04</action>
+			<action>sak_dialog.clear_ready_time("fanat_teleport_04_time")</action>
 			<give_info>fanat_teleport_04_done</give_info>
 			<!-- <give_info>info_artmod_gold_fish_galant</give_info>
 			<action>sak.info_artmod</action> -->	
@@ -1455,7 +1257,7 @@
 		<phrase id="3">
 			<text>teleport_052_dialog_3</text>
 			<give_info>fanat_teleport_05_done</give_info>
-			<action>sak_dialog.add_good_rand_bart</action>
+			<action>test.add_rnd_art_to_actor(2,5)</action>
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -1471,13 +1273,12 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.is_ready_time_fanat_teleport_04</precondition>
+		<precondition>sak_dialog.is_ready_time("fanat_teleport_04_time",1100)</precondition>
 			<text>teleport_053_dialog_11</text>
-			<!--<action>sak_dialog.time_yan_psy</action>-->
 			<next>2</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.not_ready_time_fanat_teleport_04</precondition>
+		<precondition>sak_dialog.not_ready_time("fanat_teleport_04_time",1100)</precondition>
 			<text>teleport_053_dialog_12</text>
 			<next>6</next>
 		</phrase>
@@ -1487,7 +1288,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>teleport_053_dialog_3</text>
-			<action>sak_dialog.clear_ready_time_fanat_teleport_04</action>
+			<action>sak_dialog.clear_ready_time("fanat_teleport_04_time")</action>
 			<give_info>fanat_teleport_05_done</give_info>
 		</phrase>
 		<phrase id="6">
@@ -1623,9 +1424,9 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_dialog.chimera_kogot_have</precondition>
+		<precondition>ssak.have_items_count("mutant_chimera_kogot",3)</precondition>
 			<text>teleport_072_dialog_2</text>
-			<action>sak_dialog.give_chimera_kogot</action>
+			<action>sak_inventory.release_actor_items("mutant_chimera_kogot",3)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
@@ -1635,8 +1436,6 @@
 		<phrase id="3">
 			<text>teleport_072_dialog_3</text>
 			<give_info>mil_trader_teleport_07_done</give_info>
-			<!-- <give_info>info_amk_recipt_tears_chimaera</give_info>
-			<action>sak.info_amk_received</action> -->		
 			<action>test.give_rnd_recipt(7)</action>	
 		</phrase>
 	</phrase_list>
@@ -1677,6 +1476,7 @@
 </dialog>
 	
 <dialog id="teleport_082_dialog">
+	<precondition>sak.have_items_count("playboy_12",1)</precondition>
 	<dont_has_info>mil_max_teleport_08_done</dont_has_info>
 	<has_info>mil_max_teleport_08_have</has_info>
 	<phrase_list>
@@ -1690,7 +1490,7 @@
 		</phrase>
 		<phrase id="2">
 			<text>teleport_082_dialog_2</text>
-			<action>sak_dialog.give_playboy</action>
+			<action>sak_inventory.release_actor_items("playboy_12",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -1727,7 +1527,7 @@
 		<phrase id="3">
 			<text>teleport_083_dialog_3</text>
 			<give_info>mil_max_teleport_08_have</give_info>
-			<action>sak_dialog.take_playboy</action>			
+			<action>test.add_to_actor("playboy_12",1)</action>			
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -1934,54 +1734,7 @@
 	</phrase_list>
 </dialog>
 	
-<dialog id="teleport_102_dialog">
-	<precondition>sak_dialog.dummy_spring_red_have</precondition>
-	<dont_has_info>doktor_teleport_10_done</dont_has_info>
-	<has_info>doktor_teleport_10_have</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>teleport_102_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>teleport_102_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>teleport_102_dialog_2</text>
-			<action>sak_dialog.give_dummy_spring_red</action>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>teleport_102_dialog_3</text>
-			<give_info>doktor_teleport_10_done</give_info>
-			<action>sak_dialog.take_kristall</action>
-		</phrase>
-	</phrase_list>
-</dialog>
 	
-<dialog id="teleport_103_dialog">
-	<has_info>doktor_teleport_10_start</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>teleport_103_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>teleport_103_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>teleport_103_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>teleport_103_dialog_3</text>
-			<give_info>doktor_teleport_10_have</give_info>
-			<action>sak_dialog.take_dummy_spring_red</action>			
-		</phrase>
-	</phrase_list>
-</dialog>
 	
 <dialog id="teleport_11_dialog">
 	<has_info>doktor_teleport_10_done</has_info>
@@ -2033,37 +1786,7 @@
 	</phrase_list>
 </dialog>
 	
-<dialog id="teleport_112_dialog">
-	<precondition>sak_dialog.dummy_battery_red_have</precondition>
-	<dont_has_info>doktor_teleport_11_done</dont_has_info>
-	<has_info>doktor_teleport_11_start</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>teleport_112_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>teleport_112_dialog_1</text>
-			<next>2</next>
-			<next>21</next>
-		</phrase>
-		<phrase id="2">
-		<precondition>sak_dialog.dummy_battery_red_have</precondition>
-			<text>teleport_112_dialog_2</text>
-			<action>sak_dialog.give_dummy_battery_red</action>
-			<next>3</next>
-		</phrase>
-		<phrase id="21">
-			<text>teleport_112_dialog_2</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="3">
-			<text>teleport_112_dialog_3</text>
-			<give_info>doktor_teleport_11_done</give_info>
-			<action>sak_dialog.take_mica</action>
-		</phrase>
-	</phrase_list>
-</dialog>
+
 	
 <dialog id="teleport_113_dialog">
 	<has_info>doktor_teleport_11_start</has_info>
@@ -2151,549 +1874,6 @@
 	</phrase_list>
 </dialog>
 	
-<dialog id="teleport_122_dialog">
-	<precondition>sak_dialog.dummy_pellicle_red_have</precondition>
-	<dont_has_info>doktor_teleport_12_done</dont_has_info>
-	<has_info>doktor_teleport_12_start</has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>teleport_122_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>teleport_122_dialog_1</text>
-			<next>2</next>
-			<next>22</next>
-		</phrase>
-		<phrase id="2">
-		<precondition>sak_dialog.dummy_pellicle_red_have</precondition>
-			<text>teleport_122_dialog_2</text>
-			<action>sak_dialog.give_dummy_pellicle_red</action>
-			<next>3</next>
-		</phrase>
-		<phrase id="22">
-			<text>teleport_122_dialog_22</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="3">
-			<text>teleport_122_dialog_3</text>
-			<give_info>doktor_teleport_12_done</give_info>
-			<action>sak_dialog.take_soul</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-	
-<dialog id="teleport_123_dialog">
-	<precondition>utils.is_agr_day</precondition>
-	<has_info>doktor_teleport_12_start</has_info>
-	<dont_has_info>doktor_teleport_12_faze1</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>teleport_123_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>teleport_123_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>teleport_123_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>teleport_123_dialog_3</text>
-			<next>4</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="4">
-		<precondition>sak_dialog.simbiont_have</precondition>
-			<text>teleport_123_dialog_4</text>
-			<action>sak_dialog.give_simbiont</action>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>teleport_123_dialog_5</text>
-			<give_info>doktor_teleport_12_faze1</give_info>
-			<action>sak.add_pellicle_red</action>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>teleport_123_dialog_6</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="7">
-			<text>teleport_123_dialog_7</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_11_dialog">
-	<has_info>strelok_pda_done</has_info>
-	<dont_has_info>about_life_heart_start</dont_has_info>
-	<dont_has_info>about_life_heart_done</dont_has_info>		
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_11_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_11_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_11_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_11_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_11_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_life_heart_11_dialog_5</text>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>about_life_heart_11_dialog_6</text>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>about_life_heart_11_dialog_7</text>
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>about_life_heart_11_dialog_8</text>
-			<give_info>about_life_heart_start</give_info>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_51_dialog">
-	<has_info>about_life_heart_done</has_info>
-	<dont_has_info>life_heart_final</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_51_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_51_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_51_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_51_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_51_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_life_heart_51_dialog_5</text>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>about_life_heart_51_dialog_6</text>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>about_life_heart_51_dialog_7</text>
-			<give_info>life_heart_final</give_info>
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>about_life_heart_51_dialog_8</text>		
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_21_dialog">
-	<has_info>about_life_heart_start</has_info>
-	<dont_has_info>about_life_heart_barman</dont_has_info>
-	<dont_has_info>life_heart_barman_start</dont_has_info>
-	<dont_has_info>life_heart_barman_have</dont_has_info>
-	<dont_has_info>life_heart_barman_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_21_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_21_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_21_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_21_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_21_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_life_heart_21_dialog_5</text>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>about_life_heart_21_dialog_6</text>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>about_life_heart_21_dialog_7</text>
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>about_life_heart_21_dialog_8</text>		
-			<next>9</next>
-		</phrase>
-		<phrase id="9">
-			<text>about_life_heart_21_dialog_9</text>		
-			<next>10</next>
-		</phrase>
-		<phrase id="10">
-			<text>about_life_heart_21_dialog_10</text>		
-			<next>11</next>
-		</phrase>
-		<phrase id="11">
-			<text>about_life_heart_21_dialog_11</text>		
-			<next>12</next>
-			<next>13</next>
-		</phrase>
-		<phrase id="12">
-			<text>about_life_heart_21_dialog_12</text>		
-			<give_info>life_heart_barman_start</give_info>
-			<action>sak.add_scaintist_body</action>
-		</phrase>
-		<phrase id="13">
-			<text>about_life_heart_21_dialog_13</text>		
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_31_dialog">
-	<has_info>about_life_heart_start</has_info>
-	<dont_has_info>about_life_heart_sahar</dont_has_info>
-	<dont_has_info>life_heart_sahar_start</dont_has_info>
-	<dont_has_info>life_heart_sahar_have</dont_has_info>
-	<dont_has_info>life_heart_sahar_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_31_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_31_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_31_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_31_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_31_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_life_heart_31_dialog_5</text>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>about_life_heart_31_dialog_6</text>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>about_life_heart_31_dialog_7</text>
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>about_life_heart_31_dialog_8</text>		
-			<next>9</next>
-		</phrase>
-		<phrase id="9">
-			<text>about_life_heart_31_dialog_9</text>		
-			<next>10</next>
-		</phrase>
-		<phrase id="10">
-			<text>about_life_heart_31_dialog_10</text>		
-			<next>11</next>
-		</phrase>
-		<phrase id="11">
-			<text>about_life_heart_31_dialog_11</text>		
-			<next>12</next>
-			<next>13</next>
-		</phrase>
-		<phrase id="12">
-			<text>about_life_heart_31_dialog_12</text>		
-			<give_info>life_heart_sahar_start</give_info>
-			<action>sak_dialog.give_yan_scientist_teleport_01</action>
-		</phrase>
-		<phrase id="13">
-			<text>about_life_heart_31_dialog_13</text>		
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_41_dialog">
-	<has_info>about_life_heart_start</has_info>
-	<dont_has_info>about_life_heart_sidor</dont_has_info>
-	<dont_has_info>life_heart_sidor_start</dont_has_info>
-	<dont_has_info>life_heart_sidor_have</dont_has_info>
-	<dont_has_info>life_heart_sidor_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_41_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_41_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_41_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_41_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_41_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_life_heart_41_dialog_5</text>
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>about_life_heart_41_dialog_6</text>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>about_life_heart_41_dialog_7</text>
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>about_life_heart_41_dialog_8</text>		
-			<next>9</next>
-		</phrase>
-		<phrase id="9">
-			<text>about_life_heart_41_dialog_9</text>		
-			<next>10</next>
-		</phrase>
-		<phrase id="10">
-			<text>about_life_heart_41_dialog_10</text>		
-			<next>11</next>
-		</phrase>
-		<phrase id="11">
-			<text>about_life_heart_41_dialog_11</text>		
-			<next>12</next>
-			<next>13</next>
-		</phrase>
-		<phrase id="12">
-			<text>about_life_heart_41_dialog_12</text>		
-			<give_info>life_heart_sidor_start</give_info>
-			<action>sak.add_kontainer</action>
-		</phrase>
-		<phrase id="13">
-			<text>about_life_heart_41_dialog_13</text>		
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_42_dialog">
-	<precondition>sak_dialog.rad_kontainer_have</precondition>
-	<has_info>life_heart_sidor_have</has_info>
-	<dont_has_info>life_heart_sidor_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_42_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_42_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_42_dialog_2</text>
-			<action>sak_dialog.give_rad_kontainer</action>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_42_dialog_3</text>
-			<give_info>life_heart_sidor_done</give_info>
-			<give_info>about_life_heart_sidor</give_info>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_42_dialog_4</text>	
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_32_dialog">
-	<has_info>life_heart_sahar_have</has_info>
-	<dont_has_info>life_heart_sahar_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_32_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_32_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_32_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_32_dialog_3</text>
-			<give_info>life_heart_sahar_done</give_info>
-			<give_info>about_life_heart_sahar</give_info>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_32_dialog_4</text>	
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="about_life_heart_22_dialog">
-	<precondition>sak_dialog.scintist_pda_have</precondition>
-	<has_info>life_heart_barman_have</has_info>
-	<dont_has_info>life_heart_barman_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_life_heart_22_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_life_heart_22_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_life_heart_22_dialog_2</text>
-			<action>sak_dialog.give_scintist_pda</action>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_life_heart_22_dialog_3</text>
-			<give_info>life_heart_barman_done</give_info>
-			<give_info>about_life_heart_barman</give_info>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_life_heart_22_dialog_4</text>	
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="strelok_pda1_dialog">
-	<has_info>doktor_book</has_info>
-	<dont_has_info>strelok_pda_start</dont_has_info>
-	<dont_has_info>strelok_pda_have</dont_has_info>
-	<dont_has_info>strelok_pda_done</dont_has_info>
-	<dont_has_info>strelok_pda2_start</dont_has_info>
-	<dont_has_info>strelok_pda2_have</dont_has_info>
-	<dont_has_info>strelok_pda2_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>strelok_pda1_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>strelok_pda1_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>strelok_pda1_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>strelok_pda1_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>strelok_pda1_dialog_4</text>	
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>strelok_pda1_dialog_5</text>	
-			<next>6</next>
-		</phrase>
-		<phrase id="6">
-			<text>strelok_pda1_dialog_6</text>	
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>strelok_pda1_dialog_7</text>	
-			<next>8</next>
-		</phrase>
-		<phrase id="8">
-			<text>strelok_pda1_dialog_8</text>
-			<action>sak.add_strelok_pda</action>	
-			<action>sak.add_medusa_green</action>
-			<give_info>strelok_pda_start</give_info>
-			<give_info>strelok_pda2_start</give_info>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="strelok_pda3_dialog">
-	<precondition>sak_dialog.strelok_pda_have</precondition>
-	<dont_has_info>strelok_pda_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>strelok_pda3_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>strelok_pda3_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>strelok_pda3_dialog_2</text>
-			<action>sak_dialog.give_strelok_pda</action>	
-			<give_info>strelok_pda_done</give_info>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-<dialog id="strelok_pda2_dialog">
-	<precondition>sak_dialog.strelok_pda2_have</precondition>
-	<has_info>strelok_pda2_have</has_info>
-	<dont_has_info>strelok_pda2_done</dont_has_info>
-	<phrase_list>
-		<phrase id="0">
-			<text>strelok_pda2_dialog_0</text>
-			<action>sak_dialog.give_strelok_pda2</action>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>strelok_pda2_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>strelok_pda2_dialog_2</text>
-			<action>sak.switch_timer_stancia</action>
-			<give_info>strelok_pda2_done</give_info>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-	</phrase_list>
-</dialog>
-</game_dialogs>
+
+
+

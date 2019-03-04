@@ -399,7 +399,7 @@
 			<action>dialogs.break_dialog</action>			
 		</phrase>
 		<phrase id="3">
-		    <precondition>sak_dialog.pkm_have</precondition> 
+		    <precondition>sak.have_items_count("wpn_pkm",1)</precondition> 
 			<text>mil_freedom_commander_after_x12_3</text>
 			<next>6</next>
 		</phrase>
@@ -418,7 +418,7 @@
 		</phrase>
 		<phrase id="72">
 			<text>mil_freedom_commander_after_x12_72</text>
-			<action>sak_dialog.give_pkm</action>
+			<action>sak_inventory.release_actor_items("wpn_pkm",1)</action>
 		    <next>73</next>
 		    <next>74</next>
 		    <next>75</next>			
@@ -449,7 +449,7 @@
 		</phrase>			
 		<phrase id="8">
 			<text>mil_freedom_commander_after_x12_8</text>
-			<action>sak_dialog.give_pkm</action> 
+			<action>sak_inventory.release_actor_items("wpn_pkm",1)</action> 
 			<next>9</next>	
 		</phrase>
 		<phrase id="9">
@@ -843,9 +843,9 @@
 			<give_info>mil_zoneguard_test2_passed</give_info>
 		</phrase>
 		<phrase id="1083">
-			<precondition>sak_dialog.have_100_ammo_556x39</precondition>
+			<precondition>vergas_lib.search_items("ammo_5.56x45",100,1)</precondition>
 			<text>mil_zoneguard_dialog_1083</text>
-				<action>sak_dialog.give_100_ammo_556x39</action>
+				<action>vergas_lib.search_items("ammo_5.56x45",100,2)</action>
 				<action>sak_dialog.out_wpn_from_mil</action>
 				<action>sak_dialog.out_wpn_from_actor</action>
 			<next>2032</next>
@@ -903,9 +903,9 @@
 			<next>204</next>
 		</phrase>
 		<phrase id="2022">
-			<precondition>sak_dialog.have_100_ammo_556x39</precondition>
+			<precondition>vergas_lib.search_items("ammo_5.56x45",100,1)</precondition>
 			<text>mil_zoneguard_dialog_2022</text>
-				<action>sak_dialog.give_100_ammo_556x39</action>
+				<action>vergas_lib.search_items("ammo_5.56x45",100,2)</action>
 				<action>sak_dialog.out_wpn_from_mil</action>
 				<action>sak_dialog.out_wpn_from_actor</action>
 			<next>2032</next>
@@ -916,9 +916,9 @@
 			<give_info>mil_zoneguard_test2_passed</give_info>
 		</phrase>
 		<phrase id="2041">
-			<precondition>sak_dialog.have_100_ammo_762x39</precondition>
+			<precondition>vergas_lib.search_items("ammo_7.62x39",100,1)</precondition>
 			<text>mil_zoneguard_dialog_2041</text>
-				<action>sak_dialog.give_100_ammo_762x39</action>
+				<action>vergas_lib.search_items("ammo_7.62x39",100,2)</action>
 				<action>sak_dialog.out_wpn_from_mil</action>
 				<action>sak_dialog.out_wpn_from_actor</action>
 			<next>2032</next>
@@ -1131,7 +1131,7 @@
 			<dont_has_info>shurup_charge_pda_not_ready</dont_has_info>
 			<text>shurup_charge_pda_11</text>
 			<give_info>shurup_charge_pda_not_ready</give_info>
-				<action>sak_dialog.shurup_charge_pda_time</action>
+				<action>sak_dialog.start_time("shurup_charge_pda_time")</action>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
@@ -1171,12 +1171,12 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.not_ready_time_shurup_charge_pda</precondition>
+			<precondition>sak_dialog.not_ready_time("shurup_charge_pda_time",30)</precondition>
 			<text>shurup_charge_pda_end_11</text>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-			<precondition>sak_dialog.is_ready_time_shurup_charge_pda</precondition>
+			<precondition>sak_dialog.is_ready_time("shurup_charge_pda_time",30)</precondition>
 			<text>shurup_charge_pda_end_12</text>
 			<next>221</next>
 			<next>222</next>
@@ -1184,9 +1184,9 @@
 		<phrase id="221">
 			<precondition>sak_dialog.have_vodka</precondition>
 			<text>shurup_charge_pda_end_221</text>
-				<action>sak_dialog.give_vodka</action>
-				<action>sak_dialog.charging_pda</action>
-				<action>sak_dialog.clear_ready_time_shurup_charge_pda</action>
+			<action>sak_dialog.give_vodka</action>
+			<action>sak_dialog.charging_pda</action>
+			<action>sak_dialog.clear_ready_time("shurup_charge_pda_time")</action>
 			<give_info>shurup_charge_pda_ready</give_info>
 			<next>3</next>
 		</phrase>
@@ -1748,317 +1748,13 @@
 			<text>mil_mercs_ara_dialog_start_2032</text>
 		</phrase>
 		<phrase id="2021">
-		<precondition>sak_dialog.pda_have</precondition>
+		<precondition>sak.have_items_count("device_pda_npc",1)</precondition>
 			<text>mil_mercs_ara_dialog_start_2021</text>
 			<action>ui_barter_new.barter_screen("vahtang")</action>
 			<action>dialogs.break_dialog</action>
 			<!-- <next>203</next> -->
 		</phrase>
-		<phrase id="203">
-			<text>mil_mercs_ara_dialog_start_203</text>
-			<next>2041</next>
-			<next>2042</next>
-			<next>2043</next>
-			<next>2045</next>
-			<next>2044</next>
-		</phrase>
-		<phrase id="2044">
-			<text>mil_mercs_ara_dialog_start_2044</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="2041">
-			<text>mil_mercs_ara_dialog_start_2041</text>
-			<next>2051</next>
-		</phrase>
-		<phrase id="2051">
-			<text>mil_mercs_ara_dialog_start_2051</text>
-			<next>20611</next>
-			<next>20612</next>
-			<next>20618</next>
-			<next>20613</next>
-			<next>20614</next>
-			<next>20615</next>
-			<next>20617</next>
-			<next>20616</next>
-		</phrase>
-		<phrase id="20617">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20617</text>
-			<next>203</next>
-		</phrase>
-		<phrase id="20616">
-			<text>mil_mercs_ara_dialog_start_20616</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="20611">
-		<precondition>sak_dialog.pda10_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20611</text>
-			<action>sak_dialog.give_10pda</action>
-			<next>20711</next>
-		</phrase>
-		<phrase id="20711">
-			<text>mil_mercs_ara_dialog_start_20711</text>
-			<action>sak_dialog.add_g36l</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20612">
-		<precondition>sak_dialog.pda10_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20612</text>
-			<action>sak_dialog.give_10pda</action>
-			<next>20712</next>
-		</phrase>
-		<phrase id="20618">
-		<precondition>sak_dialog.pda5_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20618</text>
-			<action>sak_dialog.give_5pda</action>
-			<next>20718</next>
-		</phrase>
-		<phrase id="20718">
-			<text>mil_mercs_ara_dialog_start_20718</text>
-			<action>sak_dialog.add_sil_9mm</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20712">
-			<text>mil_mercs_ara_dialog_start_20712</text>
-			<action>sak_dialog.add_eotech</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20613">
-		<precondition>sak_dialog.pda20_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20613</text>
-			<action>sak_dialog.give_20pda</action>
-			<next>20713</next>
-		</phrase>
-		<phrase id="20713">
-			<text>mil_mercs_ara_dialog_start_20713</text>
-			<action>sak_dialog.add_ara_wpn_fn2000</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20614">
-		<precondition>sak_dialog.pda10_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20614</text>
-			<action>sak_dialog.give_10pda</action>
-			<next>20714</next>
-		</phrase>
-		<phrase id="20714">
-			<text>mil_mercs_ara_dialog_start_20714</text>
-			<action>sak_dialog.add_ara_g36</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20615">
-		<precondition>sak_dialog.pda10_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20615</text>
-			<action>sak_dialog.give_10pda</action>
-			<next>20715</next>
-		</phrase>
-		<phrase id="20715">
-			<text>mil_mercs_ara_dialog_start_20715</text>  
-			<action>sak_dialog.add_ara_g36c</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="2042">
-			<text>mil_mercs_ara_dialog_start_2042</text>
-			<next>2052</next>
-		</phrase>
-		<phrase id="2052">
-			<text>mil_mercs_ara_dialog_start_2052</text>
-			<next>20621</next>
-			<!--<next>20622</next>-->
-			<next>20623</next>
-      <next>206231</next>
-            <!-- <next>206232</next>-->
-			<next>20625</next>
-			<next>20624</next>
-		</phrase>
-		<phrase id="20625">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20625</text>
-			<next>203</next>
-		</phrase>
-		<phrase id="20624">
-			<text>mil_mercs_ara_dialog_start_20624</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="20621">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20621</text>
-			<action>sak_dialog.give_pda</action>
-			<next>20721</next>
-		</phrase>
-		<phrase id="20721">
-			<text>mil_mercs_ara_dialog_start_20721</text>
-			<action>sak_dialog.add_100_ammo_556x45_ss190</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20622">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20622</text>
-			<action>sak_dialog.give_pda</action>
-			<next>20722</next>
-		</phrase>
-		<phrase id="20722">
-			<text>mil_mercs_ara_dialog_start_20722</text>
-			<action>sak_dialog.add_2ammo_556x45_ap</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20623">
-		<precondition>sak_dialog.pda3_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20623</text>
-			<action>sak_dialog.give_3pda</action>
-			<next>20723</next>
-		</phrase>
-		<phrase id="20723">
-			<text>mil_mercs_ara_dialog_start_20723</text>
-			<action>sak_dialog.add_ammo_m20910</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-    	<phrase id="206231">
-		<precondition>sak_dialog.pda5_have</precondition>
-			<text>mil_mercs_ara_dialog_start_206231</text>
-			<action>sak_dialog.give_5pda</action>
-			<next>207231</next>
-		</phrase>
-		<phrase id="207231">
-			<text>mil_mercs_ara_dialog_start_207231</text>
-			<action>sak_dialog.add_4ammo_762x51_fmj</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="206232">
-		<precondition>sak_dialog.pda5_have</precondition>
-			<text>mil_mercs_ara_dialog_start_206232</text>
-			<action>sak_dialog.give_5pda</action>
-			<next>207232</next>
-		</phrase>
-		<phrase id="207232">
-			<text>mil_mercs_ara_dialog_start_207232</text>
-			<action>sak_dialog.add_2ammo_762x51_ap</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="2043">
-			<text>mil_mercs_ara_dialog_start_2043</text>
-			<next>2053</next>
-		</phrase>
-		<phrase id="2053">
-			<text>mil_mercs_ara_dialog_start_2053</text>
-			<next>20631</next>
-			<next>20632</next>
-			<next>20634</next>
-			<next>20633</next>
-		</phrase>
-		<phrase id="20634">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20634</text>
-			<next>203</next>
-		</phrase>
-		<phrase id="20633">
-			<text>mil_mercs_ara_dialog_start_20633</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="20631">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20631</text>
-			<action>sak_dialog.give_pda</action>
-			<next>20731</next>
-		</phrase>
-		<phrase id="20731">
-			<text>mil_mercs_ara_dialog_start_20731</text>
-			<action>sak_dialog.add_medkit_scientic</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20632">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20632</text>
-			<action>sak_dialog.give_pda</action>
-			<next>20732</next>
-		</phrase>
-		<phrase id="20732">
-			<text>mil_mercs_ara_dialog_start_20732</text>
-			<action>sak_dialog.add_5antirad</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="2045">
-			<text>mil_mercs_ara_dialog_start_2045</text>
-			<next>2055</next>
-		</phrase>
-		<phrase id="2055">
-			<text>mil_mercs_ara_dialog_start_2055</text>
-			<next>20651</next>
-			<next>20652</next>
-			<next>20653</next>
-			<!--<next>20654</next>-->
-			<next>20655</next>
-			<next>20656</next>
-		</phrase>
-		<phrase id="20655">
-			<text>mil_mercs_ara_dialog_start_20655</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="20656">
-		<precondition>sak_dialog.pda_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20656</text>
-			<next>203</next>
-		</phrase>
-		<phrase id="20651">
-		<precondition>sak_dialog.pda5_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20651</text>
-			<action>sak_dialog.give_5pda</action>
-			<next>20751</next>
-		</phrase>
-		<phrase id="20751">
-			<text>mil_mercs_ara_dialog_start_20751</text>
-			<action>sak_dialog.add_ara_outfit</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20652">
-		<precondition>sak_dialog.pda10_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20652</text>
-			<action>sak_dialog.give_10pda</action>
-			<next>20752</next>
-		</phrase>
-		<phrase id="20752">
-			<text>mil_mercs_ara_dialog_start_20752</text>
-			<action>sak_dialog.add_ara_outfit_gaz</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20653">
-		<precondition>sak_dialog.pda30_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20653</text>
-			<action>sak_dialog.give_30pda</action>
-			<next>20753</next>
-		</phrase>
-		<phrase id="20753">
-			<text>mil_mercs_ara_dialog_start_20753</text>
-			<action>sak_dialog.add_ara_scientific</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
-		<phrase id="20654">
-		<precondition>sak_dialog.pda40_have</precondition>
-			<text>mil_mercs_ara_dialog_start_20654</text>
-			<action>sak_dialog.give_40pda</action>
-			<next>20754</next>
-		</phrase>
-		<phrase id="20754">
-			<text>mil_mercs_ara_dialog_start_20754</text>
-			<action>sak_dialog.add_ara_exo</action>
-			<next>2081</next>
-			<next>2082</next>
-		</phrase>
+
 		<phrase id="2020">
 		    <has_info>bar_merc_info</has_info>
 			<dont_has_info>gross_merc_start_new_gg</dont_has_info>
@@ -2090,7 +1786,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="2082">
-		<precondition>sak_dialog.pda_have</precondition>
+		<precondition>sak.have_items_count("device_pda_npc",1)</precondition>
 			<text>mil_mercs_ara_dialog_start_2082</text>
 			<next>203</next>
 		</phrase>
@@ -2142,7 +1838,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="400">
-		<precondition>sak_dialog.have_af_glassbeads</precondition>		
+		<precondition>sak.have_items_count("af_glassbeads",1)</precondition>		
 		<has_info>ara_exo_new</has_info>
 		<has_info>ara_exo_message</has_info>		
 		<dont_has_info>ara_exo_new_done</dont_has_info>		
@@ -2155,12 +1851,12 @@
 		</phrase>
 		<phrase id="402">
 			<text>mil_mercs_ara_dialog_start_402</text>
-			<action>sak_dialog.give_af_glassbeads</action>
+			<action>sak_inventory.release_actor_items("af_glassbeads",1)</action>
 			<next>403</next>
 		</phrase>
 		<phrase id="403">
 			<text>mil_mercs_ara_dialog_start_403</text>
-			<action>sak_dialog.add_killer_blue_exoskeleton</action>
+			<action>test.add_to_actor("killer_blue_exoskeleton",1)</action>
 			<give_info>ara_exo_new_done</give_info>			
 			<next>404</next>
 		</phrase>
@@ -2198,10 +1894,8 @@
 	<phrase_list>
 		<phrase id="0">
 			<next>100</next>
-			<!--<next>200</next>-->
 		</phrase>
 		<phrase id="100">
-		<!--<dont_has_info>rad_start_volkodav</dont_has_info>-->
 			<next>1011</next>
 			<next>1012</next>
 			<next>1013</next>
@@ -2213,37 +1907,37 @@
 			<text>mil_mercs_start_dialog_1011</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10211</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="1012">
 			<text>mil_mercs_start_dialog_1012</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10221</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="1013">
 			<text>mil_mercs_start_dialog_1013</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10231</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="1014">
 			<text>mil_mercs_start_dialog_1014</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10241</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="1015">
 			<text>mil_mercs_start_dialog_1015</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10251</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="1016">
 			<text>mil_mercs_start_dialog_1016</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>10261</next>
-			<next>10212</next>
+			<!-- <next>10212</next> -->
 		</phrase>
 		<phrase id="10211">
 			<text>mil_mercs_start_dialog_10211</text>
@@ -2269,104 +1963,7 @@
 			<text>mil_mercs_start_dialog_10261</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
-		<phrase id="10212">
-		<has_info>shustriy_find_item_2_start</has_info>
-			<text>mil_mercs_start_dialog_10212</text>
-			<next>1031</next>
-			<next>1032</next>
-			<next>1033</next>
-			<next>1034</next>
-			<next>1035</next>
-			<next>1036</next>
-		</phrase>
-		<phrase id="1031">
-			<text>mil_mercs_start_dialog_1031</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="1032">
-			<text>mil_mercs_start_dialog_1032</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="1033">
-			<text>mil_mercs_start_dialog_1033</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="1034">
-			<text>mil_mercs_start_dialog_1034</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="1035">
-			<text>mil_mercs_start_dialog_1035</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="1036">
-			<text>mil_mercs_start_dialog_1036</text>
-			<next>104</next>
-		</phrase>
-		<phrase id="104">
-			<text>mil_mercs_start_dialog_104</text>
-			<next>1051</next>
-			<next>1052</next>
-			<next>1053</next>
-			<next>1054</next>
-			<next>1055</next>
-			<next>1056</next>
-		</phrase>
-		<phrase id="1051">
-		<precondition>sak_dialog.nps_not_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1051</text>
-			<next>106</next>
-		</phrase>
-		<phrase id="1052">
-		<precondition>sak_dialog.nps_not_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1052</text>
-			<next>106</next>
-		</phrase>
-		<phrase id="1053">
-		<precondition>sak_dialog.nps_not_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1053</text>
-			<next>106</next>
-		</phrase>
-		<phrase id="1054">
-		<precondition>sak_dialog.nps_not_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1054</text>
-			<next>106</next>
-		</phrase>
-		<phrase id="1055">
-		<precondition>sak_dialog.nps_not_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1055</text>
-			<next>106</next>
-		</phrase>
-		<phrase id="1056">
-		<precondition>sak_dialog.nps_have_lr300_m1</precondition>
-			<text>mil_mercs_start_dialog_1056</text>
-			<next>1071</next>
-			<next>1072</next>
-		</phrase>
-		<phrase id="106">
-			<text>mil_mercs_start_dialog_106</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="1072">
-			<text>mil_mercs_start_dialog_1072</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
-		<phrase id="1071">
-		<precondition>sak_dialog.actor_have_ak</precondition>
-			<text>mil_mercs_start_dialog_1071</text>
-			<action>sak_dialog.give_ak</action>
-			<next>108</next>
-		</phrase>
-		<phrase id="108">
-			<text>mil_mercs_start_dialog_108</text>
-			<action>sak_dialog.nps_take_lr300_m1</action>
-			<disable_info>shustriy_find_item_2_start</disable_info>
-			<next>109</next>
-		</phrase>
-		<phrase id="109">
-			<text>mil_mercs_start_dialog_109</text>
-			<action>dialogs.break_dialog</action>
-		</phrase>
+
 		<phrase id="200">
 		<has_info>rad_start_volkodav</has_info>
 			<next>2011</next>
@@ -2870,7 +2467,7 @@
 		<phrase id="5">
 			<text>food_for_psih_done_5</text>
 			<give_info>food_for_psih_done</give_info>
-				<action>sak_dialog.take_5conserva</action>
+				<action>test.add_to_actor("conserva",5)</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="6">
@@ -3090,7 +2687,8 @@
 		</phrase>
 		<phrase id="5009">
 			<text>mil_max_dialog_5009</text>
-			<action>sak_dialog.add_max_nagrad</action>
+			<action>test.add_to_actor("vodka",1)</action>
+			<action>test.add_to_actor("wpn_eagle_m1",1)</action>
 			<next>5010</next>
 		</phrase>
 		<phrase id="5010">
@@ -3178,9 +2776,9 @@
 			<text>mil_kurjer_have_skrjaga_91</text>
 		</phrase>
 		<phrase id="82">
-		<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+		<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 			<text>mil_kurjer_have_skrjaga_82</text>
-			<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>			
+			<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>			
 			<next>92</next>
 		</phrase>
 		<phrase id="92">
@@ -3203,12 +2801,12 @@
 		</phrase>
 		<phrase id="1122">
 			<text>mil_kurjer_have_skrjaga_1122</text>
-			<action>sak_dialog.take_quest_manycase_01_mil_kurjer</action>
+			<action>test.add_to_actor("quest_manycase_01_mil_kurjer",1)</action>
 		</phrase>
 		<phrase id="83">
-		<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
+		<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
 			<text>mil_kurjer_have_skrjaga_83</text>
-			<action>sak_dialog.give_mil_kurjer_pda</action>
+			<action>sak_inventory.release_actor_items("mil_kurjer_pda",1)</action>
 			<next>93</next>
 		</phrase>
 		<phrase id="93">
@@ -3218,7 +2816,7 @@
 		</phrase>
 		<phrase id="1031">
 			<text>mil_kurjer_have_skrjaga_1031</text>
-			<action>sak_dialog.add_vyvert_5d</action>
+			<action>test.add_to_actor("af_vyvert_dyn5d",1)</action>
 			<next>1131</next>
 		</phrase>
 		<phrase id="1131">
@@ -3226,7 +2824,7 @@
 		</phrase>
 		<phrase id="1032">
 			<text>mil_kurjer_have_skrjaga_1032</text>
-			<action>sak_dialog.add_mil_kurjer_pda</action>
+			<action>test.add_to_actor("mil_kurjer_pda",1)</action>
 			<next>1132</next>
 		</phrase>
 		<phrase id="1132">
@@ -3596,14 +3194,13 @@
 		<phrase id="52">
 		<precondition>sak_dialog.rand_game_2</precondition>
 			<text>mil_leader_food_52</text>
-			<action>sak_dialog.add_ammo_5_45_fmj2</action>
+			<action>test.add_to_actor("ammo_5.45x39_fmj",2)</action>
 		</phrase>
 		<phrase id="53">
 		<precondition>sak_dialog.rand_game_3</precondition>
 			<text>mil_leader_food_53</text>
-			<action>sak_dialog.add_5medkit_scientic</action>
-			<action>sak_dialog.add_5antirad</action>
-			<action>sak_dialog.add_2vodka</action>
+			<action>test.add_to_actor("medkit_scientic",3)</action>
+			<action>test.add_to_actor("vodka",3)</action>
 		</phrase>
 	</phrase_list>
 </dialog>
@@ -3738,7 +3335,7 @@
 		<has_info>gg_kill_mil_dolg</has_info>
 			<text>mil_leader_about_kill_dolg_311</text>
 			<give_info>mil_lukash_dolg_task_complete</give_info>
-			<action>sak_dialog.mil_lukash_dolg_nagrad</action>
+			<action>test.add_to_actor("af_dummy_battery",1)</action>
 			<give_info>mil_freedom_good</give_info>
 		</phrase>
 		<phrase id="312">
@@ -3757,7 +3354,7 @@
 		<has_info>gg_kill_mil_dolg</has_info>
 			<text>mil_leader_about_kill_dolg_321</text>
 			<give_info>mil_lukash_dolg_task_complete</give_info>
-			<action>sak_dialog.mil_lukash_dolg_nagrad</action>
+			<action>test.add_to_actor("af_dummy_battery",1)</action>
 		</phrase>
 		<phrase id="322">
 		<dont_has_info>gg_kill_mil_dolg</dont_has_info>
@@ -4398,9 +3995,9 @@
 			<next>1022</next>
 		</phrase>
 		<phrase id="1021">
-			<precondition>sak_dialog.medkit_have</precondition>
+			<precondition>vergas_lib.search_items("medkit",1,1)</precondition>
 			<text>rad_halfdead_botan_dialog_1021</text>
-			<action>sak_dialog.give_medkit</action>
+			<action>vergas_lib.search_items("medkit",1,2)</action>
 			<next>103</next>
 		</phrase>
 		<phrase id="103">
@@ -4670,7 +4267,7 @@
 		</phrase>
 		<phrase id="5">
 			<text>flame_reload_receipt_5</text>
-			<action>sak_dialog.start_time_shurup</action>
+			<action>sak_dialog.start_time("time_start_shurup")</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="6">
@@ -4687,7 +4284,6 @@
 <dialog id="flame_reload_receipt_have">
 	<has_info>flame_reload_receipt_start</has_info>
 	<dont_has_info>flame_reload_receipt_have</dont_has_info>
-	<!--<dont_has_info>flame_reload_receipt_many</dont_has_info>-->
 	<phrase_list>
 		<phrase id="0">
 			<text>flame_reload_receipt_have_0</text>
@@ -4708,7 +4304,7 @@
 		</phrase>
 		<phrase id="31">
 			<text>flame_reload_receipt_have_31</text>
-			<action>sak_dialog.clear_ready_time_shurup</action>
+			<action>sak_dialog.clear_ready_time("time_start_shurup")</action>
 			<give_info>flame_reload_receipt_have</give_info>
 			<next>41</next>
 		</phrase>
@@ -4717,7 +4313,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="23">
-		<precondition>sak_dialog.have_flame_reload_kanistra</precondition>
+		<precondition>sak.have_items_count("amk_kanistra",1)</precondition>
 			<text>flame_reload_receipt_have_23</text>
 			<action>sak_dialog.give_flame_reload_kanistra</action>
 			<next>33</next>
@@ -4743,20 +4339,20 @@
 		<phrase id="533">
 		<precondition>sak_dialog.have_flame_reload_full</precondition>
 			<text>flame_reload_receipt_have_533</text>
-			<action>sak_dialog.clear_ready_time_shurup</action>
+			<action>sak_dialog.clear_ready_time("time_start_shurup")</action>
 			<action>sak_dialog.clear_flame_reload_shurup</action>
 			<give_info>flame_reload_receipt_have</give_info>
 			<next>41</next>
 		</phrase>
 		<phrase id="24">
-		<precondition>sak_dialog.have_flame_reload_ballon</precondition>
+		<precondition>sak.have_items_count("amk_ballon",1)</precondition>
 			<text>flame_reload_receipt_have_24</text>
 			<action>sak_dialog.give_flame_reload_ballon</action>
 			<next>34</next>
 		</phrase>
 		<phrase id="34">
 			<text>flame_reload_receipt_have_34</text>
-			<action>sak_dialog.clear_ready_time_shurup</action>
+			<action>sak_dialog.clear_ready_time("time_start_shurup")</action>
 			<next>44</next>
 		</phrase>
 		<phrase id="44">
@@ -4776,7 +4372,7 @@
 		<phrase id="543">
 		<precondition>sak_dialog.have_flame_reload_full</precondition>
 			<text>flame_reload_receipt_have_543</text>
-			<action>sak_dialog.clear_ready_time_shurup</action>
+			<action>sak_dialog.clear_ready_time("time_start_shurup")</action>
 			<action>sak_dialog.clear_flame_reload_shurup</action>
 			<give_info>flame_reload_receipt_have</give_info>
 			<next>41</next>
@@ -4806,7 +4402,7 @@
 		</phrase>
 		<phrase id="52">
 			<text>flame_reload_receipt_have_52</text>
-			<action>sak_dialog.clear_ready_time_shurup</action>
+			<action>sak_dialog.clear_ready_time("time_start_shurup")</action>
 			<action>sak_dialog.clear_flame_reload_shurup</action>
 			<give_info>flame_reload_receipt_have</give_info>
 			<next>41</next>
@@ -5651,7 +5247,7 @@
 		<phrase id="307">
 			<text>rad_seryi_start_dialog_307</text>
 			<give_info>rad_stalkers_pribor_add</give_info>
-			<action>sak_dialog.add_uncoder</action>
+			<action>test.add_to_actor("uncoder",1)</action>
 			<next>308</next>
 		</phrase>
 		<phrase id="308">
@@ -5807,7 +5403,7 @@
 		<phrase id="307">
 			<text>rad_bes_start_dialog_307</text>
 			<give_info>rad_stalkers_pribor_add</give_info>
-			<action>sak_dialog.add_uncoder</action>
+			<action>test.add_to_actor("uncoder",1)</action>
 			<next>308</next>
 		</phrase>
 		<phrase id="308">
@@ -5975,7 +5571,7 @@
 		<phrase id="309">
 			<text>rad_sub_glavn_start_dialog_309</text>
 			<give_info>rad_stalkers_pribor_add</give_info>
-			<action>sak_dialog.add_uncoder</action>
+			<action>test.add_to_actor("uncoder",1)</action>
 			<next>310</next>
 		</phrase>
 		<phrase id="3082">
@@ -6067,7 +5663,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>freedom_exo_dialog_done_3</text>
-			<action>sak_dialog.add_svoboda_exoskeleton</action>
+			<action>test.add_to_actor("svoboda_exoskeleton",1)</action>
 			<give_info>freedom_exo_new_done</give_info>			
 			<next>4</next>
 		</phrase>

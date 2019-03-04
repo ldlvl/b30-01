@@ -522,7 +522,7 @@
 		</objective>
 		<objective>
 			<text>Забрать улучшенный ТОЗ</text>
-			<function_complete>sak_dialog.have_1_dm_bandits</function_complete>
+			<function_complete>sak.have_items_count("wpn_hunters_toz_new",1)</function_complete>
 			<infoportion_set_complete>gar_dm_bandits_2have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -542,7 +542,7 @@
 		</objective>
 		<objective>
 			<text>Собрать 2 шкуры</text>
-			<function_complete>sak_dialog.flesh_2leather_have</function_complete>
+			<function_complete>sak.have_items_count("flesh_leather",2)</function_complete>
 			<infoportion_set_complete>orex_shkury_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1193,28 +1193,6 @@
 		</objective>
 	</game_task>
 
-<game_task id="esc_provodnik_groza">
-		<title>Найти оружие для Проводника</title>
-		<objective>
-			<text>Найти Грозу</text>
-			<icon>ui_iconsTotal_weapons</icon>
-			<infoportion_complete>esc_find_groza_done</infoportion_complete>
-			<infoportion_fail>esc_provodnik_umer</infoportion_fail>
-			<article>tex_esc_provodnik_groza</article>
-		</objective>
-		<objective>
-			<text>Найти автомат "Гроза"</text>
-			<function_complete>sak_dialog.esc_find_groza_have</function_complete>
-			<infoportion_set_complete>esc_find_groza_have</infoportion_set_complete>
-		</objective>
-		<objective>
-			<text>Принести Грозу Проводнику</text>
-			<map_location_type hint="esc_provodnik">blue_location</map_location_type>
-			<object_story_id>escape_provodnik</object_story_id>
-			<infoportion_complete>esc_find_groza_done</infoportion_complete>			
-		</objective>
-	</game_task>
-	
 	<game_task id="escape_lager_volk_document">
 		<title>Найти потерянный документ</title>
 		<objective>
@@ -1274,7 +1252,7 @@
 		</objective>
 		<objective>
 			<text>Забрать посылку для Сидоровича на Свиноферме</text>
-			<function_complete>sak_dialog.have_box_conserv</function_complete>
+			<function_complete>sak.have_items_count("box_conserv",1)</function_complete>
 			<infoportion_set_complete>sidor_conserv_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1314,7 +1292,7 @@
 		</objective>
 		<objective>
 			<text>Собрать пять собачьих хвостов</text>
-			<function_complete>sak_dialog.five_teil_have</function_complete>
+			<function_complete>sak.have_items_count("mutant_dog_tail",5)</function_complete>
 			<infoportion_set_complete>esc_tolik_five_teil_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1358,7 +1336,7 @@
 		</objective>
 		<objective>
 			<text>Найти артефакт Медуза</text>
-			<function_complete>sak_dialog.esc_shustryi_medusa_have</function_complete>
+			<function_complete>sak.have_items_count("af_medusa",1)</function_complete>
 			<infoportion_set_complete>esc_shustryi_medusa_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1381,7 +1359,7 @@
 		</objective>
 		<objective>
 			<text>Собрать 10 бутылок водки</text>
-			<function_complete>sak_dialog.esc_bridge_vodka_have</function_complete>
+			<function_complete>sak.have_items_count("vodka",10)</function_complete>
 			<infoportion_set_complete>esc_bridge_vodka_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1403,7 +1381,7 @@
 		</objective>
 		<objective>
 			<text>Собрать 10 аптечек</text>
-			<function_complete>sak_dialog.esc_fox_medkit_have</function_complete>
+			<function_complete>vergas_lib.search_items("medkit",10,1)</function_complete>
 			<infoportion_set_complete>esc_fox_medkit_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1470,7 +1448,7 @@
 		</objective>
 		<objective>
 			<text>Найти бронежилет</text>
-			<function_complete>sak_dialog.gar_hellcar_outfit_have</function_complete>
+			<function_complete>sak.have_items_count("stalker_outfit_m3",1)</function_complete>
 			<infoportion_set_complete>gar_hellcar_outfit_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1492,7 +1470,7 @@
 		</objective>
 		<objective>
 			<text>Добыть глаза псевдоплоти</text>
-			<function_complete>sak_dialog.gar_dolg_flesh_eye_have</function_complete>
+			<function_complete>sak.have_items_count("mutant_flesh_eye",4)</function_complete>
 			<infoportion_set_complete>gar_dolg_flesh_eye_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1512,7 +1490,7 @@
 		</objective>
 		<objective>
 			<text>Добыть щупальца кровососа</text>
-			<function_complete>sak_dialog.gar_dolg_krovosos_jaw_have</function_complete>
+			<function_complete>sak.have_items_count("mutant_krovosos_jaw",3)</function_complete>
 			<infoportion_set_complete>gar_dolg_krovosos_jaw_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1532,7 +1510,7 @@
 		</objective>
 		<objective>
 			<text>Добыть пять хвостов псевдопса</text>
-			<function_complete>sak_dialog.gar_dolg_psevdodog_tail_have</function_complete>
+			<function_complete>sak.have_items_count("mutant_psevdodog_tail",5)</function_complete>
 			<infoportion_set_complete>gar_dolg_psevdodog_tail_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1574,7 +1552,7 @@
 		</objective>
 		<objective>
 			<text>Найти ПДА</text>
-			<function_complete>sak_dialog.agr_krot_PDA_have</function_complete>
+			<function_complete>sak.have_items_count("agroprom_pda",1)</function_complete>
 			<infoportion_set_complete>agr_krot_PDA_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1596,7 +1574,7 @@
 		</objective>
 		<objective>
 			<text>Найти костюмы</text>
-			<function_complete>sak_dialog.mil_Svoboda_trader_outfit_have</function_complete>
+			<function_complete>sak.have_items_count("soldier_outfit",2)</function_complete>
 			<infoportion_set_complete>mil_Svoboda_trader_outfit_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1646,7 +1624,7 @@
 		</objective>
 		<objective>
 			<text>Взять мешок "плана"</text>
-			<function_complete>sak_dialog.mil_Svoboda_trader_plan_have</function_complete>
+			<function_complete>sak.have_items_count("sak_plan",1)</function_complete>
 			<infoportion_set_complete>mil_Svoboda_trader_plan_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1705,7 +1683,7 @@
 		</objective>
 		<objective>
 			<text>Найти незаконный приказ</text>
-			<function_complete>sak_dialog.ratcatcher_order_have</function_complete>
+			<function_complete>sak.have_items_count("rad_document7",1)</function_complete>
 			<infoportion_set_complete>ratcatcher_order_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1727,7 +1705,7 @@
 		</objective>
 		<objective>
 			<text>Найти отобранный ПДА</text>
-			<function_complete>sak_dialog.val_escort_PDA_have</function_complete>
+			<function_complete>sak.have_items_count("und_pda",1)</function_complete>
 			<infoportion_set_complete>val_escort_PDA_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1771,7 +1749,7 @@
 		</objective>
 		<objective>
 			<text>Найти артефакт Вспышка</text>
-			<function_complete>sak_dialog.bar_dolg_petrenko_electra_flash_have</function_complete>
+			<function_complete>sak.have_items_count("af_electra_flash",1)</function_complete>
 			<infoportion_set_complete>bar_dolg_petrenko_electra_flash_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1793,7 +1771,7 @@
 		</objective>
 		<objective>
 			<text>Доставить артефакт Сахарову</text>
-			<function_complete>sak_dialog.bar_dolg_petrenko_exo_have</function_complete>
+			<function_complete>sak.have_items_count("exo_outfit_m1",2)</function_complete>
 			<infoportion_set_complete>bar_dolg_petrenko_exo_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1834,7 +1812,7 @@
 		</objective>
 		<objective>
 			<text>Найти Золотую Рыбку</text>
-			<function_complete>sak_dialog.sak_gold_fish_have</function_complete>
+			<function_complete>sak.have_items_count("af_gold_fish",1,false,true)</function_complete>
 			<infoportion_set_complete>sak_gold_fish_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1855,7 +1833,7 @@
 		</objective>
 		<objective>
 			<text>Найти сейф в Х-18</text>
-			<function_complete>sak_dialog.sak_find_seif_have</function_complete>
+			<function_complete></function_complete>
 			<infoportion_set_complete>sak_find_seif_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1896,7 +1874,7 @@
 		</objective>
 		<objective>
 			<text>Найти Декодер</text>
-			<function_complete>sak_dialog.yan_kruglov_decoder_have</function_complete>
+			<function_complete>sak.have_items_count("decoder1",1)</function_complete>
 			<infoportion_set_complete>yan_kruglov_decoder_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -1917,7 +1895,7 @@
 		</objective>
 		<objective>
 			<text>Передать контейнер Сидоровичу</text>
-			<function_complete>sak_dialog.yan_kruglov_art_have</function_complete>
+			<function_complete>sak.have_items_count("quest_manycase_01_kruglov",1)</function_complete>
 			<infoportion_set_complete>yan_kruglov_art_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -2023,7 +2001,7 @@
 		</objective>
 		<objective>
 			<text>Найти артефакт "Бусы Бабки Бюрера"</text>
-			<function_complete>sak_dialog.yan_scientist_find_af_dummy_glassbeads_have</function_complete>
+			<function_complete>sak.have_items_count("af_dummy_glassbeads",1)</function_complete>
 			<infoportion_set_complete>yan_scientist_find_af_dummy_glassbeads_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -2070,7 +2048,7 @@
 			<text>Найти документы</text>
 			<map_location_type hint="Предполагаемое место документов">crlc_big</map_location_type>
 			<object_story_id>val_secret_0018</object_story_id>
-			<function_complete>sak_dialog.bar_dolg_leader_find_case_have</function_complete>
+			<function_complete>sak.have_items_count("quest_case_05",1)</function_complete>
 			<infoportion_set_complete>bar_dolg_leader_find_case_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -2094,7 +2072,7 @@
 			<text>Найти динамит</text>
 			<map_location_type hint="Динамит был в лагере новичков">crlc_big</map_location_type>
 			<object_story_id>esc_lager_leader</object_story_id>
-			<function_complete>sak_dialog.mil_lukash_find_dinamit_have</function_complete>
+			<function_complete>sak.have_items_count("dynamite",1)</function_complete>
 			<infoportion_set_complete>mil_lukash_find_dinamit_have</infoportion_set_complete>
 		</objective>
 		<objective>
@@ -2253,7 +2231,7 @@
 		</objective>
 		<objective>
 			<text>Получить колбасу от охотников</text>
-			<function_complete>sak_dialog.give_paper_box</function_complete>
+			<function_complete>sak_inventory.release_actor_items("paper_box_green",1)</function_complete>
 			<infoportion_set_complete>petrenko_yantar_way_have</infoportion_set_complete>
 		</objective>
 		<objective>

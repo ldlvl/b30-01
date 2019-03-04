@@ -215,7 +215,7 @@
 	
 <dialog id="kulinar_voron_box_dialog">
 <precondition>dialogs.is_not_wounded</precondition>
-<precondition>sak_dialog.kulinar_voron_box_have</precondition>
+<precondition>sak.have_items_count("kulinar_voron_box",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>kulinar_voron_box_dialog_0</text>
@@ -227,15 +227,15 @@
 			<next>12</next>
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.is_ready_time_kulinar_voron_box</precondition>
+		<precondition>sak_dialog.is_ready_time("start_kulinar_voron_time",123)</precondition>
 			<text>kulinar_voron_box_dialog_11</text>
-			<action>sak_dialog.give_kulinar_voron_box</action>
+			<action>sak_inventory.release_actor_items("kulinar_voron_box",1)</action>
 			<next>21</next>
 		</phrase>
 		<phrase id="12">
-		<precondition>sak_dialog.not_ready_time_kulinar_voron_box</precondition>
+		<precondition>sak_dialog.not_ready_time("start_kulinar_voron_time",123)</precondition>
 			<text>kulinar_voron_box_dialog_12</text>
-			<action>sak_dialog.give_kulinar_voron_box</action>
+			<action>sak_inventory.release_actor_items("kulinar_voron_box",1)</action>
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
@@ -245,7 +245,7 @@
 		<phrase id="22">
 			<text>kulinar_voron_box_dialog_22</text>
 			<give_info>kulinar_voron_info_done</give_info>
-			<action>sak_dialog.add_5antirad</action>
+			<action>test.add_to_actor("antirad",3)</action>
 		</phrase>
 	</phrase_list>
 </dialog>

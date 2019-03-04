@@ -3,7 +3,7 @@
 
 	<dialog id="mil_screw_flamethrower">
 		<dont_has_info>flamethrower_quest_start</dont_has_info>
-		<precondition>sak_dialog.flamethrower_bad_have</precondition>
+		<precondition>sak.have_items_count("flamethrower_bad",1)</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>mil_screw_flamethrower_1000</text>
@@ -15,14 +15,14 @@
 				<next>1003</next>
 			</phrase>
 			<phrase id="1002">
-			<precondition>sak_dialog.flamethrower_bad_have</precondition>
+			<precondition>sak.have_items_count("flamethrower_bad",1)</precondition>
 				<text>mil_screw_flamethrower_1002</text>
-				<action>sak_dialog.give_bad_flamethrower</action>
+				<action>sak_inventory.release_actor_items("flamethrower_bad",1)</action>
 				<next>1004</next>
 			</phrase>
 			<phrase id="1004">
 				<text>mil_screw_flamethrower_1004</text>
-				<action>sak_dialog.add_good_rand_aart</action>
+				<action>test.add_rnd_art_to_actor(1,5)</action>
 			</phrase>
 			<phrase id="1003">
 				<text>mil_screw_flamethrower_1003</text>
@@ -179,7 +179,7 @@
 			<phrase id="1005">
 				<text>barmen_flamethrower_task_1005</text>
 				<give_info>flamethrower_quest_gorelka</give_info>
-				<action>sak_dialog.add_gorelka</action>
+				<action>test.add_to_actor("gorelka",1)</action>
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -187,12 +187,12 @@
 	<dialog id="parts_completed">
 		<has_info>flamethrower_quest_start</has_info>
 		<dont_has_info>start_work</dont_has_info>
-		<precondition>sak_dialog.flamethrower_bad_have</precondition>
+		<precondition>sak.have_items_count("flamethrower_bad",1)</precondition>
 		<precondition>sak_dialog.have_10vodka</precondition>
 		<precondition>sak_dialog.fireball_have</precondition>
-		<precondition>sak_dialog.have_gorelka</precondition>
-		<precondition>sak_dialog.have_manometr</precondition>
-		<precondition>sak_dialog.have_trubka</precondition>
+		<precondition>sak.have_items_count("gorelka",1)</precondition>
+		<precondition>sak.have_items_count("manometr",1)</precondition>
+		<precondition>sak.have_items_count("trubka",1)</precondition>
 		<phrase_list>
 			<phrase id="0">
 				<text>parts_completed_0</text>
@@ -203,20 +203,19 @@
 				<next>21</next>
 			</phrase>
 			<phrase id="21">
-				<precondition>sak_dialog.flamethrower_bad_have</precondition>
+				<precondition>sak.have_items_count("flamethrower_bad",1)</precondition>
 				<precondition>sak_dialog.have_10vodka</precondition>
 				<precondition>sak_dialog.fireball_have</precondition>
-				<precondition>sak_dialog.have_gorelka</precondition>
-				<precondition>sak_dialog.have_manometr</precondition>
-				<precondition>sak_dialog.have_trubka</precondition>
+				<precondition>sak.have_items_count("gorelka",1)</precondition>
+				<precondition>sak.have_items_count("manometr",1)</precondition>
+				<precondition>sak.have_items_count("trubka",1)</precondition>
 				<text>parts_completed_1000</text>
 				<action>flamethrower.good_bye</action>
 				<next>1001</next>
 			</phrase>
 			<phrase id="1001">
 				<text>parts_completed_1001</text>
-				<!--<action>flamethrower.start_work</action>-->
-				<action>sak_dialog.sidor_opt_food_time</action>
+				<action>sak_dialog.start_time("time_start_sidor_opt_food")</action>
 				<give_info>start_work</give_info>
 				<next>1002</next>
 			</phrase>
@@ -238,7 +237,7 @@
 			</phrase>
 			<phrase id="11">
 			<!--<precondition>flamethrower.not_ready</precondition>-->
-			<precondition>sak_dialog.not_ready_time_sidor_opt_food</precondition>
+			<precondition>sak_dialog.not_ready_time("time_start_sidor_opt_food",1400)</precondition>
 				<text>parts_completed_1003</text>
 				<next>100</next>
 			</phrase>
@@ -248,7 +247,7 @@
 			</phrase>
 			<phrase id="10">
 			<!--<precondition>flamethrower.is_ready</precondition>-->
-			<precondition>sak_dialog.is_ready_time_sidor_opt_food</precondition>
+			<precondition>sak_dialog.is_ready_time("time_start_sidor_opt_food",1400)</precondition>
 				<text>parts_completed_1005</text>
 				<next>1006</next>
 			</phrase>
@@ -278,7 +277,7 @@
 			<phrase id="1009">
 				<text>parts_completed_1009</text>
 				<action>sak_dialog.take2_gar_flame</action>
-				<action>sak_dialog.clear_ready_time_sidor_opt_food</action>
+				<action>sak_dialog.clear_ready_time("time_start_sidor_opt_food")</action>
 				<give_info>game_over</give_info>
 				<next>1019</next>
 			</phrase>

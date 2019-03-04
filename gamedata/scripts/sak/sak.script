@@ -1255,7 +1255,7 @@ end
 
 function add_kont_leshyi()
     if not has_alife_info( "leshyi_umer2" ) then
-        sak_dialog.added_kont_leshyi()
+        sak_dialog.spawn_m_cont( 2 )
         send_tip(
             "Напали твари, еле убежал! Пришлось бросить контейнер. Не доходя до свинофермы, справа от дороги, возле пня",
             "Записка Лешего", 11, 20, "death", "sak", "red"
@@ -1602,14 +1602,7 @@ function add_two_corpses()
     obj = create_corpse( "yan_ecolog_respawn_2",
         v3f( 184.60, 6.0, -378.50 ), 938, 384388, 9496
     )
-    sak_dialog.borov_kont()
-end
-
-function add_scaintist_body()
-    local obj = create_corpse( "yan_ecolog_respawn_2",
-        v3f( -46.53, -2.2, -98.36 ), 2258, 53082, 9498
-    )
-    misc.spawn_to( "scaintist_pda", obj )
+    sak_dialog.spawn_m_cont( 3 )
 end
 
 function add_monster_body()
@@ -1710,7 +1703,7 @@ function blockpost_case_clear()
     if obj then misc.release_obj( obj, 'blockpost_case_clear' ) end
 end
 
-function add_kontainer() sak_dialog.add_rad_kontainer() end
+function add_kontainer() sak_dialog.spawn_m_cont( 1 ) end
 
 function agroprom_wpm()
     local obj = g_sim:story_object( story_ids.agr_inventory_box_sak )
@@ -1837,7 +1830,7 @@ end
 
 sak.have_item_namber = have_items_count
 
-function spawn_items ( npc, section, number )
+function spawn_items( npc, section, number )
     if type( npc.id ) ~= "function" then
         npc = client_obj( misc.get_object_id( npc ) )
     end
@@ -4661,10 +4654,6 @@ function give_n_repair_itemoutfit( n )
     relocate_item( db.actor, "out", "repair_itemoutfit", n )
 end
 
-function add_repair_box()
-  --amk.spawn_item( "repair_boxoutfit", v3f( 301.11, 13.31, 276.43 ), 246, 565356 )
-end
-
 function btr_looks()
     local snd_obj
     local sound = "scripts\\matches_no_light_2"
@@ -4925,7 +4914,7 @@ end
 
 function mar_corps_done()
     if
-        level_object_by_sid( 9552 ) == nil
+            level_object_by_sid( 9552 ) == nil
         and level_object_by_sid( 9553 ) == nil
         and level_object_by_sid( 9554 ) == nil
     then
@@ -9467,10 +9456,6 @@ function start_progress()
     amk_mod.last_condition = 0
     params.cond_wpn_old    = { 0, 0, 0, 0, 0, 0 }
     amk_mod.check_armor()
-end
-
-function end_hellcar()
-    db.actor:give_info_portion( "gar_hellcar_dialog_end" )
 end
 
 function paused_game()

@@ -676,19 +676,6 @@ function add_rjaboi_kontainer()
   end
 end
 
-function have_many_arts()
-	for i,k in pairs(sak_inventory.rucksack) do
-		if strpos(i, "af_",1,true) and not strpos(i, "af_full_akkum",1,true) and not strpos(i, "af_dummy_black_tip",1,true)  then
-			local kolvo = #k
-			for m=1,kolvo do
-				sak.add_price_arts(i)
-			end
-		end
-	end
-local have_many=sak.load_variable("price_arts",0)
-	if have_many>=45000 then sak.del_variable("price_arts") return true end
-end
-
 function rjaboi_letter_give()
   sak.create_items(db.actor,"mil_rjaboi_letter",1)
 end

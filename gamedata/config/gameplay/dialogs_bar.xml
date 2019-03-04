@@ -1124,7 +1124,7 @@
 	<phrase_list>
 		<phrase id="0">
 			<text>bar_bar_barman_ecolog_flash_done_0</text>
-			<action>sak_dialog.give_bar_ecolog_flash</action>
+			<action>sak_inventory.release_actor_items("bar_ecolog_flash",1)</action>
 			<next>1</next>
 		</phrase>
 		<phrase id="1">
@@ -1146,7 +1146,7 @@
 			<!-- <action>sak.info_amk_received</action>
 			<give_info>info_amk_recipt_almaz_kolobok</give_info> -->
 			<action>test.give_rnd_recipt(7)</action>
-			<action>sak_dialog.take_5000_money</action>
+			<action>sak_dialog.give_money(5000,"in")</action>
 		</phrase>
 		<phrase id="22">
 			<has_info>info_way113a</has_info>
@@ -1154,7 +1154,7 @@
 			<!-- <action>sak.info_amk_received</action>
 			<give_info>info_amk_recipt_almaz_kolobok</give_info> -->
 			<action>test.give_rnd_recipt(7)</action>
-			<action>sak_dialog.take_5000_money</action>
+			<action>sak_dialog.give_money(5000,"in")</action>
 		</phrase>
 		<phrase id="3">
 			<text />
@@ -2156,7 +2156,7 @@
 			<text>bar_bar_hunter_quest_finish_11</text>
 			<give_info>bar_bar_hunter_quest_finish</give_info>
 			<!-- <give_info>info_amk_recipt_tears_electra</give_info> -->
-			<action>sak_dialog.add_hunters_treasure1</action>
+			<action>sak_dialog.add_hunters_treasure(1)</action>
 			<!-- <action>sak.info_amk_received</action> -->
 			<action>test.give_rnd_recipt(5)</action>
 		</phrase>
@@ -2165,7 +2165,7 @@
 			<text>bar_bar_hunter_quest_finish_12</text>
 			<give_info>bar_bar_hunter_quest_finish</give_info>
 			<!-- <give_info>info_amk_recipt_steel_kolobok</give_info> -->
-			<action>sak_dialog.add_hunters_treasure2</action>
+			<action>sak_dialog.add_hunters_treasure(2)</action>
 			<action>test.give_rnd_recipt(5)</action>
 			<!-- <action>sak.info_amk_received</action> -->
 		</phrase>
@@ -2174,7 +2174,7 @@
 			<text>bar_bar_hunter_quest_finish_13</text>
 			<give_info>bar_bar_hunter_quest_finish</give_info>
 			<!-- <give_info>info_amk_recipt_grandmother_glassbeards</give_info> -->
-			<action>sak_dialog.add_hunters_treasure3</action>
+			<action>sak_dialog.add_hunters_treasure(3)</action>
 			<action>test.give_rnd_recipt(5)</action>
 			<!-- <action>sak.info_amk_received</action> -->
 		</phrase>
@@ -3728,7 +3728,7 @@
 		</phrase>
 		<phrase id="1091">
 			<text>bar_bar_drunk_dolg_start_1091</text>
-			<action>sak_dialog.bar_dolg_debt_show</action>
+			<action>sak_dialog.stalker_show("bar_dolg_debt_1")</action>
 			<next>1010</next>
 		</phrase>
 		<phrase id="1010">
@@ -4026,7 +4026,7 @@
 		</phrase>
 		<phrase id="0">
 			<text>bar_dolg_leader_quest_rg6_finish_0</text>
-			<action>bar_dialogs.give_rg6</action>
+			<action>sak_inventory.release_actor_items("wpn_rg-6",1)</action>
 			<give_info>bar_svoboda_rg6_done</give_info>
 			<next>1</next>
 		</phrase>
@@ -4139,14 +4139,14 @@
 		</phrase>
 			
 		<phrase id="511">
-		<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
+		<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
 			<text>bar_dolg_leader_start_511</text>
-			<action>sak_dialog.give_mil_kurjer_pda</action>
+			<action>sak_inventory.release_actor_items("mil_kurjer_pda",1)</action>
 			<next>611</next>
 		</phrase>
 		<phrase id="611">
 			<text>bar_dolg_leader_start_611</text>
-			<action>sak_dialog.kuznezov_shkura_time</action>
+			<action>sak_dialog.start_time("kuznezov_shkura_time")</action>
 			<give_info>bar_svoboda_rg6_done</give_info>
 			<give_info>info_amk_recipt_cheshya</give_info>
 			<action>sak.info_amk_received</action>
@@ -4154,16 +4154,16 @@
 		<phrase id="512">
 		<precondition>bar_dialogs.have_rg6</precondition>
 			<text>bar_dolg_leader_start_512</text>
-			<action>sak_dialog.give_rg6</action>
+			<action>sak_inventory.release_actor_items("wpn_rg-6",1)</action>
 			<next>612</next>
 		</phrase>
 		<phrase id="612">
 			<text>bar_dolg_leader_start_612</text>
-			<action>sak_dialog.take_30vog</action>
+			<action>test.add_to_actor("ammo_vog-25",12)</action>
 			<give_info>bar_svoboda_rg6_done</give_info>
 			<give_info>info_amk_recipt_cheshya</give_info>
 			<action>sak.info_amk_received</action>
-			<action>sak_dialog.kuznezov_shkura_time</action>
+			<action>sak_dialog.start_time("kuznezov_shkura_time")</action>
 		</phrase>
 		<phrase id="513">
 			<text>bar_dolg_leader_start_513</text>
@@ -4174,11 +4174,11 @@
 			<give_info>bar_svoboda_rg6_done</give_info>
 		</phrase>
 		<phrase id="514">
-		<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
-		<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+		<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
+		<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 			<text>bar_dolg_leader_start_514</text>
-			<action>sak_dialog.give_mil_kurjer_pda</action>
-			<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>
+			<action>sak_inventory.release_actor_items("mil_kurjer_pda",1)</action>
+			<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>
 			<next>614</next>
 		</phrase>
 		<phrase id="614">
@@ -4186,7 +4186,7 @@
 			<give_info>bar_svoboda_rg6_done</give_info>
 			<give_info>info_amk_recipt_cheshya</give_info>
 			<action>sak.info_amk_received</action>
-			<action>sak_dialog.take_30000_money</action>
+			<action>sak_dialog.give_money(30000,"in")</action>
 		</phrase>
 		<phrase id="401">
 			<text>bar_dolg_leader_start_401</text>
@@ -4477,7 +4477,7 @@
 		</phrase>
 		<phrase id="3">
 			<text>bar_bar_drunk_dolg_story_done_3</text>
-			<action>sak_dialog.add_good_rand_aart</action>
+			<action>test.add_rnd_art_to_actor(1,5)</action>
 			<give_info>drunk_dolg_story_done</give_info>			
 			<next>4</next>			
 		</phrase>

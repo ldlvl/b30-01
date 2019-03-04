@@ -90,17 +90,18 @@ end
 
 function start_randoms()
 	for _, v in ipairs({ 
-							"treasure_manager.rnd",
-							"sak.changed_art_class",
-							"amk_anoms.generate_arts",
-							"amk_anoms.randomize_arts",
-							"monster_parts.on_part_take",
-							"test.make_shron_voron",
-							"sak.artmod",
-							"generic_rnd",
-							"xr_box.ph_item_box",
-							"test.rec_art_info"
-						})	do
+		"treasure_manager.rnd",
+		"sak.changed_art_class",
+		"amk_anoms.generate_arts",
+		"amk_anoms.randomize_arts",
+		"monster_parts.on_part_take",
+		"test.make_shron_voron",
+		"sak.artmod",
+		"generic_rnd",
+		"gg_mayatniks",
+		"xr_box.ph_item_box",
+		"test.rec_art_info"
+	}) do
 		dsh.get_next_random( v )
 	end
 end

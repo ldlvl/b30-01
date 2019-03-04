@@ -259,22 +259,22 @@
 			</phrase>
 			<phrase id="31">
 				<text>val_rob_dialog_31</text>
-				<action>sak_dialog.add_1_ammo_ak</action>
+				<action>test.add_to_actor("ammo_ak",1)</action>
 				<next>4</next>
 			</phrase>
 			<phrase id="32">
 				<text>val_rob_dialog_32</text>
-				<action>sak_dialog.add_5_ammo_ak</action>
+				<action>test.add_to_actor("ammo_ak",5)</action>
 				<next>4</next>
 			</phrase>
 			<phrase id="33">
 				<text>val_rob_dialog_33</text>
-				<action>sak_dialog.add_10_ammo_ak</action>
+				<action>test.add_to_actor("ammo_ak",10)</action>
 				<next>4</next>
 			</phrase>
 			<phrase id="34">
 				<text>val_rob_dialog_34</text>
-				<action>sak_dialog.add_25_ammo_ak</action>
+				<action>test.add_to_actor("ammo_ak",25)</action>
 				<next>4</next>
 			</phrase>
 			<phrase id="4">
@@ -291,27 +291,27 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="1111">
-			<precondition>sak_dialog.actor_200_have</precondition>
+			<precondition>sak_dialog.actor_have(200)</precondition>
 				<text>val_rob_dialog_1111</text>
-				<action>sak_dialog.give_200_money</action>
+				<action>sak_dialog.give_money(200,1)</action>
 				<next>31</next>
 			</phrase>
 			<phrase id="1112">
-			<precondition>sak_dialog.actor_1000_have</precondition>
+			<precondition>sak_dialog.actor_have(1000)</precondition>
 				<text>val_rob_dialog_1112</text>
-				<action>sak_dialog.give_1000_money</action>
+				<action>sak_dialog.give_money(1000,1)</action>
 				<next>32</next>
 			</phrase>
 			<phrase id="1113">
-			<precondition>sak_dialog.actor_2000_have</precondition>
+			<precondition>sak_dialog.actor_have(2000)</precondition>
 				<text>val_rob_dialog_1113</text>
-				<action>sak_dialog.give_2000_money</action>
+				<action>sak_dialog.give_money(2000,1)</action>
 				<next>33</next>
 			</phrase>
 			<phrase id="1114">
-			<precondition>sak_dialog.actor_5000_have</precondition>
+			<precondition>sak_dialog.actor_have(5000)</precondition>
 				<text>val_rob_dialog_1114</text>
-				<action>sak_dialog.give_5000_money</action>
+				<action>sak_dialog.give_money(5000,1)</action>
 				<next>34</next>
 			</phrase>
 			<phrase id="2">

@@ -954,7 +954,8 @@
 			<dont_has_info>mil_sniper_payment</dont_has_info>
 			<has_info>mil_sniper_kill_actor</has_info>
 				<text>mil_dolg_skull_dialog_401</text>
-				<action>sak_dialog.mil_dolg_payment</action>
+				<action>test.add_rnd_art_to_actor(2)</action>
+				<action>sak_dialog.relocate_money(db.actor,25000,"in")</action>
 				<give_info>mil_sniper_payment</give_info>
 				<next>402</next>
 			</phrase>
@@ -1762,7 +1763,7 @@
 			</phrase>
 			<phrase id="3501">
 				<text>mil_trader_dialog_3501</text>
-				<action>sak_dialog.add_mil_trader_art</action>
+				<action>test.add_rnd_art_to_actor(3,4)</action>
 			</phrase>
 			<phrase id="3400">
 				<text>mil_trader_dialog_3400</text>
@@ -1835,7 +1836,7 @@
 			</phrase>
 			<phrase id="4005">
 				<text>mil_trader_dialog_4005</text>
-				<action>sak_dialog.add_mil_trader_art</action>
+				<action>test.add_rnd_art_to_actor(3,4)</action>
 				<give_info>mil_miser_task_complete</give_info>
 				<next>7006</next>
 			</phrase>			
@@ -1914,7 +1915,7 @@
 			</phrase>
 			<phrase id="7005">
 				<text>mil_trader_dialog_7005</text>
-				<action>sak_dialog.add_mil_trader_art</action>
+				<action>test.add_rnd_art_to_actor(3,4)</action>
 				<give_info>mil_miser_task_complete</give_info>
 				<give_info>mil_go_to_miser_end</give_info>
 				<next>7006</next>
@@ -1934,8 +1935,8 @@
 			</phrase>
 			<phrase id="70081">
 			<dont_has_info>mil_kurjer_have_skrjaga_info</dont_has_info>
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_70081</text>
 				<give_info>mil_kurjer_have_skrjaga_info</give_info>
 				<next>70091</next>
@@ -1948,29 +1949,29 @@
 				<next>701014</next>
 			</phrase>
 			<phrase id="701011">
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_701011</text>
-				<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>
+				<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>
 				<next>701111</next>
 			</phrase>
 			<phrase id="701111">
 				<text>mil_trader_dialog_701111</text>
-				<action>sak_dialog.take_50000_money</action>
+				<action>sak_dialog.give_money(50000,"in")</action>
 				<action>sak_dialog.add_vodka</action>
 				<give_info>freedom_exo_good_trade</give_info>				
 				<next>7012111</next>
 				<next>7012112</next>
 			</phrase>
 			<phrase id="7012111">
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
 				<text>mil_trader_dialog_7012111</text>
-				<action>sak_dialog.give_mil_kurjer_pda</action>
+				<action>sak_inventory.release_actor_items("mil_kurjer_pda",1)</action>
 				<next>7013111</next>
 			</phrase>
 			<phrase id="7013111">
 				<text>mil_trader_dialog_7013111</text>
-				<action>sak_dialog.take_2500_money</action>
+				<action>sak_dialog.give_money(2500,"in")</action>
 				<next>701411</next>
 			</phrase>
 			<phrase id="7012112">
@@ -1986,22 +1987,22 @@
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="701012">
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_701012</text>
-				<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>
+				<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>
 				<next>701112</next>
 			</phrase>
 			<phrase id="701112">
 				<text>mil_trader_dialog_701112</text>
-				<action>sak_dialog.take_cart_art</action>
+				<action>test.add_rnd_art_to_actor(3)</action>
 				<give_info>freedom_exo_good_trade</give_info>				
 				<next>7012111</next>
 				<next>7012112</next>
 			</phrase>
 			<phrase id="701013">
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_701013</text>
 				<next>701113</next>
 			</phrase>
@@ -2024,7 +2025,7 @@
 			</phrase>
 			<phrase id="70082">
 			<dont_has_info>mil_kurjer_have_skrjaga_info</dont_has_info>
-			<precondition>sak_dialog.mil_kurjer_pda_have</precondition>
+			<precondition>sak.have_items_count("mil_kurjer_pda",1)</precondition>
 				<text>mil_trader_dialog_70082</text>
 				<give_info>mil_kurjer_have_skrjaga_info</give_info>
 				<next>70092</next>
@@ -2053,7 +2054,7 @@
 			</phrase>			
 			<phrase id="70084">
 			<dont_has_info>mil_kurjer_have_skrjaga_info</dont_has_info>
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_70084</text>				
 				<next>70094</next>
 			</phrase>
@@ -2064,28 +2065,28 @@
 				<next>701044</next>
 			</phrase>
 			<phrase id="701041">
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_701041</text>
-				<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>
+				<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>
 				<next>701141</next>
 			</phrase>
 			<phrase id="701141">
 				<text>mil_trader_dialog_701141</text>
-				<action>sak_dialog.take_50000_money</action>
+				<action>sak_dialog.give_money(50000,"in")</action>
 				<action>sak_dialog.add_vodka</action>
 				<give_info>freedom_exo_good_trade</give_info>				
 				<next>701411</next>
 			</phrase>
 			<phrase id="701042">
-			<precondition>sak_dialog.quest_manycase_01_mil_kurjer_have</precondition>
+			<precondition>sak.have_items_count("quest_manycase_01_mil_kurjer",1)</precondition>
 				<text>mil_trader_dialog_701042</text>
-				<action>sak_dialog.give_quest_manycase_01_mil_kurjer</action>
+				<action>sak_inventory.release_actor_items("quest_manycase_01_mil_kurjer",1)</action>
 				<give_info>mil_kurjer_have_skrjaga_info</give_info>
 				<next>701142</next>
 			</phrase>
 			<phrase id="701142">
 				<text>mil_trader_dialog_701142</text>
-				<action>sak_dialog.take_cart_art</action>
+				<action>test.add_rnd_art_to_actor(3)</action>
 				<give_info>freedom_exo_good_trade</give_info>				
 				<next>701411</next>
 			</phrase>
