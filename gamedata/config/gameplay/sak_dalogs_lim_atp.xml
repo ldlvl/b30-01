@@ -1360,14 +1360,16 @@
 		</phrase>
 
 		<phrase id="3">
-			<precondition>test.check_monster_part_march_restore_exist</precondition>   <!-- есть запчасть в обработке -->
-			<precondition>test.check_monster_part_march_timer</precondition>           <!-- таймер оттикал -->
+			<precondition>test.check_monster_part_march_restore_exist</precondition>  <!-- есть запчасть в обработке -->
+			<precondition>test.check_monster_part_march_timer</precondition>          <!-- таймер оттикал -->
+			<precondition>sak.have_items_count("banka_full",1)</precondition> 		  <!-- есть холодец -->
 			<text>pahom_monster_parts_dialog_3</text>
 			<next>4</next>
 		</phrase>
 
 		<phrase id="4">
 			<text>pahom_monster_parts_dialog_4</text>
+			<action>sak_inventory.release_actor_items("banka_full",1)</action>
 			<action>test.give_march_monster_part_restored</action>
 			<next>9</next>
 		</phrase>
@@ -16179,6 +16181,7 @@
 <dialog id="pahom_full_banka">
 <has_info>val_escort_PDA_have</has_info>
 <dont_has_info>pahom_buzz_need</dont_has_info>
+<precondition>sak_dialog.is_pahom_buzz_time</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>pahom_full_banka_0</text>

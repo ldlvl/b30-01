@@ -928,14 +928,14 @@ end
 function check_for_march_restore( section, flag )
     if
         sak.have_items_count( section, 1 ) ~= false
-        and sak.have_items_count( "banka_full", 1 ) ~= false
+        --and sak.have_items_count( "banka_full", 1 ) ~= false
         and sak_dialog.gg_n_bart_have( 2 )
     then
         if not flag then
             return true
         else
             sak_inventory.release_actor_items( section, 1 )
-            sak_inventory.release_actor_items( "banka_full", 1 )
+            --sak_inventory.release_actor_items( "banka_full", 1 )
             sak_dialog.give_n_bart( 2 )
             nlc_vars.monster_part_march_restore = section
             timers.start_timer(
@@ -947,14 +947,21 @@ function check_for_march_restore( section, flag )
 end
 
 function march_monster_part_restore_end()
-    sak.send_tip( "Меченный, твоя запчасть готова, подваливай.", "Сообщение от Пахома:", 2, 20, "uniq", "sak", "green" )
+    sak.send_tip(
+        "Меченный, твоя запчасть готова, подваливай. Холодца банку не забудь.",
+        "Сообщение от Пахома:", 2, 20, "uniq", "sak", "green"
+    )
     timers.start_timer(
-        "march_monster_part_restore_end_timer", 1, 0, 0, "test.march_monster_part_restore_end_timer()"
+        "march_monster_part_restore_end_timer", 1, 0, 0,
+        "test.march_monster_part_restore_end_timer()"
     )
 end
 
 function march_monster_part_restore_end_timer()
-    sak.send_tip( "Меченный, твоя запчасть ушла в фонд развития науки. Я предупреждал.", "Сообщение от Пахома:", 2, 20, "uniq", "sak", "red" )
+    sak.send_tip(
+        "Меченный, твоя запчасть ушла в фонд развития науки. Я предупреждал.",
+        "Сообщение от Пахома:", 2, 20, "uniq", "sak", "red"
+    )
     nlc_vars.monster_part_march_restore = nil
 end
 

@@ -812,6 +812,7 @@ end
 function add_nagrad_pahon()
     sak.create_items( db.actor, "antirad",  3 + math.fmod( ( amk_vars.r_treas_items + timers.Get_Game_Days() ), 3 ) )
     sak.create_items( db.actor, "conserva", 4 + math.fmod( ( amk_vars.r_task_reward + timers.Get_Game_Days() ), 7 ) )
+    timers.start_timer( "pahom_buzz_pause", 0, lua_random( 17, 24 ), 0 )
 end
 
 function off_kontainer()
@@ -6001,4 +6002,12 @@ function give_lisaped_opt()
     sak_inventory.release_actor_items( "wpn_ak74_m1", 1 )
     sak_inventory.release_actor_items( "wpn_fn2000",  1 )
     sak_inventory.release_actor_items( "wpn_aks47",   1 )
+end
+
+function is_pahom_buzz_time()
+    if not timers.check_timer( "pahom_buzz_pause" ) then
+        return true
+    else
+        return false
+    end
 end
