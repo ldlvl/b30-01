@@ -198,11 +198,7 @@ function add_codelock_on_seif_agro()
         data.custom_data = "[logic]\ncfg = scripts\\ttt.ltx"
         pk:set( data )
     end
-    if obj.online then
-        alife():set_switch_online ( obj.id, false )
-        alife():set_switch_offline( obj.id, true  )
-        amk.convert_npc[ obj.id ] = 1
-    end
+    sak.off_on( obj )
 end
 
 function gg_have_this_bamazhka( sect )
@@ -320,7 +316,7 @@ function anim_eat_start( obj )
             poison_chance = f_tbl_cond - f_cond
             if lua_random() < poison_chance then
                 timers.start_timer(
-                  "do_poison_gg", lua_random( 15, 25 ), "test.food_poisoning()"
+                    "do_poison_gg", lua_random( 15, 25 ), "test.food_poisoning()"
                 )
             end
         end
@@ -333,9 +329,7 @@ function food_poisoning()
 end
 
 function delay_close_inv()
-    if db.actor:has_info( "ui_inventory" ) then
-        sak.close_window()
-    end
+    if db.actor:has_info( "ui_inventory" ) then sak.close_window() end
 end
 
 function anim_eat_middle()
@@ -829,8 +823,8 @@ function spawn_docent_lampada()
 end
 
 function add_soul()
-  local sect = test.add_rnd_art_to_actor( 3, 4 ) 
-  nlc_vars.gluzov_art_given = sect:gsub('_dyn[1-5]d', '')
+    local sect = test.add_rnd_art_to_actor( 3, 4 ) 
+    nlc_vars.gluzov_art_given = sect:gsub('_dyn[1-5]d', '')
 end
 
 function isBarterAvailable( treshold, npc_koeff )
@@ -1115,11 +1109,7 @@ function add_scarman_habar()
                 obj1.id
             )
         end
-        if obj1.online then
-            g_sim:set_switch_online ( obj1.id, false )
-            g_sim:set_switch_offline( obj1.id, true  )
-            amk.convert_npc[ obj1.id ] = 1
-        end
+        sak.off_on( obj1 )
     end
 end
 
@@ -1212,11 +1202,7 @@ function prizrak_outfit_prize()
     end
     obj = client_obj( obj.id )
     obj:set_condition( 0.65 )
-    if parent.online then
-        g_sim:set_switch_online ( parent.id, false )
-        g_sim:set_switch_offline( parent.id, true  )
-        amk.convert_npc[ parent.id ] = 1
-    end
+    sak.off_on( parent )
     nlc_vars.tmp_prizrak_outfit = nil
 end
 
@@ -1235,7 +1221,7 @@ function rad_disease_health_handle()
     if db.actor.health >= curr_max_health then
         params.health_add( -0.05 )
     end
-    if lua_random() < 0.17 then
+    if lua_random() < 0.15 then
         level.add_pp_effector( "eat_drug.ppe", 1039, false )
     end
 end
@@ -1291,8 +1277,7 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
     amk.spawn_item( "sak_document2", sak.v3f( -80, -1.28, 153 ), 163, 187916 )
     amk.spawn_item( "wpn_pb",        sak.v3f( -80, -1.20, 153 ), 163, 187916 )
     local ind = lua_random( #tbl )
-    local par = test.spawn_no_ai(
-                    "rukzak_inventory_box",
+    local par = test.spawn_no_ai( "rukzak_inventory_box",
                     sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
                     tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
                 )
@@ -1305,9 +1290,8 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
     end
     local obj
     for a = 1, 2 do
-        obj = g_sim:create(
-            "kolbasa", par.position, par.m_level_vertex_id,
-            par.m_game_vertex_id, par.id
+        obj = g_sim:create( "kolbasa",
+            par.position, par.m_level_vertex_id, par.m_game_vertex_id, par.id
         )
         misc.process_spawn()
         local new_cond = 0.3 * a
@@ -1318,11 +1302,7 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
     end
     obj = client_obj( obj.id )
     obj:set_condition( new_cond )
-    if par.online then
-        g_sim:set_switch_online ( par.id, false )
-        g_sim:set_switch_offline( par.id, true  )
-        amk.convert_npc[ par.id ] = 1
-    end
+    sak.off_on( par )
 end
 
 function move_tolik()
