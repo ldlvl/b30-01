@@ -1,107 +1,122 @@
 function add_first_spawn()
-	local tbl_del_obj = {
-		"agr_af_dummy_battery", 				-- батарейка на Агро
-		"x18_af_dummy_pellicle", 				-- плёнка в х18
-		"mil_wpn_lr300_m1", 					-- снайперский LR или оружейка Свободы?
-		"mil_wpn_lr_0002_m1", 					-- оружейка свободы
-		"mil_wpn_lr_0003_m1", 					-- оружейка свободы
-		"mil_wpn_lr_0004_m1", 					-- оружейка свободы
-		"bar_bron_dolg_m1", 					-- броник долга в ангаре на Баре
-		"val_quest_ak74u", 						-- оружейка бандосов в ТД
-		"val_quest_ak74u_0000", 				-- оружейка бандосов в ТД
-		"val_quest_ak74u_0001", 				-- оружейка бандосов в ТД
-		"val_quest_mp5", 						-- оружейка бандосов в ТД
-		"val_quest_mp5_0000", 					-- оружейка бандосов в ТД
-		"val_killer_bron", 						-- броник наймов в ТД на базе бандитов
-		"mil_inventory_box_0034", 				-- ящик в оружейке свободы???
-		"mar_quest_mp5_1",           			-- мп5 у капитана на болотах
-		"dar_quest_rpg7", 						-- РПГ в х18 на полу
-		"marsh_lab_monster1", 					-- трупики собачек у ученых на болотах?
-		"marsh_lab_monster2", 					-- трупики собачек у ученых на болотах?
-		"bar_sak_physic_object01", 				-- большой прицеп на дороге на АС
-		"bar_sak_physic_object02", 				-- камаз справа на пути на АС
-		"bar_sak_physic_object04", 				-- прицеп у перехода на АС
-		"bar_sak_physic_object06", 				-- трактор у перехода на АС
-		"ros_tutorial_witches_galantine_0022", 	-- электра на ДТ
-		"ros_tutorial_witches_galantine_0005", 	-- электра на ДТ
-		"ros_tutorial_witches_galantine_0006", 	-- электра на ДТ
-		"ros_tutorial_witches_galantine_0019", 	-- электра на ДТ
-		"ros_tutorial_witches_galantine_0018", 	-- электра на ДТ
-		"ros_tutorial_witches_galantine_0009", 	-- электра на ДТ
-		"rad_physic_object_0014" 				-- канистра на Радаре
-	}
-	for i = 1, #tbl_del_obj do
-		local obj = g_sim:object( tbl_del_obj[ i ] )
-		if obj then misc.release_obj( obj.id ) end
-	end
-	local tsa = {
-		{ "amk_zone_mincer_strong",		52.93,	 0.11, 	 32.36,		1240,	29236  },
-		{ "amk_zone_mincer_strong",		36.84,	 4.00, 	 146.22,	1412,	67530  },
-		{ "amk_zone_mincer_strong",		74.24,	 0.18, 	 265.00,	1244,	29227  }, --Бар проход на АС справа пандус
-		{ "amk_zone_mincer_strong",		74.12,	 0.10, 	 276.37,	1244,	29227  }, --Бар проход на АС справа пандус
-		{ "amk_zone_sakbuzz_strong",	74.84,	 0.86,  -136.71,	397,	244678 }, --Свалка, бетон, псевды, круг
-		{ "amk_zone_sakbuzz_strong",	32.95,	 4.00, 	 146.22,	1412,	67411  }, --ДТ трубы у перехода на Бар
-		{ "amk_zone_sakbuzz_strong",	116.99,	 20.13,	 160.00,	240,	419813 }, --Кордон??
-		{ "amk_zone_sakbuzz_strong",   -100.73, -8.99,  -134.49,	1437,	45041  }, --ДТ на выходе из тоннеля справа?
-		{ "amk_zone_sakbuzz_strong",   -201.20,	 5.00,   119.06,	1402,	26434  }, --ДТ верх лестницы у вагонов между домами
-		{ "amk_zone_sakbuzz_strong",   -197.81,	 5.00, 	 136.00,	1369,	26481  }, --ДТ верх лестницы сбоку ангара
-		{ "amk_zone_sakbuzz_strong",   -147.66,	 7.50, 	 156.50,	1327,	39387  }, --ДТ верх лестницы на вышку
-		{ "amk_zone_sakbuzz_strong",	38.81,	 3.78, 	-120.99,	427,	284666 }, --Агро дерево на пути к Шерстюку
-		{ "amk_zone_sakbuzz_strong",	128.12,	 2.70, 	  67.88,	495,	361525 }, --Агро перед вышкой
-		{ "zone_radioactive_average",  -78.82,	10.45,	-107.48,	698,	161616 }, --Арро вход в подземку на холме
-		{ "amk_zone_sakbuzz_strong",	86.42,	 0.00, 	  29.98,	423,	321146 }  --Агро перед автобусом
-		--{ "amk_zone_sakbuzz_strong",  	1.53,   -0.007, -355,79,    3006,   25185  }  --Лиманск тоннель
-	}
-	local shape = { shtype = 0,	radius = 4.0, center = { 0, 0.5, 0 } }
-	for i = 1, #tsa do
-		amk_anoms.spawn_anomaly(
-		    tsa[ i ][ 1 ],
-		    sak.v3f( tsa[ i ][ 2 ], tsa[  i ][ 3 ], tsa[ i ][ 4 ] ),
-		    tsa[ i ][ 5 ], tsa[ i ][ 6 ], shape, "static"
-		)
-	end
-	sak_spawn.spawn_inventory_box()	
-	test.spawn_docent_lampada() 			-- лампадка на столе по пути к Доцентам-Долговязым
-	test.spawn_holod_radio()  				-- добавим приёмник Холоду на Болотах
-	test.spawn_sultan_radio()				-- и Султану, а радиостанцию эту уберём нафиг
-	test.on_new_game()						-- для статистики, чтобы упорядочено было	
-	test.teleport_esc_conserva()            -- дань уважения дядьке Вергасу
-	start_randoms()		
+    local tbl_del_obj = {
+        "agr_af_dummy_battery",                 -- батарейка на Агро
+        "x18_af_dummy_pellicle",                -- плёнка в х18
+        "mil_wpn_lr300_m1",                     -- снайперский LR или оружейка Свободы?
+        "mil_wpn_lr_0002_m1",                   -- оружейка свободы
+        "mil_wpn_lr_0003_m1",                   -- оружейка свободы
+        "mil_wpn_lr_0004_m1",                   -- оружейка свободы
+        "bar_bron_dolg_m1",                     -- броник долга в ангаре на Баре
+        "val_quest_ak74u",                      -- оружейка бандосов в ТД
+        "val_quest_ak74u_0000",                 -- оружейка бандосов в ТД
+        "val_quest_ak74u_0001",                 -- оружейка бандосов в ТД
+        "val_quest_mp5",                        -- оружейка бандосов в ТД
+        "val_quest_mp5_0000",                   -- оружейка бандосов в ТД
+        "val_killer_bron",                      -- броник наймов в ТД на базе бандитов
+        "mil_inventory_box_0034",               -- ящик в оружейке свободы???
+        "mar_quest_mp5_1",                      -- мп5 у капитана на болотах
+        "dar_quest_rpg7",                       -- РПГ в х18 на полу
+        "marsh_lab_monster1",                   -- трупики собачек у ученых на болотах?
+        "marsh_lab_monster2",                   -- трупики собачек у ученых на болотах?
+        "bar_sak_physic_object01",              -- большой прицеп на дороге на АС
+        "bar_sak_physic_object02",              -- камаз справа на пути на АС
+        "bar_sak_physic_object04",              -- прицеп у перехода на АС
+        "bar_sak_physic_object06",              -- трактор у перехода на АС
+        "ros_tutorial_witches_galantine_0022",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0005",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0006",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0019",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0018",  -- электра на ДТ
+        "ros_tutorial_witches_galantine_0009",  -- электра на ДТ
+        "rad_physic_object_0014"                -- канистра на Радаре
+    }
+    for i = 1, #tbl_del_obj do
+        local obj = g_sim:object( tbl_del_obj[ i ] )
+        if obj then misc.release_obj( obj.id ) end
+    end
+    local tsa = {
+        { "amk_zone_mincer_strong",     52.93,   0.11,   32.36, 1240,  29236 },
+        { "amk_zone_mincer_strong",     36.84,   4.00,  146.22, 1412,  67530 },
+        { "amk_zone_mincer_strong",     74.24,   0.18,  265.00, 1244,  29227 },  --Бар проход на АС справа пандус
+        { "amk_zone_mincer_strong",     74.12,   0.10,  276.37, 1244,  29227 },  --Бар проход на АС справа пандус
+        { "amk_zone_sakbuzz_strong",    74.84,   0.86, -136.71,  397, 244678 },  --Свалка, бетон, псевды, круг
+        { "amk_zone_sakbuzz_strong",    32.95,   4.00,  146.22, 1412,  67411 },  --ДТ трубы у перехода на Бар
+        { "amk_zone_sakbuzz_strong",   116.99,  20.13,  160.00,  240, 419813 },  --Кордон??
+        { "amk_zone_sakbuzz_strong",  -100.73,  -8.99, -134.49, 1437,  45041 },  --ДТ на выходе из тоннеля справа?
+        { "amk_zone_sakbuzz_strong",  -201.20,   5.00,  119.06, 1402,  26434 },  --ДТ верх лестницы у вагонов между домами
+        { "amk_zone_sakbuzz_strong",  -197.81,   5.00,  136.00, 1369,  26481 },  --ДТ верх лестницы сбоку ангара
+        { "amk_zone_sakbuzz_strong",  -147.66,   7.50,  156.50, 1327,  39387 },  --ДТ верх лестницы на вышку
+        { "amk_zone_sakbuzz_strong",    38.81,   3.78, -120.99,  427, 284666 },  --Агро дерево на пути к Шерстюку
+        { "amk_zone_sakbuzz_strong",   128.12,   2.70,   67.88,  495, 361525 },  --Агро перед вышкой
+        { "zone_radioactive_strong",   -78.82,  10.45, -107.48,  698, 161616 },  --Агро вход в подземку на холме
+        { "amk_zone_sakbuzz_strong",    86.42,   0.00,   29.98,  423, 321146 },  --Агро перед автобусом
+        { "amk_zone_sakbuzz_strong",     3.14,  -0.57, -351.72, 3006,  26046 },  --Лиманск тоннель
+        { "zone_radioactive_strong",    49.35,   2.94,  300.43, 3022,  51380 },  --Лиманск лужа перед Теслой
+        { "amk_zone_sakbuzz_strong",    67.63,  10.30,  306.15, 3023,  57424 }   --Лиманск выше лужи переход
+
+    }
+    local shape = { shtype = 0, radius = 4.0, center = { 0, 0.5, 0 } }
+    for i = 1, #tsa do
+        amk_anoms.spawn_anomaly( tsa[ i ][ 1 ],
+            sak.v3f( tsa[ i ][ 2 ], tsa[  i ][ 3 ], tsa[ i ][ 4 ] ),
+            tsa[ i ][ 5 ], tsa[ i ][ 6 ], shape, "static"
+        )
+    end
+    tsa = {
+        { "zone_radioactive_strong", 389.28, 11.89, -381.98, 1290, 89431 },  -- Дорога в Бар
+        { "zone_radioactive_strong", 383.07, 13.28, -367.01, 1289, 89430 },  -- Дорога в Бар  
+        { "zone_radioactive_strong", 379.46, 16.51, -313.48, 1288, 85418 },  -- Дорога в Бар
+        { "zone_radioactive_strong", 236.23,  0.62,  -76.58, 1272, 60791 }   -- Дорога в Бар
+    }
+    shape = { shtype = 0, radius = 8.0, center = { 0, 0.5, 0 } }
+    for i = 1, #tsa do
+        amk_anoms.spawn_anomaly( tsa[ i ][ 1 ],
+            sak.v3f( tsa[ i ][ 2 ], tsa[  i ][ 3 ], tsa[ i ][ 4 ] ),
+            tsa[ i ][ 5 ], tsa[ i ][ 6 ], shape, "static"
+        )
+    end
+    sak_spawn.spawn_inventory_box() 
+    test.spawn_docent_lampada()             -- лампадка на столе по пути к Доцентам-Долговязым
+    test.spawn_holod_radio()                -- добавим приёмник Холоду на Болотах
+    test.spawn_sultan_radio()               -- и Султану, а радиостанцию эту уберём нафиг
+    test.on_new_game()                      -- для статистики, чтобы упорядочено было   
+    test.teleport_esc_conserva()            -- дань уважения дядьке Вергасу
+    start_randoms()     
 end
 
 function trade_many_remove()
-  	local sum = db.actor:money()
-	if sum > 0 then
-		db.actor:give_money( -sum )
-		nlc_vars.trade_me_re = sum
-	end
+    local sum = db.actor:money()
+    if sum > 0 then
+        db.actor:give_money( -sum )
+        nlc_vars.trade_me_re = sum
+    end
 end
 
 function trade_many_add()
-	if nlc_vars.trade_me_re == nil then return end
-	local sum = db.actor:money()
-	if sum > 0 then db.actor:give_money( -sum ) end
-  	sum = nlc_vars.trade_me_re or 1
-	if sum > 0 then
-		db.actor:give_money( sum )
-		nlc_vars.trade_me_re = nil
-	end
+    if nlc_vars.trade_me_re == nil then return end
+    local sum = db.actor:money()
+    if sum > 0 then db.actor:give_money( -sum ) end
+    sum = nlc_vars.trade_me_re or 1
+    if sum > 0 then
+        db.actor:give_money( sum )
+        nlc_vars.trade_me_re = nil
+    end
 end
 
 function start_randoms()
-	for _, v in ipairs({ 
-		"treasure_manager.rnd",
-		"sak.changed_art_class",
-		"amk_anoms.generate_arts",
-		"amk_anoms.randomize_arts",
-		"monster_parts.on_part_take",
-		"test.make_shron_voron",
-		"sak.artmod",
-		"generic_rnd",
-		"gg_mayatniks",
-		"xr_box.ph_item_box",
-		"test.rec_art_info"
-	}) do
-		dsh.get_next_random( v )
-	end
+    for _, v in ipairs({ 
+        "treasure_manager.rnd",
+        "sak.changed_art_class",
+        "amk_anoms.generate_arts",
+        "amk_anoms.randomize_arts",
+        "monster_parts.on_part_take",
+        "test.make_shron_voron",
+        "sak.artmod",
+        "generic_rnd",
+        "gg_mayatniks",
+        "xr_box.ph_item_box",
+        "test.rec_art_info"
+    }) do
+        dsh.get_next_random( v )
+    end
 end
