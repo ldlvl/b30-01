@@ -4228,6 +4228,7 @@ function repair_box_repair( obj )
                         "Оружие отремонтировано на %c[255,0,255,0]"..tostring(math.ceil(rep_percent*100)) .. "%",
                         nil, 12, 5, "g_g", "no", "green"
                     )
+                xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_weapon_repairs" ), 1, 0 )
                 timers.start_timer( "time_rep", 13, "sak.restore_weap()" )
             elseif ( slot_1 and slot_1:condition() <0.87 ) or ( slot_2 and slot_2:condition() < 0.87 ) then
                 send_tip( "Слишком сильное повреждение оружия!", nil, 2, 5, "g_g", "no", "red" )
@@ -4263,6 +4264,7 @@ function repair_box_repair( obj )
                             "Броня отремонтирована на %c[255,0,255,0]"..tostring(math.ceil(rep_percent*100)) .. "%",
                             nil, 12, 5, "g_g", "no", "green"
                         )
+                        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_armor_repairs" ), 1, 0 )
                         schedule.add( "tm_rep", "sak.return_mask()", 12500 )
                     elseif  armor:condition() < 0.87 then
                         send_tip( "Слишком сильное повреждение брони!", nil, 2, 5, "g_g", "no", "red" )
@@ -4423,9 +4425,10 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                     if rep_point > 1 then rep_point = 1 end
                     slot_obj:set_condition( rep_point )
                     send_tip(
-                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring( math.ceil( rep_percent_tiski * 100 ) ) .. "%...",
                         nil, 2, 5, "g_g", "no", "green"
                     )
+                    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_weapon_repairs" ), 1, 0 )
                     repiweap = repiweap - 1
                 else
                     send_tip( "Оружие слишком повреждено", nil, 2, 5, "g_g", "no", "red" )
@@ -4442,9 +4445,10 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                     if ( rep_point > 1 ) then rep_point = 1 end
                     slot_obj:set_condition( rep_point )
                     send_tip(
-                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                        "Оружие отремонтировано на %c[255,0,255,0]".. tostring( math.ceil( rep_percent_tiski * 100 ) ) .. "%...",
                         nil, 2, 5, "g_g", "no", "green"
                     )
+                    xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_weapon_repairs" ), 1, 0 )
                     repiweap = repiweap-1
                 else
                     send_tip( "Оружие слишком повреждено", nil, 2, 5, "g_g", "no", "red" )
@@ -4468,9 +4472,10 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                         if rep_point > 1 then rep_point = 1 end
                         amk_mod.repair_armor( rep_point )
                         send_tip(
-                            "Ну вот, подлатали на %c[255,0,255,0]".. tostring(math.ceil(rep_percent_tiski*100)) .. "%...",
+                            "Ну вот, подлатали на %c[255,0,255,0]".. tostring( math.ceil( rep_percent_tiski * 100 ) ) .. "%...",
                             nil, 2, 5, "g_g", "no", "green"
                         )
+                        xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_armor_repairs" ), 1, 0 )
                         repiout = repiout - 1
                     else
                         send_tip( "Слишком поврежден костюмчик-то", nil, 2, 5, "g_g", "no", "red" )
