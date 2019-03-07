@@ -3578,6 +3578,8 @@ end
 function actor_1000_not_have() return not actor_have(1000) end
 function actor_20000_have() return db.actor:money() >= 20000 end
 function actor_50000_have() return db.actor:money() >= 50000 end
+function actor_10000_have() return db.actor:money() >= 10000 end
+function actor_5000_have()  return db.actor:money() >= 5000  end
 
 function in_all_money()
     local summ_old = db.actor:money()
@@ -3638,6 +3640,18 @@ function give_20000_money( t1, t2 )
     local npc = t1
     if npc:id() == db.actor:id() then npc = t2 end
     relocate_money( npc, 20000, 1 )
+end
+
+function give_10000_money( t1, t2 )
+    local npc = t1
+    if npc:id() == db.actor:id() then npc = t2 end
+    relocate_money( npc, 10000, 1 )
+end
+
+function give_5000_money( t1, t2 )
+    local npc = t1
+    if npc:id() == db.actor:id() then npc = t2 end
+    relocate_money( npc, 5000, 1 )
 end
 
 function is_val_vlad( t1, t2 )
