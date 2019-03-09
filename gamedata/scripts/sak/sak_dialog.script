@@ -5325,33 +5325,39 @@ function add_volk_prize_treasure( num )
     ) 
 end 
 
---- TODO: переделать на рандомные точки и убрать стопицот всего. И что с ПКМ??? На что заменить??
---спавним из диалога тайник КЭПа на Радаре
 function add_rad_zil_treasure()
-    local obj = amk.spawn_item(
-        "rukzak_inventory_box", sak.v3f( 654.548645, -51.036823, -59.858109 ), 1896, 226836
-    )
-    level.map_add_object_spot(
-        obj.id, "crlc_big_treasure3", "Тайник неизвестного сталкера"
+    local ind = ( amk_vars.x18_iq_check  or 1 )
+              + ( amk_vars.r_treas_items or 1 )
+    if ind > 11 then ind = 11 end
+    local tbl = {
+        { 637.452, -43.691, -57.504, 1896, 226174 },
+        { 668.270, -46.123, -45.303, 1896, 227185 },
+        { 643.378, -44.713, -71.633, 1896, 226094 },
+        { 618.778, -53.058, -84.032, 1896, 225500 },
+        { 603.778, -46.026, -59.894, 1894, 218268 },
+        { 605.751, -50.797, -13.619, 1899, 216375 },
+        { 587.725, -47.773, -15.706, 1900, 209900 },
+        { 596.912, -46.937,  16.169, 1900, 211908 },
+        { 614.221, -46.268, -25.132, 1897, 222769 },
+        { 587.426, -44.708, -51.695, 1898, 210190 },
+        { 590.697, -48.049, -49.341, 1898, 210190 }
+    }
+    local obj = amk.spawn_item( "rukzak_inventory_box",
+        sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ), tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
     )
     if obj then
-        for i = 1, 5 do
-            misc.spawn_to( "suhpay", obj )
-            misc.spawn_to( "medkit_army", obj )
+        for i = 1, 3 do
+            misc.spawn_to( "ammo_og-7b", obj )
+            misc.spawn_to( "grenade_f1", obj )
         end
-        for i = 1, 20 do
-            misc.spawn_to( "ammo_vog-25", obj )
+        for i = 1, amk_vars.r_treas_items do
+            misc.spawn_to( "ammo_og-7b", obj )
+            misc.spawn_to( "grenade_rgd5", obj )
         end
-        misc.spawn_to( "wpn_pkm", obj )
-        misc.spawn_to( "ammo_7.62x54r", obj )
-        misc.spawn_to( "ammo_7.62x54r", obj )
+        misc.spawn_to( "wpn_rpg7", obj )
         misc.spawn_to( "svoboda_letter", obj )
         sak.off_on( obj )
     end
-    sak.send_tip(
-        "Получена наводка на тайник.", "Тайник неизвестного сталкера",
-        5, 15, "g_g", "sak", "green"
-    )
 end
 
 function zil_mmz_no()
@@ -6025,4 +6031,33 @@ function is_pahom_buzz_time()
     else
         return false
     end
+end
+
+function mil_freedom_commander_choice()
+    local rec_name
+    local rand = amk_vars.r_treas_items or 1
+    local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
+    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward
+    if abs > 7 then abs = 7 end
+    for k, v in pairs( sak_artmods.amk_resiepts ) do
+        for i = 1, #v do
+            if v[ i ] == test.tbl_recipt.lvl8[ abs ] then
+                rec_name = game.translate_string( sak_artmods.amk_resiepts[ k ][ 3 ] )
+            end
+        end
+    end
+    db.actor:give_talk_message(
+        "'" .. game.translate_string( system_ini():r_string( arts[ rand ], "inv_name" ) )
+        .. "', или рецепт на абсолют '"
+        .. game.translate_string( rec_name ) .. "' ?",
+        "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
+    )
+end
+
+function mil_freedom_commander_recipt()
+    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward
+    if abs > 7 then abs = 7 end
+    local info = test.tbl_recipt.lvl8[ abs ] or "info_amk_recipt_controller_skalp"
+    test.sms_recipt_found( info )
+    db.actor:give_info_portion( info )
 end
