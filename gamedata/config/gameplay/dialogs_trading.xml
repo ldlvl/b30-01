@@ -3413,6 +3413,7 @@
 	<dialog id="kruglov_art_chan_lev1_dialog">
 	<precondition>dialogs.is_not_wounded</precondition>
 	<precondition>sak_dialog.have_bart</precondition>
+	<precondition>sak_dialog.is_ready_time_to_game</precondition>
 	<has_info>info_kruglov_art_chan_yes</has_info>
 	<has_info>kruglov_flash_done</has_info>
 		<phrase_list>
@@ -3421,10 +3422,10 @@
 			<action>dialogs.no_trade</action>
 				<next>1</next>
 				<next>5</next>
-			<!--<next>6</next>-->
+				<next>6</next>
 			</phrase>
 			<phrase id="1">
-			<!-- <precondition>sak_dialog.is_ready_time_to_game</precondition> -->
+			<precondition>sak_dialog.kruglov_arts_have(true)</precondition>
 			<precondition>sak_rand_nagrad.art_chan_offer_1_yes</precondition>
 				<text>kruglov_art_chan_lev1_dialog_1</text>
 				<next>21</next>
@@ -3646,7 +3647,7 @@
 				<text>kruglov_art_chan_lev1_dialog_5</text>
 			</phrase>
 			<phrase id="6">
-			<precondition>sak_dialog.not_ready_time_to_game</precondition>
+			<precondition>sak_dialog.kruglov_arts_have(false)</precondition>
 				<text>kruglov_art_chan_lev1_dialog_6</text>
 			</phrase>
 		</phrase_list>

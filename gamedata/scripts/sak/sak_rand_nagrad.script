@@ -690,6 +690,7 @@ function art3_chan_gg_say_ok()
 		rand=lua_random(1,4)
 		sak.create_items(db.actor,item3.."_dyn"..rand.."d",1)
 	end
+	sak_dialog.kruglov_exchange_done()
 end
 
 function add_nagrad_1(nagrad_item)
