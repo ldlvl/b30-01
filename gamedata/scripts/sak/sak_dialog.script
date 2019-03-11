@@ -2811,14 +2811,6 @@ function dummy_pellicle_red_have()
     return sak.have_items_count( "af_red_dummy_pellicle", 1 ) ~= false
 end
 
-
-
-
-
-
-
-
-
 function esc_petruha_toz_have()
   return sak.have_items_count( "wpn_toz34", 1 ) ~= false
 end
@@ -2836,13 +2828,6 @@ function give_gar_dram_novice_mp5_m1( first_speaker, second_speaker )
   dialogs.relocate_item_section( second_speaker, "ammo_9x18_fmj", "out" )
   second_speaker:set_relation( game_object.friend, first_speaker )
 end
-
-
-
-
-
-
-
 
 function yan_kruglov_green_art_have()
     local rand = amk_vars.r_treas_items or 1
@@ -5688,16 +5673,6 @@ function timer_ara_exo_end()
     )
     db.actor:give_info_portion( "ara_exo_message" )
 end
---- TODO: добавить точек спавна...
--- Шустрый тайник
-function add_kishka_rukzak()
-    local obj = amk.spawn_item( "rukzak_inventory_box",
-        sak.v3f( 463.100861, 23.854406, 291.4556888 ), 4159, 991985 )
-    if obj then
-        misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 2 ), obj )
-        sak.off_on( obj )
-    end
-end
 -- semenov_green_art
 function semenov_green_art_have()
     return
@@ -5986,8 +5961,8 @@ function mil_freedom_commander_choice()
     local rec_name
     local rand = amk_vars.r_treas_items or 1
     local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
-    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward
-    if abs > 7 then abs = 7 end
+    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward - 1
+    if abs > 7 or abs < 1 then abs = 7 end
     for k, v in pairs( sak_artmods.amk_resiepts ) do
         for i = 1, #v do
             if v[ i ] == test.tbl_recipt.lvl8[ abs ] then
@@ -6004,8 +5979,8 @@ function mil_freedom_commander_choice()
 end
 
 function mil_freedom_commander_recipt()
-    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward
-    if abs > 7 then abs = 7 end
+    local abs  = amk_vars.r_treas_items + amk_vars.r_task_reward - 1
+    if abs > 7 or abs < 1 then abs = 7 end
     local info = test.tbl_recipt.lvl8[ abs ] or "info_amk_recipt_controller_skalp"
     test.sms_recipt_found( info )
     db.actor:give_info_portion( info )
@@ -6030,5 +6005,41 @@ function kruglov_exchange_done()
         nlc_vars.kruglov_exchanges = 1
     else
         nlc_vars.kruglov_exchanges = nlc_vars.kruglov_exchanges + 1
+    end
+end
+
+function shustryi_art_needed()
+    local ind  = amk_vars.r_treas_items + amk_vars.r_task_reward -1
+    if ind > 7 or ind < 1 then ind = 7 end
+    local art_sect = test.tbl_arts.lvl1[ ind ]
+    db.actor:give_talk_message(
+        game.translate_string( system_ini():r_string( art_sect, "inv_name" ) )
+        .. ". Давай так: если поделишься таким, то я тебе тот рецептик солью, что у бандоса выведал. Угу?",
+        "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
+    )
+end
+
+local shustr_art_sect
+
+function have_shustryi_art()
+    local ind  = amk_vars.r_treas_items + amk_vars.r_task_reward - 1
+    if ind > 7 or ind < 1 then ind = 7 end
+    shustr_art_sect = test.tbl_arts.lvl1[ ind ]
+    if sak.have_items_count( shustr_art_sect, 1 ) then return true end
+    return false
+end
+
+function give_shustryi_art( first_speaker, second_speaker )
+    sak_inventory.release_actor_items( shustr_art_sect, 1 )
+    second_speaker:set_relation( game_object.friend, first_speaker )
+end
+
+-- Шустрый тайник в Кишке
+function add_kishka_rukzak()
+    local obj = amk.spawn_item( "rukzak_inventory_box",
+        sak.v3f( 463.100861, 23.854406, 291.4556888 ), 4159, 991985 )
+    if obj then
+        misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 2 ), obj )
+        sak.off_on( obj )
     end
 end

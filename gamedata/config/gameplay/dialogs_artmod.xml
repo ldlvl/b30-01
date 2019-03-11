@@ -327,6 +327,7 @@
 	</phrase>
 	<phrase id="1">
 		<text>artmod_131_dialog_1</text>
+		<action>sak_dialog.shustryi_art_needed</action>
 		<next>2</next>
 		<next>3</next>
 	</phrase>
@@ -343,7 +344,7 @@
 
 
 <dialog id="artmod_132_dialog">
-<precondition>sak.have_items_count("af_medusa",1)</precondition>
+<precondition>sak_dialog.have_shustryi_art</precondition>
 <has_info>esc_shustryi_medusa_start</has_info>
 <dont_has_info>esc_shustryi_medusa_done</dont_has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -358,10 +359,10 @@
 		<next>22</next>
 	</phrase>
 	<phrase id="2">
-	<precondition>sak.have_items_count("af_medusa",1)</precondition>
+	<precondition>sak_dialog.have_shustryi_art</precondition>
 		<text>artmod_132_dialog_2</text>
 		<give_info>esc_shustryi_medusa_done</give_info>
-		<action>sak_dialog.give_esc_shustryi_medusa</action>
+		<action>sak_dialog.give_shustryi_art</action>
 		<next>3</next>
 	</phrase>
 	<phrase id="22">
