@@ -191,8 +191,7 @@
 
 
 <dialog id="artmod_122_dialog">
-<!--<precondition>sak_dialog.esc_petruha_toz_have</precondition>-->
-<precondition>sak_dialog.wpn_toz_bm16_have</precondition>
+<precondition>test.have_with_cond("wpn_toz34",1,0.95,true)</precondition>
 <has_info>esc_petruha_toz_start</has_info>
 <dont_has_info>esc_petruha_toz_done</dont_has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -207,12 +206,11 @@
 		<next>22</next>
 	</phrase>
 	<phrase id="2">
-	<!--<precondition>sak_dialog.esc_petruha_toz_have</precondition>-->
-	<precondition>sak_dialog.wpn_toz_bm16_have</precondition>	
+	<precondition>test.have_with_cond("wpn_toz34",1,0.95,true)</precondition>
 		<text>artmod_122_dialog_2</text>
 		<give_info>esc_petruha_toz_done</give_info>
-		<!--<action>sak_dialog.give_esc_petruha_toz</action>-->
-		<action>sak_dialog.give_wpn_toz_bm16</action>		
+		<action>test.release_npc_wpn</action>
+		<action>test.relocate_with_cond</action>		
 		<next>3</next>
 	</phrase>
 	<phrase id="22">

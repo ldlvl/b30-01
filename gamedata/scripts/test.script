@@ -1362,29 +1362,72 @@ function spawn_docs_tbl( name, tbl, visual, c_data, ph_type, mass )
 end
 
 -- для поиска/удаления предмета(ов) в рюкзаке автора с состоянием не ниже заданного
-function have_with_cond( sect, need_amount, condition, flag_to_release )
+local have_with_cond_tbl = {}
+-- образец вызова:
+-- test.have_with_cond( "wpn_mp5_m1", 1, 0.95, true )    - у ГГ есть заряженный мп5 в хорошем состоянии
+-- test.have_with_cond( "wpn_mp5_m1", 1, 0.95, true, true ) - удалит у ГГ такой мп5
+function have_with_cond( sect, need_amount, condition, flag_loaded, flag_to_release )
     local have_tbl, num = {}, 0
-    local amnt  = tonumber(need_amount)
+    local amnt  = tonumber( need_amount )
     local items = get_shadow_inv():get_content( true )
     for i, rec in items:ipairs() do
         if sak_inventory.dyn_art_base( rec.sect ) == sect then
             if rec.obj:condition() >= tonumber( condition ) then
-                if num < amnt then
-                    table.insert( have_tbl, rec.id )
-                    num = num + 1
+                if flag_loaded then
+                    local def_mag = system_ini():r_float( rec.sect, "ammo_mag_size" ) or 1
+                    if rec.obj:get_ammo_in_magazine() == def_mag then
+                        if num < amnt then
+                            table.insert( have_tbl, rec.id )
+                            num = num + 1
+                        end
+                    end
+                else
+                    if num < amnt then
+                        table.insert( have_tbl, rec.id )
+                        num = num + 1
+                    end     
                 end
             end
         end
     end
     if #have_tbl >= amnt then
-        if not flag_to_release then
-            return true
+        have_with_cond_tbl = have_tbl
+        if not flag_to_release then return true
         else
             for _, v in ipairs( have_tbl ) do
                 local obj1 = g_sim:object( v )
                 if obj1 then g_sim:release( obj1, true ) end
             end
             sak.relocate_item( db.actor, "out", sect, #have_tbl )
+            have_with_cond_tbl = {}
+        end
+    end
+end
+-- вызывать только с have_with_cond в прекондишене
+function relocate_with_cond( first_speaker, second_speaker )
+    if #have_with_cond_tbl > 0 then
+        local obj
+        for _, v in ipairs( have_with_cond_tbl ) do
+            obj = client_obj( v )
+            if obj:section() == "wpn_rpk74" then
+                misc.spawn_to( "ammo_5.45x39_merc", second_speaker )
+                misc.spawn_to( "ammo_5.45x39_merc", second_speaker )
+                obj:unload_magazine()
+            end
+            dialogs.relocate_item( second_speaker, obj, "out" )
+        end
+        sak.relocate_item( db.actor, "out", obj:section(), #have_with_cond_tbl )
+        have_with_cond_tbl = {}
+    end
+end
+-- для уничтожения оружия у НПС перед тем, как ему новую пуху дать
+function release_npc_wpn( first_speaker, second_speaker )
+    local ids, cnt = registry.inv_objects( second_speaker:id(), true )
+    for n = 1, cnt do
+        local id   = ids[ n ]
+        local sobj = client_obj( id )
+        if sobj then
+            if strpos( sobj:section(), "wpn_", 1, true ) then misc.release_obj( sobj:id() ) end
         end
     end
 end

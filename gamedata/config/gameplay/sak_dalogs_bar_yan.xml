@@ -16480,7 +16480,7 @@
 </dialog>
 
 <dialog id="plichko_rpk_done_dialog">
-<precondition>sak.have_items_count("wpn_rpk74",1)</precondition>
+<precondition>test.have_with_cond("wpn_rpk74",1,0.95,true)</precondition>
 <dont_has_info>plichko_rpk_done</dont_has_info>
 <has_info>plichko_rpk_have</has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -16488,20 +16488,21 @@
 	<phrase id="0">
 		<text>plichko_rpk_done_dialog_0</text>
 		<next>11</next>
-		<next>12</next>
+		<!-- <next>12</next> -->
 	</phrase>
-	<phrase id="11">	
-		<precondition>sak_dialog.rpk74_have</precondition>	
-		<text>plichko_rpk_done_dialog_11</text>	
-		<action>sak_dialog.give_rpk74</action>
+	<phrase id="11">
+		<text>plichko_rpk_done_dialog_11</text>
 		<next>2</next>
 	</phrase>
-	<phrase id="12">	
+<!-- 	<phrase id="12">	
 		<precondition>sak_dialog.rpk74_have_no</precondition>	
 		<text>plichko_rpk_done_dialog_12</text>	
 		<next>7</next>
-	</phrase>
+	</phrase> -->
 	<phrase id="2">
+		<precondition>test.have_with_cond("wpn_rpk74",1,0.95,true)</precondition>
+		<action>test.release_npc_wpn</action>
+		<action>test.relocate_with_cond</action>
 		<text>plichko_rpk_done_dialog_2</text>
 		<next>3</next>		
 	</phrase>	
@@ -16526,10 +16527,10 @@
 		<text>plichko_rpk_done_dialog_6</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>	
-	<phrase id="7">
+<!-- 	<phrase id="7">
 		<text>plichko_rpk_done_dialog_7</text>
 		<action>dialogs.break_dialog</action>
-	</phrase>	
+	</phrase>	 -->
 </phrase_list>
 </dialog>
 

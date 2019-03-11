@@ -1378,7 +1378,7 @@ function out_item_section_from_actor( first_speaker, second_speaker, section, am
 end
 
 function relocate_item_section_from_actor( first_speaker, second_speaker, section, amount )
-    local npc   = who_is_npc( first_speaker, second_speaker )
+    local npc   = who_is_npc  ( first_speaker, second_speaker )
     local actor = who_is_actor( first_speaker, second_speaker )
     local i     = 0
     if not amount then amount = 1 end
@@ -1390,12 +1390,12 @@ function relocate_item_section_from_actor( first_speaker, second_speaker, sectio
                 end
             end
     if amount == "all" then
-        i      = -1
+        i = -1
         actor:iterate_inventory( transfer_object_item, nil )
         amount = ( i + 1 ) * ( -1 )
-        i      = 0
+        i = 0
     elseif amount > 1 then
-        i      = amount
+        i = amount
         actor:iterate_inventory( transfer_object_item, nil )
     elseif amount < 1 then
     else
@@ -2827,10 +2827,12 @@ function give_esc_petruha_toz( first_speaker, second_speaker )
     second_speaker:set_relation( game_object.friend, first_speaker )
 end
 function gar_dram_novice_mp5_m1_have()
-  return sak.have_items_count( "wpn_mp5_m1", 1 ) ~= false
+  --return sak.have_items_count( "wpn_mp5_m1", 1 ) ~= false
+  return test.have_with_cond( "wpn_mp5_m1", 1, 0.95, true )
 end
 function give_gar_dram_novice_mp5_m1( first_speaker, second_speaker )
-  dialogs.relocate_item_section( second_speaker, "wpn_mp5_m1", "out" )
+  --dialogs.relocate_item_section( second_speaker, "wpn_mp5_m1", "out" )
+  test.relocate_with_cond( first_speaker, second_speaker )
   dialogs.relocate_item_section( second_speaker, "ammo_9x18_fmj", "out" )
   second_speaker:set_relation( game_object.friend, first_speaker )
 end
@@ -5519,40 +5521,6 @@ end
 function timer_junkman_end()
     db.actor:give_info_portion( "info_outfit_tourist_prize" )
 end
---для диалогов с Пличко
-function rpk74_have( first_speaker, second_speaker )
-    for i, k in pairs( sak_inventory.rucksack ) do
-        if strpos( i, "wpn_rpk74", 1, true ) then
-            if client_obj( k[ 1 ] ):get_ammo_in_magazine() >= 45 then return true end
-        end
-    end
-    return false
-end
-
-function rpk74_have_no( first_speaker, second_speaker )
-    for i, k in pairs( sak_inventory.rucksack ) do
-        if strpos( i, "wpn_rpk74", 1, true ) then
-            if client_obj( k[ 1 ] ):get_ammo_in_magazine() < 45 then return true end
-        end
-    end
-    return false
-end
------- TODO: странная функция, почему как везде нельзя??
-function give_rpk74( first_speaker, second_speaker )
-    local ids, cnt = registry.inv_objects( second_speaker:id(), true )
-    for n = 1, cnt do
-        local id   = ids[ n ]
-        local sobj = client_obj( id )
-        if sobj then
-            if strpos( sobj:section(), "wpn_rpk74", 1, true ) then amk.remove_item( sobj ) end
-        end
-    end
-    dialogs.relocate_item_section( second_speaker, "wpn_rpk74", "out" )
-    g_sim:create( "ammo_5.45x39_ap",
-        second_speaker:position(), second_speaker:level_vertex_id(),
-        second_speaker:game_vertex_id(), second_speaker:id()
-    )
-end
 
 function take_outfit_dolg_prize(first_speaker, second_speaker)
     local obj = misc.spawn_to( "outfit_dolg_m1", db.actor )
@@ -5638,27 +5606,12 @@ function have_mutant_opt()
         and sak.have_items_count( "mutant_zombie_hand", 10 ) ~= false
         and sak.have_items_count( "mutant_flesh_eye", 10   ) ~= false
 end
-
---чтобы Петруха взял или ТОЗ, или БМ
-function wpn_toz_bm16_have()
-    return sak.have_items_count( "wpn_toz34", 1 ) ~= false or sak.have_items_count( "wpn_bm16_full", 1 ) ~= false
-end
-
-function give_wpn_toz_bm16()
-    if sak.have_items_count( "wpn_toz34", 1 ) then
-        sak_inventory.release_actor_items( "wpn_toz34", 1 )
-    elseif sak.have_items_count( "wpn_bm16_full", 1 ) then
-        sak_inventory.release_actor_items( "wpn_bm16_full", 1 )
-    end
-end
-
 -- спавним ПДА в труп учёного в х6
 function warlab_ecolog_body()
     local obj = g_sim:story_object( story_ids.war_ecolog_body_1 )
     misc.spawn_to( "war_ecolog_pda", obj )
     sak.off_on( obj )
 end
-
 -- монолитовская экза и Компас в танке в РЛ
 function fill_tank_inventory_box()
     local obj = g_sim:story_object( story_ids.red_q11_n )
@@ -5683,7 +5636,6 @@ function timer_docent_end()
     )
     db.actor:give_info_portion( "docent_message" )
 end
-
 -- barman_exo_trade
 function timer_barman_exo()
     local rnd = lua_random( 2, 3 )
@@ -5697,7 +5649,6 @@ function timer_barman_exo_end()
     )
     db.actor:give_info_portion( "barman_exo_message" )
 end
-
 -- freedom_exo_dialog
 function timer_freedom_exo()
     local rnd = lua_random( 2, 3 )
@@ -5711,7 +5662,6 @@ function timer_freedom_exo_end()
     )
     db.actor:give_info_portion( "freedom_exo_message" )
 end
-
 -- dolg_exo_dialog
 function timer_dolg_exo()
     local rnd = lua_random( 2, 3 )
@@ -5725,7 +5675,6 @@ function timer_dolg_exo_end()
     )
     db.actor:give_info_portion( "dolg_exo_message" )
 end
-
 -- ara_exo_dialog
 function timer_ara_exo()
     local rnd = lua_random( 3, 4 )

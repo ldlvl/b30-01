@@ -399,7 +399,7 @@
 			<action>dialogs.break_dialog</action>			
 		</phrase>
 		<phrase id="3">
-		    <precondition>sak.have_items_count("wpn_rpg7",1)</precondition>
+		    <precondition>test.have_with_cond("wpn_rpg7",1,0.95,true)</precondition>
 		    <precondition>vergas_lib.search_items("ammo_og-7b",2,1)</precondition>
 			<text>mil_freedom_commander_after_x12_3</text>
 			<next>6</next>
@@ -420,7 +420,7 @@
 		</phrase>
 		<phrase id="72">
 			<text>mil_freedom_commander_after_x12_72</text>
-			<action>sak_inventory.release_actor_items("wpn_rpg7",1)</action>
+			<action>test.have_with_cond("wpn_rpg7",1,0.95,true,true)</action>
 			<action>vergas_lib.search_items("ammo_og-7b",2,2)</action>
 		    <next>73</next>
 		    <next>74</next>
@@ -452,8 +452,8 @@
 		</phrase>			
 		<phrase id="8">
 			<text>mil_freedom_commander_after_x12_8</text>
-			<action>sak_inventory.release_actor_items("wpn_rpg7",1)</action>
-			<action>sak_inventory.release_actor_items("ammo_og-7b",2)</action>
+			<action>test.have_with_cond("wpn_rpg7",1,0.95,true,true)</action>
+			<action>vergas_lib.search_items("ammo_og-7b",2,2)</action>
 			<next>9</next>	
 		</phrase>
 		<phrase id="9">
