@@ -417,9 +417,13 @@ local table_aart={
 	"af_rusty_thorn"}	
 
 function transfer_wolf_reward()
-  local rand_aart=table_aart[lua_random(table.getn(table_aart))]
-  sak.create_items(db.actor, rand_aart.."_dyn"..lua_random(2,4).."d",1)
+  test.add_rnd_art_to_actor( 1 )
   xr_statistic.add_pts("quests", "wolf_document", 1, 1.5)
+end
+
+function transfer_wolf_good_reward()
+  test.add_rnd_art_to_actor( 2 )
+  xr_statistic.add_pts( "quests", "wolf_document", 1, 3 )
 end
 
 function wolf_additional_reward()
@@ -428,7 +432,7 @@ function wolf_additional_reward()
   dialogs.relocate_money(db.actor,4500,"in")
 end
 function wolf_additional_2reward()
-  sak.create_items(db.actor, "wpn_fort",1)
+  --sak.create_items(db.actor, "wpn_fort",1)
 end
 function wolf_additional_3reward()
   sak.create_items(db.actor, "antirad",1)
