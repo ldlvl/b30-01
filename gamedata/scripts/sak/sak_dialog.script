@@ -6036,10 +6036,29 @@ end
 
 -- Шустрый тайник в Кишке
 function add_kishka_rukzak()
-    local obj = amk.spawn_item( "rukzak_inventory_box",
-        sak.v3f( 463.100861, 23.854406, 291.4556888 ), 4159, 991985 )
-    if obj then
+    local tbl = {
+        { -598.399,  8.34438, -403.552, 3933, 1802    },
+        {  456.127,  7.66937, -521.576, 4155, 991109  },
+        {  485.969, -0.44395, -436.505, 4155, 985391  },
+        {  349.958,  23.7140,  288.953, 4142, 810842  },
+        {  462.327,  22.8430,  294.304, 4142, 810842  },
+        {  457.464, -1.32516, -506.449, 4165, 1018530 },
+        {  440.793, -1.69576, -504.835, 4165, 1018530 },
+        {  487.431,  0.79801, -429.278, 4165, 1020016 },
+        {  511.908,  2.44494, -431.190, 4165, 1020016 },
+        {  347.508,  18.8010,  276.240, 4144, 810834  },
+        {  462.743,  19.9230,  279.985, 4144, 815843  }
+    }
+    local ind = amk_vars.r_treas_items + amk_vars.x18_iq_check or 1
+    if ind > 11 then ind = 11 end
+    local obj = test.spawn_no_ai(
+                    "rukzak_inventory_box",
+                    sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+                    tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
+                )
+    if obj and dsh.get_next_random( "generic_rnd" ) > 0.18 then
         misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 2 ), obj )
+        misc.spawn_to( "suhpay", obj )
         sak.off_on( obj )
     end
 end
