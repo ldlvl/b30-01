@@ -4825,7 +4825,92 @@
 			<next>6025</next>
 			<next>6026</next>
 			<next>6027</next>
+			<next>70001</next>
+			<next>80001</next>
 		</phrase>
+
+		<phrase id="70001">
+			<has_info>plichko_rpk_have</has_info>
+			<dont_has_info>plichko_rpk_done</dont_has_info>
+			<dont_has_info>mar_factory_leader_items_start</dont_has_info>
+			<text>mar_factory_leader_dialog_start_70001</text>
+			<next>70002</next>
+		</phrase>	
+		<phrase id="70002">
+			<text>mar_factory_leader_dialog_start_70002</text>
+			<next>70003</next>
+			<next>70004</next>
+		</phrase>
+		<phrase id="70003">
+			<precondition>sak.have_items_count("vodka",1)</precondition>
+			<text>mar_factory_leader_dialog_start_70003</text>
+			<next>70005</next>
+		</phrase>
+		<phrase id="70004">
+			<text>mar_factory_leader_dialog_start_70004</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="70005">
+			<text>mar_factory_leader_dialog_start_70005</text>
+			<action>sak.drink_vodka</action>
+			<next>70006</next>
+		</phrase>
+		<phrase id="70006">
+			<text>mar_factory_leader_dialog_start_70006</text>
+			<next>70007</next>
+		</phrase>
+		<phrase id="70007">
+			<text>mar_factory_leader_dialog_start_70007</text>
+			<next>70008</next>
+		</phrase>
+		<phrase id="70008">
+			<text>mar_factory_leader_dialog_start_70008</text>
+			<next>70009</next>
+		</phrase>
+		<phrase id="70009">
+			<text>mar_factory_leader_dialog_start_70009</text>
+			<next>70010</next>
+		</phrase>
+		<phrase id="70010">
+			<text>mar_factory_leader_dialog_start_70010</text>
+			<next>70011</next>
+		</phrase>
+		<phrase id="70011">
+			<text>mar_factory_leader_dialog_start_70011</text>
+			<next>70012</next>
+		</phrase>
+		<phrase id="70012">
+			<text>mar_factory_leader_dialog_start_70012</text>
+			<give_info>mar_factory_leader_items_start</give_info>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+		<phrase id="80001">
+			<has_info>mar_factory_leader_items_start</has_info>
+			<dont_has_info>mar_factory_leader_items_done</dont_has_info>
+			<precondition>test.mar_factory_leader_items_have</precondition>
+			<text>mar_factory_leader_dialog_start_80001</text>
+			<next>80002</next>
+		</phrase>
+		<phrase id="80002">
+			<text>mar_factory_leader_dialog_start_80002</text>
+			<next>80003</next>
+		</phrase>
+		<phrase id="80003">
+			<text>mar_factory_leader_dialog_start_80003</text>
+			<next>80004</next>
+		</phrase>
+		<phrase id="80004">
+			<text>mar_factory_leader_dialog_start_80004</text>
+			<action>test.mar_factory_leader_items_exchange</action>
+			<give_info>mar_factory_leader_items_done</give_info>
+			<next>80005</next>
+		</phrase>
+		<phrase id="80005">
+			<text>mar_factory_leader_dialog_start_80005</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
 		<phrase id="6021">
 			<text>mar_factory_leader_dialog_start_6021</text>
 			<action>dialogs.break_dialog</action>

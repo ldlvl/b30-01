@@ -1431,3 +1431,28 @@ function release_npc_wpn( first_speaker, second_speaker )
         end
     end
 end
+
+function mar_factory_leader_items_have()
+    return
+        have_remove_items_count_cond( "neytral_novice_gaz_outfit_m1", 1, 0.98, false )
+        and have_remove_items_count_cond( "af_full_akkum", 1, 0.98, false )
+        and have_remove_items_count_cond( "wpn_bm16", 1, 0.98, false )
+        and vergas_lib.search_items( "ammo_12x76_dart", 30, 1 )
+        and sak.have_items_count( 'belt_2_art', 1 )
+end
+
+function mar_factory_leader_items_exchange()
+    have_remove_items_count_cond( "neytral_novice_gaz_outfit_m1", 1, 0.98, true )
+    have_remove_items_count_cond( "af_full_akkum", 1, 0.98, true )
+    have_remove_items_count_cond( "wpn_bm16", 1, 0.98, true )
+    vergas_lib.search_items( "ammo_12x76_dart", 30, 2 )
+    sak_inventory.release_actor_items( 'belt_2_art', 1 )
+    local sect = "wpn_rpk74"
+    local obj  = misc.spawn_to( sect, db.actor )
+    misc.process_spawn()
+    if obj then
+        obj = client_obj( obj.id )
+        obj:unload_magazine()
+    end
+    sak.relocate_item( db.actor, "in", sect, 1 )
+end

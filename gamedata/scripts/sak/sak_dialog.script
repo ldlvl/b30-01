@@ -2156,7 +2156,7 @@ function weapon_unload( arg )
         if wpn then
             wpn:unload_magazine()
         else
-            wprintf( "[~T].~C0C #ERROR: weapon_unload failed for weapon id [%s]~C07", DumpVar(arg ) )
+            wprintf( "[~T].~C0C #ERROR: weapon_unload failed for weapon id [%s]~C07", DumpVar( arg ) )
         end
     end
 end
@@ -5508,20 +5508,14 @@ function timer_junkman_end()
 end
 
 function take_outfit_dolg_prize(first_speaker, second_speaker)
-    local obj = misc.spawn_to( "outfit_dolg_m1", db.actor )
+    local sect = "outfit_dolg_m1"
+    if amk_vars.r_treas_items == 2 then sect = "dolg_scientific_outfit" end
+    local obj = misc.spawn_to( sect, db.actor )
+    misc.process_spawn()
     if obj then
-        schedule.add( "t_m_p_t", "sak_dialog.take_outfit_dolg("..obj.id..")", 200 )
-        sak.relocate_item( second_speaker, "in", "outfit_dolg_m1", 1 )
+        params.upd_condition( obj, 0.61 )
+        sak.relocate_item( second_speaker, "in", sect, 1 )
     end
-end
-
-function take_outfit_dolg( id )
-    params.obj_condition( id, 0.61 )
-    local objd     = g_sim:object( id )
-    local pk       = get_netpk( objd, 1 )
-    local data     = pk:get()
-    data.condition = 0.61
-    pk:set( data )
 end
 
 -- тут только флаг на спавн, сам спавн при загрузке уровня
