@@ -14708,13 +14708,38 @@
 		</phrase>
 		<phrase id="1">
 			<text>sidor_conserv_done_1</text>
-			<action>sak_inventory.release_actor_items("box_conserv",1)</action>
-			<give_info>info_box_conserv_done</give_info>
-			<action>sak_dialog.add_sidor_med</action>
 			<next>2</next>
+			<next>3</next>
+			<next>4</next>
 		</phrase>
 		<phrase id="2">
 			<text>sidor_conserv_done_2</text>
+			<action>sak_inventory.release_actor_items("box_conserv",1)</action>
+			<give_info>info_box_conserv_done</give_info>
+			<action>test.add_to_actor("conserva",3)</action>
+			<next>5</next>
+		</phrase>
+		<phrase id="3">
+			<text>sidor_conserv_done_3</text>
+			<action>sak_inventory.release_actor_items("box_conserv",1)</action>
+			<give_info>info_box_conserv_done</give_info>
+			<action>test.add_to_actor("medkit",1)</action>
+			<action>test.add_to_actor("bandage",3)</action>
+			<next>5</next>
+		</phrase>
+		<phrase id="4">
+			<text>sidor_conserv_done_4</text>
+			<action>sak_inventory.release_actor_items("box_conserv",1)</action>
+			<give_info>info_box_conserv_done</give_info>
+			<action>test.add_to_actor("vodka",2)</action>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>sidor_conserv_done_5</text>
+			<next>6</next>
+		</phrase>
+		<phrase id="6">
+			<text>sidor_conserv_done_6</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
 	</phrase_list>
@@ -14770,7 +14795,7 @@
 	    <phrase id="91">
 		<dont_has_info>esc_dram_zoneguard_ok</dont_has_info>
 		<text>sidor_kishka_start_91</text>
-		<next>11</next>
+		<next>13</next>
 	</phrase>
 	    <phrase id="9">
 		<has_info>esc_dram_zoneguard_ok</has_info>
