@@ -28,6 +28,12 @@ function add_first_spawn()
         "ros_tutorial_witches_galantine_0019",  -- электра на ДТ
         "ros_tutorial_witches_galantine_0018",  -- электра на ДТ
         "ros_tutorial_witches_galantine_0009",  -- электра на ДТ
+        "dar_sleep_matras",                     -- подушка в кишке
+        "dsc_tiski_repair",                     -- тиски в Кишке.
+        "lim_tiski_repair",                     -- тиски в Лиманске
+        "lim_sleep_matras",                     -- подушка в лиманске
+        "dv_esc_sleep_matras",                  -- подушка в ТД
+        "mar__tiski_repair",                    -- тиски на Болотах
         "rad_physic_object_0014"                -- канистра на Радаре
     }
     for i = 1, #tbl_del_obj do
@@ -75,7 +81,7 @@ function add_first_spawn()
             tsa[ i ][ 5 ], tsa[ i ][ 6 ], shape, "static"
         )
     end
-    sak_spawn.spawn_inventory_box() 
+    --sak_spawn.spawn_inventory_box() 
     test.spawn_docent_lampada()             -- лампадка на столе по пути к Доцентам-Долговязым
     test.spawn_holod_radio()                -- добавим приёмник Холоду на Болотах
     test.spawn_sultan_radio()               -- и Султану, а радиостанцию эту уберём нафиг
