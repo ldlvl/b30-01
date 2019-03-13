@@ -106,7 +106,7 @@ local SGameMtlFlagKeys = {
 	"flPassable",
 	"flSlowDown",
 	"flSuppressShadows",
-	"flSuppressWallmarks" 
+	"flSuppressWallmarks"
 }
 
 local function get_mtl_flags(Flags)
@@ -126,7 +126,7 @@ end
 ----------------------------------------------------------------------------
 
 function switch_off()
-	
+
 	local statics = {
 		["gul_debug"] = true,
 		["prs_debug"] = true,
@@ -136,14 +136,14 @@ function switch_off()
 		--["ach_debug"] = true,
 		--["slots_debug"] = true
 	}
-	
+
 	for k, v in pairs(statics) do
 		local Static = hud:GetCustomStatic(k)
 		if Static then
 			hud:RemoveCustomStatic(k)
 		end
 	end
-	
+
 end
 
 local zones_time = 0
@@ -154,9 +154,9 @@ function zones()
 		hud:AddCustomStatic("gul_debug",true)
 		ZoneCS = hud:GetCustomStatic("gul_debug")
 	end
-	
+
 	ZoneCS:wnd():SetText("јктор в зоне:\\n")
-	
+
 	for name,zone in pairs (db.zone_by_name) do
 		if utils.npc_in_zone(db.actor,zone) then
 			if string.find(zone:section(),"space_restrictor") then
@@ -169,7 +169,7 @@ function zones()
 			    ZonesText = string.format(ZoneCS:wnd():GetText())..
 			    string.format("%s (anom)\\n",tostring(name))
 			end
-		    if ZoneCS ~= nil then ZoneCS:wnd():SetText(ZonesText) end  		
+		    if ZoneCS ~= nil then ZoneCS:wnd():SetText(ZonesText) end
 	    end
 	end
 end
@@ -200,7 +200,7 @@ local mental_anims = {
     [2]="panic"
 }
 
-function info_about_npc()	
+function info_about_npc()
 	clear_info_about_npc()
 
 	local PosLogic = hud:GetCustomStatic("logic_debug")
@@ -214,11 +214,11 @@ function info_about_npc()
 	local rq = RP:query()
 	local target_obj = RP:get_object()
 
-	if target_obj then 
+	if target_obj then
 		if target_obj:is_stalker() or target_obj:is_monster() or target_obj:is_trader() then
 
 			local gulag_val,scheme1,scheme2,anim,mental,pos,lv,gv
-		
+
 			local gulag = xr_gulag.get_npc_gulag(target_obj)
 			if gulag then
 				gulag = gulag.name
@@ -277,16 +277,16 @@ function info_about_npc()
 			local state = state_mgr.get_state(target_obj)
 			local active_evaluator
 			-- if ogse_debug.active_evaluators and ogse_debug.active_evaluators[target_obj:id()] then
-				-- active_evaluator = ogse_debug.active_evaluators[target_obj:id()]			
+				-- active_evaluator = ogse_debug.active_evaluators[target_obj:id()]
 			-- end
 			-- local active_danger
 			-- if ogse_debug.active_dangers and ogse_debug.active_dangers[target_obj:id()] then
-				-- active_danger = ogse_debug.active_dangers[target_obj:id()]			
-			-- end	
+				-- active_danger = ogse_debug.active_dangers[target_obj:id()]
+			-- end
 			-- local active_anim
 			-- if ogse_debug.active_anim and ogse_debug.active_anim[target_obj:id()] then
-				-- active_anim = ogse_debug.active_anim[target_obj:id()]			
-			-- end				
+				-- active_anim = ogse_debug.active_anim[target_obj:id()]
+			-- end
 			LogicText = LogicText..
 				"npc: sect: ["..target_obj:section().."] ".."name: ["..target_obj:name().."]\\n"..
 				"npc: id: "..target_obj:id().." ".."story_id: "..target_obj:story_id().." ".."comm: ["..community.."]\\n"..
@@ -294,7 +294,7 @@ function info_about_npc()
 				"npc: st_mgr state: ["..tostring(state).."] ".."anim: ["..tostring(anim).."] ".."mental: ["..tostring(mental).."]\\n"..
 				--"npc: last active eval: "..tostring(active_evaluator).."\\n"..
 				--"npc: last active danger: "..tostring(active_danger).."\\n"..
-				--"npc: last active anim_eval: "..tostring(active_anim).."\\n"..						
+				--"npc: last active anim_eval: "..tostring(active_anim).."\\n"..
 				"------------------\\n"..
 				"best_enemy: "..tostring(be).."\\n"..
 				"best_danger: "..tostring(best_danger_name).."\\n"..
@@ -313,7 +313,7 @@ function info_about_npc()
 			local scheme1, scheme2
 			if db.storage[target_obj:id()] then
 				scheme1 = tostring(db.storage[target_obj:id()].active_section)
-				scheme2 = tostring(db.storage[target_obj:id()].section_logic)			
+				scheme2 = tostring(db.storage[target_obj:id()].section_logic)
 			end
 			LogicText = LogicText..
 				"obj: section: "..target_obj:section().."\\n"..
@@ -339,13 +339,13 @@ function info_about_npc()
 			local bone_name = target_obj:get_bone_name(bone)
 			LogicText = LogicText.."\\n\\nbone index = ".. bone ..", name = "..bone_name
 		end
-		
+
 	-- elseif rq.mtl then
 		-- LogicText = LogicText .. get_mtl_text( rq.mtl )
     end
 
 	local dist = RP:get_distance()
-	if dist then 
+	if dist then
 		LogicText = LogicText.."\\n\\ndistance: ".. dist
 	end
 
@@ -431,7 +431,7 @@ function vis_int()
 			hud:AddCustomStatic("gul_debug",true)
 			GlgCS = hud:GetCustomStatic("gul_debug")
 		end
-		local GlgText =" " 
+		local GlgText =" "
 		local name_g = ""
 		for k,name_g in ipairs(GulagsTbl) do
 		    local val = xr_gulag.getGulagPopulationComed(name_g)
