@@ -1,1160 +1,1093 @@
 function x10_after_switch_rats()
-if has_alife_info("x10_switch_on_rats") then return end
-local table_monsters={
-"rat_mad_wery_strong",
-"rat_mad_normal",
-"rat_mad_strong",
-"rat_mad_wery_strong"
-}
-local table_spawn={
-{-19.976345062256,-9.5,-56.663566589355,3769,3636},
-{-22.296869277954,-9.5,-0.93966680765152,3446,3633},
-{-20.998249053955,-8.95,17.489625930786,3727,3629},
-{-0.27049475908279,-8.95,-7.6065130233765,6901,3660},
-{-12.827882766724,-21.9,52.936962127686,4544,3643},
-{8.6156625747681,-21.9,53.920192718506,9242,3682}
-}
-local timer=17131
-	for ii=1,8 do
-		for i=1,#table_spawn do
-		local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = x10_rats_"..i.."\nhome_min_radius = 20\nhome_max_radius = 40\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = "..tostring(timer+1234).." | mob_home"
-			timer=timer+1100
-			local zomb=table_monsters[lua_random(#table_monsters)]
-			local point=table_spawn[i]
-			local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
-	db.actor:give_info_portion("x10_switch_on_rats")
+    if has_alife_info( "x10_switch_on_rats" ) then return end
+    local table_monsters = {
+        "rat_mad_wery_strong",
+        "rat_mad_normal",
+        "rat_mad_strong",
+        "rat_mad_wery_strong"
+    }
+    local table_spawn = {
+        { -19.976345062256, -9.5,  -56.66356658935, 3769, 3636 },
+        { -22.296869277954, -9.5,  -0.939666807651, 3446, 3633 },
+        { -20.998249053955, -8.95, 17.489625930786, 3727, 3629 },
+        { -0.2704947590827, -8.95, -7.606513023376, 6901, 3660 },
+        { -12.827882766724, -21.9, 52.936962127686, 4544, 3643 },
+        {  8.6156625747681, -21.9, 53.920192718506, 9242, 3682 }
+    }
+    local timer = 17131
+    for ii = 1, 8 do
+        for i = 1, #table_spawn do
+            local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = x10_rats_"..i.."\nhome_min_radius = 20\nhome_max_radius = 40\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %= bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = "..tostring( timer+1234 ).." | mob_home"
+            timer       = timer + 1100
+            local zomb  = table_monsters[ lua_random( #table_monsters ) ]
+            local point = table_spawn[ i ]
+            local obj   = alife():create(
+                zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
+    db.actor:give_info_portion( "x10_switch_on_rats" )
 end
 
 function dead_after_fedotov_monsters()
-local table_spawn={
-{86.828010559082,1.0300453901291,38.787406921387,319520,3894},
-{20.233360290527,1.239547252655,-58.497806549072,319506,3894},
-{-74.665702819824,1.5174041986465,106.16954803467,315203,3894},
-{-67.025596618652,1.2036197185516,-197.37725830078,240678,3844}
-}
-local timer=17131
-	for ii=1,2 do
-		for i=1,#table_spawn do
-		local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = dead_bloodsuckers"..i.."\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = "..tostring(timer+1234).." | mob_home"
-			timer=timer+1100
-			local zomb="bloodsucker_strong"
-			local point=table_spawn[i]
-			local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
+    local table_spawn = {
+        { 86.828010559082, 1.030045390129, 38.787406921387, 319520, 3894 },
+        { 20.233360290527, 1.239547252655, -58.49780654907, 319506, 3894 },
+        { -74.66570281982, 1.517404198646, 106.16954803467, 315203, 3894 },
+        { -67.02559661865, 1.203619718551, -197.3772583007, 240678, 3844 }
+    }
+    local timer = 17131
+    for ii = 1, 2 do
+        for i = 1, #table_spawn do
+            local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = dead_bloodsuckers"..i.."\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %= bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = "..tostring( timer+1234 ).." | mob_home"
+            timer       = timer + 1100
+            local zomb  = "bloodsucker_strong"
+            local point = table_spawn[ i ]
+            local obj   = alife():create(
+                zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
 end
 
 function rad_near_scaner_monsters()
-local table_monsters={
-"snork_strong",
-"snork_strong",
-"snork_strong",
-"snork_strong",
-"snork_normal",
-"bloodsucker_normal",
-"snork_normal"
-}
-local table_spawn={
-{497.50897216797,-53.891983032227,-135.75592041016,165452,2049},
-{494.73611450195,-54.386772155762,-152.03329467773,164248,2049},
-{466.44006347656,-53.581493377686,-175.33825683594,155854,2055},
-{480.0647277832,-51.006896972656,-196.72906494141,157776,2055},
-{511.5114440918,-45.064025878906,-211.03578186035,171591,2057},
-{524.28405761719,-48.448532104492,-186.93353271484,177398,2056}
-}
-local timer=17131
-local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = rad_near_scaner_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-	for i=1,#table_spawn do
-			if lua_random()<0.75 then
-			timer=timer+1100
-			local zomb=table_monsters[lua_random(#table_monsters)]
-			local point=table_spawn[i]
-			local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
+    local table_monsters = {
+        "snork_strong", "snork_strong", "snork_strong", "snork_strong",
+        "snork_normal",
+        "bloodsucker_normal",
+        "snork_normal"
+    }
+    local table_spawn = {
+        { 497.50897216797, -53.891983032227, -135.75592041016, 165452, 2049 },
+        { 494.73611450195, -54.386772155762, -152.03329467773, 164248, 2049 },
+        { 466.44006347656, -53.581493377686, -175.33825683594, 155854, 2055 },
+        { 480.06472778320, -51.006896972656, -196.72906494141, 157776, 2055 },
+        { 511.51144409180, -45.064025878906, -211.03578186035, 171591, 2057 },
+        { 524.28405761719, -48.448532104492, -186.93353271484, 177398, 2056 }
+    }
+    local timer = 17131
+    local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = rad_near_scaner_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+    for i = 1, #table_spawn do
+        if lua_random() < 0.75 then
+            timer       = timer + 1100
+            local zomb  = table_monsters[ lua_random( #table_monsters ) ]
+            local point = table_spawn[ i ]
+            local obj   = alife():create(
+                zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
 end
 
 function gen_near_marsh_monsters()
-local table_monsters={
-"electro_tushkano_normal",
-"tushkano_strong",
-"tushkano_strong"
-}
-local table_spawn={
-{-187.95501708984,31.273271560669,-382.26705932617,119558,3078},
-{-157.03268432617,33.70418548584,-375.54782104492,155102,3091},
-{-141.8916015625,33.343284606934,-395.04586791992,172091,3097},
-{-169.21725463867,28.674829483032,-421.3125,144123,3079},
-{-189.3874206543,25.918481826782,-425.29901123047,117879,3079},
-{-203.98376464844,26.130619049072,-428.80560302734,101855,3079}
-}
-local timer=17131
-local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = gen_near_marsh_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-	for ii=1,2 do
-		for i=1,#table_spawn do
-			timer=timer+1100
-			local zomb=table_monsters[lua_random(#table_monsters)]
-			local point=table_spawn[i]
-			local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
+    local table_monsters = {
+        "electro_tushkano_normal",
+        "tushkano_strong",
+        "tushkano_strong"
+    }
+    local table_spawn = {
+        { -187.95501708984, 31.273271560669, -382.26705932617, 119558, 3078 },
+        { -157.03268432617, 33.704185485840, -375.54782104492, 155102, 3091 },
+        { -141.89160156250, 33.343284606934, -395.04586791992, 172091, 3097 },
+        { -169.21725463867, 28.674829483032, -421.31250000000, 144123, 3079 },
+        { -189.38742065430, 25.918481826782, -425.29901123047, 117879, 3079 },
+        { -203.98376464844, 26.130619049072, -428.80560302734, 101855, 3079 }
+    }
+    local timer = 17131
+    local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = gen_near_marsh_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+    for ii = 1, 2 do
+        for i = 1, #table_spawn do
+            timer       = timer + 1100
+            local zomb  = table_monsters[ lua_random( #table_monsters ) ]
+            local point = table_spawn[ i ]
+            local obj   = alife():create(
+                zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
 end
 
 function red_near_tank_monsters()
-local table_monsters={
-"snork_strong",
-"snork_strong",
-"snork_strong",
-"dog_strong",
-"dog_strong",
-"snork_normal",
-"dog_strong",
-"bloodsucker_normal",
-"snork_normal"
-}
-local table_spawn={
-{234.75897216797,2.7300519943237,100.12407684326,83351,3263},
-{266.54183959961,2.8341615200043,57.633422851563,83351,3263},
-{178.13026428223,0.56457483768463,78.958869934082,119069,3319},
-{158.86454772949,1.2803754806519,80.693420410156,110716,3319},
-{173.3005065918,0.49827662110329,50.643337249756,110704,3319},
-{203.51692199707,-0.24843227863312,32.118606567383,112386,3319},
-{223.31674194336,1.9060944318771,23.043556213379,140959,3318},
-{236.50140380859,1.0859681367874,35.301368713379,147173,3318},
-{205.69625854492,-3.7869124412537,11.009967803955,132914,3318},
-{210.61515808105,-3.3101496696472,8.258752822876,135272,3318}
-}
-local timer=17131
-local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = red_near_tank_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-	for i=1,#table_spawn do
-			if lua_random()<0.7 then
-			timer=timer+1100
-			local zomb=table_monsters[lua_random(#table_monsters)]
-			local point=table_spawn[i]
-			local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
+    local table_monsters = {
+        "snork_strong",
+        "snork_strong",
+        "snork_strong",
+        "dog_strong",
+        "dog_strong",
+        "snork_normal",
+        "dog_strong",
+        "bloodsucker_normal",
+        "snork_normal"
+    }
+    local table_spawn = {
+        { 234.75897216797, 2.7300519943237, 100.12407684326, 83351,  3263 },
+        { 266.54183959961, 2.8341615200043, 57.633422851563, 83351,  3263 },
+        { 178.13026428223, 0.5645748376846, 78.958869934082, 119069, 3319 },
+        { 158.86454772949, 1.2803754806519, 80.693420410156, 110716, 3319 },
+        { 173.30050659180, 0.4982766211032, 50.643337249756, 110704, 3319 },
+        { 203.51692199707, -0.248432278633, 32.118606567383, 112386, 3319 },
+        { 223.31674194336, 1.9060944318771, 23.043556213379, 140959, 3318 },
+        { 236.50140380859, 1.0859681367874, 35.301368713379, 147173, 3318 },
+        { 205.69625854492, -3.786912441253, 11.009967803955, 132914, 3318 },
+        { 210.61515808105, -3.310149669647, 8.2587528228760, 135272, 3318 }
+    }
+    local timer = 17131
+    local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = red_near_tank_home_1\nhome_min_radius = 35\nhome_max_radius = 110\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = "..timer.." | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+    for i = 1, #table_spawn do
+        if lua_random() < 0.7 then
+            timer       = timer + 1100
+            local zomb  = table_monsters[ lua_random( #table_monsters ) ]
+            local point = table_spawn[ i ]
+            local obj   = alife():create(
+                zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
 end
 
 
 function rad_zombi_exit_mil()
-if lua_random()>0.75 then return end
-local table_monsters={
-"rad_zombied_respawn_1",
-"rad_zombied_respawn_2",
-"rad_zombied_respawn_3",
-"yan_zombied_respawn_1",
-"yan_zombied_respawn_2",
-"yan_zombied_respawn_3",
-"yan_zombied_respawn_4",
-"yan_zombied_respawn_5",
-"yan_zombied_respawn_6"
-}
-local table_spawn={
-{620.09484863281,-52.355792999268,-308.76190185547,222616,2113},
-{612.83728027344,-51.82381439209,-315.77239990234,220044,1881},
-{601.27368164063,-52.257698059082,-314.01718139648,215096,1881},
-{611.359375,-52.268257141113,-307.48843383789,219497,1881},
-{609.60083007813,-51.931880950928,-319.99203491211,218928,1881},
-{601.56201171875,-52.139381408691,-318.59118652344,215095,1881}
-}
-local logic="[smart_terrains]\nnone=true\n[logic]\nactive = walker1\n[walker1]\npath_walk = rad_zombi_exit_mil_walk\nsound_idle = state\non_timer = 29855| %=bar_arena_hit% walker2\n[walker2]\npath_walk = rad_zombi_exit_mil_walk\nsound_idle = state\non_timer = 29855| %=bar_arena_hit% walker1"
-	for i=1,#table_spawn do
-		local zomb=table_monsters[lua_random(#table_monsters)]
-		local point=table_spawn[i]
-		local obj=alife():create(zomb,sak.v3f(point[1],point[2],point[3]),point[4],point[5])
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)	
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    if lua_random() > 0.75 then return end
+    local table_monsters = {
+        "rad_zombied_respawn_1",
+        "rad_zombied_respawn_2",
+        "rad_zombied_respawn_3",
+        "yan_zombied_respawn_1",
+        "yan_zombied_respawn_2",
+        "yan_zombied_respawn_3",
+        "yan_zombied_respawn_4",
+        "yan_zombied_respawn_5",
+        "yan_zombied_respawn_6"
+    }
+    local table_spawn = {
+        { 620.09484863281, -52.355792999268, -308.76190185547, 222616, 2113 },
+        { 612.83728027344, -51.823814392090, -315.77239990234, 220044, 1881 },
+        { 601.27368164063, -52.257698059082, -314.01718139648, 215096, 1881 },
+        { 611.35937500000, -52.268257141113, -307.48843383789, 219497, 1881 },
+        { 609.60083007813, -51.931880950928, -319.99203491211, 218928, 1881 },
+        { 601.56201171875, -52.139381408691, -318.59118652344, 215095, 1881 }
+    }
+    local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = walker1\n[walker1]\npath_walk = rad_zombi_exit_mil_walk\nsound_idle = state\non_timer = 29855| %=bar_arena_hit% walker2\n[walker2]\npath_walk = rad_zombi_exit_mil_walk\nsound_idle = state\non_timer = 29855| %=bar_arena_hit% walker1"
+    for i = 1, #table_spawn do
+        local zomb  = table_monsters[ lua_random( #table_monsters ) ]
+        local point = table_spawn[ i ]
+        local obj   = alife():create(
+            zomb, sak.v3f( point[ 1 ], point[ 2 ], point[ 3 ] ), point[ 4 ], point[ 5 ]
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )    
+        sak.off_on( obj )
+    end
 end
 
 function gar_monster_exit_agr()
-local table_monsters={
-{"pseudodog_normal",4},
-{"tushkano_normal",12},
-{"dog_normal",8},
-{"boar_normal",5}
-}
-local table_spawn={
-{position={x=-201.51083374023,y=0.79267346858978,z=32.624950408936},gv=268,lv=135713},
-{position={x=-212.97085571289,y=0.63914048671722,z=-16.244190216064},gv=308,lv=22403},
-{position={x=-179.76779174805,y=0.72647774219513,z=-54.675834655762},gv=308,lv=22402},
-{position={x=-119.74779510498,y=0.36166182160378,z=-46.291305541992},gv=301,lv=96098},
-{position={x=-88.224182128906,y=0.25210896134377,z=47.203319549561},gv=298,lv=106985}
-}
-
-local rand_point=lua_random(#table_spawn)
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = garb_monster_exit_agr\nhome_min_radius = 15\nhome_max_radius = 80\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)	
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 4 },
+        { "tushkano_normal", 12 },
+        { "dog_normal",       8 },
+        { "boar_normal",      5 }
+    }
+    local table_spawn = {
+        { position = { x = -201.5108337, y = 0.792673468, z = 32.62495040 }, gv = 268, lv = 135713 },
+        { position = { x = -212.9708557, y = 0.639140486, z = -16.2441902 }, gv = 308, lv = 22403  },
+        { position = { x = -179.7677917, y = 0.726477742, z = -54.6758346 }, gv = 308, lv = 22402  },
+        { position = { x = -119.7477951, y = 0.361661821, z = -46.2913055 }, gv = 301, lv = 96098  },
+        { position = { x = -88.22418212, y = 0.252108961, z = 47.20331954 }, gv = 298, lv = 106985 }
+    }
+    local rand_point  = lua_random( #table_spawn )
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = garb_monster_exit_agr\nhome_min_radius = 15\nhome_max_radius = 80\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )    
+        sak.off_on( obj )
+    end
 end
 
 function marsh_monster_botans()
-	local table_monsters = {
-		{ "pseudodog_normal",3 },
-		{ "tushkano_normal", 9 },
-		{ "dog_normal", 6      },
-		{ "boar_normal", 4     }
-	}
-	local table_spawn = {
-		{
-			position = {
-				x = -70.377578735352,
-				y = 0.97067296504974,
-				z = 283.99374389648
-			},
-			gv = 3388,
-			lv = 102412
-		},
-		{
-			position = {
-				x = -149.92785644531,
-				y = 0.50965797901154,
-				z = 332.53909301758
-			},
-			gv = 3378,
-			lv = 70881
-		},
-		{
-			position = {
-				x = -115.08837127686,
-				y = 0.88691937923431,
-				z = 139.29194641113
-			},
-			gv = 3383,
-			lv = 86145}
-	}
-	local rand_point
-	for rand_point = 1, #table_spawn do
-		local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
-		local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_botans"..rand_point.."\nhome_min_radius = 15\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-		for i = 1, rand_monstr[ 2 ] do
-			local a   = table_spawn[ rand_point ]
-			local obj = alife():create(
-			                rand_monstr[ 1 ],
-			                sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
-			            )
-			local pk         = get_netpk( obj )
-			local data       = pk:get()
-			data.custom_data = logic
-			pk:set( data )	
-			if obj.online then
-				sim:set_switch_online( obj.id, false )
-				sim:set_switch_offline( obj.id, true )
-				amk.convert_npc[ obj.id ] = 1
-			end
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal",  9 },
+        { "dog_normal",       6 },
+        { "boar_normal",      4 }
+    }
+    local table_spawn = {
+        { position = { x = -70.3775787, y = 0.970672965, z = 283.993743 }, gv = 3388, lv = 102412 },
+        { position = { x = -149.927856, y = 0.509657979, z = 332.539093 }, gv = 3378, lv = 70881  },
+        { position = { x = -115.088371, y = 0.886919379, z = 139.291946 }, gv = 3383, lv = 86145  }
+    }
+    local rand_point
+    for rand_point = 1, #table_spawn do
+        local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+        local logic = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_botans"..rand_point.."\nhome_min_radius = 15\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+        for i = 1, rand_monstr[ 2 ] do
+            local a   = table_spawn[ rand_point ]
+            local obj = alife():create(
+                rand_monstr[ 1 ],
+                sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )  
+            sak.off_on( obj )
+        end
+    end
 end
 
 function marsh_monster_oksana()
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",10},
-{"dog_normal",7},
-{"boar_normal",5}
-}
-local table_spawn={
-{position={x=96.524658203125,y=1.7513536214828,z=266.92807006836},gv=3467,lv=192686},
-{position={x=225.9900970459,y=0.94395875930786,z=267.80520629883},gv=3499,lv=277218},
-{position={x=403.26336669922,y=1.6984423398972,z=129.51379394531},gv=3538,lv=405335},
-{position={x=388.15573120117,y=1.6630955934525,z=-73.797317504883},gv=3550,lv=394042}
-}
-
-local rand_point
-	for rand_point=1,#table_spawn do
-	local rand_monstr=table_monsters[lua_random(#table_monsters)]
-	local logic="[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_oksana"..rand_point.."\nhome_min_radius = 20\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
-		for i=1,rand_monstr[2] do
-			local a=table_spawn[rand_point]
-			local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-			local pk = get_netpk(obj)
-			local data = pk:get()
-			data.custom_data = logic
-			pk:set(data)	
-			if obj.online then
-				sim:set_switch_online(obj.id, false)
-				sim:set_switch_offline(obj.id, true)
-				amk.convert_npc[obj.id]=1
-			end
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal", 10 },
+        { "dog_normal",       7 },
+        { "boar_normal",      5 }
+    }
+    local table_spawn = {
+        { position = { x = 96.5246582, y = 1.751353621, z = 266.9280700 }, gv = 3467, lv = 192686 },
+        { position = { x = 225.990097, y = 0.943958759, z = 267.8052062 }, gv = 3499, lv = 277218 },
+        { position = { x = 403.263366, y = 1.698442339, z = 129.5137939 }, gv = 3538, lv = 405335 },
+        { position = { x = 388.155731, y = 1.663095593, z = -73.7973175 }, gv = 3550, lv = 394042 }
+    }
+    local rand_point
+    for rand_point = 1, #table_spawn do
+        local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+        local logic       = "[smart_terrains]\nnone=true\n[logic]\nactive = mob_home\n[mob_home]\npath_home = marsh_monster_oksana"..rand_point.."\nhome_min_radius = 20\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17131 | %=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 16321 | mob_home"
+        for i = 1, rand_monstr[ 2 ] do
+            local a   = table_spawn[ rand_point ]
+            local obj = alife():create(
+                rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+            )
+            local pk         = get_netpk( obj )
+            local data       = pk:get()
+            data.custom_data = logic
+            pk:set( data )    
+            sak.off_on( obj )
+        end
+    end
 end
 
 function gar_monster_bandits()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",8},
-{"dog_normal",4},
-{"boar_normal",2}
-}
-local table_spawn={
-{position={x=-179.36552429199,y=-4.0037069320679,z=-189.76043701172},gv=277,lv=43987},
-{position={x=-165.52903747559,y=-1.7383469343185,z=-145.98922729492},gv=278,lv=55066},
-{position={x=-247.58894348145,y=-4.4398550987244,z=-147.1573944091},gv=282,lv=9540}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\gar\\gar_monster_bandits.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)	
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 2 },
+        { "tushkano_normal",  8 },
+        { "dog_normal",       4 },
+        { "boar_normal",      2 }
+    }
+    local table_spawn = {
+        { position = { x = -179.36552429, y = -4.0037069320, z = -189.7604370 }, gv = 277, lv = 43987 },
+        { position = { x = -165.52903747, y = -1.7383469343, z = -145.9892272 }, gv = 278, lv = 55066 },
+        { position = { x = -247.58894348, y = -4.4398550987, z = -147.1573944 }, gv = 282, lv = 9540  }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\gar\\gar_monster_bandits.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )    
+        sak.off_on( obj )
+    end
 end
 
 function add_dsc_1_monsters()
-local rand=lua_random()
-	if rand>0.4 then return end
-	dsc_1_monsters_add()
+    if lua_random() > 0.4 then return end
+    dsc_1_monsters_add()
 end
+
 function dsc_1_monsters_add()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",10},
-{"dog_normal",6},
-{"boar_normal",3}
-}
-local table_spawn={
-{position={x=-386.58489990234,y=0.53244173526764,z=-534.90270996094},gv=3950,lv=60529},
-{position={x=-411.24545288086,y=0.27787283062935,z=-441.29388427734},gv=3946,lv=49558},
-{position={x=-463.40411376953,y=0.79835343360901,z=-449.8525390625},gv=3939,lv=31578},
-{position={x=-512.77069091797,y=1.9909368753433,z=-509.19580078125},gv=3937,lv=20537}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\dsc\\dsc_1_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 2 },
+        { "tushkano_normal", 10 },
+        { "dog_normal",       6 },
+        { "boar_normal",      3 }
+    }
+    local table_spawn = {
+        { position = { x = -386.5848999, y = 0.532441735, z = -534.9027099 }, gv = 3950, lv = 60529 },
+        { position = { x = -411.2454528, y = 0.277872830, z = -441.2938842 }, gv = 3946, lv = 49558 },
+        { position = { x = -463.4041137, y = 0.798353433, z = -449.8525390 }, gv = 3939, lv = 31578 },
+        { position = { x = -512.7706909, y = 1.990936875, z = -509.1958007 }, gv = 3937, lv = 20537 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\dsc\\dsc_1_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_x18_gigant()
-	local logic="[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\dar\\dar_gigant.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-		local obj=alife():create("gigant_normal",sak.v3f(18.757219314575,-10.819721221924,-22.1803855896),5628,1157)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-	if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
+    local logic = "[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\dar\\dar_gigant.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local obj   = alife():create(
+        "gigant_normal", sak.v3f( 18.75721931, -10.81972122, -22.180385 ), 5628, 1157
+    )
+    local pk         = get_netpk( obj )
+    local data       = pk:get()
+    data.custom_data = logic
+    pk:set( data )
+    sak.off_on( obj )
 end
+
 function add_esc_monsters()
-local logic="[smart_terrains]\nesc_road_tushkans=true"
-	for i=1,5 do
-		local obj=alife():create("tushkano_normal",sak.v3f(-80.501472473145,-7.1152625083923,-115.44844818115),187545,109)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local logic = "[smart_terrains]\nesc_road_tushkans=true"
+    for i = 1, 5 do
+        local obj = alife():create(
+            "tushkano_normal", sak.v3f( -80.50147247, -7.115262508, -115.4484481 ), 187545, 109
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_esc_ambush_monsters()
-local m=amk_vars.r_treas_items or 1
-local table_monsters={
-{"cat_normal",4},
-{"tushkano_normal",7},
-{"dog_normal",5}
-}
-local logic="[smart_terrains]\nesc_ambush=true"
-	for i=1,table_monsters[m][2] do
-		local obj=alife():create(table_monsters[m][1],sak.v3f(14.8223810195923,15.9107275009155,663.943603515625),292769,206)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-	end
+    local m = amk_vars.r_treas_items or 1
+    local table_monsters = {
+        { "cat_normal",      4 },
+        { "tushkano_normal", 7 },
+        { "dog_normal",      5 }
+    }
+    local logic = "[smart_terrains]\nesc_ambush=true"
+    for i = 1, table_monsters[ m ][ 2 ] do
+        local obj = alife():create(
+            table_monsters[ m ][ 1 ], sak.v3f( 14.822381019, 15.910727500, 663.94360351 ), 292769, 206
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+    end
 end
+
 function mil_barjer_monsters_add()
-local table_monsters={
-{"pseudodog_strong",6},
-{"chimera_normal",3},
-{"snork_normal",6},
-{"bloodsucker_normal",3},
-{"burer_strong",4}
-}
-local table_spawn={
-{position={x=135.74,y=-8.40,z=438.65},gv=1812,lv=412590},
-{position={x=131.51,y=-8.50,z=433.60},gv=1812,lv=411674}, 
-{position={x=123.61,y=-6.30,z=444.35},gv=1812,lv=409754},
-{position={x=138.86,y=-8.20,z=438.87},gv=1812,lv=413071}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\mil\\mil_barjer_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_strong",   6 },
+        { "chimera_normal",     3 },
+        { "snork_normal",       6 },
+        { "bloodsucker_normal", 3 },
+        { "burer_strong",       4 }
+    }
+    local table_spawn = {
+        { position = { x = 135.74, y = -8.40, z = 438.65 }, gv = 1812, lv = 412590 },
+        { position = { x = 131.51, y = -8.50, z = 433.60 }, gv = 1812, lv = 411674 }, 
+        { position = { x = 123.61, y = -6.30, z = 444.35 }, gv = 1812, lv = 409754 },
+        { position = { x = 138.86, y = -8.20, z = 438.87 }, gv = 1812, lv = 413071 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\mil\\mil_barjer_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
 
 function add_gar_hellcar_monsters()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",10},
-{"dog_normal",6},
-{"boar_normal",3}
-}
-local table_spawn={
-{position={x=-147.9315032959,y=0.50033414363861,z=-258.63153076172},gv=275,lv=69770}, 
-{position={x=-155.05776977539,y=-0.90811288356781,z=-174.21310424805},gv=278,lv=63297}, 
-{position={x=-10.28719997406,y=-1.0010341405869,z=-177.19413757324},gv=287,lv=166462}, 
-{position={x=-1.7937774658203,y=0.48571994900703,z=-236.17179870605},gv=265,lv=173304}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\gar\\gar_hellcar_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 2 },
+        { "tushkano_normal", 10 },
+        { "dog_normal",       6 },
+        { "boar_normal",      3 }
+    }
+    local table_spawn = {
+        { position = {x = -147.93150329, y = 0.50033414363, z = -258.6315307 }, gv = 275, lv = 69770  }, 
+        { position = {x = -155.05776977, y = -0.9081128835, z = -174.2131042 }, gv = 278, lv = 63297  }, 
+        { position = {x = -10.287199974, y = -1.0010341405, z = -177.1941375 }, gv = 287, lv = 166462 }, 
+        { position = {x = -1.7937774658, y = 0.48571994900, z = -236.1717987 }, gv = 265, lv = 173304 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\gar\\gar_hellcar_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function mutant_blok_post()
-local rand2=lua_random()
-	if rand2>0.4 then return end
-	add_gar_monsters()
+    if lua_random() > 0.4 then return end
+    add_gar_monsters()
 end
+
 function add_gar_monsters()
-local table_monsters={
-{"pseudodog_normal",4},
-{"tushkano_normal",15},
-{"dog_strong",10},
-{"boar_normal",6},
-{"boar_strong",4},
-{"cat_strong",3}
-}
-local table_spawn={
-{position={x=78.63,y=0.5,z=195.3},gv=363,lv=248003}, 
-{position={x=99.96,y=0.8,z=260.27},gv=366,lv=266369}, 
-{position={x=12.91,y=0.5,z=162.57},gv=355,lv=186028}, 
-{position={x=69.41,y=0.9,z=159.32},gv=364,lv=240038}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\gar\\gar_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 4 },
+        { "tushkano_normal", 15 },
+        { "dog_strong",      10 },
+        { "boar_normal",      6 },
+        { "boar_strong",      4 },
+        { "cat_strong",       3 }
+    }
+    local table_spawn = {
+        { position = { x = 78.63, y = 0.5, z = 195.30 }, gv = 363, lv = 248003 }, 
+        { position = { x = 99.96, y = 0.8, z = 260.27 }, gv = 366, lv = 266369 }, 
+        { position = { x = 12.91, y = 0.5, z = 162.57 }, gv = 355, lv = 186028 }, 
+        { position = { x = 69.41, y = 0.9, z = 159.32 }, gv = 364, lv = 240038 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\gar\\gar_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_val_monsters()
-local rand2=lua_random()
-	if rand2>0.4 then return end
-	val_monsters_add()
+    if lua_random() > 0.4 then return end
+    val_monsters_add()
 end
+
 function val_monsters_add()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",10},
-{"m_poltergeist_tele_outdoor",1},
-{"dog_normal",5},
-{"boar_normal",3},
-{"chimera_normal",1}
-}
-local table_spawn={
-{position={x=-67.44,y=-2.69,z=-232.15},gv=852,lv=95488},
-{position={x=-135.55,y=0.44,z=-270.84},gv=848,lv=22426},
-{position={x=-152.80,y=6.27,z=-149.12},gv=884,lv=10912}
-}
-local logic="[logic]\ncfg=scripts\\val\\val_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal",           2 },
+        { "tushkano_normal",           10 },
+        { "m_poltergeist_tele_outdoor", 1 },
+        { "dog_normal",                 5 },
+        { "boar_normal",                3 },
+        { "chimera_normal",             1 }
+    }
+    local table_spawn = {
+        { position = { x = -67.44, y = -2.69, z = -232.15 }, gv = 852, lv = 95488 },
+        { position = { x = -135.55, y = 0.44, z = -270.84 }, gv = 848, lv = 22426 },
+        { position = { x = -152.80, y = 6.27, z = -149.12 }, gv = 884, lv = 10912 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\val\\val_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
 
 function add_val2_monsters()
-local rand2=lua_random()
-	if rand2>0.4 then return end
-	val2_monsters_add()
+    if lua_random() > 0.4 then return end
+    val2_monsters_add()
 end
+
 function val2_monsters_add()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",10},
-{"dog_normal",5},
-{"boar_normal",3},
-{"chimera_normal",1}
-}
-local table_spawn={
-{position={x=-21.88,y=-0.10,z=-430.76},gv=952,lv=148737},
-{position={x=-52.25,y=0.10,z=-431.32},gv=826,lv=112199},
-{position={x=-82.84,y=0.17,z=-449.32},gv=826,lv=77669},
-{position={x=-61.33,y=0.97,z=-538.55},gv=815,lv=101549}
-}
-local logic="[logic]\ncfg=scripts\\val\\val2_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 2 },
+        { "tushkano_normal", 10 },
+        { "dog_normal",       5 },
+        { "boar_normal",      3 },
+        { "chimera_normal",   1 }
+    }
+    local table_spawn = {
+        { position = { x = -21.88, y = -0.10, z = -430.76 }, gv = 952, lv = 148737 },
+        { position = { x = -52.25, y =  0.10, z = -431.32 }, gv = 826, lv = 112199 },
+        { position = { x = -82.84, y =  0.17, z = -449.32 }, gv = 826, lv = 77669  },
+        { position = { x = -61.33, y =  0.97, z = -538.55 }, gv = 815, lv = 101549 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\val\\val2_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function gar_monster_angar()
-local table_monsters={
-{"flesh_strong",2},
-{"flesh_normal",3},
-{"flesh_weak",4},
-{"pseudodog_normal",3},
-{"tushkano_normal",10},
-{"dog_weak",6},
-{"dog_normal",5},
-{"boar_normal",4},
-{"cat_strong",3}
-}
-local table_spawn={
-{position={x=79.96,y=0.65,z=-42.15},gv=394,lv=249047}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\gar\\gar_monsters_angar.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "flesh_strong",     2 },
+        { "flesh_normal",     3 },
+        { "flesh_weak",       4 },
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal", 10 },
+        { "dog_weak",         6 },
+        { "dog_normal",       5 },
+        { "boar_normal",      4 },
+        { "cat_strong",       3 }
+    }
+    local table_spawn = {
+        { position = { x = 79.96, y = 0.65, z = -42.15 }, gv = 394, lv = 249047 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\gar\\gar_monsters_angar.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
 
 function gar_monster_tonel()
-local table_monsters={
-{"pseudodog_normal",2},
-{"tushkano_normal",6}
-}
-local table_spawn={
-{position={x=-264.95,y=0.616,z=22.66},gv=314,lv=5147},
-{position={x=-217.42,y=0.42,z=12.60},gv=314,lv=19972}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\gar\\gar_monsters_tonel.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {{ "pseudodog_normal", 2 }, { "tushkano_normal", 6 }}
+    local table_spawn = {
+        { position = { x = -264.95, y = 0.616, z = 22.66 }, gv = 314, lv = 5147  },
+        { position = { x = -217.42, y = 0.420, z = 12.60 }, gv = 314, lv = 19972 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\gar\\gar_monsters_tonel.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
 
 function add_klyk_med1_monsters()
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",8},
-{"cat_strong",5}
-}
-local table_spawn={
-{position={x=45.98,y=16.96,z=198.55},gv=694,lv=283809}, 
-{position={x=-69.12,y=11.695,z=160.33},gv=591,lv=171954}, 
-{position={x=-42.14,y=8.87,z=149.05},gv=518,lv=199055}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-local logic="[logic]\ncfg=scripts\\agr\\agr_klyk_med1_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal",  8 },
+        { "cat_strong",       5 }
+    }
+    local table_spawn = {
+        { position = { x =  45.98, y = 16.960, z = 198.55 }, gv = 694, lv = 283809 }, 
+        { position = { x = -69.12, y = 11.695, z = 160.33 }, gv = 591, lv = 171954 }, 
+        { position = { x = -42.14, y = 8.8700, z = 149.05 }, gv = 518, lv = 199055 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    local logic       = "[logic]\ncfg=scripts\\agr\\agr_klyk_med1_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_klyk_med2_monsters()
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",8},
-{"boar_normal",6}
-}
-local table_spawn={
-	{position={x=-113.96,y=7.35,z=113.61},gv=590,lv=126107}, 
-	{position={x=-86.88,y=3.83,z=2.10},gv=530,lv=150967}
-	}
-local logic="[logic]\ncfg=scripts\\agr\\agr_klyk_med2_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal",  8 },
+        { "boar_normal",      6 }
+    }
+    local table_spawn = {
+        { position = { x = -113.96, y = 7.35, z = 113.61 }, gv = 590, lv = 126107 }, 
+        { position = { x = -86.880, y = 3.83, z = 2.1000 }, gv = 530, lv = 150967 }
+        }
+    local logic       = "[logic]\ncfg=scripts\\agr\\agr_klyk_med2_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_klyk_med3_monsters()
-local table_monsters={
-{"dog_normal",8},
-{"boar_normal",5},
-{"burer_normal",2}
-}
-local table_spawn={
-{position={x=65.88,y=0.6,z=-64.11},gv=425,lv=303227}, 
-{position={x=-27.93,y=0.1,z=-24.41},gv=457,lv=212533}, 
-{position={x=-43.52,y=1.11,z=-71.49},gv=545,lv=200175}
-}
-local logic="[logic]\ncfg=scripts\\agr\\agr_klyk_med3_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-	local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "dog_normal",   8 },
+        { "boar_normal",  5 },
+        { "burer_normal", 2 }
+    }
+    local table_spawn = {
+        { position = { x =  65.88, y = 0.60, z = -64.11 }, gv = 425, lv = 303227 }, 
+        { position = { x = -27.93, y = 0.10, z = -24.41 }, gv = 457, lv = 212533 }, 
+        { position = { x = -43.52, y = 1.11, z = -71.49 }, gv = 545, lv = 200175 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\agr\\agr_klyk_med3_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function agr_monster_kirpich()
-local obj=alife():story_object(story_ids.agr_pda_luber)
-level.map_remove_object_spot(obj.id, "crlc_big")
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",8},
-{"boar_normal",3}
-}
-local table_spawn={
-{position={x=-113.96,y=7.35,z=113.61},gv=590,lv=126107}, 
-{position={x=-139.58,y=13.25,z=150.68},gv=523,lv=99895}
-}
-local logic="[logic]\ncfg=scripts\\agr\\agr_monster_kirpich.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local obj = alife():story_object( story_ids.agr_pda_luber )
+    level.map_remove_object_spot( obj.id, "crlc_big" )
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal",  8 },
+        { "boar_normal",      3 }
+    }
+    local table_spawn = {
+        { position = { x = -113.96, y = 7.350, z = 113.61 }, gv = 590, lv = 126107 }, 
+        { position = { x = -139.58, y = 13.25, z = 150.68 }, gv = 523, lv = 99895  }
+    }
+    local logic       = "[logic]\ncfg=scripts\\agr\\agr_monster_kirpich.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a          = table_spawn[ rand_point ]
+        local obj        = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_x18_monsters()
-local table_monsters={
-{"snork_indoor",3},
-{"tushkano_normal",8},
-{"m_poltergeist_strong_flame",2}
-}
-local table_spawn={
-{position={x=2.24,y=4.19,z=-2.83},gv=1124,lv=3078}
-}
-local logic="[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\x18\\x18_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "snork_indoor",               3 },
+        { "tushkano_normal",            8 },
+        { "m_poltergeist_strong_flame", 2 }
+    }
+    local table_spawn = {
+        { position = { x = 2.24, y = 4.19, z = -2.83 }, gv = 1124, lv = 3078 }
+    }
+    local logic       = "[smart_terrains]\nnone = true\n[logic]\ncfg=scripts\\x18\\x18_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_ros_monsters()
-local rand2=lua_random()
-	if rand2>0.4 then return end
-	ros_monsters_add()
+    if lua_random() > 0.4 then return end
+    ros_monsters_add()
 end
+
 function ros_monsters_add()
-local table_monsters={
-{"dog_normal",8},
-{"snork_normal",5},
-{"chimera_normal",2}
-}
-local table_spawn={
-{position={x=-96.51,y=0.00,z=148.26},gv=1422,lv=45539},
-{position={x=-113.40,y=0.00,z=128.34},gv=1315,lv=43547},
-{position={x=-163.66,y=0.00,z=128.11},gv=1314,lv=34646},
-{position={x=-152.32,y=0.00,z=158.00},gv=1327,lv=38436}
-}
-local logic="[logic]\ncfg=scripts\\ros\\ros_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "dog_normal",     8 },
+        { "snork_normal",   5 },
+        { "chimera_normal", 2 }
+    }
+    local table_spawn = {
+        { position = { x = -96.510, y = 0.00, z = 148.26 }, gv = 1422, lv = 45539 },
+        { position = { x = -113.40, y = 0.00, z = 128.34 }, gv = 1315, lv = 43547 },
+        { position = { x = -163.66, y = 0.00, z = 128.11 }, gv = 1314, lv = 34646 },
+        { position = { x = -152.32, y = 0.00, z = 158.00 }, gv = 1327, lv = 38436 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\ros\\ros_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_ros2_monsters()
-	if not has_alife_info("ros_zombied_spawn_01") then
-	ros2_monsters_add()
-	else
-	local rand2=lua_random()
-	if rand2>0.4 then return end
-	ros2_monsters_add()
-	end
+    if not has_alife_info( "ros_zombied_spawn_01" ) then
+        ros2_monsters_add()
+    else
+        if lua_random() > 0.4 then return end
+        ros2_monsters_add()
+    end
 end
+
 function ros2_monsters_add()
-local table_monsters={
-{"dog_normal",8},
-{"snork_normal",5},
-{"chimera_normal",2}
-}
-local table_spawn={
-{position={x=-47.42,y=-13.82,z=-201.48},gv=1433,lv=58323},
-{position={x=-96.60,y=-12.60,z=-142.94},gv=1437,lv=45471},
-{position={x=-149.08,y=-12.55,z=-274.51},gv=1435,lv=38993}
-}
-local logic="[logic]\ncfg=scripts\\ros\\ros2_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "dog_normal",     8 },
+        { "snork_normal",   5 },
+        { "chimera_normal", 2 }
+    }
+    local table_spawn = {
+        { position = { x = -47.420, y = -13.82, z = -201.48 }, gv = 1433, lv = 58323 },
+        { position = { x = -96.600, y = -12.60, z = -142.94 }, gv = 1437, lv = 45471 },
+        { position = { x = -149.08, y = -12.55, z = -274.51 }, gv = 1435, lv = 38993 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\ros\\ros2_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function add_ros3_monsters()
-local rand2=lua_random()
-	if rand2>0.4 then return end
-	ros3_monsters_add()
+    if lua_random() > 0.4 then return end
+    ros3_monsters_add()
 end
+
 function ros3_monsters_add()
-local table_monsters={
-{"dog_normal",6},
-{"snork_normal",4},
-{"m_poltergeist_tele_outdoor",1},
-{"chimera_normal",3}
-}
-local table_spawn={
-{position={x=-56.84,y=0,z=112.51},gv=1419,lv=56508},
-{position={x=-18.12,y=0,z=150.00},gv=1415,lv=64638},
-{position={x=-71.53,y=0,z=151.81},gv=1309,lv=51940}
-}
-local logic="[logic]\ncfg=scripts\\ros\\ros3_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local rand_point=lua_random(#table_spawn)
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[rand_point]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "dog_normal",                 6 },
+        { "snork_normal",               4 },
+        { "m_poltergeist_tele_outdoor", 1 },
+        { "chimera_normal",             3 }
+    }
+    local table_spawn = {
+    { position = { x = -56.84, y = 0, z = 112.51 }, gv = 1419, lv = 56508 },
+    { position = { x = -18.12, y = 0, z = 150.00 }, gv = 1415, lv = 64638 },
+    { position = { x = -71.53, y = 0, z = 151.81 }, gv = 1309, lv = 51940 }
+    }
+    local logic       = "[logic]\ncfg=scripts\\ros\\ros3_add_monsters.ltx\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local rand_point  = lua_random( #table_spawn )
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ rand_point ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 function agr_monsters_enteres()
-local table_monsters={
-{"pseudodog_normal",3},
-{"tushkano_normal",10},
-{"dog_normal",6},
-{"boar_normal",4}
-}
-local table_spawn={
-{position={x=239.45269775391,y=0.33257076144218,z=-13.490202903748},gv=416,lv=423629}
-}
-local rand_monstr=table_monsters[lua_random(#table_monsters)]
-local logic="[logic]\nactive = mob_home\n[mob_home]\npath_home = solider_ambush_2_walk\nhome_min_radius = 25\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17000|%=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 30000 | mob_home\n[spawner]\nday_night_switch=false\ncheck_distance=false"
-	for i=1,rand_monstr[2] do
-		local a=table_spawn[1]
-		local obj=alife():create(rand_monstr[1],sak.v3f(a.position.x,a.position.y,a.position.z),a.lv,a.gv)
-		local pk = get_netpk(obj)
-		local data = pk:get()
-		data.custom_data = logic
-		pk:set(data)
-		if obj.online then
-			sim:set_switch_online(obj.id, false)
-			sim:set_switch_offline(obj.id, true)
-			amk.convert_npc[obj.id]=1
-		end
-	end
+    local table_monsters = {
+        { "pseudodog_normal", 3 },
+        { "tushkano_normal", 10 },
+        { "dog_normal",       6 },
+        { "boar_normal",      4 }
+    }
+    local table_spawn = {
+        { position = { x = 239.4526977, y = 0.332570761, z = -13.4902029 }, gv = 416, lv = 423629 }
+    }
+    local rand_monstr = table_monsters[ lua_random( #table_monsters ) ]
+    local logic = "[logic]\nactive = mob_home\n[mob_home]\npath_home = solider_ambush_2_walk\nhome_min_radius = 25\nhome_max_radius = 50\naggressive_home\non_signal = sig_attacked | mob_combat\non_timer = 17000|%=bar_arena_hit%  mob_combat\n[mob_combat]\non_timer = 30000 | mob_home\n[spawner]\nday_night_switch=false\ncheck_distance=false"
+    for i = 1, rand_monstr[ 2 ] do
+        local a   = table_spawn[ 1 ]
+        local obj = alife():create(
+            rand_monstr[ 1 ], sak.v3f( a.position.x, a.position.y, a.position.z ), a.lv, a.gv
+        )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
+        data.custom_data = logic
+        pk:set( data )
+        sak.off_on( obj )
+    end
 end
+
 local spawn_l01_escape = {
-{-210.6,-22.88,-122.39,42632,59},
-{-210.6,-22.88,-122.39,42632,59}
+    { -210.6, -22.88, -122.39, 42632, 59 },
+    { -210.6, -22.88, -122.39, 42632, 59 }
 }
+
 local spawn_l02_garbage = {}
+
 local spawn_l03_agroprom = {
-{-197.40832519531,-0.001372367143631,-217.87741088867,39202,555},
-{-197.40832519531,-0.001372367143631,-217.87741088867,39202,555},
-{-182.53715515137,1.0960040092468,-304.18606567383,53749,689},
-{-105.64331054688,-0.0010449588298798,-214.49771118164,134209,552},
-{-147.96534729004,-0.20088905096054,-224.84063720703,87306,554},
-{-184.15728759766,0.011988133192062,-185.3687286377,54584,666},
-{-150.07102966309,1.1019934415817,-160.90698242188,85935,669},
-{-133.22476196289,1.6374768018723,-140.18840026855,104045,697},
-{-124.13204193115,-0.00052705407142639,-169.2686920166,116029,564},
-{-150.96371459961,1.1015794277191,-148.06611633301,87391,668},
-{-181.03880310059,-0.0024654865264893,-166.3733215332,55326,560},
-{-189.67437744141,-0.069051057100296,-177.87515258789,46853,558},
-{-198.82919311523,-0.0045629143714905,-199.82818603516,37839,557},
-{-156.32991027832,-0.0021463334560394,-205.35818481445,82695,648},
-{-120.96133422852,14.999356269836,-200.72688293457,118927,642},
-{-138.17070007324,1.0594934225082,-197.22166442871,101724,649},
-{-113.6064453125,13.289253234863,-264.05694580078,126336,631},
-{50.503395080566,14.468194007874,-290.08377075195,286939,450},
-{-14.892495155334,-0.74388289451599,-156.57693481445,225328,437},
-{48.609634399414,2.1393494606018,-152.38336181641,285255,641},
-{80.252487182617,0.26916721463203,-58.579772949219,315716,425},
-{82.56184387207,0.62457859516144,28.336143493652,319820,423},
-{22.503131866455,-0.20140597224236,44.808353424072,261973,475},
-{-43.449123382568,-0.00015690922737122,40.219749450684,197553,672},
-{-27.942699432373,2.7175040245056,106.40400695801,212700,588},
-{50.801006317139,18.042943954468,131.48590087891,288146,580},
-{106.6749420166,8.0823307037354,145.79360961914,340920,504},
-{111.6714630127,12.138738632202,198.83236694336,346285,579},
-{38.866779327393,20.816883087158,209.17419433594,277682,694},
-{38.866779327393,20.816883087158,209.17419433594,277682,694}
+    { -197.40832519531, -0.0013723671436, -217.87741088867, 39202, 555  },
+    { -197.40832519531, -0.0013723671436, -217.87741088867, 39202, 555  },
+    { -182.53715515137,  1.0960040092468, -304.18606567383, 53749, 689  },
+    { -105.64331054688, -0.0010449588298, -214.49771118164, 134209, 552 },
+    { -147.96534729004, -0.2008890509605, -224.84063720703, 87306, 554  },
+    { -184.15728759766,  0.0119881331920, -185.36872863770, 54584, 666  },
+    { -150.07102966309,  1.1019934415817, -160.90698242188, 85935, 669  },
+    { -133.22476196289,  1.6374768018723, -140.18840026855, 104045, 697 },
+    { -124.13204193115, -0.0005270540714, -169.26869201660, 116029, 564 },
+    { -150.96371459961,  1.1015794277191, -148.06611633301, 87391, 668  },
+    { -181.03880310059, -0.0024654865264, -166.37332153320, 55326, 560  },
+    { -189.67437744141, -0.0690510571002, -177.87515258789, 46853, 558  },
+    { -198.82919311523, -0.0045629143714, -199.82818603516, 37839, 557  },
+    { -156.32991027832, -0.0021463334560, -205.35818481445, 82695, 648  },
+    { -120.96133422852,  14.999356269836, -200.72688293457, 118927, 642 },
+    { -138.17070007324,  1.0594934225082, -197.22166442871, 101724, 649 },
+    { -113.60644531250,  13.289253234863, -264.05694580078, 126336, 631 },
+    {  50.503395080566,  14.468194007874, -290.08377075195, 286939, 450 },
+    { -14.892495155334, -0.7438828945159, -156.57693481445, 225328, 437 },
+    {  48.609634399414,  2.1393494606018, -152.38336181641, 285255, 641 },
+    {  80.252487182617,  0.2691672146320, -58.579772949219, 315716, 425 },
+    {  82.561843872070,  0.6245785951614,  28.336143493652, 319820, 423 },
+    {  22.503131866455, -0.2014059722423,  44.808353424072, 261973, 475 },
+    { -43.449123382568, -0.0001569092273,  40.219749450684, 197553, 672 },
+    { -27.942699432373,  2.7175040245056,  106.40400695801, 212700, 588 },
+    {  50.801006317139,  18.042943954468,  131.48590087891, 288146, 580 },
+    {  106.67494201660,  8.0823307037354,  145.79360961914, 340920, 504 },
+    {  111.67146301270,  12.138738632202,  198.83236694336, 346285, 579 },
+    {  38.866779327393,  20.816883087158,  209.17419433594, 277682, 694 },
+    {  38.866779327393,  20.816883087158,  209.17419433594, 277682, 694 }
 }
 local spawn_l03u_agr_underground = {}
-local spawn_l04_darkvalley = {}
-local spawn_l04u_labx18 = {}
-local spawn_l05_bar = {}
-local spawn_l06_rostok = {}
-local spawn_l07_military={
-{-138.06878662109,-0.94603538513184,-59.39884185791,176330,1622}, --derevo_na_baze_svobody
-{-108.22340393066,-5.7765727043152,-9.6930503845215,207044,1613},--v_kustax_e_proloma_na_baze_svobody
-{-94.977043151855,-6.2111787796021,59.214408874512,213510,1616},--na_dereve_na_baze_svobody
-{108.56769561768,-6.3105902671814,11.720973014832,405007,1561},--pod_derevom_2_na_bazsvobody
-{-8.2585945129395,-8.707555770874,48.819267272949,298787,1580},--na_vagone_pod_dorogoi_na_baze_cvobody
-{-31.105308532715,-9.0780038833618,26.549795150757,276631,1606},--derevo_na_sport_ploshadke_na_baze
-{-72.398063659668,-7.1178121566772,-37.414375305176,239380,1605},--derevo_u_shurupa_na_baze
-{69.604995727539,-1.7951892614365,-57.483680725098,319753,1591},--krysha_boksov_na_baze
-{10.633180618286,0.48450103402138,-14.111708641052,317797,1585}--krysha_pazlomannogo_angara_na_baze
-} 
-local spawn_l08_yantar={
-{85.14,0.39204499125481,11.55,84105,1513}, --v_trube
-{96.16,0.15887573361397,26.37,87213,1512}, --v_zakutke
-{94.83,0.15944364666939,29.20,89028,1512}, --v_uglu
-{86.62,1.0477981567383,-9.61,85218,1514}, --na_stole_u_verstaka
-{94.52,0.02390930056572,-25.00,88940,1514}, --ugol_angara
-{61.35,-0.7736474275589,1.94,71786,1509}, --v_trube_v_basseine
-{59.39,-0.375148969888687,29.00,69773,1509}, --plita_v_basseine_
-{38.52,0.13321402668953,43.02,59538,1510}, --pod_kustom_u_transfopmatornoi_budki
-{20.49,0.12415805459023,36.43,59538,1510}, --pozadi_tr_budki
-{35.35,-0.85104143619537,9.91,57024,1445}, --v_kustax_u_gruzovika
-{49.72,7.3883419036865,17.10,64695,1445}, --naverxu_u_basseina
-{30.26,0.071936756372452,-6.35,53799,1507}, --v_garage_mezdu_kirpizei
-{19.39,0.085919499397278,-5.84,48647,1507}, --v_garage_za_kirpizami_u_stenki
-{33.18,0.13766834139824,-24.27,55946,1506}, --vozle_garaza_vperedi
-{37.88,0.27733400464058,-71.78,63787,1517}, --v_trube_u_levogo_angara
-{8.13,0.92447483539581,-11.77,44277,1503}, --zakutok_u_glavn_korpusa
-{8.65,8.862042427063,4.62,43665,1502}, --na_verxu_na_trube_u_glavn_kompl
-{10.55,7.1110558509827,-12.37,45732,1445}, --na_trube_vozle_glavn_anomalii_tyla
-{-15.83,0.34346553683281,-33.08,34470,1444}, --v_kustax_u_vhoda_v_glavn_kompl
-{-7.68,0.14076626300812,13.80,42729,1502}, --v_kustax_u_pravogo_ugla_glavn_kompl
-{3.40,1.3564069271088,0.99,41114,1525}, --na_stole_u_vxoda_v_okno
-{-4.49,9.3516025543213,1.49,37376,1525}, --tretii_etag_u_trupa
-{-0.76,14.985825538635,-16.29,38597,1525}, --parapet_glavg_kompl
-{-2.68,5.4348163604736,-16.91,37917,1525}, --krysha_pristroiki
-{87.45,0.052900612354279,41.43,85289,1520}, --za_garazami_s_vneshnei_storony
-{104.24,0.39546039700508,40.35,94640,1520}, --mesto_spawna_monstrov_3_tochki
-{157.77,-7.5283575057983,-93.00,128118,1451}, --mesto_spawna_2_tochki_1
-{16.24,-8.2876586914063,-206.38,48451,1469}, --u_bunkera__gde_radiacia
-{-106.28,-1.8489271402359,-204.53,4855,1485} --pozadi_ozera
-} 
-local spawn_l08u_brainlab = {}
-local spawn_l10_radar = {}
-local spawn_limansk = {}
-local spawn_lost_village = {}
-local spawn_marsh = {}
-local spawn_red_forest = {}
-local spawn_warlab = {}
-local spawn_labx10 = {}
-local spawn_labx8 = {}
-local spawn_generators = {}
-local spawn_aver = {}
-local spawn_hospital = {}
-local spawn_deadcity = {
-{-146.58863830566,19.050142288208,-41.386787414551,171366,3793}, --na cherdake
-{-149.80274963379,6.2662415504456,-1.861160993576,168833,3804}, --pod oblomkami
-{6.8520812988281,1.2480462789536,-32.950668334961,301873,3888}, --paviljon vozle shkoly
-{-181.51889038086,19.055055618286,-7.5016026496887,150990,3793} --na cherdake2
-}
-local spawn_av_peshera = {}
-local spawn_l10u_bunker = {}
-local spawn_l11_pripyat = {}
-local spawn_l12_stancia_new = {}
-local spawn_l12_stancia_2_new = {}
-local spawn_l12u_control_monolith = {}
-local spawn_l12u_sarcofag = {}
+local spawn_l04_darkvalley       = {}
+local spawn_l04u_labx18          = {}
+local spawn_l05_bar              = {}
+local spawn_l06_rostok           = {}
 
-local leveles={
-["l01_escape"]=spawn_l01_escape,
-["l02_garbage"]=spawn_l02_garbage,
-["l03_agroprom"]=spawn_l03_agroprom,
-["l03u_agr_underground"]=spawn_l03u_agr_underground,
-["l04_darkvalley"]=spawn_l04_darkvalley,
-["l04u_labx18"]=spawn_l04u_labx18,
-["l05_bar"]=spawn_l05_bar,
-["l06_rostok"]=spawn_l06_rostok,
-["l07_military"]=spawn_l07_military,
-["l08_yantar"]=spawn_l08_yantar,
-["l08u_brainlab"]=spawn_l08u_brainlab,
-["l10_radar"]=spawn_l10_radar,
-["limansk"]=spawn_limansk,
-["lost_village"]=spawn_lost_village,
-["marsh"]=spawn_marsh,
-["red_forest"]=spawn_red_forest,
-["warlab"]=spawn_warlab,
-["labx10"]=spawn_labx10,
-["labx8"]=spawn_labx8,
-["generators"]=spawn_generators,
-["aver"]=spawn_aver,
-["hospital"]=spawn_hospital,
-["deadcity"]=spawn_deadcity,
-["av_peshera"]=spawn_av_peshera,
-["l10u_bunker"]=spawn_l10u_bunker,
-["l11_pripyat"]=spawn_l11_pripyat,
-["l12_stancia_new"]=spawn_l12_stancia_new,
-["l12_stancia_2_new"]=spawn_l12_stancia_2_new,
-["l12u_control_monolith"]=spawn_l12u_control_monolith,
-["l12u_sarcofag"]=spawn_l12u_sarcofag
+local spawn_l07_military = {
+    { -138.06878662109, -0.9460353851318, -59.39884185791, 176330, 1622 }, --derevo_na_baze_svobody
+    { -108.22340393066, -5.7765727043152, -9.693050384521, 207044, 1613 }, --v_kustax_e_proloma_na_baze_svobody
+    { -94.977043151855, -6.2111787796021,  59.21440887451, 213510, 1616 }, --na_dereve_na_baze_svobody
+    {  108.56769561768, -6.3105902671814,  11.72097301483, 405007, 1561 }, --pod_derevom_2_na_bazsvobody
+    { -8.2585945129395, -8.7075557708740,  48.81926727294, 298787, 1580 }, --na_vagone_pod_dorogoi_na_baze_cvobody
+    { -31.105308532715, -9.0780038833618,  26.54979515075, 276631, 1606 }, --derevo_na_sport_ploshadke_na_baze
+    { -72.398063659668, -7.1178121566772, -37.41437530517, 239380, 1605 }, --derevo_u_shurupa_na_baze
+    {  69.604995727539, -1.7951892614365, -57.48368072509, 319753, 1591 }, --krysha_boksov_na_baze
+    {  10.633180618286,  0.4845010340213, -14.11170864105, 317797, 1585 }  --krysha_pazlomannogo_angara_na_baze
+} 
+local spawn_l08_yantar = {
+    {  85.140,  0.392044,  11.550, 84105,  1513 }, --v_trube
+    {  96.160,  0.158875,  26.370, 87213,  1512 }, --v_zakutke
+    {  94.830,  0.159443,  29.200, 89028,  1512 }, --v_uglu
+    {  86.620,  1.047798, -9.6010, 85218,  1514 }, --na_stole_u_verstaka
+    {  94.520,  0.023909, -25.000, 88940,  1514 }, --ugol_angara
+    {  61.350, -0.773647,  1.9400, 71786,  1509 }, --v_trube_v_basseine
+    {  59.390, -0.375148,  29.000, 69773,  1509 }, --plita_v_basseine_
+    {  38.520,  0.133214,  43.020, 59538,  1510 }, --pod_kustom_u_transfopmatornoi_budki
+    {  20.490,  0.124158,  36.430, 59538,  1510 }, --pozadi_tr_budki
+    {  35.350, -0.851041,  9.9100, 57024,  1445 }, --v_kustax_u_gruzovika
+    {  49.720,  7.388341,  17.100, 64695,  1445 }, --naverxu_u_basseina
+    {  30.260,  0.071936, -6.3500, 53799,  1507 }, --v_garage_mezdu_kirpizei
+    {  19.390,  0.085919, -5.8400, 48647,  1507 }, --v_garage_za_kirpizami_u_stenki
+    {  33.180,  0.137668, -24.270, 55946,  1506 }, --vozle_garaza_vperedi
+    {  37.880,  0.277334, -71.780, 63787,  1517 }, --v_trube_u_levogo_angara
+    {  8.1300,  0.924474, -11.770, 44277,  1503 }, --zakutok_u_glavn_korpusa
+    {  8.6500,  8.862042,  4.6200, 43665,  1502 }, --na_verxu_na_trube_u_glavn_kompl
+    {  10.550,  7.111055, -12.370, 45732,  1445 }, --na_trube_vozle_glavn_anomalii_tyla
+    { -15.830,  0.343465, -33.080, 34470,  1444 }, --v_kustax_u_vhoda_v_glavn_kompl
+    { -7.6800,  0.140766,  13.800, 42729,  1502 }, --v_kustax_u_pravogo_ugla_glavn_kompl
+    {  3.4000,  1.356406,  0.9900, 41114,  1525 }, --na_stole_u_vxoda_v_okno
+    { -4.4900,  9.351602,  1.4900, 37376,  1525 }, --tretii_etag_u_trupa
+    { -0.7600,  14.98582, -16.290, 38597,  1525 }, --parapet_glavg_kompl
+    { -2.6800,  5.434816, -16.910, 37917,  1525 }, --krysha_pristroiki
+    {  87.450,  0.052900,  41.430, 85289,  1520 }, --za_garazami_s_vneshnei_storony
+    {  104.24,  0.395460,  40.350, 94640,  1520 }, --mesto_spawna_monstrov_3_tochki
+    {  157.77, -7.528357, -93.000, 128118, 1451 }, --mesto_spawna_2_tochki_1
+    {  16.240, -8.287658, -206.38, 48451,  1469 }, --u_bunkera__gde_radiacia
+    { -106.28, -1.848927, -204.53, 4855,   1485 }  --pozadi_ozera
 }
-function spawn_items_on_escape()
-spawn_items_on_levels("l01_escape")
+
+local spawn_l08u_brainlab = {}
+local spawn_l10_radar     = {}
+local spawn_limansk       = {}
+local spawn_lost_village  = {}
+local spawn_marsh         = {}
+local spawn_red_forest    = {}
+local spawn_warlab        = {}
+local spawn_labx10        = {}
+local spawn_labx8         = {}
+local spawn_generators    = {}
+local spawn_aver          = {}
+local spawn_hospital      = {}
+
+local spawn_deadcity = {
+    { -146.58863830566, 19.050142288208, -41.386787414551, 171366, 3793 }, --na cherdake
+    { -149.80274963379, 6.2662415504456, -1.8611609935760, 168833, 3804 }, --pod oblomkami
+    {  6.8520812988281, 1.2480462789536, -32.950668334961, 301873, 3888 }, --paviljon vozle shkoly
+    { -181.51889038086, 19.055055618286, -7.5016026496887, 150990, 3793 } --na cherdake2
+}
+local spawn_av_peshera            = {}
+local spawn_l10u_bunker           = {}
+local spawn_l11_pripyat           = {}
+local spawn_l12_stancia_new       = {}
+local spawn_l12_stancia_2_new     = {}
+local spawn_l12u_control_monolith = {}
+local spawn_l12u_sarcofag         = {}
+
+local leveles = {
+    [ "l01_escape"            ] = spawn_l01_escape,
+    [ "l02_garbage"           ] = spawn_l02_garbage,
+    [ "l03_agroprom"          ] = spawn_l03_agroprom,
+    [ "l03u_agr_underground"  ] = spawn_l03u_agr_underground,
+    [ "l04_darkvalley"        ] = spawn_l04_darkvalley,
+    [ "l04u_labx18"           ] = spawn_l04u_labx18,
+    [ "l05_bar"               ] = spawn_l05_bar,
+    [ "l06_rostok"            ] = spawn_l06_rostok,
+    [ "l07_military"          ] = spawn_l07_military,
+    [ "l08_yantar"            ] = spawn_l08_yantar,
+    [ "l08u_brainlab"         ] = spawn_l08u_brainlab,
+    [ "l10_radar"             ] = spawn_l10_radar,
+    [ "limansk"               ] = spawn_limansk,
+    [ "lost_village"          ] = spawn_lost_village,
+    [ "marsh"                 ] = spawn_marsh,
+    [ "red_forest"            ] = spawn_red_forest,
+    [ "warlab"                ] = spawn_warlab,
+    [ "labx10"                ] = spawn_labx10,
+    [ "labx8"                 ] = spawn_labx8,
+    [ "generators"            ] = spawn_generators,
+    [ "aver"                  ] = spawn_aver,
+    [ "hospital"              ] = spawn_hospital,
+    [ "deadcity"              ] = spawn_deadcity,
+    [ "av_peshera"            ] = spawn_av_peshera,
+    [ "l10u_bunker"           ] = spawn_l10u_bunker,
+    [ "l11_pripyat"           ] = spawn_l11_pripyat,
+    [ "l12_stancia_new"       ] = spawn_l12_stancia_new,
+    [ "l12_stancia_2_new"     ] = spawn_l12_stancia_2_new,
+    [ "l12u_control_monolith" ] = spawn_l12u_control_monolith,
+    [ "l12u_sarcofag"         ] = spawn_l12u_sarcofag
+}
+
+function spawn_items_on_escape() spawn_items_on_levels( "l01_escape" ) end
+
+local max_kol_point   = 1
+local game_difficulty = tonumber( level.get_game_difficulty() )
+local spawn_ini       = ini_file( "misc\\spawn_items_by_levels.ltx" )
+
+function spawn_items_on_levels( urov )
+    local level_name   = urov
+    local kol_by_level = {}
+    if not spawn_ini:section_exist( level_name ) then level_name = "default" end
+    local n = spawn_ini:line_count( level_name )
+    local id, value = "", ""
+    for i = 0, n - 1 do
+        result, id, value = spawn_ini:r_line( level_name, i, "", "" )
+        local m = tonumber( value )
+        if m ~= 0 then kol_by_level[ id ] = m end
+    end
+    local tbl       = leveles[ level_name ]
+    max_kol_point   = math.ceil( #tbl / ( game_difficulty * 2 + 4 ) )
+    local kol_point = lua_random( 1, max_kol_point )
+    for a = 1, kol_point do
+        local point = lua_random( 1, #tbl )
+        for k, v in pairs( kol_by_level ) do
+            if lua_random() < 0.2 then
+                local number = math.ceil( lua_random( 1, v ) )
+                for i = 1, number do
+                    --ODS( "[ ~T ]. #DBG: спавним ~C0A"..k.."~C07" )
+                    alife():create( k,
+                        sak.v3f( tbl[ point ][ 1 ] + 0.05 * i, tbl[ point ][ 2 ] + 0.05 * i, tbl[ point ][ 3 ] + 0.05 * i ),
+                        tbl[ point ][ 4 ], tbl[ point ][ 5 ]
+                    )
+                end
+            end
+        end
+    end
 end
-local max_kol_point =1
-local game_difficulty=tonumber(level.get_game_difficulty())
-local spawn_ini = ini_file("misc\\spawn_items_by_levels.ltx")
-function spawn_items_on_levels(urov)
-	local level_name = urov
-	local kol_by_level={}
-	if not spawn_ini:section_exist(level_name) then
-		level_name = "default"
-	end
-	local n = spawn_ini:line_count(level_name)
-	local id, value = "", ""
-	for i=0,n-1 do
-		result, id, value	= spawn_ini:r_line(level_name,i,"","")
-		local m=tonumber(value)
-		if m~=0 then
-		kol_by_level[id] = m
-		end
-	end
-	local tbl=leveles[level_name]
-	max_kol_point = math.ceil(#tbl/(game_difficulty*2+4))
-	local kol_point=lua_random(1,max_kol_point)
-	for a=1, kol_point do
-		local point=lua_random(1,#tbl)
-		for k,v in pairs(kol_by_level) do
-			if lua_random()<0.2 then
-				local number = math.ceil(lua_random(1, v))
-				for i=1,number do
-				--ODS("[~T]. #DBG: спавним ~C0A"..k.."~C07")
-					alife():create(k,sak.v3f(tbl[point][1]+0.05*i,tbl[point][2]+0.05*i,tbl[point][3]+0.05*i),tbl[point][4],tbl[point][5])
-				end
-			end
-		end
-	end
-end
+
 --спавн снорков, замеры у болота
 function add_yan_izm1_monsters()
-local obj = alife():create("snork_strong",sak.v3f(-71.469215,-11.499264,-212.189102),13861,1447)
-local obj = alife():create("snork_strong",sak.v3f(-103.1200880,-6.372991,-210.809509),5813,1485)
-local obj = alife():create("snork_strong",sak.v3f(-89.266365,-12.460389,-243.925964),8494,1486)
+    alife():create( "snork_strong", sak.v3f( -71.469215, -11.499264, -212.189102 ), 13861, 1447 )
+    alife():create( "snork_strong", sak.v3f( -103.12008, -6.3729910, -210.809509 ), 5813,  1485 )
+    alife():create( "snork_strong", sak.v3f( -89.266365, -12.460389, -243.925964 ), 8494,  1486 )
 end
 --спавн бюреров, замеры у автобуса
 function add_yan_izm2_monsters()
-local obj = alife():create("burer_strong",sak.v3f(156.845490,-7.424787,-119.390503),127776,1465)
-local obj = alife():create("burer_strong",sak.v3f(162.725433,-7.091201,-65.980659),130474,1463)
+    alife():create( "burer_strong", sak.v3f( 156.845490, -7.424787, -119.390503 ), 127776, 1465 )
+    alife():create( "burer_strong", sak.v3f( 162.725433, -7.091201, -65.9806590 ), 130474, 1463 )
 end
 --доспавн кровососов в РЛ
 function red_smart_bloodsucker01()
-    alife():create("red_bloodsucker1",sak.v3f(-32.25,2.45000004768372,-163.020004272461),40732,3268)
-    alife():create("red_bloodsucker2",sak.v3f(-32.25,2.45000004768372,-163.020004272461),40732,3268)
+    alife():create( "red_bloodsucker1", sak.v3f( -32.25, 2.45000005, -163.020004 ), 40732, 3268 )
+    alife():create( "red_bloodsucker2", sak.v3f( -32.25, 2.45000005, -163.020004 ), 40732, 3268 )
 end
 --ящики 
 function spawn_inventory_box()
-  local obj = alife():create("arsenal_inventory_box",sak.v3f(-137.263122558594,2.558294296265,-308.6144104000391),77315,3374)
-  local obj = alife():create("arsenal_inventory_box",sak.v3f(56.985794067383,8.935692787170,-205.299560546875),338317,3898)
-  local obj = alife():create("arsenal_inventory_box",sak.v3f(597.852661132813,-49.738662719727,19.177061080933),213296,1900)  
+  alife():create( "arsenal_inventory_box", sak.v3f( -137.263122558,  2.558294296265, -308.614410400 ), 77315,  3374 )
+  alife():create( "arsenal_inventory_box", sak.v3f(  56.9857940673,  8.935692787170, -205.299560546 ), 338317, 3898 )
+  alife():create( "arsenal_inventory_box", sak.v3f(  597.852661132, -49.73866271972,  19.1770610809 ), 213296, 1900 )  
 end

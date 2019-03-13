@@ -1,156 +1,151 @@
 section = "af_dummy_black_tip"
 last_id = false
-info    = "info_black_tip" 
+info    = "info_black_tip"
 
 function have_black_tip()
-  return sak_inventory.rucksack[ section ] or
+    return sak_inventory.rucksack[ section ] or
          sak_inventory.belt_items[ section ] or
          arc_containers.inv_containers:have_black_tip()
-end  
+end
 
 function need_black_tip()
-  return db.actor:has_info( info ) and nlc_vars.catched_bt
+    return db.actor:has_info( info ) and nlc_vars.catched_bt
 end
 
 function black_tip.discharge( coef )
-  if level.name() == "aver" then return end
-  if not need_black_tip() then return end
-  local list = have_black_tip()  
-  if type( list ) ~= 'table' then
-     if arc_containers.inv_containers:have_black_tip() then
-        wprintf( "[~T].~C0B #HINT: ЧМ спрятана в контейнер и не разрушается ~C07" )
-        return 
-     end                          
-     on_drop( last_id )
-     return 
-  end
-  local npc = db.actor
-  local act_pos = npc:position()
-  if not amk_anoms.check_coordinates( act_pos ) then
-     coef = tonumber( coef ) * 0.1
-  end
-  -- wprintf("[~T/~B]. #DBG: проверка и порча ЧМ в количестве~C0D %d~C07", #list)
-  for i, id in ipairs ( list ) do    
-    local cv = params.add_condition( id, -0.005 * tonumber( coef ) )
-    -- обработка вредной ЧМ, удаление лишних копий
-    wprintf( "~C06 black tip~C0D %d~C07 discharge, condition =~C0F %.5f~C07", id, cv or -1 )      
-    if ( cv >= 0 ) and ( cv < 0.25 ) or ( i > 1 ) then
-     wprintf( " внезапно кончилась ЧМ~C0D %d~C07, с износом =~C0D %.3f~C07", id, cv )
-     misc.release_obj( id, 'defeat black tip' )
-     if i == 1 then 
-        db.actor:disable_info_portion( "info_black_tip" )
-        nlc_vars.catched_bt = nil
-     end    
-     nlc_vars.black_off = 0.8
-     break     
-    end -- if cond
-    last_id = id    
-    nlc_vars.catched_bt = id
-  end -- for
-  -- wprintf("[~T/~B]. #PERF: проверка закончилась ")
+    if level.name() == "aver" then return end
+    if not need_black_tip() then return end
+    local list = have_black_tip()
+    if type( list ) ~= 'table' then
+        if arc_containers.inv_containers:have_black_tip() then
+            wprintf( "[~T].~C0B #HINT: ЧМ спрятана в контейнер и не разрушается ~C07" )
+            return
+        end
+        on_drop( last_id )
+        return
+    end
+    local npc     = db.actor
+    local act_pos = npc:position()
+    if not amk_anoms.check_coordinates( act_pos ) then
+        coef = tonumber( coef ) * 0.1
+    end
+    -- wprintf("[~T/~B]. #DBG: проверка и порча ЧМ в количестве~C0D %d~C07", #list)
+    for i, id in ipairs( list ) do
+        local cv = params.add_condition( id, -0.005 * tonumber( coef ) )
+        -- обработка вредной ЧМ, удаление лишних копий
+        wprintf( "~C06 black tip~C0D %d~C07 discharge, condition =~C0F %.5f~C07", id, cv or -1 )
+        if ( cv >= 0 ) and ( cv < 0.25 ) or ( i > 1 ) then
+            wprintf( " внезапно кончилась ЧМ~C0D %d~C07, с износом =~C0D %.3f~C07", id, cv )
+            misc.release_obj( id, 'defeat black tip' )
+            if i == 1 then
+                db.actor:disable_info_portion( "info_black_tip" )
+                nlc_vars.catched_bt = nil
+            end
+            nlc_vars.black_off = 0.8
+            break
+        end
+        last_id = id
+        nlc_vars.catched_bt = id
+    end
+    -- wprintf("[~T/~B]. #PERF: проверка закончилась ")
 end
 
 function check_dropped( obj )
-  if obj:section() == section and need_black_tip() then  
-     wprintf( " detected drop very important object~C0F %s ~C07", obj:name() )
-     on_drop( obj:id() ) 
-     return true
-  end     
-  return false
+    if obj:section() == section and need_black_tip() then
+        wprintf( " detected drop very important object~C0F %s ~C07", obj:name() )
+        on_drop( obj:id() )
+        return true
+    end
+    return false
 end
 
-function black_tip.respawn( id )  
-  if have_black_tip() or not need_black_tip() then return end   
-  local objs, cnt = registry.sc_objects( section, true, 15, server_obj )
-  for i, sobj in ipairs( objs ) do
-    if sobj.parent_id == 0 then
-      wprintf( "[~T].~C0B #HAPPY:~C06 ЧМ найдена у законного владельца~C0A %s~C07", sobj:name() )
-      sak_inventory.need_update_inventory()
-      health_handle()
-      return  
-    elseif sobj.level_name == level.name() then
-      wprintf( "[~T].~C06 #DBG: обнаружена подходящая для возвращения ЧМ~C0D %d ~C07", sobj.id )
-      g_sim:set_switch_online ( sobj.id, true  )
-      g_sim:set_switch_offline( sobj.id, false )     
-      schedule.add(
-                    "myaso",
-                    sprintf( "sak.actor_pickup(%d, black_tip.respawn())", sobj.id ),
-                    lua_random( 500, 1500 )
-                  )
-      return
-    elseif sobj.parent_id ~= 0 then
-      wprintf( "[~T].~C06 #DBG: обнаружена подходящая для уничтожения ЧМ, у владельца~C0D %d~C06 на уровне~C0A %s~C07", sobj.parent_id, sobj.level_name ) 
-      misc.release_obj( sobj, 'black_tip.respawn0' )
-    end 
-  end
-  amk.spawn_item_in_inv( section ) -- новая метка, без повреждений
-  if not id then return end 
-  local obj = g_sim:object( tonumber( id ) )
-  if obj then
-     misc.release_obj( obj, 'black_tip.respawn' )
-  end
+function black_tip.respawn( id )
+    if have_black_tip() or not need_black_tip() then return end
+    local objs, cnt = registry.sc_objects( section, true, 15, server_obj )
+    for i, sobj in ipairs( objs ) do
+        if sobj.parent_id == 0 then
+            wprintf( "[~T].~C0B #HAPPY:~C06 ЧМ найдена у законного владельца~C0A %s~C07", sobj:name() )
+            sak_inventory.need_update_inventory()
+            health_handle()
+            return
+        elseif sobj.level_name == level.name() then
+            wprintf( "[~T].~C06 #DBG: обнаружена подходящая для возвращения ЧМ~C0D %d ~C07", sobj.id )
+            g_sim:set_switch_online ( sobj.id, true  )
+            g_sim:set_switch_offline( sobj.id, false )
+            schedule.add(
+                "myaso", sprintf( "sak.actor_pickup(%d, black_tip.respawn())", sobj.id ),
+                lua_random( 500, 1500 )
+            )
+            return
+        elseif sobj.parent_id ~= 0 then
+            wprintf(
+                "[~T].~C06 #DBG: обнаружена подходящая для уничтожения ЧМ, у владельца~C0D %d~C06 на уровне~C0A %s~C07",
+                sobj.parent_id, sobj.level_name
+            )
+            misc.release_obj( sobj, 'black_tip.respawn0' )
+        end
+    end
+    amk.spawn_item_in_inv( section ) -- новая метка, без повреждений
+    if not id then return end
+    local obj = g_sim:object( tonumber( id ) )
+    if obj then misc.release_obj( obj, 'black_tip.respawn' ) end
 end
 
 function black_tip.on_drop( id )
-  id = tonumber( id or 0 ) 
-  if id == 0 then
-     respawn( false )
-     return 
-  end                  
-  local obj = client_obj( id )
-  if obj then
-    local pobj = obj:parent()
-    if pobj and pobj.is_alive then    
-       if pobj:id() ~= 0 then 
-         wprintf( "[~T].~C0B #HAPPY:~C06 ЧМ перешла к другой жизненной форме~C0A %s~C07", pobj:name() )
-         db.actor:disable_info_portion( "info_black_tip" )
-       end   
-       return
+    id = tonumber( id or 0 )
+    if id == 0 then respawn( false ) return end
+    local obj = client_obj( id )
+    if obj then
+        local pobj = obj:parent()
+        if pobj and pobj.is_alive then
+            if pobj:id() ~= 0 then
+                wprintf( "[~T].~C0B #HAPPY:~C06 ЧМ перешла к другой жизненной форме~C0A %s~C07", pobj:name() )
+                db.actor:disable_info_portion( "info_black_tip" )
+            end
+            return
+        end
+        wprintf(
+            "~C0C наверное потерялась ЧМ ~C0D %s~C0C =~C0F %s~C07, будем поискать~C07",
+            DumpVar( id ), obj:name()
+        )
+        if lua_random() < 0.5 then
+            schedule.add(
+                "myaso_need",
+                sprintf( "sak.actor_pickup(%d, black_tip.on_drop(0))", id ),
+                lua_random( 1000, 3000 )
+            )
+        end
+        return
     end
-    wprintf( "~C0C наверное потерялась ЧМ ~C0D %s~C0C =~C0F %s~C07, будем поискать~C07", DumpVar( id ), obj:name() )
-    if lua_random() < 0.5 then
-       schedule.add(
-                      "myaso_need",
-                      sprintf( "sak.actor_pickup(%d, black_tip.on_drop(0))", id ),
-                      lua_random( 1000, 3000 )
-                    )
-    end    
-    return 
-  end  
-  obj = g_sim:object( id )
-  if obj then
-     wprintf( "[~T]. #DBG: ЧМ уничтожена физически, наверное надо респавн" )
-     timers.start_timer( "black_tip", lua_random( 10, 60 ), "black_tip.respawn(" .. id .. ")" )
-     return
-  end
+    obj = g_sim:object( id )
+    if obj then
+        wprintf( "[~T]. #DBG: ЧМ уничтожена физически, наверное надо респавн" )
+        timers.start_timer( "black_tip", lua_random( 10, 60 ), "black_tip.respawn("..id..")" )
+        return
+    end
 end
 
 function black_tip.health_handle()
-  local bt = have_black_tip()
-  if not bt then return end
-  if type(bt) == "table" then bt = bt[ 1 ] end
-  nlc_vars.catched_bt = bt
-  if not need_black_tip() then
-     db.actor:give_info_portion( info )
-  end   
-  local npc  = db.actor
-  n_healh    = npc.health
-  s_healh    = params.actor_satiety_health()
-  local cond = 1
-  if type( bt ) == "number" then
-    cond = params.get_condition( bt ) or 1
-    wprintf( "~C06 black_tip.health_handle() using condition coef =~C0D %.3f~C07", cond ) 
-  end
-  if n_healh >= 0.45 then params.health_add ( -0.05  * cond ) end
-  if s_healh >= 0.2  then params.satiety_add( -0.005 * cond ) end
-  if lua_random() < 0.2 then
-    level.add_pp_effector( "black_tip_eff.ppe", 1031, false )
-  end
+    local bt = have_black_tip()
+    if not bt then return end
+    if type( bt ) == "table" then bt = bt[ 1 ] end
+    nlc_vars.catched_bt = bt
+    if not need_black_tip() then db.actor:give_info_portion( info ) end
+    local npc  = db.actor
+    n_healh    = npc.health
+    s_healh    = params.actor_satiety_health()
+    local cond = 1
+    if type( bt ) == "number" then
+        cond = params.get_condition( bt ) or 1
+        wprintf( "~C06 black_tip.health_handle() using condition coef =~C0D %.3f~C07", cond )
+    end
+    if n_healh >= 0.45 then params.health_add ( -0.05  * cond ) end
+    if s_healh >= 0.2  then params.satiety_add( -0.005 * cond ) end
+    if lua_random() < 0.2 then
+        level.add_pp_effector( "black_tip_eff.ppe", 1031, false )
+    end
 end
 
-function init_module()
-end
+function init_module() end
 
-function late_init()
-  black_tip.discharge( 0 )
-end
+function late_init() black_tip.discharge( 0 ) end

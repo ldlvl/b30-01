@@ -1,473 +1,393 @@
 -- prefetch("_G")
-all_items = {}             -- все предметы без разбора
-belt_items = {}                  -- все предметы на поясе
-slots = {}                 -- все предметы в слотах (оружие, бинокль, фонарь)
-rucksack = {}              -- все остальное
-eatable = {}               -- все что "кушается" (еда, бинты, аптеки)
+all_items  = {}             -- все предметы без разбора
+belt_items = {}             -- все предметы на поясе
+slots      = {}             -- все предметы в слотах (оружие, бинокль, фонарь)
+rucksack   = {}             -- все остальное
+eatable    = {}             -- все что "кушается" (еда, бинты, аптеки)
 
-eatable_flags = tonumber('3F800000', 16)
+eatable_flags = tonumber( '3F800000', 16 )
 
-
-function flags_slots_obj(id, ofs)
-  local flag = 0
-    if xr_build_id > 5500 then                        
-       local intf = engine_object(id) -- cobj:get_inventory_item()
-       local cobj = client_obj(id)
-        
-       if intf then
-          if cobj:is_eatable_item() then  
-             return eatable_flags         
-          end
-          flag = intf.item_place
-          if flag and flag > 0 then
-             return flag 
-          end
-          --wprintf("~C0C #WARN~C07: for object %s get_inventory_item returned %s ", cobj:name(), DumpVar(intf))
-          return 3
-       end   
-       
+function flags_slots_obj( id, ofs )
+    local flag = 0
+    if xr_build_id > 5500 then
+        local intf = engine_object( id ) -- cobj:get_inventory_item()
+        local cobj = client_obj( id )
+        if intf then
+            if cobj:is_eatable_item() then return eatable_flags end
+            flag = intf.item_place
+            if flag and flag > 0 then return flag end
+            return 3
+        end
     end
- 
-  if ofs ~= nil then 
-       ofs = tonumber (ofs) 
-    else  
-       ofs = "#CInventoryItem.flags" 
+    if ofs ~= nil then
+        ofs = tonumber( ofs )
+    else
+        ofs = "#CInventoryItem.flags"
     end
-  
-    cobj = xray_dma.get_CObject(id)
-  if cobj then
-    flag = ReadDMA(cobj, ofs, "int")
-  end
-  return tonumber(flag)     
+    cobj = xray_dma.get_CObject( id )
+    if cobj then flag = ReadDMA( cobj, ofs, "int" ) end
+    return tonumber( flag )
 end
 
 function inventory_control()
-  if db.actor == nil then return end
-  
-  belt_items = {}
-  slots = {}
-  rucksack = {}
-  eatable = {}
-  all_items = {}
-  allcore_mayatniks.clear_inv_items()   
-  local inv_items = get_shadow_inv():get_content(false) -- nlc_container.collect_items(db.actor)      
-  -- db.actor:iterate_inventory( function(dummy, vItem)
-  for i, rec in inv_items:ipairs() do
-     local vItem = client_obj(rec.id)             
-     if not vItem or (vItem:section()==nil and vItem:section_name()==nil) then return end
-       local vItemSection=vItem:section() or vItem:section_name()
-       local vItemID = rec.id
-       local flag = flags_slots_obj(vItemID)
-       local clid = vItem:clsid()
-       local obj_class = class_map[clid] or "unknown#"..tostring(clid)
-       local id_class = "?"
-       -- wprintf("[~T]. #DBG: ~C0D %s ~C0A-%25s @~C0E %-25s->%8s ~C0F id = %5d~C0D flag = 0x%08x ~C07", FormatPtr(get_CObject(vItemID)), vItemSection, obj_class, id_class, vItemID, flag)
-       sak.cant_trade(vItem,vItemSection,vItemID,flag)
-       allcore_mayatniks.add_inv_items(vItemID, vItemSection)
-       local ignore = false
-       
-       if flag == eatable_flags then
-         insert_to_table(eatable, vItemSection, vItemID)
-       elseif flag==3 then -- ruck flag
-         insert_to_table(rucksack, vItemSection, vItemID)
-       elseif flag==2 then -- belt flag
-         insert_to_table(belt_items, vItemSection, vItemID) 
-       elseif flag==1 then -- slot flag
-         insert_to_table(slots, vItemSection, vItemID)
-       else
-         ignore = true                                     
-       end
-       
-       if not ignore then
-          insert_to_table(all_items, vItemSection, vItemID)
-       end      
-  end -- for
-
-  --[[
-  wprintf(" inventory_control dump rucksack:")
-  dump_table(rucksack)
-  wprintf(" inventory_control dump slots:")
-  dump_table(slots)
-  wprintf(" inventory_control dump belt_items:")
-  dump_table(belt_items)
-  wprintf(" executed from\n %s", lua_traceback('               '))
-  --]]  
-
+    if db.actor == nil then return end
+    belt_items, slots, rucksack, eatable, all_items = {}, {}, {}, {}, {}
+    allcore_mayatniks.clear_inv_items()
+    local inv_items = get_shadow_inv():get_content( false ) -- nlc_container.collect_items(db.actor)
+    for i, rec in inv_items:ipairs() do
+        local vItem = client_obj( rec.id )
+        if
+            not vItem
+            or ( vItem:section() == nil and vItem:section_name() == nil )
+        then
+            return
+        end
+        local vItemSection = vItem:section() or vItem:section_name()
+        local vItemID      = rec.id
+        local flag         = flags_slots_obj( vItemID )
+        local clid         = vItem:clsid()
+        local obj_class    = class_map[ clid ] or "unknown#" .. tostring( clid )
+        local id_class     = "?"
+        sak.cant_trade( vItem, vItemSection, vItemID, flag )
+        allcore_mayatniks.add_inv_items( vItemID, vItemSection )
+        local ignore = false
+        if flag == eatable_flags then
+            insert_to_table( eatable, vItemSection, vItemID )
+        elseif flag == 3 then -- ruck flag
+            insert_to_table( rucksack, vItemSection, vItemID )
+        elseif flag == 2 then -- belt flag
+            insert_to_table( belt_items, vItemSection, vItemID )
+        elseif flag == 1 then -- slot flag
+            insert_to_table( slots, vItemSection, vItemID )
+        else
+            ignore = true
+        end
+        if not ignore then
+            insert_to_table( all_items, vItemSection, vItemID )
+        end
+    end
 end
 
-function belt_need_update_razgr(inv_open)
-  if inv_open==false then
-   inventory_control()
-   sak_artmods.artCollections_close()
-   mike.art_new_collection()
-   unhide_items()
-  elseif inv_open==true then
-   --inventory_control()
-   amk_mod.firebat_ammo()
-   arc_arts.check_artefact()
-   sak_artmods.artCollections_open()
-  --sak.weapon_slots()
-  end
+function belt_need_update_razgr( inv_open )
+    if inv_open == false then
+        inventory_control()
+        sak_artmods.artCollections_close()
+        mike.art_new_collection()
+        unhide_items()
+    elseif inv_open == true then
+        --inventory_control()
+        amk_mod.firebat_ammo()
+        arc_arts.check_artefact()
+        sak_artmods.artCollections_open()
+        --sak.weapon_slots()
+    end
 end
 
 local call_count = 0
 
-
 function need_update_inventory() -- функция выполняется раз в игровую минуту
-  
-
-  if razgruzka.open_inv_raz_pod then
-    return    
-  end     
-  
-  razgruzka.open_inv_raz_pod=true    
-
-  call_count = call_count + 1
-  if call_count % 100 == 0 then
-     wprintf("[~T/~B]. #PERF: need_update_inventory() call_count =~C0D %d~C07, last from~C0A %s~C07", call_count, lua_traceback('     '))
-  end
-  inventory_control()
-  params.repbox_weight_add()
-  arc_arts.check_artefact()
-  --params.tired_owermass()
+    if razgruzka.open_inv_raz_pod then return end
+    razgruzka.open_inv_raz_pod = true
+    call_count = call_count + 1
+    if call_count % 100 == 0 then
+        wprintf(
+            "[~T/~B]. #PERF: need_update_inventory() call_count =~C0D %d~C07, last from~C0A %s~C07",
+            call_count, lua_traceback('     ')
+        )
+    end
+    inventory_control()
+    params.repbox_weight_add()
+    arc_arts.check_artefact()
+    --params.tired_owermass()
 end
 
-function insert_to_table(tbl, section, id)
-  if tbl[section]==nil then
-    tbl[section] = {}
-  end
-  table.insert(tbl[section], id)
+function insert_to_table( tbl, section, id )
+    if tbl[ section ] == nil then tbl[ section ] = {} end
+    table.insert( tbl[ section ], id )
 end
+
 function inventory_control_2()
-  for i,k in pairs(belt_items) do
-      ODS( "[~T]. #DBG: на поясe = "..i)
-  end
+    for i,k in pairs( belt_items ) do ODS( "[~T]. #DBG: на поясe = " .. i ) end
 end
 
---- ADDED by alpet. DMA routines for inventory 
-
+--- ADDED by alpet. DMA routines for inventory
 function get_inv_ptrs()
-  g_hud = hud_params.get_hudmgr()
-  local cui = ReadPtr(g_hud, 24)  -- CHUDManager::GetUI universal for 2945-3312
-  if cui ~= nil then
-     local main_wnd = ReadPtr(cui, 56)
-     -- wprintf('[~T]. #DBG: g_hud =~C0D %s ~C07', g_hud:format())    
-     -- ODS('[~T].~C0F #DBG: CUI = '..FormatPtr(cui) .. ' MainInGameWnd = ~C0D'..FormatPtr(main_wnd)..'~C07') -- CUI = $10E19A80 MainInGameWnd = $11053760
-     local cui_sp = ReadPtr(cui, 44)     
-     -- wprintf(' CUIGameSP *cui_sp = ~C0D %s ~C07', cui_sp:format())     
-     local inv_wnd    = ReadPtr(cui_sp, 60)
-     local game_state = ReadPtr(cui_sp, 56)  
-     
-     return inv_wnd, game_state
-  end       
-
-  return nil, nil
+    g_hud     = hud_params.get_hudmgr()
+    local cui = ReadPtr( g_hud, 24 )  -- CHUDManager::GetUI universal for 2945-3312
+    if cui ~= nil then
+        local main_wnd   = ReadPtr( cui, 56 )
+        local cui_sp     = ReadPtr( cui, 44 )
+        local inv_wnd    = ReadPtr( cui_sp, 60 )
+        local game_state = ReadPtr( cui_sp, 56 )
+        return inv_wnd, game_state
+    end
+    return nil, nil
 end
-
 
 function inventory_visible()
- local wnd = ui.get_inventory_wnd()
- if wnd then
-    return wnd:IsShown()
- end                       
- 
- local flags = 0
- local inv_wnd, game_state = get_inv_ptrs()
- if inv_wnd then 
-    flags = inv_wnd:read(4, 'int')
-    --wprintf('inventory flag = $%x ', flags)    
- end
-
- return ( flags ~= 0 )     
+    local wnd = ui.get_inventory_wnd()
+    if wnd then return wnd:IsShown() end
+    local flags = 0
+    local inv_wnd, game_state = get_inv_ptrs()
+    if inv_wnd then
+        flags = inv_wnd:read( 4, 'int' )
+        --wprintf('inventory flag = $%x ', flags)
+    end
+    return ( flags ~= 0 )
 end
 
-function toggle_inv()   
-   if xr_build_id > 5500 then 
-      return
-   end
-  
-   local inv_wnd, game_state = get_inv_ptrs()
-   
-   if not ( inv_wnd and game_state ) then
-      wprintf('[~T].~C0C #FATAL: bad pointers returned for inventory access') 
-      return
-   end
-    
-    
-   local offset = '$2ACF30'
-   local mi = GetModuleInfo('xrGame.dll')
-   
-   if mi.release == '2947debug' then offset = '$2AD6C0' end   
-    
-    
-   local func = CalcPtr('xrGame.dll', offset, '+') -- game_cl_GameState::StartStopMenu    
-   
-   
-   -- wprintf(' CUIInventoryWnd *wnd = ~C0D %s ~C07, game_state = %s, func =~C0A %s ~C07', inv_wnd:format(), game_state:format(), func:format() )
-   
-   local dump = ReadDMA(func, 0, 'dump', 1)
-   
-   if (dump == 'A1') then      
-      BinThisCall (game_state, func, '1', inv_wnd:format())
-   else
-      wprintf('[~T].~C0C #FATAL: incorrect head bytes for game_cl_GameState::StartStopMenu ~C0F %s ~C0C, offset =~C0F %s~C07', dump, offset)     
-      
-   end      
+function toggle_inv()
+    if xr_build_id > 5500 then return end
+    local inv_wnd, game_state = get_inv_ptrs()
+    if not ( inv_wnd and game_state ) then
+        wprintf( '[~T].~C0C #FATAL: bad pointers returned for inventory access' )
+        return
+    end
+    local offset = '$2ACF30'
+    local mi     = GetModuleInfo( 'xrGame.dll' )
+    if mi.release == '2947debug' then offset = '$2AD6C0' end
+    local func = CalcPtr( 'xrGame.dll', offset, '+' ) -- game_cl_GameState::StartStopMenu
+    -- wprintf(' CUIInventoryWnd *wnd = ~C0D %s ~C07, game_state = %s, func =~C0A %s ~C07', inv_wnd:format(), game_state:format(), func:format() )
+    local dump = ReadDMA( func, 0, 'dump', 1 )
+    if dump == 'A1' then
+        BinThisCall( game_state, func, '1', inv_wnd:format() )
+    else
+        wprintf(
+            '[~T].~C0C #FATAL: incorrect head bytes for game_cl_GameState::StartStopMenu ~C0F %s ~C0C, offset =~C0F %s~C07',
+            dump, offset
+        )
+    end
 end
 
-function check_item_cast (item, methods)
- for i, mfunc in ipairs(methods) do 
-   if type(item[mfunc]) == "function" and item[mfunc](item) then
-      return true
-   end      
- end
- return false
+function check_item_cast( item, methods )
+    for i, mfunc in ipairs( methods ) do
+        if
+            type( item[ mfunc ] ) == "function"
+            and item[ mfunc ]( item )
+        then
+            return true
+        end
+    end
+    return false
 end
-
 
 local active_led_tex = ""
 
-function sak_inventory.update_accum_leds()  
- local cl = 0 -- charge level in %
- local path   = "ui\\accum_leds\\"
- local prefix = "cl_"
- local tr = prefix.."000"
- local accum = sak.get_accum()
- if accum then
-    local rc = 0    
-    local cf = accum:condition()
-    rc = math.floor(cf * 100.0)
-    cl = math.ceil(cf * 10.0) * 10
-    tr = sprintf(prefix.."%03d", cl)                            
-    -- wprintf("[~T]. ~CF0 #DBG:~C07 cf =~C0D %.4f~C07, rc =~C0D %.0f~C07, cl = %.0f, tr =~C0F %s~C07", cf, rc, cl, tr)
- else  
-    -- wprintf("[~T]. #DBG: no accum in slot detected!")                 
- end                     
- 
- if tr == active_led_tex then
-    return
- end           
-
- active_led_tex = tr
-
- local tlist = TexFindList (path)
- tr = path..tr
- for f, p in pairs(tlist) do    
-   if f ~= tr then
-      wprintf(" replacing texture~C0A %s~C07 to~C0E %s~C07", f, tr)
-      TexLoad(p, false)
-      TexFile(p, tr)
-      TexLoad(p, true)
-   end   
- end
- 
+function sak_inventory.update_accum_leds()
+    local cl     = 0                       -- charge level in %
+    local path   = "ui\\accum_leds\\"
+    local prefix = "cl_"
+    local tr     = prefix .. "000"
+    local accum  = sak.get_accum()
+    if accum then
+        local rc = 0
+        local cf = accum:condition()
+        rc       = math.floor( cf * 100.0 )
+        cl       = math.ceil ( cf * 10.0  ) * 10
+        tr       = sprintf( prefix .. "%03d", cl )
+    else
+        -- wprintf("[~T]. #DBG: no accum in slot detected!")
+    end
+    if tr == active_led_tex then return end
+    active_led_tex = tr
+    local tlist    = TexFindList( path )
+    tr             = path .. tr
+    for f, p in pairs( tlist ) do
+        if f ~= tr then
+            wprintf( " replacing texture~C0A %s~C07 to~C0E %s~C07", f, tr )
+            TexLoad( p, false )
+            TexFile( p, tr    )
+            TexLoad( p, true  )
+        end
+    end
 end
 
 local last_accum_id = BAD_OBJ_ID
 
 function sak_inventory.check_accum_change()
- local id = BAD_OBJ_ID
- local accum = sak.get_accum()
- if accum then
-    id = accum:id()
- end 
-
- if (id ~= last_accum_id) then
-    sak_inventory.update_accum_leds()
-    last_accum_id = id
- end
-
+    local id    = BAD_OBJ_ID
+    local accum = sak.get_accum()
+    if accum then id = accum:id() end
+    if id ~= last_accum_id then
+        sak_inventory.update_accum_leds()
+        last_accum_id = id
+    end
 end
 
-
-function enum_items(cb_func)
- local gg = db.actor
- for i = 0, gg:object_count() - 1 do
-    local obj = gg:object(i)
-    local item = nil
-    if obj then
-       item = obj:get_interface()
+function enum_items( cb_func )
+    local gg = db.actor
+    for i = 0, gg:object_count() - 1 do
+        local obj  = gg:object( i )
+        local item = nil
+        if obj  then item = obj:get_interface() end
+        if item then cb_func( item, obj ) end
     end
-    if item then
-       cb_func(item, obj)
-    end
-
- end -- for
 end
 
 function unhide_items()
- local cb_func = function (item, obj)
-   if item.set_visible_in_slot then
-      item:set_visible_in_slot (-1, true)    -- разрешить отображение предмета
-   end
- end -- local function
- enum_items(cb_func)
+    local cb_func = function( item, obj )
+                        if item.set_visible_in_slot then
+                            item:set_visible_in_slot( -1, true )    -- разрешить отображение предмета
+                        end
+                    end
+    enum_items( cb_func )
 end
 
-
-function show_inventory(b_show, flt_func)
- 
- if b_show == nil then
-    b_show = true
- else 
-    b_show = (b_show ~= false)   
- end
-
- if b_show and flt_func then
-
-   local cb_func = function(item, obj)
-     if item.set_visible_in_slot then
-        if flt_func(obj, item) then
-           --wprintf("~C0A bypass~C0F %s~C07  ", obj:name())
-           item:set_visible_in_slot (-1, true)    -- разрешить отображение предмета
-        else
-           wprintf("~C0E inventory show disable~C0F %s~C07  ", obj:name())
-           item:set_visible_in_slot (-1, false)   -- запретить отображение предмета
-        end
-      end -- if
-   end -- local function
-
-   enum_items(cb_func)
- end  
-  
- 
- local wnd = ui.get_inventory_wnd()
- if wnd then
-    wprintf("[~T].~CF0 #DBG: show_inventory from ~C0F\n %s~C07 ", lua_traceback(' '))
-    if b_show then
-       update_accum_leds()       
-       if get_shadow_inv().items_restored then
-          razgruzka.hide_in_shadow_inv("show_inventory", 1) -- спрятать используемые предметы в разгрузке/подсумке/НЗ
-       end                            
-       params.start_dialog(wnd, true)
+function show_inventory( b_show, flt_func )
+    if b_show == nil then
+        b_show = true
     else
-       params.stop_dialog(wnd)
-    end             
-    return 
- end                         
- 
- if inventory_visible() ~= b_show then
-    toggle_inv()
- end
+        b_show = ( b_show ~= false )
+    end
+    if b_show and flt_func then
+        local cb_func = function( item, obj )
+                            if item.set_visible_in_slot then
+                                if flt_func( obj, item ) then
+                                    --wprintf("~C0A bypass~C0F %s~C07  ", obj:name())
+                                    item:set_visible_in_slot( -1, true )  -- разрешить отображение предмета
+                                else
+                                    wprintf(
+                                        "~C0E inventory show disable~C0F %s~C07  ",
+                                        obj:name()
+                                    )
+                                    item:set_visible_in_slot( -1, false ) -- запретить отображение предмета
+                                end
+                            end
+                        end
+        enum_items( cb_func )
+    end
+    local wnd = ui.get_inventory_wnd()
+    if wnd then
+        wprintf(
+            "[~T].~CF0 #DBG: show_inventory from ~C0F\n %s~C07 ",
+            lua_traceback(' ')
+        )
+        if b_show then
+            update_accum_leds()
+            if get_shadow_inv().items_restored then
+                razgruzka.hide_in_shadow_inv( "show_inventory", 1 ) -- спрятать используемые предметы в разгрузке/подсумке/НЗ
+            end
+            params.start_dialog( wnd, true )
+        else
+            params.stop_dialog( wnd )
+        end
+        return
+    end
+    if inventory_visible() ~= b_show then toggle_inv() end
 end
 
 function hide_inventory()
- show_inventory(false)
- 
- local IR = level.main_input_receiver()
- if IR then
-    wprintf(" main input receiver = %s ", DumpVar(IR))
- end
-
- unhide_items()
- sak.restore_weap()    
+    show_inventory( false )
+    local IR = level.main_input_receiver()
+    if IR then wprintf( " main input receiver = %s ", DumpVar( IR ) ) end
+    unhide_items()
+    sak.restore_weap()
 end
-
 
 -- dialog used functions
-
-function dyn_art_base(section) -- получение базовой секции артефакта    
-  if section:sub(1, 3) == "af_" then
-     local ss = section:match ("_dyn%dd")
-  	 if ss then section = section:gsub(ss, "") end
-  end
-  return section 
+function dyn_art_base( section ) -- получение базовой секции артефакта
+    if section:sub( 1, 3 ) == "af_" then
+        local ss = section:match( "_dyn%dd" )
+        if ss then section = section:gsub( ss, "" ) end
+    end
+    return section
 end
 
-
-function release_actor_items(section, count, all_sect) -- уничтожение у игрока предметов в диалоге, скрытых или в инвентаре
-  -- section = dyn_art_base(section)
-  --if not all_sect and strposx(section, "af_") then
-    -- return false
-  --end
-  
-  local items = get_shadow_inv():get_content(true) -- сначала идут объекты из рюкзака, потом из инвентаря
- 
-  local real = 0
-  wprintf(" trying release~C0D %s~C0B x~C0D %d~C07", section, count)
- 
-  for i, rec in items:ipairs() do
-    local sect = dyn_art_base(rec.sect)
-    if strposx(sect, section) then
-       local amount =  nlc_container.amount_in_batch(rec.obj)
-       local need_release = count - real
-       if need_release < amount then            
-         nlc_container.amount_in_batch(rec.obj, amount - need_release) -- вычитание из пачки уничтожаемого количества
-         amount = need_release                          
-       else 
-         misc.release_obj(rec.id, "sak_inventory.release_actor_items")
-       end   
-       real = real + amount  
-       wprintf(" dialog-release~C0A %-27s~C07 has planned amount = %d ", rec.obj:name(), amount)
-       if real >= count then break end
+-- уничтожение у игрока предметов в диалоге, скрытых или в инвентаре
+function release_actor_items( section, count, all_sect )
+    local items = get_shadow_inv():get_content( true ) -- сначала идут объекты из рюкзака, потом из инвентаря
+    local real  = 0
+    wprintf( " trying release~C0D %s~C0B x~C0D %d~C07", section, count )
+    for i, rec in items:ipairs() do
+        local sect = dyn_art_base( rec.sect )
+        if strposx( sect, section ) then
+            local amount       =  nlc_container.amount_in_batch( rec.obj )
+            local need_release = count - real
+            if need_release < amount then
+                nlc_container.amount_in_batch( rec.obj, amount - need_release ) -- вычитание из пачки уничтожаемого количества
+                amount = need_release
+            else
+                misc.release_obj( rec.id, "sak_inventory.release_actor_items" )
+            end
+            real = real + amount
+            wprintf(
+                " dialog-release~C0A %-27s~C07 has planned amount = %d ",
+                rec.obj:name(), amount
+            )
+            if real >= count then break end
+        else
+            -- wprintf(" unaccepted~C0A %s~C07", sect)
+        end
+    end
+    if real > 0 then
+        sak.relocate_item( db.actor, "out", section, real, true ) -- real is ammo amount also!
+        sak_inventory.need_update_inventory()
     else
-       -- wprintf(" unaccepted~C0A %s~C07", sect)
+        wprintf(
+            "~C0C #ERROR:~C07 was released~C0D %d~C07 x ~C0A %s~C07 from~C0D %d~C07 required ",
+            real, section, count
+        )
     end
-  end
-  if real > 0 then
-    sak.relocate_item(db.actor, "out", section, real, true) -- real is ammo amount also!   
-    sak_inventory.need_update_inventory()
-  else
-    wprintf("~C0C #ERROR:~C07 was released~C0D %d~C07 x ~C0A %s~C07 from~C0D %d~C07 required ", real, section, count)
-  end  
- 
-  return (real == count) -- уничтожено все? 
+    return (real == count) -- уничтожено все?
 end
 
-
-function relocate_actor_items(npc, section, count, all_sect) -- отбирание у игрока предметов в пользу непися
-  -- section = dyn_art_base(section) 
-  
-  local items = get_shadow_inv():get_content(true)
- 
-  sak.relocate_item(db.actor, "out", section, count)
- 
-  for i, rec in items:ipairs() do
-    local sect = dyn_art_base(rec.sect)
-    if strposx(section, sect) then
-       count = count - 1 -- amount_in_batch(rec.obj)
-       local owner = rec.obj:parent()
-       if owner then
-          wprintf(" dialog-relocate~C0A %-27s~C07 has planned ", rec.obj:name())
-          owner:transfer_item(rec.obj, npc)    
-          if count <= 0 then break end
-       end   
+-- отбирание у игрока предметов в пользу непися
+function relocate_actor_items( npc, section, count, all_sect )
+    local items = get_shadow_inv():get_content( true )
+    sak.relocate_item( db.actor, "out", section, count )
+    for i, rec in items:ipairs() do
+        local sect = dyn_art_base( rec.sect )
+        if strposx( section, sect ) then
+            count       = count - 1 -- amount_in_batch(rec.obj)
+            local owner = rec.obj:parent()
+            if owner then
+                wprintf(
+                    " dialog-relocate~C0A %-27s~C07 has planned ",
+                    rec.obj:name()
+                )
+                owner:transfer_item( rec.obj, npc )
+                if count <= 0 then break end
+            end
+        end
     end
-  end
- 
-  sak_inventory.need_update_inventory()
-  return (count == 0) -- уничтожено все? 
+    sak_inventory.need_update_inventory()
+    return ( count == 0 ) -- уничтожено все?
 end
 
 function fast_update_inventory()
-  if razgruzka.open_inv_raz_pod==false then
-    sak_inventory.need_update_inventory()
-    razgruzka.open_inv_raz_pod=true
-  end
+    if razgruzka.open_inv_raz_pod == false then
+        sak_inventory.need_update_inventory()
+        razgruzka.open_inv_raz_pod = true
+    end
 end
 
-function init_module()
-end
+function init_module() end
 
 function late_init()
- AddRegularTask("check_accum_change", sak_inventory.check_accum_change, nil, 0, 500) -- проверка, что АКБ была заменена
- AddRegularTask("sak_inventory.fast_update_inventory", sak_inventory.fast_update_inventory, nil, 0, 70)
+    -- проверка, что АКБ была заменена
+    AddRegularTask(
+        "check_accum_change",
+        sak_inventory.check_accum_change, nil, 0, 500
+    )
+    AddRegularTask(
+        "sak_inventory.fast_update_inventory",
+        sak_inventory.fast_update_inventory, nil, 0, 70
+    )
 end
 
-function on_cl_spawned(list) -- глобальный колбек на появление объектов в онлайне
- local actor_items = 0 
- for i, id in ipairs(list) do
-  local obj = client_obj(id)
-  if obj then  
-    local p = obj:parent()
-    if p and p:id() == 0 then
-       actor_items = actor_items + 1
+function on_cl_spawned( list ) -- глобальный колбек на появление объектов в онлайне
+    local actor_items = 0
+    for i, id in ipairs( list ) do
+        local obj = client_obj( id )
+        if obj then
+            local p = obj:parent()
+            if p and p:id() == 0 then actor_items = actor_items + 1 end
+        else
+            wprintf(
+                "[~T].~C0C #WARN:~C07 on_cl_spawned no client object~C0D %d~C07 found. Possible destroyed?",
+                id
+            )
+        end
     end
-  else
-    wprintf("[~T].~C0C #WARN:~C07 on_cl_spawned no client object~C0D %d~C07 found. Possible destroyed?", id)
-  end                                                                                                           
- end
- if actor_items > 0 then
-  need_update_inventory()
- end
+    if actor_items > 0 then need_update_inventory() end
 end
