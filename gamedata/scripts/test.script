@@ -769,6 +769,7 @@ function haldle_art_for_stats( sect, id )
         xr_statistic.add_pts( "stalkerkills",
             game.translate_string( "st_pda_arts_found_sem" ), 1, 0
         )
+        nlc_vars.semart_id = nil
     end
     if art_is_bio_art( id ) then                                -- арт природный, не сваренный
         for k, v in pairs( tbl_arts ) do
