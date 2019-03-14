@@ -2484,7 +2484,7 @@ function give_spas12( first_speaker, second_speaker )
 end
 
 function docent_chimera_kogot_have()
-    return sak.have_items_count( "mutant_chimera_kogot", 5 ) ~= false 
+    return sak.have_items_count( "mutant_chimera_kogot", 5 ) ~= false
     and sak.have_items_count( "device_pda_npc", 25 ) ~= false
 end
 
@@ -3020,7 +3020,7 @@ end
 function not_have_infos_green()
     if
             db.actor:has_info( "info_green_medusa" )
-        and db.actor:has_info( "info_green_vyvert" ) 
+        and db.actor:has_info( "info_green_vyvert" )
         and db.actor:has_info( "info_green_blood" )
     then
         return false
@@ -3030,7 +3030,7 @@ function not_have_infos_green()
 end
 
 function gg_new_about_cherep()
-    if 
+    if
            db.actor:has_info( "mil_dolg_dialog_already" )
         or db.actor:has_info( "mil_patrol_glavn_know" )
     then
@@ -5290,32 +5290,50 @@ function added_vil_ranger_treasure()
 end
 
 function add_volk_prize_treasure( num )
+    num = tonumber( num )
+    local ind = amk_vars.r_task_reward or 1
     local tbl = {
-        { 536.490112, -54.553421, -72.432205, 2041, 183687 },
-        { -82.166389, -9.9271670, 58.7570300, 2988, 5      },
-        { 25.6409470, 17.3389800, 20.4458810, 3263, 81206  }
+        {
+            { 552.616, -49.062, -86.3810, 2044, 191791 },
+            { 581.159, -45.004, -94.1100, 1893, 205899 },
+            { 639.103, -47.636, -161.479, 1887, 225377 },
+            { 567.766, -41.192, -256.612, 1863, 198059 },
+            { 592.654, -45.258, -383.673, 1878, 211584 }
+        },
+        {
+            {  15.000, 8.57148,  134.527, 2997, 33673 },
+            { -21.763, 2.15030,  93.1000, 2999, 14403 },
+            { -26.147, 2.07234,  31.8040, 2988, 12605 },
+            {  13.959, 4.80210,  27.6930, 3015, 33127 },
+            { -36.978, 1.27067, -121.236, 2996, 7455  }
+        },
+        {
+            {  26.5260, 13.1670, -61.1380, 3290, 81747  },
+            { -157.135, 9.71280, -270.520, 3238, 5724   },
+            {  183.091, 7.60294, -137.503, 3308, 121923 },
+            {  52.7830, 4.76922,  24.2000, 3308, 120751 },
+            { -19.0790, 8.24603, -264.215, 3276, 51261  }
+        }
     }
-    local obj = amk.spawn_item( "rukzak_inventory_box",
-        sak.v3f( tbl[ num ][ 1 ], tbl[ num ][ 2 ], tbl[ num ][ 3 ] ),
-        tbl[ num ][ 4 ], tbl[ num ][ 5 ]
+    local obj = test.spawn_no_ai( "rukzak_inventory_box",
+        sak.v3f( tbl[ num ][ ind ][ 1 ], tbl[ num ][ ind ][ 2 ], tbl[ num ][ ind ][ 3 ] ),
+        tbl[ num ][ ind ][ 4 ], tbl[ num ][ ind ][ 5 ]
     )
     misc.process_spawn()
     level.map_add_object_spot( obj.id, "crlc_big_treasure3", "Награда Волка" )
     if obj then
         local tbl1 = {
-            { "af_dummy_pellicle_capsule",   "monolit_scientific_outfit" },
+            { "af_dummy_kolobok_capsule",    "scientific_outfit"         },
             { "af_dummy_glassbeads_capsule", "freedom_scientific_outfit" },
-            { "af_dummy_kolobok_capsule",    "merc_scientific_outfit"    }
+            { "af_dummy_pellicle_capsule",   "merc_scientific_outfit"    }
         }
-        for i = 1, 2 do
-            misc.spawn_to( tbl1[ num ][ i ], obj )
-        end
+        for i = 1, 2 do misc.spawn_to( tbl1[ num ][ i ], obj ) end
         sak.off_on( obj )
     end
     sak.send_tip(
         "Получена наводка на тайник.", "Награда Волка", 5, 15, "g_g", "sak", "green"
-    ) 
-end 
+    )
+end
 
 function add_rad_zil_treasure()
     local ind = ( amk_vars.x18_iq_check  or 1 )
