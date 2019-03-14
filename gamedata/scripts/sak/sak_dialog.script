@@ -5261,15 +5261,20 @@ function add_vil_wolf_letter()
 end
 
 function added_vil_ranger_treasure()
-    local rand   = ( amk_vars.r_treas_items or 1 ) * 5
-    local points = {
-        -100.861191,  6.424353,  52.707348, 11904, 3328,
-         27.6993200, -3.165885, -6.3741940,  7783, 3329,
-         4.89243400,  6.171393, -88.685661, 22057, 3329
+    local tbl = {
+        { -72.722, 19.120, -55.497, 3325, 1163  },
+        {  3.5773, 12.323, -67.840, 3329, 14319 },
+        {  90.055, 12.052, -35.607, 3336, 41192 },
+        {  81.520, 17.663,  30.142, 3333, 38178 },
+        {  49.912, 8.5649,  91.111, 3331, 29325 },
+        {  1.1138, 19.127,  41.183, 3330, 13866 },
+        { -17.132, 17.267,  46.461, 3327, 9399  }
     }
-    local obj = amk.spawn_item( "rukzak_inventory_box",
-        sak.v3f( points[ rand - 4 ], points[ rand - 3 ], points[ rand - 2 ] ),
-        points[ rand ], points[ rand - 1 ]
+    local ind = amk_vars.r_task_reward + amk_vars.r_treas_items - 1
+    if ind > 7 or ind < 1 then ind = 1 end
+    local obj = test.spawn_no_ai( "rukzak_inventory_box",
+        sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+        tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
     )
     if obj then
         local tbl = {

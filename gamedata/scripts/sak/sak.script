@@ -9846,7 +9846,7 @@ function cats_near()
     end
     return cats
 end
-
+--++ ?? что это и зачем?
 function add_anom_spot()
     local actor   = db.actor
     local dir     = device().cam_dir
@@ -9871,9 +9871,7 @@ function dbglog( fmt, ...)
     get_command( "dbg:" .. msg_no_ws )
 end
 
-function init_module()
-    sak.have_item_namber = have_items_count
-end
+function init_module() sak.have_item_namber = have_items_count end
 
 function sak.late_init()
     discharge_accum()
@@ -9881,19 +9879,12 @@ function sak.late_init()
     AddRegularTask( "sak.actor_bio",       sak.actor_bio,       nil, 0, 5000  )
 end
 
-function set_obj_section()
-    local obj_id  = sak_inventory.rucksack[ "af_gravi_dyn5d" ][ 1 ]
-    local new_art = "af_gravi_dyn2d"
-    ODS( "[~T]. #DBG: af_gravi вот ~C0A"..obj_id.."~C07" )
-    --db.actor:give_info_portion( "voron_monster_part_1_info" )
-    coord_params.set_obj_section( obj_id, new_art )
-end
 --функция для спавна тайника Волка
 function add_vil_ranger_treasure()
     if not has_alife_info( "petruha_info_treasure" ) then
         sak_dialog.added_vil_ranger_treasure()
         send_tip(
-            "Ну ищи, щенок, если такой настырный. Может где-то рядом, а может и нет...",
+            "Ну ищи, щенок, если такой настырный. Может где-то рядом, а может и нет... Главное - внимательнее под ноги смотри.",
             "Из записки Волка", 5, 15, "g_g", "sak", "yellow"
         )
         db.actor:give_info_portion( "petruha_info_treasure" )
