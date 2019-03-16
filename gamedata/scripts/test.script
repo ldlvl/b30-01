@@ -1457,3 +1457,35 @@ function mar_factory_leader_items_exchange()
     end
     sak.relocate_item( db.actor, "in", sect, 1 )
 end
+-- для изничтожения у ГГ б0т0реек полтерами и выбросами
+function fuckup_gg_batteries( flag_all )
+    if lua_random() > 0.64 then return end                  -- просто рандом
+    if
+        sak.arts_operate == true
+        and sak_inventory.belt_items[ "af_dummy_dummy_new" ] -- "изолятор" защищает от разряда
+    then
+        return
+    end
+    for sect, ids in pairs( sak_inventory.eatable ) do
+        if strposx( sect, "batt_torch" ) then
+            for m = 1, #ids do
+                if flag_all then
+                    misc.release_obj( ids[ m ] )
+                else
+                    if lua_random() > 0.83 then misc.release_obj( ids[ m ] ) end
+                end
+            end
+            if flag_all then
+                sak.send_tip(
+                    "Батарейкам кирдык, придётся выбросить.", "Ее..понский городовой...",
+                    5, 15, "g_g", "sak", "red"
+                )
+            else
+                sak.send_tip(
+                    "Кое-каким батарейкам кирдык, придётся выбросить.", "Ее..понский городовой...",
+                    5, 15, "g_g", "sak", "red"
+                )
+            end
+        end
+    end
+end
