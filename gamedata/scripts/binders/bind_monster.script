@@ -179,10 +179,11 @@ function generic_object_binder:update( delta )
         local enemy = sfobj:best_enemy()
         if
             enemy
-            and posit:distance_to( enemy:position() ) < 10       -- было 3м
+            and posit:distance_to( enemy:position() ) < 13       -- было 3м
             and sfobj:see( enemy )
         then
-            charge_tushkano( sfobj )  -- разряд, как от электротушканчика
+            charge_tushkano( sfobj )   -- разряд, как от электротушканчика
+            test.fuckup_gg_batteries() -- уничтожение батареек в рюкзаке
         end
     end
     ----------------------------  Пузырёк от собак  ------------------------------
