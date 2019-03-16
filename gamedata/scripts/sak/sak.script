@@ -8592,9 +8592,10 @@ function marsh_radiation()
                         local arm = actor:item_in_slot( 6 )
                         local hit_reduct, pda_brk_chns = 1, 0.07    -- снижение хита, шанс поломки пда на 1 разряд
                         if arm ~= nil then                          -- Если инвалид в экзе, то хит в 5 раз больше
-                            if strposx ( arm:section(), "exo" ) then hit_reduct = 5 end
+                            if strposx ( arm:section(), "exo" ) then hit_reduct = 5
                         end
-                        if sak.arts_operate == true then            -- если носим "Изолятор", то меньше шанс поломки ПДА
+                    end
+                    if sak.arts_operate == true then            -- если носим "Изолятор", то меньше шанс поломки ПДА
                         if sak_inventory.belt_items[ "af_dummy_dummy_new" ] then
                             pda_brk_chns = 0.02
                             arc_arts.discharge_art_on_belt( "af_dummy_dummy_new", 0.008 )
