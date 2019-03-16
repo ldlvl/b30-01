@@ -1112,11 +1112,8 @@ function add_scarman_habar()
         local obj1 = g_sim:object( obj.id )
         for _, v in ipairs( tbl_habar[ ind_habar ] ) do
             g_sim:create(
-                v,
-                obj1.position,
-                obj1.m_level_vertex_id,
-                obj1.m_game_vertex_id,
-                obj1.id
+                v, obj1.position, obj1.m_level_vertex_id,
+                obj1.m_game_vertex_id, obj1.id
             )
         end
         sak.off_on( obj1 )
@@ -1124,7 +1121,10 @@ function add_scarman_habar()
 end
 
 function scarman_sms()
-    sak.send_tip( "'Галиматья какая-то. Слова, снизу цифры, типа ключ. Цифр вроде в 2 раза больше, чем слов.'", "В ПДА добавлена статья:", 0, 10, "uniq", "sak", "orange" )
+    sak.send_tip(
+        "'Галиматья какая-то. Слова, снизу цифры, типа ключ. Цифр вроде в 2 раза больше, чем слов.'",
+        "В ПДА добавлена статья:", 0, 10, "uniq", "sak", "orange"
+    )
 end
 
 function teleport_esc_conserva()

@@ -1,142 +1,143 @@
-local n_v_flag=true
+local n_v_flag = true
 
-function get_NVD_old (torch_id)
- local cobj = get_CObject(torch_id)
- local torch_item = CalcPtr(cobj, "$D8", "-")
- return cobj, torch_item
+function get_NVD_old( torch_id )
+    local cobj       = get_CObject( torch_id )
+    local torch_item = CalcPtr( cobj, "$D8", "-" )
+    return cobj, torch_item
 end
 
 function get_NVD()
- local a = get_actor_obj()
- if a then return a.night_vision_device end
- return nil
+    local a = get_actor_obj()
+    if a then return a.night_vision_device end
+    return nil
 end
 
 nvd_params.get_NVD = get_NVD
 
-function get_NVD_powered ()
- local nvd = get_NVD()
- if (nvd) then
-     return nvd.powered
- end  
- return false
+function get_NVD_powered()
+    local nvd = get_NVD()
+    if nvd then return nvd.powered end
+    return false
 end
 
 function disable_NVD()
- if get_NVD() then get_NVD().enabled = false end  
+    if get_NVD() then get_NVD().enabled = false end
 end
 
 function enable_NVD()
- if get_NVD() then get_NVD().enabled = true end  
+    if get_NVD() then get_NVD().enabled = true end
 end
 
-function toggle_NVD(enabled)
-
-  local nvd = get_NVD()
-  if (nvd) then
-      if(enabled) then
-         nvd:turn_on()
-      else
-         nvd:turn_off()
-      end
-      return
-  else
-     -- wprintf("[~T].~C0C #ERROR:~C07 getNVD() returned nil")
-     return          
-  end
-           
-  -- 
+function toggle_NVD( enabled )
+    local nvd = get_NVD()
+    if nvd then
+        if enabled then
+            nvd:turn_on()
+        else
+            nvd:turn_off()
+        end
+        return
+    else
+        return
+    end
 end
 
 nvd_params.toggle_NVD = toggle_NVD
 
-function set_nvd_state(state)
-  nvd_params.toggle_NVD(state)
+function set_nvd_state( state )
+    nvd_params.toggle_NVD( state )
 end
 
-
-function nvd_params.nvd_disabled() 
- local cond = vergas_masks.mask_condition() 
- if cond < 0 then 
-    return 3
- elseif cond < 0.85 then  
-   return 1
- elseif ( not sak.arts_operate ) then
-   return 2
- elseif ( not vergas_masks.get_flag_mask() ) then
-   return 3 
- elseif ( vergas_masks.mask_definition() == "?" ) then 
-   return 4
- else 
-   return false
- end    
+function nvd_params.nvd_disabled()
+    local cond = vergas_masks.mask_condition()
+    if cond < 0 then
+        return 3
+    elseif cond < 0.85 then
+        return 1
+    elseif not sak.arts_operate then
+        return 2
+    elseif not vergas_masks.get_flag_mask() then
+        return 3
+    elseif vergas_masks.mask_definition() == "?" then
+        return 4
+    else
+        return false
+    end
 end
 
 local last_reason = false
-local rlist = { "Outfit condition bad", "Accumulator absent/discharged", "Mask absent/not wearing", "Invalid mask" }
+
+local rlist = {
+    "Outfit condition bad",
+    "Accumulator absent/discharged",
+    "Mask absent/not wearing",
+    "Invalid mask"
+}
 
 function nvd_params.check_nvd()
- local r = nvd_disabled()
- if r then
-  if r ~= last_reason then
-     ODS( sprintf('!~C0C #WARN:~C07 NVD disabled by reason~C0F %s~C07 (%d), mask condition =~C0D %f~C07 ', rlist[r] or 'Unknown', r, vergas_masks.mask_condition()), 'gf')  
-  end
- 
-  disable_NVD()
- elseif last_reason then
-  ODS( '##DBG: NVD was enabled ', 'gcf')
-  enable_NVD()
- end
- last_reason = r 
+    local r = nvd_disabled()
+    if r then
+        if r ~= last_reason then
+            ODS( sprintf(
+                '!~C0C #WARN:~C07 NVD disabled by reason~C0F %s~C07 (%d), mask condition =~C0D %f~C07 ',
+                rlist[r] or 'Unknown', r, vergas_masks.mask_condition() ), 'gf'
+            )
+        end
+        disable_NVD()
+    elseif last_reason then
+        ODS( '##DBG: NVD was enabled ', 'gcf' )
+        enable_NVD()
+    end
+    last_reason = r
 end
 
 function _G.cb_ctrl_nvd()
-  sak.discharge_accum()
-  local reason = nvd_disabled()
-  if reason then 
-    ODS( sprintf('![~T].~C0C #REJECT:~C07 NVD disabled by reason~C0F %s~C07 (%d), mask condition =~C0D %f~C07', 
-                                         rlist[reason] or 'Unknown', reason, vergas_masks.mask_condition()), 'gf') 
-    nv_state = false 
-  elseif ElapsedTime(-43) > 100 then
-    ElapsedTime(43)        
-    nv_state = not nv_state
-    -- wprintf('[~T]. #DBG: NVD stated switched to %s', tostring(nv_state))
-    nvd_params.set_nvd_state (nv_state)              
-  end 
-end 
+    sak.discharge_accum()
+    local reason = nvd_disabled()
+    if reason then
+        ODS( sprintf(
+            '![~T].~C0C #REJECT:~C07 NVD disabled by reason~C0F %s~C07 (%d), mask condition =~C0D %f~C07',
+            rlist[ reason ] or 'Unknown', reason, vergas_masks.mask_condition() ), 'gf'
+        )
+        nv_state = false
+    elseif ElapsedTime( -43 ) > 100 then
+        ElapsedTime( 43 )
+        nv_state = not nv_state
+        -- wprintf('[~T]. #DBG: NVD stated switched to %s', tostring(nv_state))
+        nvd_params.set_nvd_state( nv_state )
+    end
+end
 
 function set_off_nv()
-  if nvd_disabled() then
-    if not n_v_flag then
-      params.command_unbind("night_vision")
-      n_v_flag = true
+    if nvd_disabled() then
+        if not n_v_flag then
+            params.command_unbind( "night_vision" )
+            n_v_flag = true
+        end
+        nvd_params.set_nvd_state( false )
+    else
+        if n_v_flag then
+            local n_vis_cfg = ReadIni( db.stor_ltx, "stor", "night_vision" )
+            if not strpos( n_vis_cfg, "bind night_vision k", 1, true ) then
+                n_vis_cfg = "bind night_vision kN"
+            end
+            -- sak.get_command(n_vis_cfg)
+            n_v_flag = false
+        end
     end
-   
-   nvd_params.set_nvd_state (false)
-  else
-    if n_v_flag then
-       local n_vis_cfg = ReadIni(db.stor_ltx, "stor", "night_vision")
-       if not strpos(n_vis_cfg,"bind night_vision k",1,true) then n_vis_cfg="bind night_vision kN" end
-       -- sak.get_command(n_vis_cfg)
-       n_v_flag = false
-    end
-  end
 end
 
-
-
-function init_module()
-end
+function init_module() end
 
 function late_init()
- AddRegularTask("check_NVD", nvd_params.check_nvd, nil, 0, 1000)
+    AddRegularTask("check_NVD", nvd_params.check_nvd, nil, 0, 1000)
 end
 
-function nvd_params.init_kcb() 
- local hot_key = params.extract_key ('night_vision', 'kN')
- if hot_key and hot_key:len() > 1 then 
-    wprintf(" set NVD key for callback~C0F %s~C07", hot_key:sub(2))
-    SetKbdCallback ("cb_ctrl_nvd", hot_key:sub(2))
- end   
- -- params.execute_command('unbind', 'night_vision') -- требуется отключать, чтобы включение шло в обход     
-end      
+function nvd_params.init_kcb()
+    local hot_key = params.extract_key( 'night_vision', 'kN' )
+    if hot_key and hot_key:len() > 1 then
+        wprintf( " set NVD key for callback~C0F %s~C07", hot_key:sub( 2 ) )
+        SetKbdCallback( "cb_ctrl_nvd", hot_key:sub( 2 ) )
+    end
+    -- params.execute_command('unbind', 'night_vision') -- требуется отключать, чтобы включение шло в обход
+end

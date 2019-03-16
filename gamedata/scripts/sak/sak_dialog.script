@@ -5948,7 +5948,7 @@ function take_bar_lisaped_ak( first_speaker, second_speaker )
     local obj = misc.spawn_to( "wpn_ak74_m1", db.actor )
     misc.process_spawn()
     if obj then
-        params.obj_condition( obj.id, 0.39 )
+        params.upd_condition( obj.id, 0.39 )
         sak.relocate_item( second_speaker, "in", "wpn_ak74_m1", 1 )
     end
 end
