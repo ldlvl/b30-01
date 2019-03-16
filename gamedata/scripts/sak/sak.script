@@ -8996,7 +8996,7 @@ function kanistra_fill()
         and amk.check_npc_in_box( actor, point_drop[ 19 ], point_drop[ 20 ] ) ~= false
     then
         if nlc_vars.benz1 <= amk_vars.r_treas_items then
-            timers.start_timer( "knstr_ful", 8, "sak.kanistra_full( 1 )" )
+            timers.start_timer( "knstr_ful", 8, "sak.kanistra_full(1)" )
             nlc_vars.benz1 = nlc_vars.benz1 + 1
             level.disable_input()
             close_window()  snd_toilet()
@@ -9009,7 +9009,7 @@ function kanistra_fill()
         and amk.check_npc_in_box( actor, point_drop[ 21 ], point_drop[ 22 ] ) ~= false
         and not timers.check_timer( "march_benzinopause" )
     then
-        timers.start_timer( "knstr_ful", 8, "sak.kanistra_full( 2 )" )
+        timers.start_timer( "knstr_ful", 8, "sak.kanistra_full(2)" )
         timers.start_timer( "march_benzinopause", 0, lua_random( 18, 24 ), 0 )
         level.disable_input()
         close_window()  snd_toilet()
@@ -9019,7 +9019,7 @@ function kanistra_fill()
         and amk.check_npc_in_box( actor, point_drop[ 43 ], point_drop[ 44 ] ) ~= false
     then
         if nlc_vars.benz2 <= amk_vars.r_task_reward then
-            timers.start_timer( "knstr_ful", 8, "sak.kanistra_full( 3 )" )
+            timers.start_timer( "knstr_ful", 8, "sak.kanistra_full(3)" )
             nlc_vars.benz2 = nlc_vars.benz2 + 1
             level.disable_input()
             close_window()  snd_toilet()
@@ -9049,6 +9049,7 @@ local pos_kanistra_full = {
 }
 
 function kanistra_full( pos )
+    pos = tonumber( pos )
     amk.spawn_item( "amk_kanistra",
         v3f( pos_kanistra_full[ pos ][ 1 ], pos_kanistra_full[ pos ][ 2 ], pos_kanistra_full[ pos ][ 3 ] ),
         pos_kanistra_full[ pos ][ 5 ], pos_kanistra_full[ pos ][ 4 ]
