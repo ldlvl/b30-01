@@ -4200,7 +4200,8 @@ function return_kompass( first_speaker, second_speaker )
     end
 end
 
-local stas_art = "medusa"
+local stas_art  = "af_medusa"
+local stas_bart = "af_gravi"
 
 function stas_give_gameart( first_speaker, second_speaker )
     for i = 1, table.getn( table_aart ) do
@@ -4211,6 +4212,17 @@ function stas_give_gameart( first_speaker, second_speaker )
         end
     end
 end
+
+function stas_give_gamebart( first_speaker, second_speaker )
+    for i = 1, table.getn( table_bart ) do
+        if sak.have_items_count( table_bart[ i ], 1 ) then
+            sak_inventory.relocate_actor_items( second_speaker, table_bart[ i ], 1 )
+            stas_bart = table_bart[ i ]
+            break
+        end
+    end
+end
+
 
 function stas_return_gameart( first_speaker, second_speaker )
     for n = 1, 6 do
@@ -4223,11 +4235,32 @@ function stas_return_gameart( first_speaker, second_speaker )
     end
 end
 
+function stas_return_gamebart( first_speaker, second_speaker )
+    for n = 1, 6 do
+        local obj = first_speaker:object( stas_bart .. "_dyn" .. n .. "d" )
+        if obj then
+            first_speaker:transfer_item( obj, second_speaker )
+            sak.relocate_item( second_speaker, "in", stas_bart, 1 )
+            break
+        end
+    end
+end
+
 function stas_out_gameart( first_speaker, second_speaker )
     for n = 1, 6 do
         local obj = first_speaker:object( stas_art .. "_dyn" .. n .. "d" )
         if obj then
             misc.release_obj( obj, 'stas_out_gameart' )
+            break
+        end
+    end
+end
+
+function stas_out_gamebart( first_speaker, second_speaker )
+    for n = 1, 6 do
+        local obj = first_speaker:object( stas_bart .. "_dyn" .. n .. "d" )
+        if obj then
+            misc.release_obj( obj, 'stas_out_gamebart' )
             break
         end
     end

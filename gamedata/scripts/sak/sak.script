@@ -3290,8 +3290,9 @@ function lysyi_art_new( info )
     if info == "time_morning" then
         nlc_vars.art_win        = 0
         nlc_vars.vergas_rem     = 0
-        sak_minigame.gg_wined()
+        nlc_vars.mongol_wins    = 0
         nlc_vars.greens_kolbasa = 0
+        sak_minigame.gg_wined()
     end
 end
 
@@ -8592,37 +8593,36 @@ function marsh_radiation()
                         local arm = actor:item_in_slot( 6 )
                         local hit_reduct, pda_brk_chns = 1, 0.07    -- снижение хита, шанс поломки пда на 1 разряд
                         if arm ~= nil then                          -- Если инвалид в экзе, то хит в 5 раз больше
-                            if strposx ( arm:section(), "exo" ) then hit_reduct = 5
+                            if strposx ( arm:section(), "exo" ) then hit_reduct = 5 end
                         end
-                    end
-                    if sak.arts_operate == true then            -- если носим "Изолятор", то меньше шанс поломки ПДА
-                        if sak_inventory.belt_items[ "af_dummy_dummy_new" ] then
-                            pda_brk_chns = 0.02
-                            arc_arts.discharge_art_on_belt( "af_dummy_dummy_new", 0.008 )
+                        if sak.arts_operate == true then            -- если носим "Изолятор", то меньше шанс поломки ПДА
+                            if sak_inventory.belt_items[ "af_dummy_dummy_new" ] then
+                                pda_brk_chns = 0.02
+                                arc_arts.discharge_art_on_belt( "af_dummy_dummy_new", 0.008 )
+                            end
                         end
-                    end
-                    local h     = hit()
-                    h.draftsman = actor
-                    h.type      = hit.shock
-                    h.power     = 0.1 * ( 1 + ( 100 / ( ( v3f( 13.5, 40.2, -230.7 ):distance_to( act_pos ) ) + 10 ) ) ) * hit_reduct
-                    h.impulse   = 0.0
-                    h:bone( "bip01_spine" )
-                    actor:hit( h )
-                    -- добавим небольшой шанс поломки ПДА при разряде на Тесла
-                    if lua_random() < pda_brk_chns then
-                        if not actor:has_info( "pda_will_be_broken" ) then
-                            actor:give_info_portion( "pda_will_be_broken" )
+                        local h     = hit()
+                        h.draftsman = actor
+                        h.type      = hit.shock
+                        h.power     = 0.1 * ( 1 + ( 100 / ( ( v3f( 13.5, 40.2, -230.7 ):distance_to( act_pos ) ) + 10 ) ) ) * hit_reduct
+                        h.impulse   = 0.0
+                        h:bone( "bip01_spine" )
+                        actor:hit( h )
+                        -- добавим небольшой шанс поломки ПДА при разряде на Тесла
+                        if lua_random() < pda_brk_chns then
+                            if not actor:has_info( "pda_will_be_broken" ) then
+                                actor:give_info_portion( "pda_will_be_broken" )
+                            end
                         end
                     end
                 end
             end
-        end
-        if step <= 10 then
-            step = step + 1
-        else
-            step = 0
-        end
-        time_previous_water = time_current
+            if step <= 10 then
+                step = step + 1
+            else
+                step = 0
+            end
+            time_previous_water = time_current
         end
         return
     end

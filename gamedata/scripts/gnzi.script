@@ -125,4 +125,9 @@ function start_randoms()
     }) do
         dsh.get_next_random( v )
     end
+    for _, v in ipairs({
+        "minigame_bet_rnd"
+    }) do
+        dsh.get_fixed_random( v, 1 )
+    end
 end

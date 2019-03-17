@@ -4,6 +4,8 @@ local die_f, die_g, die_h, die_i, die_j
 local game_difficulty       = tonumber( level.get_game_difficulty() )
 local vodka_wins            = ( 10 - ( game_difficulty * 2 ) )
 local art_wins              = 1
+local mongol_wins_today     = nlc_vars.mongol_wins or 0
+local mongol_wins_amount    = 1 + math.fmod( timers.Get_Game_Days(), 3 )
 local dices_drop_npc        = xray_vars.load_table( nlc_vars, "dices_npc",        {} )
 local dices_drop_gg         = xray_vars.load_table( nlc_vars, "dices_gg",         {} )
 local dices_drop_mass_npc   = xray_vars.load_table( nlc_vars, "dices_mass_npc",   {} )
@@ -321,7 +323,7 @@ local ochko   = 11
 local gg_sum  = 0
 local npc_sum = 0
 
-function new_game_ochko()
+function new_game_ochko( npc )
     gg_sum  = 0
     npc_sum = 0
     db.actor:disable_info_portion( "gg_winner" )
@@ -333,7 +335,7 @@ function new_game_ochko()
     )
 end
 
-function roll_dice_ochko_npc_for_gg()
+function roll_dice_ochko_npc_for_gg( npc )
     die_a = lua_random( 1, 6 )
     if ( die_a + gg_sum ) == ochko then
         db.actor:give_talk_message(
@@ -342,11 +344,7 @@ function roll_dice_ochko_npc_for_gg()
             .. "\\n%c[255,216,186,140]Всего одиннадцать! Очко! Повезло...",
             "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
         )
-        db.actor:give_info_portion( "gg_winner" )
-        -- для статистики:
-        xr_statistic.add_pts(
-            "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0
-        )
+        handle_minigame_wins( npc )
     elseif ( die_a + gg_sum ) > ochko then
         db.actor:give_talk_message(
             "%c[255,216,186,140]Ха! У тебя "  .. numer[ die_a ]
@@ -376,7 +374,7 @@ function roll_dice_ochko_npc_for_gg()
     end
 end
 
-function roll_dice_ochko_npc()
+function roll_dice_ochko_npc( npc )
     die_e = lua_random( 1, 5 )
     if ( die_e + npc_sum ) == ochko then
         db.actor:give_talk_message(
@@ -393,11 +391,7 @@ function roll_dice_ochko_npc()
             .. "\\n%c[255,216,186,140]Перебор... Банк твой...",
             "ui\\ui_iconsTotal", Frect():set( 498, 188, 83, 47 ), "iconed_answer_item"
         )
-        db.actor:give_info_portion( "gg_winner" )
-        -- для статистики:
-        xr_statistic.add_pts(
-            "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 
-        )
+        handle_minigame_wins( npc )
     elseif ( die_e + npc_sum ) < gg_sum then
         if npc_sum ~= 0 then
             db.actor:give_talk_message(
@@ -457,6 +451,22 @@ function roll_dice_ochko_npc()
             npc_sum = ( die_e + npc_sum )
         end
         db.actor:give_info_portion("gg_luser")
+    end
+end
+
+function handle_minigame_wins( npc )
+    db.actor:give_info_portion( "gg_winner" )
+    -- для статистики:
+    xr_statistic.add_pts(
+        "stalkerkills", game.translate_string( "st_pda_minigames_won" ), 1, 0 
+    )
+    if npc == "mongol" then
+        mongol_wins_today    = mongol_wins_today + 1
+        nlc_vars.mongol_wins = mongol_wins_today
+    elseif npc == "stas" then
+        vodka8_wins_from_stas()
+    elseif npc == "lysyi" then
+        art1_wins_from_lysyi()
     end
 end
 
@@ -541,29 +551,12 @@ function art1_wins_from_lysyi()
     nlc_vars.art_win = art_winned + 1
 end
 
-function run_roll_dice_npc_stas( first_speaker, second_speaker )
-  game.start_tutorial( "dises_sidor01" )
-end
-
-function run_roll_dice_gg_stas( first_speaker, second_speaker )
-  game.start_tutorial( "dises_sidor02" )
-end
-
-function run_roll_dice_npc_lysyi( first_speaker, second_speaker )
-  game.start_tutorial( "dises_bar01" )
-end
-
-function run_roll_dice_gg_lysyi( first_speaker, second_speaker )
-  game.start_tutorial( "dises_bar02" )
-end
-
-function run_roll_dice_npc_mongol( first_speaker, second_speaker )
-  game.start_tutorial( "dises_bandit01" )
-end
-
-function run_roll_dice_gg_mongol( first_speaker, second_speaker )
-  game.start_tutorial( "dises_bandit02" )
-end
+function run_roll_dice_npc_stas  ( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit01" ) end
+function run_roll_dice_gg_stas   ( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit01" ) end
+function run_roll_dice_npc_lysyi ( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit01" ) end
+function run_roll_dice_gg_lysyi  ( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit01" ) end
+function run_roll_dice_npc_mongol( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit01" ) end
+function run_roll_dice_gg_mongol ( first_speaker, second_speaker ) game.start_tutorial( "dises_bandit02" ) end
 
 local thimble_ids        = {}
 local blow_thimbles      = {}
@@ -1098,6 +1091,40 @@ function two_bio_esc_()
     end
 end
 
+local mongol_tbl = { "suhpay", "device_pda_npc", "grenade_f1", "ammo_vog-25" }
+local mongol_ind = 1
+
+function mongol_bet_today()
+    local day  = timers.Get_Game_Days() or 1
+    mongol_ind = dsh.get_fixed_random( "minigame_bet_rnd", day, 1, #mongol_tbl )
+    db.actor:give_talk_message(
+        game.translate_string( system_ini():r_string( mongol_tbl[ mongol_ind ], "inv_name" ) )
+        .. " - одна штука",
+        "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
+    )
+end
+
+function add_mongol_bet()
+    local item = mongol_tbl[ mongol_ind ]
+    if item == "device_pda_npc" then
+        mike.add_1_pda_npc()
+    else
+        test.add_to_actor( item , 1 )
+    end
+end
+
+function mongol_have_items()
+    wprintf( "@----------- mongol_wins_amount: %s, nlc_vars.mongol_wins: %s", tostring(mongol_wins_amount), tostring(nlc_vars.mongol_wins) )
+    if
+           ( not nlc_vars.mongol_wins )
+        or ( nlc_vars.mongol_wins < mongol_wins_amount )
+    then
+        return true
+    end
+    return false
+end
+
+function mongol_not_have_items() return not mongol_have_items() end
 
 --[[Покер с игральными костями
 

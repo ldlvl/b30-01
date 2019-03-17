@@ -5393,14 +5393,16 @@
 <precondition>utils.is_agr_day</precondition>
 <has_info>minigame_start</has_info>
 	<phrase_list>
+
 		<phrase id="0">
 			<text>minigame_dialog_0</text>
-			<action>sak_minigame.prov_dices_drop</action>
+			<!-- <action>sak_minigame.prov_dices_drop</action> -->
 			<next>111</next>
 			<next>112</next>
 		</phrase>
+
 		<phrase id="111">
-		<precondition>sak_dialog.not_ready_time_to_game</precondition>
+			<precondition>sak_dialog.not_ready_time_to_game</precondition>
 			<text>minigame_dialog_111</text>
 			<next>1111</next>
 		</phrase>
@@ -5408,102 +5410,278 @@
 			<text>minigame_dialog_1111</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 		<phrase id="112">
-		<precondition>sak_dialog.is_ready_time_to_game</precondition>
+			<precondition>sak_dialog.is_ready_time_to_game</precondition>
 			<text></text>
 			<next>1121</next>
 		</phrase>
+
 		<phrase id="1121">
 			<text></text>
 			<next>113</next>
 			<next>114</next>
 		</phrase>
+
 		<phrase id="113">
-		<precondition>sak_minigame.lysyi_no_have_art</precondition>
+			<precondition>sak_minigame.lysyi_no_have_art</precondition>
 			<text>minigame_dialog_112</text>
 			<next>1131</next>
 		</phrase>
+
 		<phrase id="1131">
 			<text>minigame_dialog_1121</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 		<phrase id="114">
-		<precondition>sak_minigame.lysyi_have_art</precondition>
+			<precondition>sak_minigame.lysyi_have_art</precondition>
 			<text></text>
 			<next>1141</next>
 		</phrase>
+
 		<phrase id="1141">
 			<text></text>
 			<next>115</next>
 			<next>116</next>
 		</phrase>
+
 		<phrase id="115">
-		<precondition>sak_minigame.is_gg_chiter</precondition>
+			<precondition>sak_minigame.is_gg_chiter</precondition>
 			<text>minigame_dialog_115</text>
 			<action>sak_minigame.text_money_gg_chiter</action>
 			<next>1152</next>
 			<next>1151</next>
 		</phrase>
+
 		<phrase id="1152">
-		<precondition>sak_minigame.gg_chiter_money_have</precondition>
+			<precondition>sak_minigame.gg_chiter_money_have</precondition>
 			<text>minigame_dialog_1152</text>
 			<action>sak_minigame.give_gg_chiter_money</action>
 			<action>sak_minigame.gg_wined</action>
 			<next>116</next>
 		</phrase>
+
 		<phrase id="1151">
 			<text>minigame_dialog_1151</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 		<phrase id="116">
 		<precondition>sak_minigame.no_gg_chiter</precondition>
 			<text>minigame_dialog_2</text>
-			<action>sak_minigame.prov_dices_drop</action>
+			<!-- <action>sak_minigame.prov_dices_drop</action> -->
 			<next>31</next>
 			<next>32</next>
 			<!--<next>33</next> -->
 			<next>34</next>
 		</phrase>
+
 		<phrase id="31">
-		<precondition>sak_dialog.actor_have(15000)</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
 			<text>minigame_dialog_31</text>
-			<action>sak_dialog.give_money(15000,1)</action>
+			<action>sak_dialog.stas_give_gameart</action>
+			<action>sak_minigame.new_game_ochko("lysyi")</action>
 			<next>41</next>
 		</phrase>
+
 		<phrase id="32">
-		<precondition>sak_dialog.actor_have(30000)</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
 			<text>minigame_dialog_32</text>
-			<action>sak_dialog.give_money(30000,1)</action>
+			<action>sak_dialog.stas_give_gamebart</action>
+			<action>sak_minigame.new_game_ochko("lysyi")</action>
 			<next>42</next>
 		</phrase>
-		<phrase id="33">
-		<precondition>sak_dialog.actor_85000_have</precondition>
-			<text>minigame_dialog_33</text>
-			<action>sak_dialog.give_85000_money</action>
-			<next>43</next>
-		</phrase>
+
 		<phrase id="34">
 			<text>minigame_dialog_34</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
-		<phrase id="41">
+
+		<phrase id="41"> <!-- 1ур -->
 			<text>minigame_dialog_41</text>
 			<action>sak_minigame.run_roll_dice_npc_lysyi</action>
-			<action>sak_minigame.roll_dice_npc</action>
-			<next>51</next>
+			<action>sak_minigame.roll_dice_ochko_npc_for_gg("lysyi")</action>
+			<next>511</next><!-- Давай ещё... -->
+			<next>512</next><!-- Нет, хватает... -->
+			<next>712</next><!-- проиграл -->
+			<next>713</next><!-- выиграл -->
 		</phrase>
-		<phrase id="42">
+
+		<phrase id="42"> <!-- 2ур -->
 			<text>minigame_dialog_42</text>
 			<action>sak_minigame.run_roll_dice_npc_lysyi</action>
-			<action>sak_minigame.roll_dice_mass_npc</action>
-			<next>52</next>
+			<action>sak_minigame.roll_dice_ochko_npc_for_gg("lysyi")</action>
+			<next>51111</next><!-- Давай ещё... -->
+			<next>51211</next><!-- Нет, хватает... -->
+			<next>71211</next><!-- проиграл -->
+			<next>71311</next><!-- выиграл -->
 		</phrase>
-		<phrase id="43">
+
+		<phrase id="511">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_511</text> <!-- Давай ещё... -->
+			<next>41</next>
+		</phrase>
+
+		<phrase id="51111">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_511</text> <!-- Давай ещё... -->
+			<next>42</next>
+		</phrase>
+
+		<phrase id="512">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_512</text> <!-- Нет, хватает... -->
+			<next>61</next>
+		</phrase>
+
+		<phrase id="51211">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_512</text> <!-- Нет, хватает... -->
+			<next>6111</next>
+		</phrase>
+
+		<phrase id="61">
+			<text>minigame_dialog_bandit_61</text> <!-- Так, мой камень... -->
+			<action>sak_minigame.run_roll_dice_gg_mongol</action>
+			<action>sak_minigame.roll_dice_ochko_npc("lysyi")</action>
+			<next>711</next> <!--ещё-->
+			<next>712</next> <!-- проиграл -->
+			<next>713</next> <!-- выиграл -->
+			<next>714</next> <!-- ничья -->
+		</phrase>
+
+		<phrase id="6111">
+			<text>minigame_dialog_bandit_61</text> <!-- Так, мой камень... -->
+			<action>sak_minigame.run_roll_dice_gg_mongol</action>
+			<action>sak_minigame.roll_dice_ochko_npc("lysyi")</action>
+			<next>71111</next> <!--ещё-->
+			<next>71211</next> <!-- проиграл -->
+			<next>71311</next> <!-- выиграл -->
+			<next>71411</next> <!-- ничья -->
+		</phrase>		
+
+		<phrase id="711">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<dont_has_info>draw</dont_has_info>
+			<text>minigame_dialog_bandit_711</text> <!-- Не томи, швыряй! -->
+			<next>61</next>
+		</phrase>
+
+		<phrase id="71111">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<dont_has_info>draw</dont_has_info>
+			<text>minigame_dialog_bandit_711</text> <!-- Не томи, швыряй! -->
+			<next>6111</next>
+		</phrase>
+
+		<phrase id="712"><!-- 1ур -->
+			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
+			<next>812</next>
+		</phrase>
+
+		<phrase id="71211"><!-- 2ур -->
+			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
+			<next>81211</next>
+		</phrase>
+
+		<phrase id="713"><!-- 1ур -->
+			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
+			<next>813</next>
+		</phrase>
+
+		<phrase id="71311"><!-- 2ур -->
+			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
+			<next>81311</next>
+		</phrase>
+
+		<phrase id="714"><!-- 1ур -->
+			<has_info>draw</has_info> <!-- ничья -->
+			<text>minigame_dialog_bandit_714</text> <!-- Ничего, в следующий раз я выиграю! -->
+			<next>814</next>
+		</phrase>
+
+		<phrase id="71411"><!-- 2ур -->
+			<has_info>draw</has_info> <!-- ничья -->
+			<text>minigame_dialog_bandit_714</text> <!-- Ничего, в следующий раз я выиграю! -->
+			<next>81411</next>
+		</phrase>
+
+		<phrase id="812">
+			<text>minigame_dialog_bandit_812</text> <!-- Не расстраивайся, не корову же проиграл...\nМожет, повторим? -->
+			<action>sak_dialog.stas_out_gameart</action>
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="81211">
+			<text>minigame_dialog_bandit_812</text> <!-- Не расстраивайся, не корову же проиграл...\nМожет, повторим? -->
+			<action>sak_dialog.stas_out_gamebart</action>
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="813"><!-- 1ур -->
+			<text>minigame_dialog_bandit_813</text> <!-- Знал он... Бери свой выигрыш!\nМожет, повторим? -->
+			<action>sak_dialog.stas_return_gameart</action>
+			<action>sak_dialog.relocate_money(db.actor,15000,"in")</action>
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="81311"><!-- 1ур -->
+			<text>minigame_dialog_bandit_813</text> <!-- Знал он... Бери свой выигрыш!\nМожет, повторим? -->
+			<action>sak_dialog.stas_return_gamebart</action>
+			<action>sak_dialog.relocate_money(db.actor,30000,"in")</action>
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="814">
+			<text>minigame_dialog_bandit_814</text><!-- Это точно!\nМожет, повторим? -->
+			<!-- <action>test.add_to_actor("vodka",2)</action> -->
+			<action>sak_dialog.stas_return_gameart</action>
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="81411">
+			<text>minigame_dialog_bandit_814</text><!-- Это точно!\nМожет, повторим? -->
+			<action>sak_dialog.stas_return_gamebart</action>
+			<!-- <action>test.add_to_actor("vodka",2)</action> -->
+			<next>9</next>
+			<next>666</next>
+		</phrase>
+
+		<phrase id="9">
+			<text>minigame_dialog_stas_52</text><!-- А давай повторим! -->
+			<!-- <next>116</next> -->
+		</phrase>
+
+		<phrase id="666">
+			<text>minigame_dialog_bandit_666</text><!-- Не, хватит... Дела у меня... -->
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+
+<!-- 		<phrase id="43">
 			<text>minigame_dialog_43</text>
 			<action>sak_minigame.run_roll_dice_npc_lysyi</action>
 			<action>sak_minigame.roll_dice_o_mass_npc</action>
 			<next>53</next>
-		</phrase>
+		</phrase> -->
+
 		<phrase id="51">
 			<text>minigame_dialog_51</text>
 			<action>sak_minigame.run_roll_dice_gg_lysyi</action>
@@ -5520,14 +5698,16 @@
 			<next>622</next>
 			<next>623</next>
 		</phrase>
-		<phrase id="53">
+
+<!-- 		<phrase id="53">
 			<text>minigame_dialog_53</text>
 			<action>sak_minigame.run_roll_dice_gg_lysyi</action>
 			<action>sak_minigame.roll_dice_o_mass_gg</action>
 			<next>631</next>
 			<next>632</next>
 			<next>633</next>
-		</phrase>
+		</phrase> -->
+
 		<phrase id="611">
 		<has_info>gg_luser</has_info>
 			<text>minigame_dialog_611</text>
@@ -5578,7 +5758,8 @@
 			<next>0</next>
 			<next>7</next>
 		</phrase>
-		<phrase id="631">
+
+<!-- 		<phrase id="631">
 		<has_info>gg_luser</has_info>
 			<text>minigame_dialog_631</text>
 			<next>0</next>
@@ -5599,11 +5780,13 @@
 			<action>sak_dialog.take_100000_money</action>
 			<next>0</next>
 			<next>7</next>
-		</phrase>
+		</phrase> -->
+
 		<phrase id="7">
 			<text>minigame_dialog_7</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 	</phrase_list>
 </dialog>
 	
@@ -5641,11 +5824,11 @@
 			<next>101</next>
 		</phrase>
 		<phrase id="1">
-		<precondition>sak_dialog.no_day</precondition>
+			<precondition>sak_dialog.no_day</precondition>
 			<text>minigame_dialog_stas_1</text>
 		</phrase>
 		<phrase id="101">
-		<precondition>sak_dialog.is_day</precondition>
+			<precondition>sak_dialog.is_day</precondition>
 			<text></text>
 			<next>102</next>
 		</phrase>
@@ -5655,12 +5838,12 @@
 			<next>103</next>
 		</phrase>
 		<phrase id="112">
-		<precondition>sak_minigame.stas_no_have_vodka</precondition>
+			<precondition>sak_minigame.stas_no_have_vodka</precondition>
 			<text>minigame_dialog_stas_112</text>
 			<next>1121</next>
 		</phrase>
 		<phrase id="103">
-		<precondition>sak_minigame.stas_have_vodka</precondition>
+			<precondition>sak_minigame.stas_have_vodka</precondition>
 			<text></text>
 			<next>104</next>
 		</phrase>
@@ -5670,12 +5853,12 @@
 			<next>105</next>
 		</phrase>
 		<phrase id="111">
-		<!-- <precondition>sak_dialog.not_ready_time_to_game</precondition> -->
+			<precondition>sak_dialog.not_ready_time_to_game</precondition>
 			<text>minigame_dialog_stas_111</text>
 			<next>1111</next>
 		</phrase>
 		<phrase id="105">
-		<!-- <precondition>sak_dialog.is_ready_time_to_game</precondition> -->
+			<precondition>sak_dialog.is_ready_time_to_game</precondition>
 			<text></text>
 			<next>106</next>
 		</phrase>
@@ -5685,12 +5868,12 @@
 			<next>113</next>
 		</phrase>
 		<phrase id="11">
-		<!-- <precondition>sak_dialog.is_time_to_game</precondition> -->
+			<precondition>sak_dialog.is_time_to_game</precondition>
 			<text>minigame_dialog_stas_11</text>
 			<next>12</next>
 		</phrase>
 		<phrase id="113">
-		<!-- <precondition>sak_dialog.is_no_time_to_game</precondition> -->
+			<precondition>sak_dialog.is_no_time_to_game</precondition>
 			<text>minigame_dialog_stas_113</text>
 			<next>1231</next>
 		</phrase>
@@ -5712,153 +5895,124 @@
 			<next>222</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_minigame.stas_have_vodka</precondition>
+			<precondition>sak_minigame.stas_have_vodka</precondition>
 			<text>minigame_dialog_stas_2</text>
-			<action>sak_minigame.prov_dices_drop</action>
+			<!-- <action>sak_minigame.prov_dices_drop</action> -->
 			<next>31</next>
 			<!-- <next>32</next> -->
 			<next>34</next>
 		</phrase>
 		<phrase id="222">
-		<precondition>sak_minigame.stas_no_have_vodka</precondition>
+			<precondition>sak_minigame.stas_no_have_vodka</precondition>
 			<text>minigame_dialog_stas_222</text>
 		</phrase>
+
 		<phrase id="31">
-		<precondition>sak_dialog.have_any_aart</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
 			<text>minigame_dialog_stas_31</text>
 			<action>sak_dialog.stas_give_gameart</action>
-			<action>sak_minigame.new_game_ochko</action>
+			<action>sak_minigame.new_game_ochko("stas")</action>
 			<next>41</next>
 		</phrase>
-		<phrase id="32">
-		<precondition>sak_dialog.actor_have(1500)</precondition>
-			<text>minigame_dialog_stas_32</text>
-			<action>sak_dialog.give_money(1500,1)</action>
-			<next>42</next>
-		</phrase>
-		<phrase id="33">
-		<precondition>sak_dialog.vyvert_have</precondition>
-			<text>minigame_dialog_stas_33</text>
-			<action>sak_dialog.give_vyvert</action>
-			<next>43</next>
-		</phrase>
+
 		<phrase id="34">
 			<text>minigame_dialog_stas_34</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 		<phrase id="41">
 			<text>minigame_dialog_stas_41</text>
 			<action>sak_minigame.run_roll_dice_npc_stas</action>
-			<action>sak_minigame.roll_dice_mass_npc</action>
-			<next>51</next>
+			<action>sak_minigame.roll_dice_ochko_npc_for_gg("stas")</action>
+			<next>511</next><!-- Давай ещё... -->
+			<next>512</next><!-- Нет, хватает... -->
+			<next>712</next><!-- проиграл -->
+			<next>713</next><!-- выиграл -->
 		</phrase>
-		<phrase id="42">
-			<text>minigame_dialog_stas_42</text>
-			<action>sak_minigame.run_roll_dice_npc_stas</action>
-			<action>sak_minigame.roll_dice_npc</action>
-			<next>52</next>
+
+		<phrase id="511">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_511</text> <!-- Давай ещё... -->
+			<next>41</next>
 		</phrase>
-		<phrase id="43">
-			<text>minigame_dialog_stas_43</text>
-			<action>sak_minigame.run_roll_dice_npc_stas</action>
-			<action>sak_minigame.roll_dice_o_mass_npc</action>
-			<next>53</next>
+
+		<phrase id="512">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_512</text> <!-- Нет, хватает... -->
+			<next>61</next>
 		</phrase>
-		<phrase id="51">
-			<text>minigame_dialog_stas_51</text>
-			<action>sak_minigame.run_roll_dice_gg_stas</action>
-			<action>sak_minigame.roll_dice_mass_gg</action>
-			<next>611</next>
-			<next>612</next>
-			<next>613</next>
+
+		<phrase id="61">
+			<text>minigame_dialog_bandit_61</text> <!-- Так, мой камень... -->
+			<action>sak_minigame.run_roll_dice_gg_mongol</action>
+			<action>sak_minigame.roll_dice_ochko_npc("stas")</action>
+			<next>711</next> <!--ещё-->
+			<next>712</next> <!-- проиграл -->
+			<next>713</next> <!-- выиграл -->
+			<next>714</next> <!-- ничья -->
 		</phrase>
-		<phrase id="52">
-			<text>minigame_dialog_stas_52</text>
-			<action>sak_minigame.run_roll_dice_gg_stas</action>
-			<action>sak_minigame.roll_dice_gg</action>
-			<next>621</next>
-			<next>622</next>
-			<next>623</next>
+
+		<phrase id="711">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<dont_has_info>draw</dont_has_info>
+			<text>minigame_dialog_bandit_711</text> <!-- Не томи, швыряй! -->
+			<next>61</next>
 		</phrase>
-		<phrase id="53">
-			<text>minigame_dialog_stas_53</text>
-			<action>sak_minigame.run_roll_dice_gg_stas</action>
-			<action>sak_minigame.roll_dice_o_mass_gg</action>
-			<next>631</next>
-			<next>632</next>
-			<next>633</next>
+
+		<phrase id="712">
+			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
+			<next>812</next>
 		</phrase>
-		<phrase id="611">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_stas_611</text>
+
+		<phrase id="713">
+			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
+			<next>813</next>
+		</phrase>
+
+		<phrase id="714">
+			<has_info>draw</has_info> <!-- ничья -->
+			<text>minigame_dialog_bandit_714</text> <!-- Ничего, в следующий раз я выиграю! -->
+			<next>814</next>
+		</phrase>
+
+		<phrase id="812">
+			<text>minigame_dialog_bandit_812</text> <!-- Не расстраивайся, не корову же проиграл...\nМожет, повторим? -->
 			<action>sak_dialog.stas_out_gameart</action>
-			<next>12</next>
-			<next>7</next>
+			<next>9</next>
+			<next>666</next>
 		</phrase>
-		<phrase id="612">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_stas_612</text>
+
+		<phrase id="813">
+			<text>minigame_dialog_bandit_813</text> <!-- Знал он... Бери свой выигрыш!\nМожет, повторим? -->
 			<action>sak_dialog.stas_return_gameart</action>
 			<action>sak_dialog.add_8vodka</action>
-			<action>sak_minigame.vodka8_wins_from_stas</action>
-			<next>12</next>
-			<next>7</next>
+			<next>9</next>
+			<next>666</next>
 		</phrase>
-		<phrase id="613">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_stas_613</text>
+
+		<phrase id="814">
+			<text>minigame_dialog_bandit_814</text><!-- Это точно!\nМожет, повторим? -->
+			<!-- <action>test.add_to_actor("vodka",2)</action> -->
 			<action>sak_dialog.stas_return_gameart</action>
-			<next>12</next>
-			<next>7</next>
+			<next>9</next>
+			<next>666</next>
 		</phrase>
-		<phrase id="621">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_stas_621</text>
-			<next>12</next>
-			<next>7</next>
+
+		<phrase id="9">
+			<text>minigame_dialog_stas_52</text><!-- А давай повторим! -->
+			<next>11</next>
 		</phrase>
-		<phrase id="622">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_stas_622</text>
-			<action>sak_dialog.give_money(1500,"in")</action>
-			<action>sak_dialog.add_vodka</action>
-			<action>sak_minigame.vodka1_wins_from_stas</action>
-			<next>12</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="623">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_stas_623</text>
-			<action>sak_dialog.give_money(1500,"in")</action>
-			<next>12</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="631">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_stas_631</text>
-			<next>12</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="632">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_stas_632</text>
-			<action>sak_dialog.add_vyvert</action>
-			<action>sak_dialog.add_6vodka</action>
-			<action>sak_minigame.vodka6_wins_from_stas</action>
-			<next>12</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="633">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_stas_633</text>
-			<action>sak_dialog.add_vyvert</action>
-			<next>12</next>
-			<next>7</next>
-		</phrase>
-		<phrase id="7">
-			<text>minigame_dialog_stas_7</text>
+
+		<phrase id="666">
+			<text>minigame_dialog_bandit_666</text><!-- Не, хватит... Дела у меня... -->
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 	</phrase_list>
 </dialog>
 	
@@ -5868,19 +6022,19 @@
 <dont_has_info>minigame_bandit_start</dont_has_info>
 	<phrase_list>
 		<phrase id="0">
-			<text>minigame_start_dialog_bandit_0</text><!-- Ну и чем развлекаешь пиплов? -->
+			<text>minigame_start_dialog_bandit_0</text>
 			<next>1</next>
 		</phrase>
 		<phrase id="1">
-			<text>minigame_start_dialog_bandit_1</text><!-- Дык, как же... Туго тут с нормальным куражом. Так, когда пулю распишем, когда в очко... -->
+			<text>minigame_start_dialog_bandit_1</text>
 			<next>2</next>
 		</phrase>
 		<phrase id="2">
-			<text>minigame_start_dialog_bandit_2</text><!-- В очко? В карты? -->
+			<text>minigame_start_dialog_bandit_2</text>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
-			<text>minigame_start_dialog_bandit_3</text><!-- Да нет, не в карты. В кости. Хотя правила те же... Я бросаю одну кость, сначала для тебя. Пока не скажешь, что тебе хватит. Потом для себя. Одиннадцать - это очко - выигрыш, больше одиннадцати - это перебор - проигрыш. Вот так. -->
+			<text>minigame_start_dialog_bandit_3</text>
 			<give_info>minigame_bandit_start</give_info>
 		</phrase>
 	</phrase_list>
@@ -5891,353 +6045,142 @@
 <has_info>minigame_bandit_start</has_info>
 	<phrase_list>
 		<phrase id="0">
-			<text>minigame_dialog_bandit_0</text><!-- Ну давай, сыграем, какие ставки? -->
-			<next>11</next><!-- Да игре. Правила -->
-			<next>13</next><!-- Нет игре. погоди -->
+			<text>minigame_dialog_bandit_0</text>
+			<next>11</next>
+			<next>13</next>
 		</phrase>
+
 		<phrase id="13">
-		<precondition>sak_dialog.not_ready_time_to_game</precondition>
-			<text>minigame_dialog_bandit_13</text><!-- Не-е-е... чёт бошка не соображает... Чутка погоди... -->
-			<next>14</next><!-- Ну смотри, а то бы расписали... -->
+			<precondition>sak_dialog.not_ready_time_to_game</precondition>
+			<text>minigame_dialog_bandit_13</text>
+			<next>14</next>
 		</phrase>
 		<phrase id="14">
-			<text>minigame_dialog_bandit_14</text><!-- Ну смотри, а то бы расписали... -->
+			<text>minigame_dialog_bandit_14</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 		<phrase id="11">
-		<precondition>sak_dialog.is_ready_time_to_game</precondition>
-			<text>minigame_dialog_bandit_11</text><!-- Давай на жратву! Я против еды и воды большие цены ставлю. Против одного батона - пятьсот, колбаса - штука, консерва - две штукенции! Ну и за банку энергетика могу поставить тысячу рваников. -->
-			<next>12</next><!-- На жратву? Ну погнали, посмотрим, чья вывезет... -->
-		</phrase>
-		<phrase id="12">
-			<text>minigame_dialog_bandit_12</text><!-- На жратву? Ну погнали, посмотрим, чья вывезет... -->
-			<next>2</next><!-- Что ставишь? -->
-		</phrase>
-		<phrase id="2">
-			<text>minigame_dialog_bandit_2</text><!-- Что ставишь? -->
-			<action>sak_minigame.new_game_ochko</action>
-			<next>31</next> <!--хлеб-->
-			<next>32</next> <!--колбаса-->
-			<next>33</next> <!--вода-->
-			<next>35</next> <!--консерва-->
+			<precondition>sak_dialog.is_ready_time_to_game</precondition>
+			<text>minigame_dialog_bandit_11</text>
+			<action>sak_minigame.mongol_bet_today</action>
+			<next>12</next>
 			<next>34</next>
 		</phrase>
-		<phrase id="31">
-		<precondition>sak.have_items_count("bread",1)</precondition>
-			<text>minigame_dialog_bandit_31</text><!-- Хлеб. -->
-			<action>sak_inventory.release_actor_items("bread",1)</action>	
-			<next>41</next><!-- Принято! Погнали! -->
-		</phrase>
-		<phrase id="32">
-		<precondition>sak.have_items_count("kolbasa",1)</precondition>
-			<text>minigame_dialog_bandit_32</text><!-- Колбасу. -->
-			<action>sak_inventory.release_actor_items("kolbasa",1)</action>
-			<next>42</next><!-- Плакала твоя колбаска! Ну, понеслась... -->
-		</phrase>
-		<phrase id="33">
-		<precondition>sak.have_items_count("conserva",1)</precondition>
-			<text>minigame_dialog_bandit_33</text><!-- Консервов банку. -->
-			<action>sak_inventory.release_actor_items("conserva",1)</action>
-			<next>43</next><!-- Мясо! Это в кон! Гоним! -->
-		</phrase>
-		<phrase id="35">
-		<precondition>vergas_lib.search_items("energy_drink",1,1)</precondition>
-			<text>minigame_dialog_bandit_35</text><!-- Энергетик. -->
-			<action>vergas_lib.search_items("energy_drink",1,2)</action>
-			<next>45</next><!-- Попью я твоей водички! Поехали... -->
-		</phrase>
-		<phrase id="34">
-			<text>minigame_dialog_bandit_34</text><!-- Передумал я, самому нужна жратва. -->
-			<action>dialogs.break_dialog</action><!-- ВЫХОД -->
-		</phrase>
-		<phrase id="41">
-			<text>minigame_dialog_bandit_41</text><!-- Принято! Погнали! -->
-			<action>sak_minigame.run_roll_dice_npc_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc_for_gg</action>
-			<next>511</next> <!--ещё-->
-			<next>512</next> <!--хватит-->
-			<next>712</next><!-- Вот, чёрт... -->
-			<next>713</next><!-- Ага! Я всегда знал! -->
-		</phrase>
-		<phrase id="42">
-			<text>minigame_dialog_bandit_42</text><!-- Плакала твоя колбаска! Ну, понеслась... -->
-			<action>sak_minigame.run_roll_dice_npc_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc_for_gg</action>
-			<next>521</next> <!--ещё-->
-			<next>522</next> <!--хватит-->
-			<next>722</next>
-			<next>723</next>
-		</phrase>
-		<phrase id="43">
-			<text>minigame_dialog_bandit_43</text><!-- Мясо! Это в кон! Гоним! -->
-			<action>sak_minigame.run_roll_dice_npc_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc_for_gg</action>
-			<next>531</next> <!--ещё-->
-			<next>532</next> <!--хватит-->
-			<next>732</next>
-			<next>733</next>
-		</phrase>
-		<phrase id="45">
-			<text>minigame_dialog_bandit_45</text><!-- Попью я твоей водички! Поехали... -->
-			<action>sak_minigame.run_roll_dice_npc_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc_for_gg</action>
-			<next>551</next> <!--ещё-->
-			<next>552</next> <!--хватит-->
-			<next>752</next>
-			<next>753</next>
-		</phrase>
-		<phrase id="511">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_511</text><!-- Давай ещё... -->
+
+		<phrase id="12">
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>minigame_dialog_bandit_12</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<action>sak_minigame.new_game_ochko("mongol")</action>
 			<next>41</next>
-		</phrase>
-		<phrase id="521">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_521</text><!-- Мало будет, давай ещё... -->
 			<next>42</next>
 		</phrase>
-		<phrase id="531">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_531</text><!-- Кидай, кидай, не сомневайся. -->
-			<next>43</next>
+
+		<phrase id="34">
+			<text>minigame_dialog_bandit_34</text>
+			<action>dialogs.break_dialog</action><!-- ВЫХОД -->
 		</phrase>
-		<phrase id="551">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_551</text><!-- Давай посмотрим, что ещё выпадет. -->
-			<next>45</next>
+
+		<phrase id="41">
+			<precondition>sak_minigame.mongol_have_items</precondition>
+			<text>minigame_dialog_bandit_41</text>
+			<action>sak_minigame.run_roll_dice_npc_mongol</action>
+			<action>sak_minigame.roll_dice_ochko_npc_for_gg("mongol")</action>
+			<next>511</next> <!--ещё-->
+			<next>512</next> <!--хватит-->
+			<next>712</next> <!-- Вот, чёрт... -->
+			<next>713</next> <!-- Ага! Я всегда знал! -->
 		</phrase>
+
+		<phrase id="42">
+			<precondition>sak_minigame.mongol_not_have_items</precondition>
+			<text>minigame_dialog_bandit_42</text>
+			<action>test.add_to_actor("vodka",2)</action>
+			<next>14</next>
+		</phrase>
+
+		<phrase id="511">
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_511</text> <!-- Давай ещё... -->
+			<next>41</next>
+		</phrase>
+
 		<phrase id="512">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_512</text><!-- Нет, хватает... -->
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<text>minigame_dialog_bandit_512</text> <!-- Нет, хватает... -->
 			<next>61</next>
 		</phrase>
-		<phrase id="522">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_522</text><!-- Достаточно, себе давай... -->
-			<next>62</next>
-		</phrase>
-		<phrase id="532">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_532</text><!-- Думаю, хватит! Себе! -->
-			<next>63</next>
-		</phrase>
-		<phrase id="552">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-			<text>minigame_dialog_bandit_552</text><!-- Мне достаточно, теперь твой ход. -->
-			<next>65</next>
-		</phrase>
+
 		<phrase id="61">
-			<text>minigame_dialog_bandit_61</text><!-- Так, мой камень... -->
+			<text>minigame_dialog_bandit_61</text> <!-- Так, мой камень... -->
 			<action>sak_minigame.run_roll_dice_gg_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc</action>
+			<action>sak_minigame.roll_dice_ochko_npc("mongol")</action>
 			<next>711</next> <!--ещё-->
-			<next>712</next>
-			<next>713</next>
-			<next>714</next>
+			<next>712</next> <!-- проиграл -->
+			<next>713</next> <!-- выиграл -->
+			<next>714</next> <!-- ничья -->
 		</phrase>
+
 		<phrase id="711">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-		<dont_has_info>draw</dont_has_info>
-			<text>minigame_dialog_bandit_711</text><!-- Не томи, швыряй! -->
+			<dont_has_info>gg_luser</dont_has_info>
+			<dont_has_info>gg_winner</dont_has_info>
+			<dont_has_info>draw</dont_has_info>
+			<text>minigame_dialog_bandit_711</text> <!-- Не томи, швыряй! -->
 			<next>61</next>
 		</phrase>
+
 		<phrase id="712">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_bandit_712</text><!-- Вот, чёрт... -->
+			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
 			<next>812</next>
 		</phrase>
+
 		<phrase id="713">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_bandit_713</text><!-- Ага! Я всегда знал! -->
+			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
 			<next>813</next>
 		</phrase>
+
 		<phrase id="714">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_bandit_714</text><!-- Ничего, в следующий раз я выиграю! -->
+			<has_info>draw</has_info> <!-- ничья -->
+			<text>minigame_dialog_bandit_714</text> <!-- Ничего, в следующий раз я выиграю! -->
 			<next>814</next>
 		</phrase>
+
 		<phrase id="812">
-			<text>minigame_dialog_bandit_812</text><!-- Не расстраивайся, не корову же проиграл...\nМожет, повторим? -->
+			<text>minigame_dialog_bandit_812</text> <!-- Не расстраивайся, не корову же проиграл...\nМожет, повторим? -->
 			<next>9</next>
 			<next>666</next>
 		</phrase>
+
 		<phrase id="813">
-			<text>minigame_dialog_bandit_813</text><!-- Знал он... Бери свой выигрыш!\nМожет, повторим? -->
-			<action>test.add_to_actor("bread",1)</action>
-			<action>sak_dialog.give_money(500,"in")</action>
+			<text>minigame_dialog_bandit_813</text> <!-- Знал он... Бери свой выигрыш!\nМожет, повторим? -->
+			<action>test.add_to_actor("vodka",2)</action>
+			<action>sak_minigame.add_mongol_bet</action>
 			<next>9</next>
 			<next>666</next>
 		</phrase>
+
 		<phrase id="814">
 			<text>minigame_dialog_bandit_814</text><!-- Это точно!\nМожет, повторим? -->
-			<action>test.add_to_actor("bread",1)</action>
+			<action>test.add_to_actor("vodka",2)</action>
 			<next>9</next>
 			<next>666</next>
 		</phrase>
-		<phrase id="62">
-			<text>minigame_dialog_bandit_62</text><!-- Простись с колбаской, кидаю... -->
-			<action>sak_minigame.run_roll_dice_gg_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc</action>
-			<next>721</next> <!--ещё-->
-			<next>722</next>
-			<next>723</next>
-			<next>724</next>
-		</phrase>
-		<phrase id="721">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-		<dont_has_info>draw</dont_has_info>
-			<text>minigame_dialog_bandit_721</text><!-- Хватит нервы мотать, кидай... -->
-			<next>62</next>
-		</phrase>
-		<phrase id="722">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_bandit_722</text><!-- В следующий раз повезёт... -->
-			<next>822</next>
-		</phrase>
-		<phrase id="723">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_bandit_723</text><!-- И где мои кровные? -->
-			<next>823</next>
-		</phrase>
-		<phrase id="724">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_bandit_724</text><!-- Так-с, куда дел мою колбасу? -->
-			<next>824</next>
-		</phrase>
-		<phrase id="822">
-			<text>minigame_dialog_bandit_822</text><!-- Золотые слова! Ну, давай ещё? -->
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="823">
-			<text>minigame_dialog_bandit_823</text><!-- Не боись, у меня как в сейфе! Получи. -->
-			<action>sak_dialog.give_money(1000,"in")</action>
-			<action>test.add_to_actor("kolbasa",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="824">
-			<text>minigame_dialog_bandit_824</text><!-- Бери! Давай ещё проверим удачу? -->
-			<action>test.add_to_actor("kolbasa",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="63">
-			<text>minigame_dialog_bandit_63</text><!-- Где наша не пропадала... -->
-			<action>sak_minigame.run_roll_dice_gg_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc</action>
-			<next>731</next> <!--ещё-->
-			<next>732</next>
-			<next>733</next>
-			<next>734</next>
-		</phrase>
-		<phrase id="731">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-		<dont_has_info>draw</dont_has_info>
-			<text>minigame_dialog_bandit_731</text><!-- Не тяни уже... -->
-			<next>63</next>
-		</phrase>
-		<phrase id="732">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_bandit_732</text><!-- Ничего, не последний раз... -->
-			<next>832</next>
-		</phrase>
-		<phrase id="733">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_bandit_733</text><!-- Вот как надо играть! Учись... -->
-			<next>833</next>
-		</phrase>
-		<phrase id="734">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_bandit_734</text><!-- Баночку-то верни, нехорошо... -->
-			<next>834</next>
-		</phrase>
-		<phrase id="832">
-			<text>minigame_dialog_bandit_832</text><!-- Прав ты. Отыграешься? -->
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="833">
-			<text>minigame_dialog_bandit_833</text><!-- Не учи учёного, повторить слабо? -->
-			<action>sak_dialog.give_money(2000,"in")</action>
-			<action>test.add_to_actor("conserva",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="834">
-			<text>minigame_dialog_bandit_834</text><!-- Не сожрёшь же прямо сейчас? Повторить слабо? -->
-			<action>test.add_to_actor("conserva",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="65">
-			<text>minigame_dialog_bandit_65</text><!-- И-и-и ррр-а-а-азз! -->
-			<action>sak_minigame.run_roll_dice_gg_mongol</action>
-			<action>sak_minigame.roll_dice_ochko_npc</action>
-			<next>751</next> <!--ещё-->
-			<next>752</next>
-			<next>753</next>
-			<next>754</next>
-		</phrase>
-		<phrase id="751">
-		<dont_has_info>gg_luser</dont_has_info>
-		<dont_has_info>gg_winner</dont_has_info>
-		<dont_has_info>draw</dont_has_info>
-			<text>minigame_dialog_bandit_751</text><!-- И сколько можно ждать? -->
-			<next>65</next>
-		</phrase>
-		<phrase id="752">
-		<has_info>gg_luser</has_info>
-			<text>minigame_dialog_bandit_752</text><!-- Не везёт мне в смерти... -->
-			<next>852</next>
-		</phrase>
-		<phrase id="753">
-		<has_info>gg_winner</has_info>
-			<text>minigame_dialog_bandit_753</text><!-- Мастерство не пропьёшь... -->
-			<next>853</next>
-		</phrase>
-		<phrase id="754">
-		<has_info>draw</has_info>
-			<text>minigame_dialog_bandit_754</text><!-- Может, попить мне водички? -->
-			<next>854</next>
-		</phrase>
-		<phrase id="852">
-			<text>minigame_dialog_bandit_852</text><!-- Повезёт в любви... Ну, бросим ещё? -->
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="853">
-			<text>minigame_dialog_bandit_853</text><!-- Мастер, ёпть... Ну, бросим ещё? -->
-			<action>sak_dialog.give_money(1000,"in")</action>
-			<action>test.add_to_actor("energy_drink",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
-		<phrase id="854">
-			<text>minigame_dialog_bandit_854</text><!-- На, не захлебнись... Ну, бросим ещё? -->
-			<action>test.add_to_actor("energy_drink",1)</action>
-			<next>9</next>
-			<next>666</next>
-		</phrase>
+
 		<phrase id="9">
 			<text>minigame_dialog_bandit_9</text><!-- А давай повторим! -->
-			<next>2</next>
+			<next>11</next>
 		</phrase>
+
 		<phrase id="666">
 			<text>minigame_dialog_bandit_666</text><!-- Не, хватит... Дела у меня... -->
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
 	</phrase_list>
 </dialog>
 	
