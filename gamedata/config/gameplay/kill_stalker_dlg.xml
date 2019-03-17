@@ -3417,14 +3417,35 @@
 		</phrase>
 		<phrase id="106">
 			<text>tm_kill_stalker_dlg_106</text>
-			<next>107</next>
+			<next>1071</next>
+			<next>1072</next>
+			<next>1073</next>
 		</phrase>
-		<phrase id="107">
-			<text>tm_kill_stalker_dlg_107</text>
+
+		<phrase id="1071">
+			<precondition>sak_dialog.rand_game_3</precondition>
+			<text>tm_kill_stalker_dlg_1071</text>
 			<give_info>tm_kill_stalker_hunter_info</give_info>
 			<next>1081</next>
-			<next>1082</next>
+			<next>10821</next>
 		</phrase>
+
+		<phrase id="1072">
+			<precondition>sak_dialog.rand_game_2</precondition>
+			<text>tm_kill_stalker_dlg_1072</text>
+			<give_info>tm_kill_stalker_hunter_info</give_info>
+			<next>1081</next>
+			<next>10822</next>
+		</phrase>
+
+		<phrase id="1073">
+			<precondition>sak_dialog.rand_game_1</precondition>
+			<text>tm_kill_stalker_dlg_1073</text>
+			<give_info>tm_kill_stalker_hunter_info</give_info>
+			<next>1081</next>
+			<next>10823</next>
+		</phrase>
+
 		<phrase id="1081">
 			<text>tm_kill_stalker_dlg_1081</text>
 			<next>1091</next>
@@ -3432,13 +3453,31 @@
 		<phrase id="1091">
 			<text>tm_kill_stalker_dlg_1091</text>
 		</phrase>
-		<phrase id="1082">
-		<precondition>vergas_lib.search_items("ammo_12x76_dart",50,1)</precondition>
+
+		<phrase id="10821">
+			<precondition>vergas_lib.search_items("ammo_12x76_dart",50,1)</precondition>
 			<text>tm_kill_stalker_dlg_1082</text>
 			<action>vergas_lib.search_items("ammo_12x76_dart",50,2)</action>
 			<give_info>tm_kill_stalker_1_yes</give_info>
 			<next>1092</next>
 		</phrase>
+
+		<phrase id="10822">
+			<precondition>vergas_lib.search_items("ammo_12x70_buck",80,1)</precondition>
+			<text>tm_kill_stalker_dlg_1082</text>
+			<action>vergas_lib.search_items("ammo_12x70_buck",80,2)</action>
+			<give_info>tm_kill_stalker_1_yes</give_info>
+			<next>1092</next>
+		</phrase>
+
+		<phrase id="10823">
+			<precondition>vergas_lib.search_items("grenade_rgd5",4,1)</precondition>
+			<text>tm_kill_stalker_dlg_1082</text>
+			<action>vergas_lib.search_items("grenade_rgd5",4,2)</action>
+			<give_info>tm_kill_stalker_1_yes</give_info>
+			<next>1092</next>
+		</phrase>
+
 		<phrase id="1092">
 			<text>tm_kill_stalker_dlg_1092</text>
 			<give_info>tm_kill_stalker_hunter_done</give_info>
@@ -3454,15 +3493,35 @@
 			<text>tm_kill_stalker_dlg_201</text>
 			<next>202</next>
 		</phrase>
+
 		<phrase id="202">
 			<text>tm_kill_stalker_dlg_202</text>
-			<next>203</next>
+			<next>2031</next>
+			<next>2032</next>
+			<next>2033</next>
 		</phrase>
-		<phrase id="203">
-			<text>tm_kill_stalker_dlg_203</text>
+
+		<phrase id="2031">
+			<precondition>sak_dialog.rand_game_3</precondition>
+			<text>tm_kill_stalker_dlg_2031</text>
 			<next>1081</next>
-			<next>1082</next>
+			<next>10821</next>
 		</phrase>
+
+		<phrase id="2032">
+			<precondition>sak_dialog.rand_game_2</precondition>
+			<text>tm_kill_stalker_dlg_2032</text>
+			<next>1081</next>
+			<next>10822</next>
+		</phrase>
+
+		<phrase id="2033">
+			<precondition>sak_dialog.rand_game_1</precondition>
+			<text>tm_kill_stalker_dlg_2033</text>
+			<next>1081</next>
+			<next>10823</next>
+		</phrase>
+
 	</phrase_list>
 </dialog>
 
