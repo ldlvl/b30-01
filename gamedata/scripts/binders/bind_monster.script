@@ -671,6 +671,10 @@ function generic_object_binder:death_callback( victim, who )
     if rx_ai then rx_ai.monster_death( victim, who ) end
     -- для xr_kamp от ДиШа ----------------------------------
     xr_kamp.on_death( victim, who )
+    --- удаление запчастей, если не ГГ убил зверушку---------
+    if IsMonster( victim ) then
+        test.on_monster_kill_check_parts( victim, who )
+    end
 end
 
 function generic_object_binder:hit_callback( obj, amount, local_direction, who, bone_index )

@@ -1501,3 +1501,16 @@ function have_mercenary_items( flag )
 end
 -- для проверки в диалогах по таскам ( 1-5 )
 function r_task_variant( ind ) return amk_vars.r_task_reward == ind end
+-- уничтожить у мутанта запчасти, если его убил не актор
+function on_monster_kill_check_parts( obj, who )
+    if obj == nil or who:id() == db.actor:id() then return end
+    obj:iterate_inventory(
+        function( obj, item )
+            if strposx( item:section(), "mutant_" ) then
+                local sobj = alife():object( item:id() )
+                if sobj then alife():release( sobj ) end
+            end
+        end,
+        obj
+    )
+end
