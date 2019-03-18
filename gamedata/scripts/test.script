@@ -1489,3 +1489,15 @@ function fuckup_gg_batteries( flag_all )
         end
     end
 end
+-- вещи Вахтангу по переходу АС-РЛ
+function have_mercenary_items( flag )
+    local  ind =  amk_vars.r_task_reward or 1
+    if     ind == 1 then return have_with_cond( "dolg_outfit",           3, 0.95, false, flag )
+    elseif ind == 2 then return have_with_cond( "cs_light_outfit",       3, 0.95, false, flag )
+    elseif ind == 3 then return have_with_cond( "neytral_gaz_outfit_m1", 3, 0.95, false, flag )
+    elseif ind == 4 then return have_with_cond( "specops_outfit",        3, 0.95, false, flag )
+    elseif ind == 5 then return have_with_cond( "svoboda_gaz_outfit_m1", 3, 0.95, false, flag )
+    end
+end
+-- для проверки в диалогах по таскам ( 1-5 )
+function r_task_variant( ind ) return amk_vars.r_task_reward == ind end

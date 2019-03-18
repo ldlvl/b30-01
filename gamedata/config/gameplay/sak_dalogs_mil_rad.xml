@@ -1743,7 +1743,9 @@
 			<next>2022</next>
 			<next>300</next>
 			<next>400</next>
-			<next>500</next>			
+			<next>500</next>
+			<next>600</next>
+			<next>700</next>			
 		</phrase>
 		<phrase id="2022">
 			<text>mil_mercs_ara_dialog_start_2022</text>
@@ -1890,7 +1892,92 @@
 		<phrase id="503">
 			<text>mil_mercs_ara_dialog_start_503</text>
 			<action>dialogs.break_dialog</action>
-		</phrase>	
+		</phrase>
+
+<!-- new lc	 -->
+
+		<phrase id="600">
+			<dont_has_info>mercenary_way_to_red_forest_done</dont_has_info>
+			<dont_has_info>mercenary_items_start</dont_has_info>
+			<has_info>mercenary_way_to_red_forest_start</has_info>
+			<text>mil_mercs_ara_dialog_start_600</text>
+			<next>601</next>
+		</phrase>
+		<phrase id="601">
+			<text>mil_mercs_ara_dialog_start_601</text>
+			<next>602</next>
+		</phrase>
+		<phrase id="602">
+			<text>mil_mercs_ara_dialog_start_602</text>
+			<next>603</next>
+		</phrase>
+		<phrase id="603">
+			<text>mil_mercs_ara_dialog_start_603</text>
+			<next>604</next>
+		</phrase>
+		<phrase id="604">
+			<text>mil_mercs_ara_dialog_start_604</text>
+			<next>605</next>
+			<next>606</next>
+			<next>607</next>
+			<next>608</next>
+			<next>609</next>
+		</phrase>
+		<phrase id="605">
+			<precondition>test.r_task_variant(1)</precondition>
+			<text>mil_mercs_ara_dialog_start_605</text>
+			<give_info>mercenary_items_start</give_info>
+			<next>610</next>
+		</phrase>
+		<phrase id="606">
+			<precondition>test.r_task_variant(2)</precondition>
+			<text>mil_mercs_ara_dialog_start_606</text>
+			<give_info>mercenary_items_start</give_info>
+			<next>610</next>
+		</phrase>
+		<phrase id="607">
+			<precondition>test.r_task_variant(3)</precondition>
+			<text>mil_mercs_ara_dialog_start_607</text>
+			<give_info>mercenary_items_start</give_info>
+			<next>610</next>
+		</phrase>
+		<phrase id="608">
+			<precondition>test.r_task_variant(4)</precondition>
+			<text>mil_mercs_ara_dialog_start_608</text>
+			<give_info>mercenary_items_start</give_info>
+			<next>610</next>
+		</phrase>
+		<phrase id="609">
+			<precondition>test.r_task_variant(5)</precondition>
+			<text>mil_mercs_ara_dialog_start_609</text>
+			<give_info>mercenary_items_start</give_info>
+			<next>610</next>
+		</phrase>
+		<phrase id="610">
+			<text>mil_mercs_ara_dialog_start_610</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+		<phrase id="700">
+			<has_info>mercenary_items_start</has_info>
+			<dont_has_info>mercenary_way_to_red_forest_done</dont_has_info>
+			<precondition>test.have_mercenary_items(false)</precondition>
+			<text>mil_mercs_ara_dialog_start_700</text>
+			<next>701</next>
+		</phrase>
+		<phrase id="701">
+			<text>mil_mercs_ara_dialog_start_701</text>
+			<action>test.have_mercenary_items(true)</action>
+			<give_info>mercenary_way_to_red_forest_done</give_info>
+			<action>sak.add_new_rostok_105</action>
+			<action>sak.add_new_red_mil_174</action>
+			<next>702</next>
+		</phrase>
+		<phrase id="702">
+			<text>mil_mercs_ara_dialog_start_702</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
 	</phrase_list>
 </dialog>
 
