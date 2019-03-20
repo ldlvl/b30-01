@@ -1052,33 +1052,63 @@
 <dont_has_info>gar_hellcar_outfit_done</dont_has_info>
 <precondition>dialogs.is_not_wounded</precondition>
 <phrase_list>
+
 	<phrase id="0">
 		<text>artmod_222_dialog_0</text>
 		<next>1</next>
 	</phrase>
+
 	<phrase id="1">
 		<text>artmod_222_dialog_1</text>
 		<next>2</next>
 		<next>22</next>
 	</phrase>
+
 	<phrase id="2">
-	<precondition>sak.have_items_count("stalker_outfit_m3",1)</precondition>
+		<precondition>sak.have_items_count("stalker_outfit_m3",1)</precondition>
 		<text>artmod_222_dialog_2</text>
-		<give_info>gar_hellcar_outfit_done</give_info>
 		<action>sak_dialog.give_gar_hellcar_outfit</action>
 		<next>3</next>
 	</phrase>
+
 	<phrase id="22">
 		<text>artmod_222_dialog_22</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
+
 	<phrase id="3">
 		<text>artmod_222_dialog_3</text>
 		<!--<give_info>info_artmod_rusty_kristall_gravi_zone</give_info>
 		<action>sak.info_artmod</action>-->
 		<action>test.give_rnd_recipt(1)</action>
-		<action>test.add_to_actor("grenade_f1",2)</action>
+		<next>4</next>
+		<next>5</next>
 	</phrase>
+
+	<phrase id="4">
+		<text>artmod_222_dialog_4</text>
+		<action>test.add_to_actor("grenade_f1",2)</action>
+		<next>6</next>
+	</phrase>
+
+	<phrase id="5">
+		<text>artmod_222_dialog_5</text>
+		<action>test.add_gg_gd</action>
+		<next>6</next>
+	</phrase>
+
+	<phrase id="6">
+		<text>artmod_222_dialog_6</text>
+		<give_info>gar_hellcar_outfit_done</give_info>
+		<next>7</next>
+	</phrase>
+
+	<phrase id="7">
+		<text>artmod_222_dialog_7</text>
+		<action>dialogs.break_dialog</action>
+	</phrase>
+
+
 </phrase_list>
 </dialog>
 	

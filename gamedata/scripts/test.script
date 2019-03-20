@@ -1514,3 +1514,10 @@ function on_monster_kill_check_parts( obj, who )
         obj
     )
 end
+
+function add_gg_gd()
+	local gg_gd    = nlc_vars.gg_gd or 0
+	gg_gd          = gg_gd + 1
+	nlc_vars.gg_gd = gg_gd
+	wprintf( "@----------- gg_gd added. Now it is: %s", tostring( nlc_vars.gg_gd ) )
+end

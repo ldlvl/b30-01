@@ -12142,12 +12142,13 @@
 			<next>42</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.actor_have(1000)</precondition>
+		<precondition>sak_dialog.actor_have(7000)</precondition>
 		<precondition>sak.have_items_count("neum_drags",1)</precondition>
 			<text>neumeha_container_2_dialog_41</text>
 			<give_info>neumeha_container_done</give_info>
-			<action>sak_dialog.give_money(1000,1)</action>
+			<action>sak_dialog.give_money(7000,1)</action>
 			<action>sak_inventory.release_actor_items("neum_drags",1)</action>
+			<action>test.add_gg_gd</action>
 			<next>7</next>
 		</phrase>
 		<phrase id="42">
