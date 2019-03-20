@@ -1521,3 +1521,23 @@ function add_gg_gd()
 	nlc_vars.gg_gd = gg_gd
 	wprintf( "@----------- gg_gd added. Now it is: %s", tostring( nlc_vars.gg_gd ) )
 end
+
+function check_gg_gd()
+    return
+        nlc_vars.gg_gd
+        and nlc_vars.gg_gd >= 10
+end
+
+function add_shron_sanek_dsc()
+    local tbl = {
+        "dsc_secret_0000", "dsc_secret_0001", "dsc_secret_0002",
+        "dsc_secret_0003", "dsc_secret_0004", "dsc_secret_0005",
+        "dsc_secret_0006", "dsc_secret_0007", "dsc_secret_0008",
+        "dsc_secret_0009", "dsc_secret_0010", "dsc_secret_0011",
+        "dsc_secret_0012", "dsc_secret_0013", "dsc_secret_0014",
+        "dsc_secret_0015", "dsc_secret_0016", "dsc_secret_0017"
+    }
+    treasure_manager.get_treasure_manager():give_treasure(
+        tbl[ dsh.get_next_random( "test.make_shron_voron", #tbl ) ]
+    )
+end

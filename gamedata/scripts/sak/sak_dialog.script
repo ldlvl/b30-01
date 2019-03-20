@@ -5649,14 +5649,17 @@ function warlab_ecolog_body()
 end
 -- монолитовская экза и Компас в танке в РЛ
 function fill_tank_inventory_box()
+    local ind = amk_vars.r_treas_items
+    local tbl = { "af_red_dummy_spring", "af_red_dummy_battery", "af_red_dummy_pellicle" }
     local obj = g_sim:story_object( story_ids.red_q11_n )
     for _, v in ipairs({
-        "monolit_exoskeleton",
+        --"monolit_exoskeleton",
         "af_compass_dyn5d",
         "sak_document4"
     }) do
         misc.spawn_to( v, obj )
     end
+    misc.spawn_to( tbl[ ind ], obj )
     sak.off_on( obj )
 end
 

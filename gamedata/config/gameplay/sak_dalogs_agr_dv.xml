@@ -742,6 +742,7 @@
 			<text>rygyi_01_dialog_5</text>
 			<give_info>agr_find_rygyi_done</give_info>
 			<action>sak_dialog.give_2_rygyi</action>
+			<action>test.add_gg_gd</action>
 		</phrase>
 		<phrase id="6">
 			<text>rygyi_01_dialog_6</text>
@@ -1062,7 +1063,7 @@
 		</phrase>
 <!-- igor.doc -->
 		<phrase id="2052">
-		<dont_has_info>info_amk_recipt_burer_pra_grandmother_glassbeards</dont_has_info>		
+		<!-- <dont_has_info>info_amk_recipt_burer_pra_grandmother_glassbeards</dont_has_info> -->		
 			<text>rygyi_aver_dialog_2052</text>
 			<next>211</next>
 		</phrase>
@@ -1074,18 +1075,20 @@
 		<phrase id="2111">
 		<precondition>sak.have_items_count("af_spirit_3",1)</precondition>		
 			<text>rygyi_aver_dialog_2111</text>
-			<action>sak_inventory.release_actor_items("af_spirit_3",1)</action>			
+			<action>sak_inventory.release_actor_items("af_spirit_3",1)</action>
+			<action>test.add_gg_gd</action>			
 			<next>214</next>
 		</phrase>
 		<phrase id="214">
 			<text>rygyi_aver_dialog_214</text>
-			<give_info>info_amk_recipt_burer_pra_grandmother_glassbeards</give_info>
-		    <action>sak.info_amk_received</action>
+<!-- 			<give_info>info_amk_recipt_burer_pra_grandmother_glassbeards</give_info>
+		    <action>sak.info_amk_received</action> -->
 			<give_info>rygyi_find_habar_done</give_info>			
 			<next>209</next>
 		</phrase>
 		<phrase id="2112">
 			<text>rygyi_aver_dialog_2112</text>
+			<give_info>rygyi_find_habar_done</give_info>
 			<next>215</next>
 		</phrase>
 		<phrase id="215">

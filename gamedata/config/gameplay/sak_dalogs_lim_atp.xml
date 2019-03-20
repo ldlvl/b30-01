@@ -3644,6 +3644,7 @@
 		</phrase>
 		<phrase id="3032">
 			<text>marsh_sanek_start_dialog_3032</text>
+			<action>test.add_gg_gd</action>
 			<give_info>trup_sanek_to_charch_end</give_info>
 			<next>3042</next>
 		</phrase>
@@ -5064,6 +5065,7 @@
 		<phrase id="6138">
 			<text>mar_factory_leader_dialog_start_6138</text>
 			<give_info>marsh_postmens_info</give_info>
+			<action>test.add_gg_gd</action>
 			<next>6139</next>
 		</phrase>
 		<phrase id="6139">
@@ -10871,6 +10873,7 @@
 		</phrase>
 		<phrase id="5">
 			<text>gen_iskatel_akkum_dialog_5</text>
+			<action>test.add_gg_gd</action>
 			<next>6</next>
 		</phrase>
 		<phrase id="6">
@@ -13581,11 +13584,37 @@
 			<text>diador_marsh_dialog_301</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>302</next>
+			<next>303</next>
 		</phrase>
+
 		<phrase id="302">
 			<text>diador_marsh_dialog_302</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+		<phrase id="303">
+			<precondition>test.check_gg_gd</precondition>
+			<text>diador_marsh_dialog_303</text>
+			<next>304</next>
+		</phrase>
+		<phrase id="304">
+			<text>diador_marsh_dialog_304</text>
+			<next>305</next>
+		</phrase>
+		<phrase id="305">
+			<text>diador_marsh_dialog_305</text>
+			<next>306</next>
+		</phrase>
+		<phrase id="306">
+			<text>diador_marsh_dialog_306</text>
+			<action>test.add_to_actor("monolit_exoskeleton",1)</action>
+			<next>307</next>
+		</phrase>
+		<phrase id="307">
+			<text>diador_marsh_dialog_307</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+
 	</phrase_list>
 </dialog>
 
@@ -15208,16 +15237,23 @@
 		<phrase id="207">
 			<text>dsk_sanek_start_dialog_207</text>
 			<next>208</next>
+			<next>2088</next>
 		</phrase>
 		<phrase id="208">
 			<text>dsk_sanek_start_dialog_208</text>
+			<action>test.add_gg_gd</action>
+			<next>209</next>
+		</phrase>
+		<phrase id="2088">
+			<text>dsk_sanek_start_dialog_2088</text>
+			<action>test.add_shron_sanek_dsc</action>
 			<next>209</next>
 		</phrase>
 		<phrase id="209">
 			<text>dsk_sanek_start_dialog_209</text>
 			<!-- <give_info>info_amk_recipt_souls_fire</give_info>
 			<action>sak.info_amk_received</action> -->
-			<action>test.give_rnd_recipt(6)</action>
+			<!-- <action>test.give_rnd_recipt(6)</action> -->
 		</phrase>
 		<phrase id="2042">
 			<text>dsk_sanek_start_dialog_2042</text>
