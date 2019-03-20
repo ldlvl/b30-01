@@ -4194,14 +4194,14 @@ function check_repair_percent_by_tbl( sect, tbl )
     return percent
 end
 
-function check_if_repaired( rep_table, id, rep_percent, amnt )
+function check_if_repaired( rep_table, name, rep_percent, amnt )
     local subtract    = 0
     local tbl_rep_ids = xray_vars.load_table( nlc_vars, rep_table, {} )
-    if not tbl_rep_ids[ id ] then
-        tbl_rep_ids[ id ] = amnt
+    if not tbl_rep_ids[ name ] then
+        tbl_rep_ids[ name ] = amnt
     else
-        subtract = tbl_rep_ids[ id ]
-        tbl_rep_ids[ id ] = tbl_rep_ids[ id ] + amnt
+        subtract = tbl_rep_ids[ name ]
+        tbl_rep_ids[ name ] = tbl_rep_ids[ name ] + amnt
     end
     rep_percent = rep_percent - subtract
     if rep_percent < 0.01 then rep_percent = 0.01 end
@@ -4230,7 +4230,7 @@ function repair_box_repair( obj )
 
                 if slot_1 and slot_1:condition() >= 0.87 and slot_1:condition() < 0.985 then
                     rep_percent      = check_repair_percent_by_tbl( slot_1:section(), wpn_proc ) or 0.1
-                    rep_percent      = check_if_repaired( "rep_wpn_ids", slot_1:id(), rep_percent, 0.005 )
+                    rep_percent      = check_if_repaired( "rep_wpn_ids", slot_1:name(), rep_percent, 0.005 )
                     local rep_point  = slot_1:condition() + rep_percent
                     if rep_point > 1 then rep_point = 1 end
                     slot_1:set_condition( rep_point )
@@ -4239,7 +4239,7 @@ function repair_box_repair( obj )
 
                 elseif ( slot_2 and slot_2:condition() >= 0.87 and slot_2:condition() < 0.985 ) then
                     rep_percent     = check_repair_percent_by_tbl( slot_2:section(), wpn_proc ) or 0.1
-                    rep_percent     = check_if_repaired( "rep_wpn_ids", slot_2:id(), rep_percent, 0.005 )
+                    rep_percent     = check_if_repaired( "rep_wpn_ids", slot_2:name(), rep_percent, 0.005 )
                     local rep_point = slot_2:condition() + rep_percent
                     if rep_point > 1 then rep_point = 1 end
                     slot_2:set_condition( rep_point )
@@ -4273,7 +4273,7 @@ function repair_box_repair( obj )
                         vergas_masks.set_flag_minimap( false )
                         local arm_sect = armor:section()
                         rep_percent = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
-                        rep_percent = check_if_repaired( "rep_arm_ids", armor:id(), rep_percent, 0.005 )
+                        rep_percent = check_if_repaired( "rep_arm_ids", armor:name(), rep_percent, 0.005 )
                         if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
                             rep_percent = rep_percent * 0.5
                         end
@@ -4444,7 +4444,7 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
             if repiweap ~= 0 then
                 if slot_obj:condition() >= 0.75 then
                     rep_percent_tiski = check_repair_percent_by_tbl( slot_obj:section(), wpn_proc ) or 0.1
-                    rep_percent_tiski = check_if_repaired( "rep_wpn_ids", slot_obj:id(), rep_percent_tiski, 0.004 )
+                    rep_percent_tiski = check_if_repaired( "rep_wpn_ids", slot_obj:name(), rep_percent_tiski, 0.004 )
                     rep_percent_tiski = rep_percent_tiski * 1.5
                     local rep_point   = slot_obj:condition() + rep_percent_tiski
                     if rep_point > 1 then rep_point = 1 end
@@ -4465,7 +4465,7 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
             if repiweap ~= 0 then
                 if slot_obj:condition() >= 0.75 then
                     rep_percent_tiski = check_repair_percent_by_tbl( slot_obj:section(), wpn_proc ) or 0.1
-                    rep_percent_tiski = check_if_repaired( "rep_wpn_ids", slot_obj:id(), rep_percent_tiski, 0.004 )
+                    rep_percent_tiski = check_if_repaired( "rep_wpn_ids", slot_obj:name(), rep_percent_tiski, 0.004 )
                     rep_percent_tiski = rep_percent_tiski * 1.5
                     local rep_point   = slot_obj:condition() + rep_percent_tiski
                     if rep_point > 1 then rep_point = 1 end
@@ -4490,7 +4490,7 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                     if slot_obj:condition() >= 0.75 then
                         local arm_sect    = slot_obj:section()
                         rep_percent_tiski = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
-                        rep_percent_tiski = check_if_repaired( "rep_arm_ids", slot_obj:id(), rep_percent_tiski, 0.004 )
+                        rep_percent_tiski = check_if_repaired( "rep_arm_ids", slot_obj:name(), rep_percent_tiski, 0.004 )
                         if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
                             rep_percent_tiski = rep_percent_tiski * 0.5
                         end
