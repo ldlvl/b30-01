@@ -4015,7 +4015,7 @@
 </dialog>
 
 <dialog id="artmod_522_dialog">
-<precondition>mike.bronik_have</precondition>
+<precondition>sak.have_items_count("ecolog_outfit_m1",1)</precondition>
 <dont_has_info>barmen_find_item_2_done</dont_has_info>
 <has_info>barmen_find_item_2_start</has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -4030,7 +4030,7 @@
 	</phrase>
 	<phrase id="2">
 		<text>artmod_522_dialog_2</text>
-		<action>mike.take_bronik</action>		
+		<action>sak_inventory.release_actor_items("ecolog_outfit_m1",1)</action>		
 		<next>3</next>
 	</phrase>
 	<phrase id="3">
@@ -4950,7 +4950,7 @@
 </dialog>
 
 <dialog id="artmod_632_dialog">
-<precondition>mike.box_have</precondition>
+<precondition>sak.have_items_count("arc_art_box_basic",1)</precondition>
 <dont_has_info>sak_find_seif_done</dont_has_info>
 <has_info>sak_find_seif_start</has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -4965,10 +4965,10 @@
 		<next>22</next>
 	</phrase>
 	<phrase id="2">
-	<precondition>mike.box_have</precondition>
+	<precondition>sak.have_items_count("arc_art_box_basic",1)</precondition>
 		<text>artmod_632_dialog_2</text>
 		<give_info>sak_find_seif_done</give_info>
-		<action>mike.give_ivar_box</action>
+		<action>sak_inventory.release_actor_items("arc_art_box_basic",1)</action>
 		<next>3</next>
 	</phrase>
 	<phrase id="22">
@@ -4979,7 +4979,7 @@
 		<text>artmod_632_dialog_3</text>
 		<give_info>info_artmod_dummy_glassbeads_mincer</give_info>
 		<action>sak.info_artmod</action>
-		<action>mike.add_suhpay</action>
+		<action>test.add_to_actor("suhpay",2)</action>
 	</phrase>
 </phrase_list>
 </dialog>

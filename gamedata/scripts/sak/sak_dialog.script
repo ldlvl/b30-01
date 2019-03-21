@@ -4409,11 +4409,11 @@ function add_stalker_treasure()
         "af_gold_fish_capsule_dyn3d",
         "af_night_star_capsule_dyn3d",
     }
-    local obj1 = g_sim:story_object( story_ids.red_treasure_4 )
-    level.map_add_object_spot( obj1.id, "crlc_big_treasure3", "Тайник сталкера" )
-    if obj1 then
+    local obj = g_sim:story_object( story_ids.red_treasure_4 )
+    level.map_add_object_spot( obj.id, "crlc_big_treasure3", "Тайник сталкера" )
+    if obj then
         for _, v in ipairs( tbl ) do
-            g_sim:create( v, obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
+            misc.spawn_to( v, obj )
         end
     end
 end

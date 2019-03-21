@@ -1850,13 +1850,13 @@ function spawn_items( npc, section, number )
     relocate_item( npc, "in", section, number )
 end
 
-function create_items ( npc, sect_list, number )
+function create_items( npc, sect_list, number )
     local ts = type( sect_list )
     if ts == "string" then
         spawn_items( npc, sect_list, number )
     elseif ts == "table" then
         for k, v in pairs( sect_list ) do
-            if type( v ) == "number" then -- { bandage = 1, medkit = 3 }
+            if type( v ) == "number" then     -- { bandage = 1, medkit = 3 }
                 spawn_items( npc, k, v )
             elseif type( v ) == "string" then -- { "bandage", "medkit" }
                 spawn_items( npc, v, number )
@@ -6408,18 +6408,13 @@ function detectors_fake( flag )
         end
         -- добавлено mike для спавна в Тесле
         if lname == "generators" and not npc:has_info( "tesla_gift_info" ) then
-            mike.spawn_in_generators()
+            test.spawn_jolly_roger( lname )
             npc:give_info_portion( "tesla_gift_info" )
         end
         -- добавлено mike для спавна в райцентре
         if lname == "deadcity" and not npc:has_info( "deadcity_gift_info" ) then
-            mike.spawn_in_deadcity()
+            test.spawn_jolly_roger( lname )
             npc:give_info_portion( "deadcity_gift_info" )
-        end
-        -- добавлено mike для спавна на Радаре
-        if lname == "l10_radar" and not npc:has_info( "radar_gift_info" ) then
-            mike.add_radar_habar()
-            npc:give_info_portion( "radar_gift_info" )
         end
         -- добавлено mike для спавна маятника в ТЧ или Припяти
         if
@@ -6544,10 +6539,9 @@ function detectors_fake( flag )
         end
         if lname == "red_forest" and sname == "l08u_brainlab" then
             local obj = g_sim:story_object( story_ids.x16_beton_block_7 )
-            if obj then misc.release_obj( obj, 'sak.script:3975') end end
-        if lname == "l11_pripyat" then
-            mike.fill_food_prip()
+            if obj then misc.release_obj( obj, 'sak.script:3975') end
         end
+        if lname == "l11_pripyat" then mike.fill_food_prip() end
         -- выдаём поршень для диалога с Фраером в Лиманске
         if
             lname == "l11_pripyat"

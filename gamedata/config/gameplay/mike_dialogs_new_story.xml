@@ -288,7 +288,7 @@
 		<phrase id="3">
 			<text>after_deadcity_doctor_dialog_3</text>
 			<give_info>strelok_sheets_new_info</give_info>
-			<action>mike.give_sheets</action>
+			<action>test.add_to_actor("strelok_sheets",1)</action>
 			<next>4</next>
 		</phrase>			
 		<phrase id="4">
@@ -356,7 +356,6 @@
 		</phrase>
 		<phrase id="119">
 			<text>after_deadcity_doctor_dialog_119</text>
-			<action>mike.doc_give_art</action>
 			<next>120</next>
 		</phrase>
 		<phrase id="120">
@@ -542,7 +541,7 @@
 		</phrase>
 		<phrase id="4">
 			<text>dead_vergas_decoder_dialog_4</text>
-			<action>mike.give_decoder</action>
+			<action>test.add_to_actor("self_made_decoder",1)</action>
 			<next>5</next>
 		</phrase>
 		<phrase id="5">
@@ -1975,7 +1974,7 @@
 			<next>3</next>
 		</phrase>	
 		<phrase id="3">
-		<precondition>mike.gg_3_dart_have</precondition>
+		<precondition>sak_dialog.gg_n_dart_have(3)</precondition>
 			<text>sanek_quest_art2_dialog_3</text>
 			<next>4</next>
 		</phrase>			
@@ -2098,7 +2097,7 @@
 			<next>3</next>
 		</phrase>	
 		<phrase id="3">
-		<precondition>mike.have_3_cheque2</precondition>
+		<precondition>sak.have_items_count("bearer_cheque",3)</precondition>
 			<text>voron_quest_art2_dialog_3</text>
 			<next>4</next>
 		</phrase>			
@@ -2195,7 +2194,7 @@
 </dialog>
 
 <dialog id="scarman1_docent_dialog">
-<precondition>mike.scarman_pda_have</precondition>
+<precondition>sak.have_items_count("scarman_pda",1)</precondition>
 <dont_has_info>scarman1_docent_info</dont_has_info>
 	<phrase_list>
 		<phrase id="0">
@@ -2938,10 +2937,10 @@
 			<next>7</next>
 		</phrase>		
 		<phrase id="6">
-		<precondition>mike.manometr_vodka_have</precondition>
+		<precondition>sak.have_items_count("vodka",10)</precondition>
 			<text>agr_manometr_sherstyk_6</text>
-			<action>mike.manometr_vodka_give</action>
-			<action>mike.manometr_take</action>			
+			<action>sak_inventory.release_actor_items("vodka",10)</action>
+			<action>test.add_to_actor("manometr",1)</action>			
 			<give_info>manometr_sherstyk_done</give_info>
 			<action>dialogs.break_dialog</action>
 		</phrase>
@@ -2954,7 +2953,7 @@
 </dialog>
 
 <dialog id="agr_manometr_2_sherstyk">
-<precondition>mike.manometr_vodka_have</precondition>
+<precondition>sak.have_items_count("vodka",10)</precondition>
 <has_info>manometr_sherstyk</has_info>
 <dont_has_info>manometr_sherstyk_done</dont_has_info>
 	<phrase_list>
@@ -2964,8 +2963,8 @@
 		</phrase>
 		<phrase id="1">
 			<text>agr_manometr_2_sherstyk_1</text>
-			<action>mike.manometr_vodka_give</action>
-			<action>mike.manometr_take</action>
+			<action>sak_inventory.release_actor_items("vodka",10)</action>
+			<action>test.add_to_actor("manometr",1)</action>
 			<give_info>manometr_sherstyk_done</give_info>
 			<next>2</next>
 		</phrase>		
@@ -3019,7 +3018,7 @@
 		</phrase>		
 		<phrase id="9">
 			<text>mil_ryaboi_end_dialog_9</text>
-			<action>mike.rjaboi_letter_give</action>
+			<action>test.add_to_actor("mil_rjaboi_letter",1)</action>
 			<give_info>mil_ryaboi_end</give_info>
 			<next>10</next>
 		</phrase>		
@@ -4351,7 +4350,7 @@
 		<phrase id="2">
 			<text>fanat_lampa_2_dialog_2</text>
 			<action>mike.give_fanat_gun</action>
-			<action>mike.take_notebook</action>
+			<action>test.add_to_actor("note-book",1)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -4979,7 +4978,7 @@
 		</phrase>		
 		<phrase id="2">
 			<text>mercs_gun_2_dialog_2</text>
-			<action>mike.take_quest_tools</action>
+			<action>test.add_to_actor("quest_tools",1)</action>
 			<next>3</next>
 		</phrase>		
 		<phrase id="3">
@@ -5030,7 +5029,7 @@
 		</phrase>		
 		<phrase id="5">
 			<text>zub_last_dialog_5</text>
-			<action>mike.give_quest_tools</action>
+			<action>sak_inventory.release_actor_items("quest_tools",1)</action>
 			<next>13</next>
 		</phrase>		
 		<phrase id="6">
@@ -5062,8 +5061,8 @@
 		</phrase>		
 		<phrase id="12">
 			<text>zub_last_dialog_12</text>
-			<action>mike.give_quest_tools</action>
-			<action>mike.zub_add_prize</action>
+			<action>sak_inventory.release_actor_items("quest_tools",1)</action>
+			<action>test.add_to_actor("ammo_7.62x54_7h14",10)</action>
 			<next>13</next>
 		</phrase>		
 		<phrase id="13">
@@ -5912,7 +5911,7 @@
 			<action>dialogs.break_dialog</action>
 		</phrase>
 		<phrase id="200">
-		<precondition>mike.have_theory</precondition>
+		<precondition>sak.have_items_count("mar_ecolog_theory",1)</precondition>
 		<has_info>marsh_ecolog_last_info</has_info>
 			<text>petrenko_mdata4_dialog_200</text>
 			<next>201</next>
@@ -5931,7 +5930,7 @@
 		</phrase>
 		<phrase id="4">
 			<text>petrenko_mdata4_dialog_4</text>
-			<action>mike.give_theory</action>
+			<action>sak_inventory.release_actor_items("mar_ecolog_theory",1)</action>
 			<next>5</next>
 		</phrase>
 		<phrase id="5">
@@ -6253,7 +6252,7 @@
 		</phrase>		
 		<phrase id="533">
 			<text>petrenko_tesla_2_dialog_533</text>
-			<action>mike.pet_3_gift</action>
+			<action>test.add_to_actor("bearer_cheque",1)</action>
 			<next>10</next>
 		</phrase>		
 		<phrase id="6">
@@ -6302,22 +6301,22 @@
 		</phrase>		
 		<phrase id="831">
 			<text>petrenko_tesla_2_dialog_831</text>
-			<action>mike.pet_4_gift</action>
+			<!-- <action>mike.pet_4_gift</action> -->
 			<next>10</next>
 		</phrase>		
 		<phrase id="832">
 			<text>petrenko_tesla_2_dialog_832</text>
-			<action>mike.pet_5_gift</action>
+			<!-- <action>mike.pet_5_gift</action> -->
 			<next>10</next>
 		</phrase>		
 		<phrase id="833">
 			<text>petrenko_tesla_2_dialog_833</text>
-			<action>mike.pet_6_gift</action>
+			<!-- <action>mike.pet_6_gift</action> -->
 			<next>10</next>
 		</phrase>		
 		<phrase id="834">
 			<text>petrenko_tesla_2_dialog_834</text>
-			<action>mike.pet_7_gift</action>
+			<!-- <action>mike.pet_7_gift</action> -->
 			<next>10</next>
 		</phrase>		
 		<phrase id="835">
