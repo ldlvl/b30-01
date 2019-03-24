@@ -1582,3 +1582,96 @@ function spawn_jolly_roger( level )
         end
     end
 end
+
+function korovan_timer_start()
+    timers.start_timer( "korovan_timer", 4, lua_random( 6, 23 ), 0, "test.korovan_timer_end()" )
+end
+
+function korovan_timer_end()
+    -- выключаем гулаг солдатам
+    if not db.actor:has_info( "bar_korovan_done" ) then
+        db.actor:give_info_portion( "bar_korovan_done" )
+    end
+    -- изничтожаем рестриктор
+    sak.off_spot_korovan_3()
+    -- изничтожаем солдатов
+    for _, v in ipairs({
+        "agr_sak_soldier_01",
+        "agr_sak_soldier_02",
+        "agr_sak_soldier_03",
+    }) do
+        wprintf( "@---------------- [ %s ] releasing by name: %s", script_name(), v )
+        misc.release_by_name( v )
+    end
+    -- изничтожаем бтр
+    if nlc_vars.korovan_btr_id ~= nil then
+        local obj = g_sim:object( nlc_vars.korovan_btr_id )
+        if
+            obj
+            and obj.section_name
+            and strposx( obj:section_name(), "vehicle_btr" ) then
+            wprintf( "@---------------- [ %s ] releasing by id: %s", script_name(), obj.id )
+            misc.release_obj( obj.id )
+        end
+        nlc_vars.korovan_btr_id = nil
+    end
+    -- изничтожаем ящики
+    local tbl = xray_vars.load_table( nlc_vars, "korovan_box_id", {} )
+    for _, v in ipairs( tbl ) do
+        local obj = g_sim:object( v )
+        wprintf( "@---------------- [ %s ] releasing by id: %s", script_name(), obj.id )
+        if obj then misc.release_obj( obj.id ) end
+    end
+    nlc_vars.korovan_box_id = nil
+end
+
+function not_have_korovan_sample()
+    return sak.have_items_count( "weapon_box", 1 ) == false
+end
+
+function spawn_kep_kishka_ruckzack()
+    local tbl = {
+        { -116.977, -1.10914, -534.730, 3997, 260698  },
+        { -33.7220, -4.14946, -459.003, 4011, 349624  },
+        {  12.0050, -0.51152, -500.811, 4034, 403415  },
+        { -33.5960,  1.65238, -557.047, 4034, 349497  },
+        { -236.734,  2.77808,  499.757, 3965, 140908  },
+        { -299.174,  0.43598,  561.140, 3958, 101724  },
+        { -242.575,  4.55688,  536.985, 3970, 136708  },
+        {  421.222, -0.30177,  92.1160, 4149, 940439  },
+        {  451.728,  3.33980,  95.7680, 4158, 987107  },
+        {  477.137,  0.92706,  133.045, 4166, 1020678 }
+    }
+    local ind = amk_vars.r_treas_items + amk_vars.x18_iq_check or 1
+    if ind > 10 then ind = 10 end
+    local obj = test.spawn_no_ai(
+                    "rukzak_inventory_box",
+                    sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+                    tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
+                )
+    if obj then
+        misc.spawn_to( "sak_plan", obj )
+        sak.off_on( obj )
+    end
+end
+
+function spawn_korovan_box_bolota( num )  -- 1, 4, 7
+    local tbl = {
+        { -256.308, -0.1856374, 219.146, 3361, 14221  }, -- у вышки на востоке
+        { -266.453, -0.4309889, 236.113, 3361, 12490  },
+        { -257.350,  0.3025928, 280.430, 3361, 16419  },
+
+        { -226.289, -0.2110082, 257.289, 3378, 28528  }, -- у пролома в колючке
+        { -70.3120, -0.3058606, 471.247, 3361, 27208  },
+        { -74.5720,  0.6997097, 479.971, 3361, 27208  },
+
+        {  98.4030, -0.2868925, 177.045, 3455, 190695 }, -- у логова кровососов
+        {  81.5960, -0.3158128, 201.512, 3455, 184383 },
+        {  79.0980, -0.1186229, 171.169, 3455, 183442 }
+    }
+    local ind = tonumber( num ) + amk_vars.r_treas_items - 1
+    amk.spawn_item( "weapon_box",
+        sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
+        tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
+    )
+end

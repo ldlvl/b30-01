@@ -2348,6 +2348,10 @@ function check_used_item( obj )
             misc.release_obj( obj, 'sak.script:check_used_item_release')
         elseif sect == "amk_zapiska_sak" then
             info = "provodnik_senks_have"
+        elseif sect == "weapon_box" and not act:has_info( "bar_korovan_info4" ) then
+            info_korovan()
+            off_spot_korovan_3()
+            info = "bar_korovan_info4"
         end
     --------------------------------------------------------------------------------------------------
     elseif lvl == "l03_agroprom" then
@@ -7731,14 +7735,13 @@ function restore_weap()
     bind_stalker.restore_weapon()
     level.enable_input()
 end
-function rectore_weap()
-    restore_weap()
-end
 
 function bar_korovan_3()
     local obj = g_sim:create( "vehicle_btr",
         v3f( -142.81, -0.88, -307.21 ), 95363, 658
     )
+    nlc_vars.korovan_btr_id = obj.id
+    tbl_korovan_box_id= {}
     local pk          = get_netpk( obj, 1 )
     local data        = pk:get()
     data.object_flags = bit_not( 5 )
@@ -7746,10 +7749,14 @@ function bar_korovan_3()
     data.mass         = 100
     pk:set( data )
     for i = 1, 7 do
-        amk.spawn_item( "weapon_box",
-            v3f( -182.0, 1.86, -321.86 ), 689, 54409
+        local obj1 = amk.spawn_item( "weapon_box",
+            --v3f( -182.0, 1.86, -321.86 ), 689, 54409
+            v3f( -169.87, 1.45, -311.79 ), 689, 66634
         )
+        table.insert( tbl_korovan_box_id, obj1.id )
     end
+    nlc_vars.korovan_box_id = tbl_korovan_box_id
+    misc.dump_table( nlc_vars.korovan_box_id )
     local spot = lua_random( 1, 3 )
     local objt = g_sim:story_object( story_ids.agr_korovan_zone )
     if objt then

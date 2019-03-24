@@ -2725,6 +2725,7 @@ function have_3vodka()  return sak.have_items_count( "vodka", 3  ) ~= false end
 function have_5vodka()  return sak.have_items_count( "vodka", 5  ) ~= false end
 function have_7vodka()  return sak.have_items_count( "vodka", 7  ) ~= false end
 function have_10vodka() return sak.have_items_count( "vodka", 10 ) ~= false end
+function not_have_10vodka() return sak.have_items_count( "vodka", 10 ) == false end
 function have_15vodka() return sak.have_items_count( "vodka", 15 ) ~= false end
 function have_20vodka() return sak.have_items_count( "vodka", 20 ) ~= false end
 function add_vodka()    sak.create_items( db.actor, "vodka", 1  ) end

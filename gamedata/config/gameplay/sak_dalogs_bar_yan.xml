@@ -1312,6 +1312,7 @@
 		<phrase id="7">
 			<text>bar_korovan_dialog_7</text>
 			<give_info>bar_korovan_info3</give_info>
+			<action>test.korovan_timer_start</action>
 			<next>8</next>
 		</phrase>
 		<phrase id="8">
@@ -1333,27 +1334,49 @@
 		<phrase id="1">
 			<text>bar_korovan_done_dialog_1</text>
 			<next>2</next>
+			<next>211</next>
 		</phrase>
+
 		<phrase id="2">
+			<precondition>test.not_have_korovan_sample</precondition>
 			<text>bar_korovan_done_dialog_2</text>
 			<next>3</next>
 			<next>31</next>
 		</phrase>
+
+		<phrase id="211">
+			<precondition>sak.have_items_count("weapon_box",1)</precondition>
+			<text>bar_korovan_done_dialog_211</text>
+			<action>sak_inventory.release_actor_items("weapon_box",1)</action>
+			<next>311</next>
+			<next>31</next>
+		</phrase>
+
 		<phrase id="3">
-		<dont_has_info>val_borov_dead</dont_has_info>
+			<dont_has_info>val_borov_dead</dont_has_info>
 			<text>bar_korovan_done_dialog_3</text>
 			<give_info>bar_korovan_done</give_info>
 			<action>test.add_to_actor("af_eye_dyn3d",1)</action>
 			<next>4</next>
 		</phrase>
+
+		<phrase id="311">
+			<dont_has_info>val_borov_dead</dont_has_info>
+			<text>bar_korovan_done_dialog_311</text>
+			<give_info>bar_korovan_done</give_info>
+			<action>test.add_to_actor("af_eye_dyn5d",1)</action>
+			<next>4</next>
+		</phrase>
+
 		<phrase id="31">
-		<has_info>val_borov_dead</has_info>
+			<has_info>val_borov_dead</has_info>
 			<text>bar_korovan_done_dialog_31</text>
 			<give_info>bandit_krisyk_start</give_info>
 			<give_info>bar_korovan_done</give_info>
-			<action>test.add_to_actor("af_eye_dyn3d",1)</action>
+			<action>test.add_to_actor("af_eye_dyn2d",1)</action>
 			<next>4</next>
 		</phrase>
+
 		<phrase id="4">
 			<text>bar_korovan_done_dialog_4</text>
 			<action>dialogs.break_dialog</action>

@@ -5995,3 +5995,85 @@
 		</phrase>
 	</phrase_list>
 </dialog>
+
+<dialog id="korovan_sherstuk_dialog">
+<precondition>dialogs.is_not_wounded</precondition>
+<has_info>bar_korovan_info3</has_info>
+<dont_has_info>bar_korovan_info4</dont_has_info>
+<dont_has_info>korovan_sherstuk_start</dont_has_info>
+<dont_has_info>korovan_sherstuk_done</dont_has_info>
+	<phrase_list>
+		<phrase id="0">
+			<text>korovan_sherstuk_dialog_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>korovan_sherstuk_dialog_1</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>korovan_sherstuk_dialog_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>korovan_sherstuk_dialog_3</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>korovan_sherstuk_dialog_4</text>
+			<next>5</next>
+		</phrase>
+		<phrase id="5">
+			<text>korovan_sherstuk_dialog_5</text>
+			<next>6</next>
+			<next>7</next>
+		</phrase>
+		<phrase id="6">
+			<precondition>sak_dialog.have_10vodka</precondition>
+			<text>korovan_sherstuk_dialog_6</text>
+			<action>sak_dialog.give_10vodka</action>
+			<next>9</next>
+		</phrase>
+		<phrase id="7">
+			<precondition>sak_dialog.not_have_10vodka</precondition>
+			<text>korovan_sherstuk_dialog_7</text>
+			<give_info>korovan_sherstuk_start</give_info>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="9">
+			<text>korovan_sherstuk_dialog_9</text>
+			<give_info>korovan_sherstuk_done</give_info>
+			<next>10</next>
+		</phrase>
+		<phrase id="10">
+			<text>korovan_sherstuk_dialog_10</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="korovan_sherstuk_dialog2">
+<precondition>dialogs.is_not_wounded</precondition>
+<precondition>sak_dialog.have_10vodka</precondition>
+<has_info>bar_korovan_info3</has_info>
+<has_info>korovan_sherstuk_start</has_info>
+<dont_has_info>bar_korovan_info4</dont_has_info>
+<dont_has_info>korovan_sherstuk_done</dont_has_info>
+	<phrase_list>
+		<phrase id="0">
+			<precondition>sak_dialog.have_10vodka</precondition>
+			<text>korovan_sherstuk_dialog_8</text>
+			<action>sak_dialog.give_10vodka</action>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>korovan_sherstuk_dialog_9</text>
+			<give_info>korovan_sherstuk_done</give_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>korovan_sherstuk_dialog_10</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>

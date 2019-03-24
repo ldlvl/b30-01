@@ -4828,6 +4828,91 @@
 			<next>6027</next>
 			<next>70001</next>
 			<next>80001</next>
+			<next>90000</next>
+			<next>91000</next>
+		</phrase>
+
+		<phrase id="90000">
+			<!-- <precondition>sak_dialog.rand_game_1</precondition> -->
+			<has_info>bar_korovan_info3</has_info>
+			<has_info>korovan_sherstuk_done</has_info>
+			<dont_has_info>bar_korovan_info4</dont_has_info>
+			<dont_has_info>korovan_kep_start</dont_has_info>
+			<text>korovan_kep_dialog_0</text>
+			<next>90001</next>
+		</phrase>
+		<phrase id="90001">
+			<text>korovan_kep_dialog_1</text>
+			<next>90002</next>
+		</phrase>
+		<phrase id="90002">
+			<text>korovan_kep_dialog_2</text>
+			<next>90003</next>
+			<next>90004</next>
+		</phrase>
+		<phrase id="90003">
+			<precondition>sak.have_items_count("vodka",1)</precondition>
+			<text>korovan_kep_dialog_3</text>
+			<next>90005</next>
+		</phrase>
+		<phrase id="90004">
+			<text>korovan_kep_dialog_4</text>
+			<next>900013</next>
+		</phrase>
+		<phrase id="900013">
+			<text>korovan_dialog_end</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="90005">
+			<text>korovan_kep_dialog_5</text>
+			<action>sak.drink_vodka</action>
+			<next>90006</next>
+		</phrase>
+		<phrase id="90006">
+			<text>korovan_kep_dialog_6</text>
+			<next>90007</next>
+		</phrase>
+		<phrase id="90007">
+			<text>korovan_kep_dialog_7</text>
+			<next>90008</next>
+		</phrase>
+		<phrase id="90008">
+			<text>korovan_kep_dialog_8</text>
+			<next>90009</next>
+		</phrase>
+		<phrase id="90009">
+			<text>korovan_kep_dialog_9</text>
+			<next>900010</next>
+		</phrase>
+		<phrase id="900010">
+			<text>korovan_kep_dialog_10</text>
+			<action>test.spawn_kep_kishka_ruckzack</action>
+			<give_info>korovan_kep_start</give_info>
+			<next>900011</next>
+		</phrase>
+		<phrase id="900011">
+			<text>korovan_dialog_end</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+		<phrase id="91000">
+			<has_info>korovan_kep_start</has_info>
+			<precondition>sak.have_items_count("sak_plan",1)</precondition>
+			<dont_has_info>bar_korovan_info4</dont_has_info>
+			<dont_has_info>korovan_kep_done</dont_has_info>
+			<text>korovan_kep_dialog_11</text>
+			<action>sak_inventory.release_actor_items("sak_plan",1)</action>
+			<next>91001</next>
+		</phrase>
+		<phrase id="91001">
+			<text>korovan_kep_dialog_12</text>
+			<give_info>korovan_kep_done</give_info>
+			<action>test.spawn_korovan_box_bolota(7)</action>
+			<next>91002</next>
+		</phrase>
+		<phrase id="91002">
+			<text>korovan_dialog_end</text>
+			<action>dialogs.break_dialog</action>
 		</phrase>
 
 		<phrase id="70001">
@@ -14120,6 +14205,8 @@
 			<text>mar_military_post_tower_dialog_201</text>
 			<action>dialogs.no_trade_trader</action>
 			<next>202</next>
+			<next>300</next>
+			<next>400</next>
 		</phrase>
 		<phrase id="202">
 			<text>mar_military_post_tower_dialog_202</text>
@@ -14140,6 +14227,74 @@
 			<text>mar_military_post_tower_dialog_2032</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
+
+		<phrase id="300">
+			<!-- <precondition>sak_dialog.rand_game_1</precondition> -->
+			<has_info>korovan_sherstuk_done</has_info>
+			<dont_has_info>korovan_soldier_start</dont_has_info>
+			<text>korovan_soldier_dialog_0</text>
+			<next>301</next>
+		</phrase>
+		<phrase id="301">
+			<text>korovan_soldier_dialog_1</text>
+			<next>302</next>
+		</phrase>
+		<phrase id="302">
+			<text>korovan_soldier_dialog_2</text>
+			<next>304</next>
+		</phrase>
+		<phrase id="304">
+			<text>korovan_soldier_dialog_4</text>
+			<next>305</next>
+		</phrase>
+		<phrase id="305">
+			<text>korovan_soldier_dialog_5</text>
+			<next>306</next>
+		</phrase>
+		<phrase id="306">
+			<text>korovan_soldier_dialog_6</text>
+			<give_info>korovan_soldier_start</give_info>
+			<next>307</next>
+		</phrase>
+		<phrase id="307">
+			<text>korovan_soldier_dialog_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
+
+		<phrase id="400">
+			<!-- <precondition>sak_dialog.rand_game_1</precondition> -->
+			<precondition>sak.have_items_count("vodka",7)</precondition>
+			<precondition>sak.have_items_count("green_kolbasa",10)</precondition>
+			<has_info>korovan_sherstuk_done</has_info>
+			<has_info>korovan_soldier_start</has_info>
+			<dont_has_info>korovan_soldier_done</dont_has_info>
+			<text>korovan_soldier_dialog_8</text>
+			<next>401</next>
+		</phrase>
+		<phrase id="401">
+			<text>korovan_soldier_dialog_9</text>
+			<next>402</next>
+		</phrase>
+		<phrase id="402">
+			<precondition>sak.have_items_count("vodka",7)</precondition>
+			<precondition>sak.have_items_count("green_kolbasa",10)</precondition>
+			<text>korovan_soldier_dialog_10</text>
+			<action>sak_inventory.release_actor_items("vodka",7)</action>
+			<action>sak_inventory.release_actor_items("green_kolbasa",10)</action>
+			<next>403</next>
+		</phrase>
+		<phrase id="403">
+			<text>korovan_soldier_dialog_11</text>
+			<give_info>korovan_soldier_done</give_info>
+			<action>test.spawn_korovan_box_bolota(1)</action>
+			<next>404</next>
+		</phrase>
+		<phrase id="404">
+			<text>korovan_dialog_end</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
 	</phrase_list>
 </dialog>
 
@@ -15499,6 +15654,65 @@
 		<phrase id="201">
 			<text>mar_boryan_start_dialog_201</text>
 			<action>dialogs.no_trade_trader</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="korovan_boryan_dialog">
+<has_info>mar_boryan_new_gg</has_info>
+<!-- <precondition>sak_dialog.rand_game_3</precondition> -->
+<has_info>bar_korovan_info3</has_info>
+<has_info>korovan_sherstuk_done</has_info>
+<dont_has_info>korovan_boryan_start</dont_has_info>
+	<phrase_list>
+		<phrase id="0">
+			<text>korovan_boryan_dialog_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>korovan_boryan_dialog_1</text>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>korovan_boryan_dialog_2</text>
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>korovan_boryan_dialog_5</text>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>korovan_boryan_dialog_6</text>
+			<give_info>korovan_boryan_start</give_info>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+<dialog id="korovan_boryan_dialog2">
+<has_info>mar_boryan_new_gg</has_info>
+<!-- <precondition>sak_dialog.rand_game_3</precondition> -->
+<has_info>bar_korovan_info3</has_info>
+<has_info>korovan_sherstuk_done</has_info>
+<has_info>korovan_boryan_start</has_info>
+<dont_has_info>korovan_boryan_done</dont_has_info>
+<precondition>vergas_lib.search_items("medkit",15,1)</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<precondition>vergas_lib.search_items("medkit",15,1)</precondition>
+			<text>korovan_boryan_dialog_7</text>
+			<action>vergas_lib.search_items("medkit",15,2)</action>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>korovan_boryan_dialog_8</text>
+			<action>test.spawn_korovan_box_bolota(4)</action>
+			<give_info>korovan_boryan_done</give_info>
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>korovan_dialog_end</text>
+			<action>dialogs.break_dialog</action>
 		</phrase>
 	</phrase_list>
 </dialog>
