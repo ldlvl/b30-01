@@ -1,6 +1,17 @@
 -- Версия мода в главном меню
 
-sak_title	= "New_Level_Changer"
-sak_version	= "v7.3.61.01"
-update		= "25.03.2019"
+sak_title   = "New_Level_Changer"
+sak_version = "v7.3.6.1.01"
+
+function get_update_date()
+    local fs   = getFS()
+    local fname = fs:update_path( "$game_scripts$", "test.script" )
+    if fs:exist( fname ) then
+        return fs:get_file_age_str( fname )
+    else
+        return false
+    end
+end
+
+update = get_update_date() or "25.03.2019"
 
