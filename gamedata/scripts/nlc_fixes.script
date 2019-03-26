@@ -1,14 +1,16 @@
 local processed_info = {}
---local vname          = "fixes.version"
+local scr_name       = script_name() or "nlc_fixes"
+--local vname        = "fixes.version"
 
 function on_late_init()
     local fixes = {
         this.fix_tiski_mil_dv,
+        this.fix_gar_bandit_wpn,
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
-        "[nlc_fixes]: fixes_done = %s, fixes_all = %s",
-        stored_fixes_num, table.getn( fixes )
+        "[ %s.script ]: fixes_done = %s, fixes_all = %s",
+        scr_name, stored_fixes_num, table.getn( fixes )
     )
     if stored_fixes_num < table.getn( fixes ) then
         for i = stored_fixes_num + 1, table.getn( fixes ) do
@@ -41,7 +43,7 @@ function on_late_init()
 end
 
 function fix_tiski_mil_dv()
-    for _, v in ipairs( { "mil_tiski_repair_03", "val_tiski_repair" } ) do
+    for _, v in ipairs({ "mil_tiski_repair_03", "val_tiski_repair" }) do
         local sobj = g_sim:object( v )
         if sobj then
             local pk         = get_netpk( sobj, 1 )
@@ -50,5 +52,25 @@ function fix_tiski_mil_dv()
             pk:set( data )
             sak.off_on( sobj )
         end
+    end
+end
+
+function fix_gar_bandit_wpn()
+    local pobj = g_sim:object( "gar_sniper_bandit" )
+    if pobj then
+        log2( "[ %s.script ]: gar_sniper_bandit exists", scr_name )
+        local ids, cnt = registry.inv_objects( pobj.id, true )
+        for n = 1, cnt do
+            local obj = g_sim:object( ids[ n ] )
+            if obj and obj.section_name then
+                if strposx( obj:section_name(), "wpn_" ) then
+                    log2( "[ %s.script ]: gar_sniper_bandit has weapon %s, releasing...", scr_name, obj:section_name()  )
+                    misc.release_obj( obj.id )
+                end
+            end
+        end
+        misc.spawn_to( "wpn_bm16",        pobj.id )
+        misc.spawn_to( "ammo_12x70_buck", pobj.id )
+        log2( "[ %s.script ]: gar_sniper_bandit now is with obrez...probably...", scr_name )
     end
 end
