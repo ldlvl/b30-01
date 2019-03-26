@@ -554,13 +554,14 @@ end
 
 -- отсырение спичек при дожде  +++ поломка пухи  -- Апдейт 6 игровых минут.
 function fuckup_matches()
-    local range = 9
-    local lfactor = level.rain_factor()
-    local RP = ray_pick ( db.actor:position(), vector():set( 0, 1, 0 ), 200, rq_target.rqtStatic, nil )
+    local range       = 9
+    local rain_factor = level.rain_factor()
+    local RP          = ray_pick(
+        db.actor:position(), vector():set( 0, 1, 0 ), 200, rq_target.rqtStatic, nil
+    )
     if RP:query() then range = RP:get_distance() end
-    --sak.send_tip( "Сила дождя: " .. lfactor ..  "    Расстояние над головой: ".. range , "", 2, 20, "uniq", "sak", "green" )
     if
-        lfactor > 0.2                                   -- идёт нормальный дождь
+        rain_factor > 0.3                               -- идёт нормальный дождь
         and const.ground_levels[ level.name() ]         -- наземные уровни
         and range > 8                                   -- ГГ под открытым небом или дырявой крышей
         -- and not sleep_manager.is_sleep_active()
@@ -568,7 +569,7 @@ function fuckup_matches()
         for sect, ids in pairs( sak_inventory.all_items ) do
             if sect == "matches" then
                 for m = 1, #ids do
-                    if lua_random() < ( lfactor * 0.5 ) then
+                    if lua_random() < ( rain_factor * 0.25 ) then
                         sak.send_tip(
                             "От дождя спички отсырели.", "Да ё-моё...",
                             5, 15, "g_g", "sak", "red"
@@ -580,24 +581,24 @@ function fuckup_matches()
             end
         end
         -- для порчи активного оружия при дожде:
-        if lua_random() < ( lfactor ) then
-            local active_item = db.actor:active_item()
-            if active_item then
-                local active_sect = active_item:section()
-                if not ( active_sect == "bolt"
-                or active_sect == "wpn_knife"
-                or active_sect == "wpn_knife_m1" )
-                then
-                    local active_cond = params.get_condition( active_item, 0.99 )
-                    sak.send_tip( "Старое состояние: ".. active_cond , "", 1, 20, "uniq", "sak", "green" )
-                    if active_cond > 0.1 then
-                        params.upd_condition( active_item:id(), active_cond - 0.01 ) -- на 1 процент дамажим пуху
-                        active_cond = params.get_condition( active_item, 0.99 )
-                        sak.send_tip( "Новое состояние: ".. active_cond , "", 2, 20, "uniq", "sak", "green" )
-                    end
-                end
-            end
-        end
+        -- if lua_random() < ( rain_factor ) then
+        --     local active_item = db.actor:active_item()
+        --     if active_item then
+        --         local active_sect = active_item:section()
+        --         if not ( active_sect == "bolt"
+        --         or active_sect == "wpn_knife"
+        --         or active_sect == "wpn_knife_m1" )
+        --         then
+        --             local active_cond = params.get_condition( active_item, 0.99 )
+        --             sak.send_tip( "Старое состояние: ".. active_cond , "", 1, 20, "uniq", "sak", "green" )
+        --             if active_cond > 0.1 then
+        --                 params.upd_condition( active_item:id(), active_cond - 0.01 ) -- на 1 процент дамажим пуху
+        --                 active_cond = params.get_condition( active_item, 0.99 )
+        --                 sak.send_tip( "Новое состояние: ".. active_cond , "", 2, 20, "uniq", "sak", "green" )
+        --             end
+        --         end
+        --     end
+        -- end
     end
 end
 
