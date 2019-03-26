@@ -1026,19 +1026,22 @@ function have_actor_any_gun()
 end
 -- автоматы Небову
 local is_ak_actor = {
-    [ "wpn_ak47"        ] = true,
-    [ "wpn_ak47_old"    ] = true,
-    [ "wpn_saiga12c_m2" ] = true,
-    [ "wpn_ak104"       ] = true,
-    [ "wpn_akm"         ] = true,
-    [ "wpn_ak74_m1"     ] = true,
-    [ "wpn_ak74_m2"     ] = true,
-    [ "wpn_aks47"       ] = true
+    [ "wpn_ak74"        ] = true,
+    [ "wpn_ak74_old"    ] = true,
+    [ "wpn_ak74m"       ] = true,
+    [ "wpn_rpk74"       ] = true,
+    [ "wpn_ak74pbn"     ] = true
 }
 -- TODO: добавить проверку на кондицию автомата
 function have_actor_any_ak()
     for i, k in pairs( sak_inventory.rucksack ) do
-        if is_ak_actor[ i ] and #k > 0 then return true end
+        if
+            is_ak_actor[ i ]
+            and #k > 0
+            and test.have_with_cond( i, 1, 0.95, true )
+        then
+            return true
+        end
     end
 end
 

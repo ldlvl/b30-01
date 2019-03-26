@@ -6912,7 +6912,8 @@
 		<precondition>sak_dialog.have_actor_any_ak</precondition>
 			<text>ivan_dialog_61</text>
 			<action>sak_dialog.give_n_bart(2)</action>
-			<action>sak_dialog.transfer_any_ak_from_actor</action>
+			<action>test.relocate_with_cond</action>
+			<!-- <action>sak_dialog.transfer_any_ak_from_actor</action> -->
 			<give_info>gar_dm_bandits_2have</give_info>
 			<next>7</next>
 		</phrase>
@@ -7115,9 +7116,9 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>vergas_lib.search_items("ammo_7.62x39_fmj",300,1)</precondition>
+		<precondition>vergas_lib.search_items("ammo_5.45x39_fmj",300,1)</precondition>
 			<text>ivan_cs_dialog2_21</text>
-			<action>vergas_lib.search_items("ammo_7.62x39_fmj",300,2)</action>
+			<action>vergas_lib.search_items("ammo_5.45x39_fmj",300,2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
