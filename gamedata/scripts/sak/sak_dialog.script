@@ -2198,7 +2198,8 @@ function gar_sakbox_have()
 end
 
 function gar_flame_have()
-    return sak.have_items_count( "wpn_flame", 1 ) ~= false
+    --return sak.have_items_count( "wpn_flame", 1 ) ~= false
+    return test.have_with_cond( "wpn_flame", 1, 0.95, true )
 end
 
 function seryi_payment()
