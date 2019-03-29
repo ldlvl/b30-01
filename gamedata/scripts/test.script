@@ -561,7 +561,7 @@ function fuckup_matches()
     )
     if RP:query() then range = RP:get_distance() end
     if
-        rain_factor > 0.3                               -- идёт нормальный дождь
+        rain_factor > 0.35                              -- идёт нормальный дождь
         and const.ground_levels[ level.name() ]         -- наземные уровни
         and range > 8                                   -- ГГ под открытым небом или дырявой крышей
         -- and not sleep_manager.is_sleep_active()
@@ -569,7 +569,7 @@ function fuckup_matches()
         for sect, ids in pairs( sak_inventory.all_items ) do
             if sect == "matches" then
                 for m = 1, #ids do
-                    if lua_random() < ( rain_factor * 0.25 ) then
+                    if lua_random() < ( rain_factor * 0.23 ) then
                         sak.send_tip(
                             "От дождя спички отсырели.", "Да ё-моё...",
                             5, 15, "g_g", "sak", "red"
@@ -602,9 +602,9 @@ function fuckup_matches()
     end
 end
 
--- если радейка более 1.5 рентген, то заражаем жратву по таблице.       -- Апдейт 6 игровых минут.
+-- если радейка более 2 рентген, то заражаем жратву по таблице.       -- Апдейт 6 игровых минут.
 function fuckup_food()
-    if db.actor.radiation > 0.15 then
+    if db.actor.radiation > 0.2 then
         for sect, ids in pairs( sak_inventory.eatable ) do
             if food_anim_time[ sect ] then
                 for m = 1, #ids do
@@ -1028,15 +1028,18 @@ function update_sleep_icon( mode )
 end
 
 function eternal_start()
-    if nlc_vars.semeneckyi_done then return end
+    if nlc_vars.semeneckyi_done then
+        wprintf( "@-------------------------------------  SEMECKY ALREADY SPAVNED IN THIS LVL" )
+        return
+    end
     local delay = lua_random( 45, 300 )
     if not timers.check_timer( "semeneckyi_timer" ) then
         timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
-        --wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  min" )
+        wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  min" )
     else
         timers.stop_timer( "semeneckyi_timer" )
         timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
-        --wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
+        wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
     end
 end
 
