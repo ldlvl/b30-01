@@ -2704,7 +2704,7 @@ function check_droped_item( obj )
         end
         if window == 1 then
             local self = level.main_input_receiver()
-            if self then self:GetHolder():start_stop_menu( self, true ) end
+            if self then schedule.add( "close_window", "sak.close_window()", 100 ) end
             window = 0
         end
     end
@@ -4234,6 +4234,7 @@ function repair_box_repair( obj )
         local slot_2 = actor:item_in_slot( 2 )
         local armor  = actor:item_in_slot( 6 )
         local sounds = lua_random( 1, 3 )
+        local r_damage = 0.005
         if obj and obj:section() == "repair_item_weapon" then
             if
                    ( slot_1 and slot_1:condition() >= 0.87 and slot_1:condition() < 0.985 )
@@ -4282,6 +4283,7 @@ function repair_box_repair( obj )
                     misc.spawn_to( obj:section().."_feik", actor )
                 else
                     if armor:condition() >= 0.87 and armor:condition() < 0.985 then
+                        if strposx( armor:section(), "monolit" ) then r_damage = 0.003 end
                         actor_hide_weapon()
                         level.add_cam_effector( "camera_effects\\item_use.anm", 9008, false, "" )
                         level.add_pp_effector( "fade_to_black_9_sec.ppe", 9009, false )
@@ -4289,7 +4291,7 @@ function repair_box_repair( obj )
                         vergas_masks.set_flag_minimap( false )
                         local arm_sect = armor:section()
                         rep_percent = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
-                        rep_percent = check_if_repaired( "rep_arm_ids", armor:name(), rep_percent, 0.005 )
+                        rep_percent = check_if_repaired( "rep_arm_ids", armor:name(), rep_percent, r_damage )
                         if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
                             rep_percent = rep_percent * 0.5
                         end
@@ -4454,6 +4456,7 @@ function repair_2_on()
  end
 
 function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
+    local r_damage = 0.004
     local slot_obj = client_obj( slot_obj_id )
     if slot_obj:condition() < 0.985 then
         if slot == 1 then
@@ -4505,8 +4508,9 @@ function repair_tiski_do( slot, slot_obj_id, r_box_id, repiout, repiweap )
                 else
                     if slot_obj:condition() >= 0.75 then
                         local arm_sect    = slot_obj:section()
+                        if strposx( arm_sect, "monolit" ) then r_damage = 0.002 end
                         rep_percent_tiski = check_repair_percent_by_tbl( arm_sect, outfit_proc ) or 0.1
-                        rep_percent_tiski = check_if_repaired( "rep_arm_ids", slot_obj:name(), rep_percent_tiski, 0.004 )
+                        rep_percent_tiski = check_if_repaired( "rep_arm_ids", slot_obj:name(), rep_percent_tiski, r_damage )
                         if strposx( arm_sect, "_q_" ) and not strposx( arm_sect, "exo" ) then
                             rep_percent_tiski = rep_percent_tiski * 0.5
                         end
@@ -8119,7 +8123,7 @@ function fear_sounds()
                 pos = actor:position():add( v3f( dir.x * 10, 2, dir.z * 10 ) )
                 phantom_manager.spawn_phantom( pos )
             elseif rands == 4 and const.ground_levels[ lname ] then
-                add_rad()
+                --add_rad()
             elseif rands == 1 and const.ground_levels[ lname ] then
                 visual_eff     = { "elektra", "tramplin", "voronka", "garka", "karusel", "holodec", "g_puh", "pustishka" }
                 local rand_vis = visual_eff[ lua_random( 1, #visual_eff ) ]
@@ -8165,7 +8169,7 @@ function fear_sounds()
                         off_on( obj )
                     end
                 elseif rands == 4 then
-                    add_rad()
+                    --add_rad()
                 elseif rands == 3 then
                     if lua_random() > 0.4 then
                         local robjd = amk.spawn_item( "fear_sound_item", pos, gvid, lv )

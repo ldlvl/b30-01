@@ -2574,7 +2574,14 @@ end
 function actor_check_body(npc)
     if npc then
         body_blow_id = npc:id()
-        amk_mod.try_add_black_tip(level.name(),npc:id())
+        local armor  = db.actor:item_in_slot( 6 )
+        if
+            armor
+            and strposx( armor, "monolit" )
+        then
+            return
+        end
+        amk_mod.try_add_black_tip( level.name(), npc:id() )
     end
 end
 

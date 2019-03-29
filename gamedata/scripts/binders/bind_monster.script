@@ -520,12 +520,14 @@ function generic_object_binder:update( delta )
         end
         ---------------------------  йпнбняня  -----------------------------
         if classid == CLID_BLOODSUCKER and sfobj:alive() and sfobj.health > 0.05 then
-            local npc = sfobj:get_enemy()
+            local npc  = sfobj:get_enemy()
+            local chns = 0.5
+            if actor_in_monolith_outfit() then chns = chns / 2 end
             if npc and npc:id() == actor:id() then
                 if
                     sfobj:see( npc )
                     and dist_to_actor < 15
-                    and lua_random() < 0.5
+                    and lua_random() < chns
                 then
                     local snd_obj
                     local sound = "monsters\\bloodsucker\\bloodsucker_attack"
@@ -551,6 +553,7 @@ function generic_object_binder:update( delta )
                 ch_dist = 20
                 ch_chns = 0.65
             end
+            if actor_in_monolith_outfit() then ch_chns = ch_chns / 2 end
             local npc = sfobj:get_enemy()
             if npc and npc:id() == actor:id() then
                 if sfobj:see( npc ) and dist_to_actor < ch_dist and lua_random() < ch_chns then
@@ -896,6 +899,7 @@ function panic_item_drop( coeff )
     else
         slot_k = 1
     end
+    if actor_in_monolith_outfit() then slot_k = slot_k * 0.5 end
     local drop = ( coeff + sleep_k + ( 0.03 * game_difficulty ) ) * dog_shield * slot_k
     if lua_random() < drop then
         local active_item = actor:active_item()
@@ -923,4 +927,10 @@ function actor_has_knife()
         active_item and db.actor:active_slot() == 0
         and strposx( active_item:section(), "knife" )
     )
+end
+
+function actor_in_monolith_outfit()
+    local armor = db.actor:item_in_slot( 6 )
+    if armor and strposx( armor:section(), "monolit" ) then return true end
+    return false
 end
