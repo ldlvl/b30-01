@@ -497,7 +497,7 @@ function _kamp_talk(actor, npc)
 --		return xr_kamp.kamp_stalkers[npc:id()]
 --	end
 --	return false
--- для работы xr_kamp от ДиШа ----------------
+-- для работы xr_kamp от Ди а ----------------
 	    return xr_kamp.can_talk( npc )
 end
 
@@ -760,6 +760,24 @@ function mob_was_hit(actor, npc)
 		return true
 	end
 	return false
+end
+
+-- Added by Oxy to eliminate Kordon patrol fighting Kordon Village - function to use FROM logic!
+function fighting_monster( actor, npc )
+	local enemy = db.storage[ npc:id() ].enemy
+	if enemy and is_object_monster( enemy ) then 
+		return true
+	end
+	return false		
+end
+-- Added by Oxy to eliminate Gluzov  fighting marsh gigant - function to use FROM logic!
+function fighting_gigant( actor, npc )
+	local enemy = db.storage[ npc:id() ].enemy
+	if enemy then
+		local enemy_clsid = get_clsid( enemy )
+		if enemy_clsid == CLID_GIGANT then return true end
+	end
+	return false		
 end
 
 -- текущий враг актЄр?

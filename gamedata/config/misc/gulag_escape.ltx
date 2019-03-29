@@ -1035,7 +1035,7 @@ on_info = {=killed_by_actor} %+esc_dram_pass_fire =sak.set_gulag_enemy_actor =sa
 [logic@esc_blockpost_patrol1]
 active = patrol@esc_blokpost_day_patrol_commander
 on_hit = hit@esc_blockpost
-combat_ignore = combat_ignore@esc_blockpost
+combat_ignore = combat_ignore@esc_patrol
 
 [patrol@esc_blokpost_day_patrol_commander]
 path_walk = day_patrol_walk
@@ -1043,12 +1043,13 @@ path_look = day_patrol_look
 danger = danger_condition@day_patrol
 formation = back
 commander = true
-combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+; -- combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+combat_ignore_cond = {=fighting_dist_ge(5) =fighting_monster}, {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
 
 [logic@esc_blockpost_follower1]
 active = patrol@esc_blokpost_day_patrol_follower1
 on_hit = hit@esc_blockpost
-combat_ignore = combat_ignore@esc_blockpost
+combat_ignore = combat_ignore@esc_patrol
 
 [patrol@esc_blokpost_day_patrol_follower1]
 path_walk = day_patrol_walk
@@ -1056,13 +1057,14 @@ path_look = day_patrol_look
 danger = danger_condition@day_patrol
 formation = back
 commander = false
-combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+;-- combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+combat_ignore_cond = {=fighting_dist_ge(5) =fighting_monster}, {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
 
 [logic@esc_blockpost_follower2]
 active = patrol@esc_blokpost_day_patrol_follower2
-combat_ignore = combat_ignore@esc_bridge
+; -- combat_ignore = combat_ignore@esc_bridge
 on_hit = hit@esc_blockpost
-combat_ignore = combat_ignore@esc_blockpost
+combat_ignore = combat_ignore@esc_patrol
 
 [patrol@esc_blokpost_day_patrol_follower2]
 path_walk = day_patrol_walk
@@ -1070,7 +1072,8 @@ path_look = day_patrol_look
 danger = danger_condition@day_patrol
 formation = back
 commander = false
-combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+; -- combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
+combat_ignore_cond = {=fighting_dist_ge(5) =fighting_monster}, {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
 
 [danger_condition@day_patrol]
 ignore_distance = 5
@@ -1296,6 +1299,9 @@ on_info = {=hit_by_actor} %=sak.mil_abuse() +esc_blockpost_abuse%
 [combat_ignore@esc_blockpost]
 combat_ignore_cond = {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
 
+-- exclusive section for Kordon blokpost patrol
+[combat_ignore@esc_patrol]
+combat_ignore_cond = {=fighting_dist_ge(5) =fighting_monster}, {-esc_blockpost_abuse +mil_find_prizrak_today =fighting_actor}
 
 ;-----------------------------------------------------------------------------
 ;------------------------------  ESCAPE SPECNAZ  -----------------------------
