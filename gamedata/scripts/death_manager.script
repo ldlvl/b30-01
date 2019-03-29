@@ -383,19 +383,19 @@ function drop_manager:create_release_item()
 end
 
 local npc_cond = {
-    [ "military" ] = 75,
-    [ "killer"   ] = 75,
-    [ "monolith" ] = 30,
-    [ "zombied"  ] = 5,
-    [ "stalker"  ] = 45,
+    [ "military" ] = 50,
+    [ "killer"   ] = 60,
+    [ "monolith" ] = 45,
+    [ "zombied"  ] = 42,
+    [ "stalker"  ] = 60,
     [ "dolg"     ] = 65,
-    [ "bandit"   ] = 25,
-    [ "ecolog"   ] = 15,
+    [ "bandit"   ] = 55,
+    [ "ecolog"   ] = 45,
     [ "stranger" ] = 80,
     [ "trader"   ] = 80,
     [ "sniper"   ] = 80,
     [ "green"    ] = 40,
-    [ "freedom"  ] = 25
+    [ "freedom"  ] = 60
 }
 
 function keep_item( npc, item )
@@ -414,8 +414,10 @@ function keep_item( npc, item )
     if section == "bolt" then return false end
     if always_keep_item[ section ] == true then return true end
     local item_id = item:id()
-    local kond    = npc_cond[ npc_community ]
+    local kond1   = 10 + math.floor( npc:rank() / 50 )
+    local kond2   = npc_cond[ npc_community ]
     local item_in_slot
+    if kond1 > 40 then kond1 = 40 end
     for i = 1, 2 do
         item_in_slot = npc:item_in_slot( i )
         if item_in_slot ~= nil and item_in_slot:id() == item_id then
@@ -427,7 +429,7 @@ function keep_item( npc, item )
                 )
             else
                 item:unload_magazine()
-                item:set_condition( lua_random( 10, 45 ) / 100 )
+                item:set_condition( lua_random( kond1, kond2 ) / 100 )
                 return true
             end
         end
@@ -435,7 +437,7 @@ function keep_item( npc, item )
 
     item_in_slot = npc:active_item()
     if item_in_slot ~= nil and item_in_slot:id() == item_id then
-        item:set_condition( lua_random( 10, 45 ) / 100 )
+        item:set_condition( lua_random( kond1, kond2 ) / 100 )
         return true
     end
     if
