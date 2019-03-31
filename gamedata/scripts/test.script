@@ -1679,3 +1679,20 @@ function spawn_korovan_box_bolota( num )  -- 1, 4, 7
         tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
     )
 end
+
+function teleport_esc_energy_drink()
+    local tbl = {
+        { -52.959461212158, -9.0071945190430, -60.711692810059, 77, 226158 },
+        { -57.242519378662, -10.030177116394, -51.030503082275, 77, 220623 },
+        { -40.648516387939, -9.4729245376587, -82.002436218262, 77, 237958 },
+        { -90.234230041504, -4.5147166252136, -74.248161315918, 75, 173875 }
+    }
+    local sobj = g_sim:object( "esc_energy_drink" )
+    if sobj and lua_random > 0.3 then
+        local ind = lua_random( #tbl )
+        g_sim:teleport_object(
+            sobj.id, tbl[ ind ][ 4 ], tbl[ ind ][ 5 ],
+            sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] )
+        )
+    end
+end
