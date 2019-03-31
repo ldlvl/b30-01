@@ -903,6 +903,7 @@ function randomize_arts()
 				and not strposx( sobj:section_name(), "unknown" )
 				and not strposx( sobj:section_name(), "_full_akkum" )
 				and sobj:section_name() ~= "esc_af_medusa"
+				and not strposx( sobj:section_name(), "dummy_green" )
 			then
 				misc.release_obj( sobj )
 				break
