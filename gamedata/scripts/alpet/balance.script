@@ -1,59 +1,37 @@
-
-
 function balance.load_config()
- local fs = getFS()
- local bcfg = get_console():get_string("g_game_balance") or ""
-    bcfg = "light"
- 
- local fname = fs:update_path('$game_config$', sprintf('balance_%s.ltx', bcfg) )
- 
- if not fs:exist(fname) then
-    abort(" not found "..fname) 
-    return
- end 
- 
- local ini = ini_file(fname) -- load default configuration
- if not ini:load(fname) then
-    wprintf("~C0C #ERROR:~C07 failed to load~C0A %s~C07 ", fname)
-    return
- end 
- local obj = ini:object()
- 
- 
- wprintf("[~T/~B]. #DBG: sections count =~C0D %d~C07 ", ini:section_count())
- 
- 
- for i = 0, ini:section_count() - 1 do
-  local scn = ini:section_name(i)
-  
-  wprintf("[~T/~B]. #DBG: loading~C0F balance.%s~C07", scn)
-  local sc = obj[scn]  -- section object
-  
-  sc.auto_type = true
-  local lcnt = ini:line_count(scn) -- lines count in section
-  
-  local tab = {}
-  
-   
-  for n = 0, lcnt - 1 do
-    local r, k, v = ini:r_line(scn, n, "", "")    
-    tab[k] = sc[k] -- auto value by key      
-    -- wprintf("  ~C0E balance.%s.%s = %s~C07", scn, k, DumpVar(tab[k]))
-  end -- for n
-  balance[scn] = tab -- save table in name space
-  
- end
-  
- wprintf("~C0F _G.balance = ~C07") 
- misc.dump_table(balance, '     ') 
+    local fs    = getFS()
+    local bcfg  = get_console():get_string( "g_game_balance" ) or ""
+    bcfg        = "light"
+    local fname = fs:update_path( '$game_config$', sprintf( 'balance_%s.ltx', bcfg ) )
+    if not fs:exist( fname ) then
+        abort( " not found " .. fname )
+        return
+    end
+    local ini = ini_file( fname ) -- load default configuration
+    if not ini:load( fname ) then
+        wprintf( "~C0C #ERROR:~C07 failed to load~C0A %s~C07 ", fname )
+        return
+    end
+    local obj = ini:object()
+    wprintf( "[~T/~B]. #DBG: sections count =~C0D %d~C07 ", ini:section_count() )
+    for i = 0, ini:section_count() - 1 do
+        local scn    = ini:section_name( i )
+        wprintf( "[~T/~B]. #DBG: loading~C0F balance.%s~C07", scn )
+        local sc     = obj[ scn ]  -- section object
+        sc.auto_type = true
+        local lcnt   = ini:line_count( scn ) -- lines count in section
+        local tab    = {}
+        for n = 0, lcnt - 1 do
+            local r, k, v = ini:r_line( scn, n, "", "" )
+            tab[ k ]      = sc[ k ] -- auto value by key
+        end
+        balance[ scn ] = tab -- save table in name space
+    end
+    wprintf( "~C0F _G.balance = ~C07" )
+    misc.dump_table( balance, '     ' )
 end
 
-function init_module()
- balance.load_config()
-end
-
-function late_init()
-
-end
+function init_module() balance.load_config() end
+function late_init() end
 
 balance.load_config()
