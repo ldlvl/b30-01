@@ -3568,6 +3568,7 @@ function actor_have( amount )
 end
 
 function actor_1000_not_have() return not actor_have(1000) end
+function actor_7000_not_have() return not actor_have(7000) end
 function actor_20000_have() return db.actor:money() >= 20000 end
 function actor_50000_have() return db.actor:money() >= 50000 end
 function actor_10000_have() return db.actor:money() >= 10000 end
