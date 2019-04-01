@@ -205,14 +205,13 @@ function off_corpses( loks )
         if
             ( obj.parent_id == nil or obj.parent_id == BAD_OBJ_ID )
             and not str_in_tab( obj_name, {
-                                    "_m1",
-                                    "_m2",
+                                    "_m1", "_m2",
                                     "hunters_toz_new",
                                     "wpn_gungauss",
                                     "wpn_gm94",
+                                    "outfit_bandit_m1",
                                     "quest"
-                                }
-                            )
+                                })
         then
             if
                 isWeapon( obj )
