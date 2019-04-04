@@ -1222,7 +1222,7 @@ end
 
 function add_rad_disease()
     local total_remove = nlc_vars.rad_disease or 0
-    total_remove = total_remove + dsh.get_next_random( "test.add_rad_disease", 0.08, 0.15 )
+    total_remove = total_remove + ( dsh.get_next_random( "test.add_rad_disease", 6, 11 ) / 100 )
     if total_remove >= 0.8 then total_remove = 0.8 end
     nlc_vars.rad_disease = total_remove
     wprintf( "~C0C #WARN:~C07 added_rad_disease = %s", DumpVar( total_remove ) )
@@ -1695,4 +1695,30 @@ function teleport_esc_energy_drink()
             sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] )
         )
     end
+end
+
+function teleport_gluzov_to_base()
+    local obj = g_sim:story_object( story_ids.marsh_ecolog1_sev_khutor )
+    if obj then
+        g_sim:teleport_object(
+            obj.id, 3377, 74293,
+            sak.v3f( -142.9165802002, 1.3347436189651, -273.37432861328 )
+        )
+    end
+end
+
+function damage_art_by_sect( section, damage )
+    local items = get_shadow_inv():get_content( true )
+    for i, rec in items:ipairs() do
+        if rec.sect == section then
+            wprintf( "----------------------1      %s,     %s", rec.sect, section )
+            local cond = rec.obj:condition()
+            if cond >= damage then
+                wprintf( "----------------------2     cond = %s   damage = %s", cond, damage )
+                params.upd_condition( rec.id, cond - damage )
+                wprintf( "----------------------3     cond = %s", rec.obj:condition() )
+                return
+            end
+        end
+    end  
 end
