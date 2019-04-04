@@ -239,7 +239,7 @@ function change_art_on_belt()
             end
         end
     end
-    local amount = dsh.get_next_random( "vergas_art.rnd", 0.07, 0.16 )
+    local amount = dsh.get_next_random( "vergas_art.rnd", 7, 16 ) / 100
     local cond   = params.get_condition( art_id, 0.9999 )
     if cond > amount + 0.05 then
         local new_cond

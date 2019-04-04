@@ -277,10 +277,15 @@ function _G.snd_on_off()
 end
 
 function _G.snd_volume_up() snd_volume_change(  0.1 ) end
-function _G.snd_volume_dn() snd_volume_change( -0.1 )end
+function _G.snd_volume_dn() snd_volume_change( -0.1 ) end
 
-function set_w_up() lukash_info.dbg_set_w_up() end
-function set_w_dn() lukash_info.dbg_set_w_dn() end
+function set_w_up()
+    --lukash_info.dbg_set_w_up()
+end
+
+function set_w_dn()
+    --lukash_info.dbg_set_w_dn()
+end
 
 function zoom_wpn_fov()
     local fr = params.get_fov_ratio()
