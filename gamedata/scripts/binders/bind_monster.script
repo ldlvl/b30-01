@@ -348,7 +348,7 @@ function generic_object_binder:update( delta )
                 panic_item_drop()
                 GigantTimer = time_global()
             end
-            if actor and dist_to_actor < bconf.gigant_radiation_dist then
+            if actor and dist_to_actor < bconf.gigant_radiation_dist and level.name() ~= "l04u_labx18" then
                 local snd_rand = lua_random( 1, 4 )
                 sak.snd_rand_geiger( snd_rand )
                 local h     = hit()
