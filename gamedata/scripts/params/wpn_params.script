@@ -379,6 +379,7 @@ gg_tired          = 1
 function scope_wobble()
     local actor = db.actor
     local wobble_progress_k = 1       -- начальный коээф. раскачки по времени, умножается потом на базовый
+    local sleepiness = sleep_manager.get_sleepiness()
     local eff_obj = wpn_params.get_zie_obj()
     if eff_obj == nil then         
         if wpn_params.zoom_time > 1 and zoom_weapon then
@@ -415,7 +416,7 @@ function scope_wobble()
             if base_wobble > 1 then                                      -- если раскачка больше 1
                 wobble_progress_k = 1 - ( timers.Get_Game_Days() / 200 ) -- снижение в 2 раза к 100-му дню в Зоне 
                 if wobble_progress_k < 0.5 then wobble_progress_k = 0.5 end
-                base_wobble = base_wobble * wobble_progress_k
+                base_wobble = base_wobble * wobble_progress_k + ( sleepiness / 250 )
                 local arm6 = actor:item_in_slot( 6 )
                 if arm6 ~= nil then                                      -- Если в экзе, то раскачка на 30% слабее
                     if strposx ( arm6:section(), "exo" ) then base_wobble = base_wobble * 0.75 end
@@ -442,7 +443,6 @@ function scope_wobble()
     end
     local div_limit  = 10
     local crouch     = actor:get_crouch_factor()
-    local sleepiness = sleep_manager.get_sleepiness()
     if crouch == 1 and sleepiness < 170 then
         wpn_params.zoom_time = wpn_params.zoom_time + 0.07
         div_limit            = 20
