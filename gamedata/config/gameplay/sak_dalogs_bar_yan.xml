@@ -16619,7 +16619,7 @@
 </dialog>
 
 <dialog id="barman_exo_dialog_done">
-<precondition>mike.gg_4_caps_have</precondition>
+<precondition>mike.gg_5_caps_have</precondition>
 <has_info>barman_exo_new</has_info>
 <has_info>barman_exo_message</has_info>
 <dont_has_info>barman_exo_new_done</dont_has_info>
@@ -16634,13 +16634,15 @@
 		</phrase>
 		<phrase id="2">
 			<text>barman_exo_dialog_done_2</text>
-			<action>mike.give_4_caps</action>
+			<action>mike.give_5_caps</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
 			<text>barman_exo_dialog_done_3</text>
 			<action>test.add_to_actor("outfit_exo_m1",1)</action>
-			<give_info>barman_exo_new_done</give_info>			
+			<give_info>barman_exo_new_done</give_info>
+			<give_info>freedom_exo_good_trade</give_info>
+			<give_info>dolg_exo_good_trade</give_info>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
@@ -16688,7 +16690,7 @@
 </dialog>
 
 <dialog id="dolg_exo_dialog_done">
-<precondition>mike.gg_4_caps_have</precondition>
+<precondition>mike.gg_5_caps_have</precondition>
 <has_info>dolg_exo_new</has_info>
 <has_info>dolg_exo_message</has_info>
 <dont_has_info>dolg_exo_new_done</dont_has_info>
@@ -16703,13 +16705,15 @@
 		</phrase>
 		<phrase id="2">
 			<text>dolg_exo_dialog_done_2</text>
-			<action>mike.give_4_caps</action>
+			<action>mike.give_5_caps</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
 			<text>dolg_exo_dialog_done_3</text>
 			<action>test.add_to_actor("dolg_black_exoskeleton",1)</action>
-			<give_info>dolg_exo_new_done</give_info>			
+			<give_info>dolg_exo_new_done</give_info>
+			<give_info>barman_exo_good_trade</give_info>
+			<give_info>freedom_exo_good_trade</give_info>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">

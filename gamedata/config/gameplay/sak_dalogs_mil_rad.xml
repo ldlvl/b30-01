@@ -5735,7 +5735,7 @@
 </dialog>
 
 <dialog id="freedom_exo_dialog_done">
-<precondition>mike.gg_4_caps_have</precondition>
+<precondition>mike.gg_5_caps_have</precondition>
 <has_info>freedom_exo_new</has_info>
 <has_info>freedom_exo_message</has_info>
 <dont_has_info>freedom_exo_new_done</dont_has_info>
@@ -5750,13 +5750,15 @@
 		</phrase>
 		<phrase id="2">
 			<text>freedom_exo_dialog_done_2</text>
-			<action>mike.give_4_caps</action>
+			<action>mike.give_5_caps</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
 			<text>freedom_exo_dialog_done_3</text>
 			<action>test.add_to_actor("svoboda_exoskeleton",1)</action>
-			<give_info>freedom_exo_new_done</give_info>			
+			<give_info>freedom_exo_new_done</give_info>
+			<give_info>barman_exo_good_trade</give_info>
+			<give_info>dolg_exo_good_trade</give_info>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">
