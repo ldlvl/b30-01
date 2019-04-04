@@ -571,6 +571,12 @@ function barter_screen_ui:DoBarter( ind )
             if self.b_name == "zub" then
                 test.sms_recipt_found( tovar )
                 actor:give_info_portion( tovar )
+            elseif self.b_name == "menyala" then
+                local mobj = misc.spawn_to( tovar, actor )
+                misc.process_spawn()
+                sak.relocate_item( actor, "in", tovar, tovar_amnt )
+                params.upd_condition( mobj.id, ( dsh.get_next_random( "generic_rnd", 40, 70 ) / 100 ) )
+                --test.damage_art_by_sect( tovar, ( dsh.get_next_random( "generic_rnd", 40, 70 ) / 100 ) )
             else
                 sak.create_items( actor, tovar, tovar_amnt )
             end
