@@ -2,6 +2,7 @@
 active                        = walker
 danger                        = danger_condition
 treshold                      = treshold
+combat_ignore                 = combat_ignore@gig_watch
 
 [treshold]
 max_ignore_distance           = 10
@@ -58,6 +59,9 @@ use                           = true
 use_wpn                       = true
 meet_talk_enabled             = true
 meet_dialog                   = marsh_botan1_base_start_dialog
+
+[combat_ignore@gig_watch]
+combat_ignore_cond            = {=fighting_dist_ge(5) =fighting_gigant}
 
 [danger_condition]
 ignore_distance_corpse        = 0
