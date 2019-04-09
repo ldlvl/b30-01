@@ -1851,6 +1851,10 @@ function show_killed_stalker(actor,npc,p1,p2)
 	if killed_text_who~=nil and killed_text_who~="" and killed_text_where~=nil and killed_text_where~="" then
 		db.actor:give_talk_message(killed_text_who,"ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
 		db.actor:give_talk_message(killed_text_where,"ui\\ui_iconsTotal",Frect():set(0,0,0,0), "simple_answer_item")
+		if db.actor:object( "klava" ) ~= nil then
+        	local custom_msg = killed_text_who .. "\n" .. killed_text_where
+        	vergas_lib.add_record_in_klava( "custom", custom_msg )
+    	end
 	end
 end
 function format_killed_text(id)

@@ -3920,6 +3920,10 @@ function show_search_stalker( npc_id )
             text_where, "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
         )
     end
+    if db.actor:object( "klava" ) ~= nil then
+        local custom_msg = text_who .. "\n" .. text_where
+        vergas_lib.add_record_in_klava( "custom", custom_msg )
+    end
 end
 
 function format_search_text( id )

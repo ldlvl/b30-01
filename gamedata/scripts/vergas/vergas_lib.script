@@ -436,7 +436,7 @@ function ammo_for_slot(wpn)
   return tmp_inf
 end
 
-function add_record_in_klava(msg_id)
+function add_record_in_klava(msg_id, custom_msg)
   local msg_tema = ""
   local msg_text = ""
   local message
@@ -445,15 +445,26 @@ function add_record_in_klava(msg_id)
   local hvost
   local perenos
 
-  local tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id),true)
-  msg_tema = set_data_string()..tbl_msg[1]
+  local tbl_msg
+
+  if msg_id == "custom" then
+    tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id,custom_msg),true)
+    msg_tema = "Инфо по сталкеру"
+    for i = 1,table.getn(tbl_msg) do
+      table.insert(tbl_txt,tbl_msg[i])
+    end
+  else
+    tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id),true)
+    msg_tema = set_data_string()..tbl_msg[1]
+    for i = 2,table.getn(tbl_msg) do
+      table.insert(tbl_txt,tbl_msg[i])
+    end
+  end
+
   if string.len(msg_tema) < 40 then
     msg_tema = msg_tema..string.rep(" ", 40-string.len(msg_tema))
   elseif string.len(msg_tema) > 40 then
     msg_tema = string.sub(msg_tema,1,40)
-  end
-  for i = 2,table.getn(tbl_msg) do
-    table.insert(tbl_txt,tbl_msg[i])
   end
 
   if table.getn(tbl_txt) < 14 then

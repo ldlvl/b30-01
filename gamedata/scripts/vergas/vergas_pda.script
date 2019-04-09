@@ -891,7 +891,7 @@ function set_info_pda_nil()
 	number_record = nil
 end
 
-function read_message(msg_id)
+function read_message(msg_id, custom_msg)
 
 	local text = ""
 	local line
@@ -899,40 +899,48 @@ function read_message(msg_id)
 	local file_msg
 	local text_tmp
 
-	if string.find (msg_id, "stalker") then
-		file_msg = "$game_config$/text/rus/string_table_pda_stalker.xml"
-	elseif string.find (msg_id, "military") then
-		file_msg = "$game_config$/text/rus/string_table_pda_military.xml"
-	elseif string.find (msg_id, "bandit") then
-		file_msg = "$game_config$/text/rus/string_table_pda_bandit.xml"
-	elseif string.find (msg_id, "dolg") then
-		file_msg = "$game_config$/text/rus/string_table_pda_dolg.xml"
-	elseif string.find (msg_id, "freedom") then
-		file_msg = "$game_config$/text/rus/string_table_pda_freedom.xml"
-	elseif string.find (msg_id, "monolith") then
-		file_msg = "$game_config$/text/rus/string_table_pda_monolith.xml"
-	elseif string.find (msg_id, "killer") then
-		file_msg = "$game_config$/text/rus/string_table_pda_killer.xml"
-	elseif string.find (msg_id, "ecolog") then
-		file_msg = "$game_config$/text/rus/string_table_pda_ecolog.xml"
-	elseif string.find (msg_id, "green") then
-		file_msg = "$game_config$/text/rus/string_table_pda_green.xml"
-	elseif string.find (msg_id, "treasure") then
-		file_msg = "$game_config$/text/rus/string_table_pda_treasure.xml"
-	end
-	
-	local file_text =  FileLoad(file_msg)
-	local lines = SplitStr( file_text, "\n")
-	local sample = string.format("id=\"%s\"", msg_id)
-	
-	
-	for i, line in pairs(lines) do
-		if string.find (line, sample) then   
-			local lstart = string.find(line, "<text>") + 6
-			local lend = string.find(line, "</text>") - 1
-			text_tmp = string.sub(line, lstart, lend)
+	if msg_id ~= "custom" then
+
+		if string.find (msg_id, "stalker") then
+			file_msg = "$game_config$/text/rus/string_table_pda_stalker.xml"
+		elseif string.find (msg_id, "military") then
+			file_msg = "$game_config$/text/rus/string_table_pda_military.xml"
+		elseif string.find (msg_id, "bandit") then
+			file_msg = "$game_config$/text/rus/string_table_pda_bandit.xml"
+		elseif string.find (msg_id, "dolg") then
+			file_msg = "$game_config$/text/rus/string_table_pda_dolg.xml"
+		elseif string.find (msg_id, "freedom") then
+			file_msg = "$game_config$/text/rus/string_table_pda_freedom.xml"
+		elseif string.find (msg_id, "monolith") then
+			file_msg = "$game_config$/text/rus/string_table_pda_monolith.xml"
+		elseif string.find (msg_id, "killer") then
+			file_msg = "$game_config$/text/rus/string_table_pda_killer.xml"
+		elseif string.find (msg_id, "ecolog") then
+			file_msg = "$game_config$/text/rus/string_table_pda_ecolog.xml"
+		elseif string.find (msg_id, "green") then
+			file_msg = "$game_config$/text/rus/string_table_pda_green.xml"
+		elseif string.find (msg_id, "treasure") then
+			file_msg = "$game_config$/text/rus/string_table_pda_treasure.xml"
 		end
-	end 
+		
+		local file_text =  FileLoad(file_msg)
+		local lines = SplitStr( file_text, "\n")
+		local sample = string.format("id=\"%s\"", msg_id)
+		
+		
+		for i, line in pairs(lines) do
+			if string.find (line, sample) then   
+				local lstart = string.find(line, "<text>") + 6
+				local lend = string.find(line, "</text>") - 1
+				text_tmp = string.sub(line, lstart, lend)
+			end
+		end
+
+	end
+
+	if custom_msg then text_tmp = custom_msg end
+
+
 	local on = false
 	local off
 	local sumbol
