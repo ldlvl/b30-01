@@ -401,7 +401,9 @@ function shadow_inventory:drop_storage()
   if self:update_storage() and self:hide_content(2) then
      self.storage:get_container():close()
      self.storage:set_name("dropped_rucksack") 
-     self.holder:drop_item(self.storage) -- объект отделен от носителя!          
+     local pos = test.pos_in_front_of_actor() or db.actor:position()
+     self.holder:drop_item_and_teleport( self.storage, pos )
+     --self.holder:drop_item(self.storage) -- объект отделен от носителя!          
      misc.process_spawn()                          
      self:update_storage() -- обработать сброс     
      self.storage = nil
