@@ -52,7 +52,7 @@ function take_art( obj )
     local actor   = db.actor
     -- для статистики:
     test.haldle_art_for_stats( sect, obj:id() )
-    if sect == "esc_af_medusa" then add_dmg = 0 end  -- чтобы первой же медузой не убило при новых дамагах
+    if obj:name() == "esc_af_medusa" then add_dmg = 0 end  -- чтобы первой же медузой не убило при новых дамагах
     if ver_art ~= nil and table.getn( ver_art ) ~= 0 then
         for i = 1, table.getn( ver_art ) do
             if ver_art[ i ] == obj:id() then
