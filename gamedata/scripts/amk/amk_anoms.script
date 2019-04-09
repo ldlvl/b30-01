@@ -459,7 +459,7 @@ level_anoms = {
 
 level_arts = {
 	marsh = {
-		1, 3,
+		2, 4,
 		{
 			balb_1        = 14,
 			gravi_1       = 15,
@@ -523,7 +523,7 @@ level_arts = {
 		}
 	},
 	l03_agroprom = {
-		1, 2,
+		1, 3,
 		{
 			balb_1        = 15,
 			gravi_1       = 15,
@@ -538,7 +538,7 @@ level_arts = {
 		}
 	},
 	l04_darkvalley = {
-		1, 2,
+		1, 3,
 		{
 			balb_1        = 15,
 			gravi_1       = 15,
@@ -555,7 +555,7 @@ level_arts = {
 		}
 	},
 	k01_darkscape = {
-		1, 3,
+		2, 4,
 		{
 			balb_1        = 14,
 			gravi_1       = 14,
@@ -587,7 +587,7 @@ level_arts = {
 		}
 	},
 	l06_rostok = {
-		0, 2,
+		1, 2,
 		{
 			electra_1     = 19,
 			zharka_1      = 19,
@@ -604,7 +604,7 @@ level_arts = {
 		}
 	},
 	l08_yantar = {
-		1, 2,
+		1, 3,
 		{
 			balb_1        = 8,
 			gravi_1       = 9,
@@ -631,7 +631,7 @@ level_arts = {
 		}
 	},
 	aver = {
-		2, 3,
+		2, 4,
 		{
 			balb_2        = 12,
 			gravi_2       = 12,
@@ -651,7 +651,7 @@ level_arts = {
 		}
 	},
 	l07_military = {
-		0, 2,
+		1, 2,
 		{
 			balb_1        = 8,
 			gravi_1       = 8,
@@ -678,7 +678,7 @@ level_arts = {
 		}
 	},
 	generators = {
-		2, 4,
+		3, 5,
 		{
 			electra_1     = 47,
 			electra_2     = 40,
@@ -688,7 +688,7 @@ level_arts = {
 		}
 	},
 	red_forest = {
-		1, 3,
+		2, 3,
 		{
 			balb_2        = 10,
 			gravi_2       = 10,
@@ -711,7 +711,7 @@ level_arts = {
 		}
 	},
 	limansk = {
-		0, 2,
+		1, 2,
 		{
 			balb_2        = 11,
 			gravi_2       = 11,
@@ -731,7 +731,7 @@ level_arts = {
 		}
 	},
 	deadcity = {
-		1, 3,
+		2, 3,
 		{
 			balb_2        = 7,
 			gravi_2       = 8,
@@ -757,7 +757,7 @@ level_arts = {
 		}
 	},
 	l10_radar = {
-		1, 3,
+		2, 3,
 		{
 			balb_2        = 9,
 			gravi_2       = 9,
@@ -900,11 +900,14 @@ function randomize_arts()
 			if
 				sobj.parent_id
 				and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID )
-				and not strposx( sobj:section_name(), "unknown" )
-				and not strposx( sobj:section_name(), "_full_akkum" )
-				and sobj:section_name() ~= "esc_af_medusa"
-				and not strposx( sobj:section_name(), "dummy_green" )
+				and not str_in_tab( sobj:section_name(), {
+            		"unknown",
+            		"_full_akkum",
+            		"dummy_green"
+        		})
+				and not test.is_protected_art( sobj )
 			then
+				wprintf( "@----------------------- OH NOES!!  released: %s", sobj:name() )
 				misc.release_obj( sobj )
 				break
 			end
