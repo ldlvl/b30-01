@@ -35,13 +35,13 @@ function trade_init( npc, cfg )
     end
 end
 
-function update( npc )
+function update( npc, flag )
     local tt = trade_manager[ npc:id() ]
     ASSERT( tt, "trade_manager[ npc:id() ] npc found: %s", npc:name() )
 
-    if tt.update_time and tt.update_time > time_global() then return end
-    local update_t = math.random( 1800, 3600 ) * 1000
-    tt.update_time = time_global() + update_t
+    if tt.update_time and tt.update_time > time_global() and not flag then return end
+    local update_t = math.random( 1800, 2400 ) * 1000                       -- апдейт проверки, пора ли пополнять ассортимент,
+    tt.update_time = time_global() + update_t                               -- идёт раз в реальных полчаса-час, по рандому
 
     local str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.buy_condition )
     if tt.current_buy_condition ~= str then
@@ -71,7 +71,11 @@ function update( npc )
             --add_buy_supplies( npc, tt.config, str )
             tt.current_buy_supplies = str
         end
-        tt.resuply_time = game.get_game_time() + seconds2ctime( math.random( 12, 24 ) * 3600 )
+        if npc:name() == "escape_trader" or npc:name() == "lim_trader" then
+            tt.resuply_time = game.get_game_time() + seconds2ctime( 6 * 3600 )
+        else
+            tt.resuply_time = game.get_game_time() + seconds2ctime( math.random( 12, 24 ) * 3600 )
+        end
         -- log2(
         --   "TRADE UPDATE[%s] resuply_time in %s seconds",
         --   npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
