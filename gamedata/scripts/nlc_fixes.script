@@ -6,6 +6,7 @@ function on_late_init()
     local fixes = {
         this.fix_tiski_mil_dv,
         this.fix_gar_bandit_wpn,
+        this.fix_mp5_m1_in_inventory,
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -72,5 +73,14 @@ function fix_gar_bandit_wpn()
         misc.spawn_to( "wpn_bm16",        pobj.id )
         misc.spawn_to( "ammo_12x70_buck", pobj.id )
         log2( "[ %s.script ]: gar_sniper_bandit now is with obrez...probably...", scr_name )
+    end
+end
+
+function fix_mp5_m1_in_inventory()
+    local items = get_shadow_inv():get_content( true )
+    for i, rec in items:ipairs() do
+        if rec.sect == "wpn_mp5_m1" and rec.obj:condition() < 0.63 then
+            params.upd_condition( rec.id, 0.63 )
+        end
     end
 end

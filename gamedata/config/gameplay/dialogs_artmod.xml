@@ -894,7 +894,7 @@
 
 
 <dialog id="artmod_212_dialog">
-<precondition>sak_dialog.gar_dram_novice_mp5_m1_have</precondition>
+<precondition>test.have_mp5_m1_in_any_cond</precondition>
 <has_info>gar_dram_novice_mp5_m1_start</has_info>
 <dont_has_info>gar_dram_novice_mp5_m1_done</dont_has_info>
 <precondition>dialogs.is_not_wounded</precondition>
@@ -905,25 +905,40 @@
 	</phrase>
 	<phrase id="1">
 		<text>artmod_212_dialog_1</text>
-		<next>2</next>
+		<next>20</next>
+		<next>21</next>
 		<next>22</next>
 	</phrase>
-	<phrase id="2">
+	<phrase id="20">
+	<precondition>test.not_have_good_cond_mp5_m1</precondition>
+		<text>artmod_212_dialog_20</text>
+		<give_info>gar_dram_novice_mp5_m1_done</give_info>
+		<action>test.give_not_good_cond_mp5_m1</action>
+		<next>30</next>
+	</phrase>
+	<phrase id="21">
 	<precondition>sak_dialog.gar_dram_novice_mp5_m1_have</precondition>
-		<text>artmod_212_dialog_2</text>
+		<text>artmod_212_dialog_21</text>
 		<give_info>gar_dram_novice_mp5_m1_done</give_info>
 		<action>sak_dialog.give_gar_dram_novice_mp5_m1</action>
-		<next>3</next>
+		<next>31</next>
 	</phrase>
 	<phrase id="22">
 		<text>artmod_212_dialog_22</text>
 		<action>dialogs.break_dialog</action>
 	</phrase>
-	<phrase id="3">
-		<text>artmod_212_dialog_3</text>
+	<phrase id="30">
+		<text>artmod_212_dialog_30</text>
 		<!--<give_info>info_artmod_electra_sparkler_mosquito_bald</give_info>
 		<action>sak.info_artmod</action>-->
 		<action>test.give_rnd_recipt(1)</action>
+	</phrase>
+	<phrase id="31">
+		<text>artmod_212_dialog_31</text>
+		<!--<give_info>info_artmod_electra_sparkler_mosquito_bald</give_info>
+		<action>sak.info_artmod</action>-->
+		<action>test.give_rnd_recipt(1)</action>
+		<action>sak.take_trasure</action>
 	</phrase>
 </phrase_list>
 </dialog>

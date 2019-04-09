@@ -428,6 +428,7 @@ function keep_item( npc, item )
                     npc:level_vertex_id(), npc:game_vertex_id()
                 )
             else
+                if section == "wpn_mp5_m1" then kond1, kond2 = 55, 67 end
                 item:unload_magazine()
                 item:set_condition( lua_random( kond1, kond2 ) / 100 )
                 return true
@@ -437,6 +438,7 @@ function keep_item( npc, item )
 
     item_in_slot = npc:active_item()
     if item_in_slot ~= nil and item_in_slot:id() == item_id then
+        if section == "wpn_mp5_m1" then kond1, kond2 = 55, 67 end
         item:set_condition( lua_random( kond1, kond2 ) / 100 )
         return true
     end
