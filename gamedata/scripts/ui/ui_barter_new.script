@@ -580,7 +580,6 @@ function barter_screen_ui:DoBarter( ind )
                 misc.process_spawn()
                 sak.relocate_item( actor, "in", tovar, tovar_amnt )
                 params.upd_condition( mobj.id, ( dsh.get_next_random( "generic_rnd", 40, 70 ) / 100 ) )
-                --test.damage_art_by_sect( tovar, ( dsh.get_next_random( "generic_rnd", 40, 70 ) / 100 ) )
             else
                 sak.create_items( actor, tovar, tovar_amnt )
             end
@@ -589,7 +588,20 @@ function barter_screen_ui:DoBarter( ind )
     elseif strposx( need_sect, "ammo_" ) then
         if vergas_lib.search_items( need_sect, self.price_amnt, 1 ) ~= false then
             vergas_lib.search_items( need_sect, self.price_amnt, 2 )
-            sak.create_items( actor, tovar, tovar_amnt )
+            if
+                self.b_name == "eger"
+                and str_in_tab( tovar, {
+                    "mutant_poltergeist_glas",
+                    "mutant_psevdogigant_hand",
+                    "mutant_hand_kontroler"
+                })
+            then
+                sak_dialog.add_bad_part(
+                    tovar, ( dsh.get_next_random( "generic_rnd", 55, 85 ) / 100 )
+                )
+            else
+                sak.create_items( actor, tovar, tovar_amnt )
+            end
             misc.process_spawn()
         end
     else
