@@ -10,66 +10,7 @@
 #include "gameplay\kill_stalker_dlg.xml"
 #include "gameplay\vergas_dialogs.xml"
 #include "gameplay\mike_dialogs_new_story.xml"
-<dialog id="about_repair_box_dialog">
-<precondition>sak_dialog.repair_box_not_have</precondition>
-	<phrase_list>
-		<phrase id="0">
-			<text>about_repair_box_dialog_0</text>
-			<next>1</next>
-		</phrase>
-		<phrase id="1">
-			<text>about_repair_box_dialog_1</text>
-			<next>2</next>
-		</phrase>
-		<phrase id="2">
-			<text>about_repair_box_dialog_2</text>
-			<next>3</next>
-		</phrase>
-		<phrase id="3">
-			<text>about_repair_box_dialog_3</text>
-			<next>4</next>
-		</phrase>
-		<phrase id="4">
-			<text>about_repair_box_dialog_4</text>
-			<next>5</next>
-		</phrase>
-		<phrase id="5">
-			<text>about_repair_box_dialog_5</text>
-			<next>61</next>
-			<next>82</next>
-			<next>62</next>
-		</phrase>
-		<phrase id="61">
-		<precondition>sak_dialog.medusa10_have</precondition>
-			<text>about_repair_box_dialog_61</text>
-			<action>sak_dialog.give_10medusa</action>
-			<next>71</next>
-		</phrase>
-		<phrase id="62">
-			<text>about_repair_box_dialog_62</text>
-			<next>72</next>
-		</phrase>
-		<phrase id="71">
-			<text>about_repair_box_dialog_71</text>
-			<action>sak.off_repair_box</action>
-			<action>test.add_to_actor("repair_boxoutfit",1)</action>
-		</phrase>
-		<phrase id="72">
-			<text>about_repair_box_dialog_72</text>
-			<next>81</next>
-			<next>82</next>
-		</phrase>
-		<phrase id="81">
-		<precondition>sak_dialog.medusa7_have</precondition>
-			<text>about_repair_box_dialog_81</text>
-			<action>sak_dialog.give_7medusa</action>
-			<next>71</next>
-		</phrase>
-		<phrase id="82">
-			<text>about_repair_box_dialog_82</text>
-		</phrase>
-	</phrase_list>
-</dialog>
+
 <dialog id="barman_musik_dialog">
 	<phrase_list>
 		<phrase id="0">
