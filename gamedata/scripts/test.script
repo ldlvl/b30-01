@@ -1218,6 +1218,7 @@ function prizrak_outfit_prize()
 end
 
 function add_rad_disease()
+    if dsh.get_next_random( "test.add_rad_disease" ) > 0.8 then return end
     local total_remove = nlc_vars.rad_disease or 0
     total_remove = total_remove + ( dsh.get_next_random( "test.add_rad_disease", 6, 11 ) / 100 )
     if total_remove >= 0.8 then total_remove = 0.8 end
@@ -1232,7 +1233,8 @@ function rad_disease_health_handle()
     if db.actor.health >= curr_max_health then
         params.health_add( -0.05 )
     end
-    if lua_random() < 0.15 then
+    if lua_random() < 0.1 then
+        misc.easy_sound( "scripts\\actor_gripp" )
         level.add_pp_effector( "eat_drug.ppe", 1039, false )
     end
 end
@@ -1747,9 +1749,7 @@ function pos_in_front_of_actor()
     local xdelta = math.sin( a.y )
     local zdelta = math.cos( a.y )
     local pos    = actr:position()
-    --local lvid   = actr:level_vertex_id()
-    --local gvid   = actr:game_vertex_id()
-    return v3f( ( pos.x + xdelta ), pos.y, ( pos.z + zdelta ) )
+    return v3f( ( pos.x + xdelta ), ( pos.y + 0.3 ), ( pos.z + zdelta ) )
 end
 
 function is_protected_art( obj )
@@ -1788,4 +1788,37 @@ function sidor_resuply()
             sak.send_tip( "Обновили ассортимент проклятому Сидору...", "", 2, 20, "uniq", "sak", "green" )
         end
     end
+end
+
+function add_text_quest_rashpil()
+    local tbl = {
+        "\nА к прикиду сверху ещё пайки военной накинь, пачек пять - оно для Севера как раз в цвет. Ну чё, давай краба?",
+        "\nА к прикиду сверху ещё аптечек конкретных, жёлтых, накинь, штуки четыре - оно для Севера как раз в цвет. Ну чё, давай краба?",
+        "\nА к прикиду сверху ещё пуху накинь, 'глок'. Там патронов много, для Севера в самый раз. На Баре кажысь такими банчат. Ну чё, давай краба?"
+    }
+    db.actor:give_talk_message(
+        "%c[255,216,186,140]" .. game.translate_string( tbl[ amk_vars.r_treas_items or 1 ] ),
+        "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
+    ) 
+end
+
+local rashpil_tbl = {
+        { "suhpay", 5 }, { "medkit_scientic", 4 }, { "wpn_glock", 1 }
+    }
+
+function have_rashpil_items()
+    return
+        have_with_cond( "ecolog_outfit", 1, 0.95, false )
+        and vergas_lib.search_items(
+            rashpil_tbl[ amk_vars.r_treas_items ][ 1 ],
+            rashpil_tbl[ amk_vars.r_treas_items ][ 2 ], 1
+        )
+end
+
+function give_rashpil_items()
+    sak_inventory.release_actor_items( "ecolog_outfit", 1 )
+    sak_inventory.release_actor_items(
+        rashpil_tbl[ amk_vars.r_treas_items ][ 1 ],
+        rashpil_tbl[ amk_vars.r_treas_items ][ 2 ]        
+    )
 end
