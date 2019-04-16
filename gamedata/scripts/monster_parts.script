@@ -1,87 +1,84 @@
 -- -*- mode: lua; encoding: windows-1251 -*-
-local actor   		= db.actor
-local monster 		= nil
-local snd 			= nil
-local knf_time_k	= 1							-- время отрезания, 2 секунды + коэфф. запчасти
-local knf_brk_k = { 							-- веротность поломки ножа по запчастям
-	[ "mutant_flesh_eye" 		 ] = 0.04,
-	[ "mutant_boar_leg"			 ] = 0.10,
-	[ "mutant_dog_tail" 		 ] = 0.03,
-	[ "mutant_psevdodog_tail" 	 ] = 0.07,
-	[ "mutant_krovosos_jaw" 	 ] = 0.12,
-	[ "mutant_burer_hand" 		 ] = 0.14,
-	[ "mutant_zombie_hand" 		 ] = 0.10,
-	[ "mutant_snork_leg" 		 ] = 0.14,
-	[ "mutant_face_tushkano" 	 ] = 0.03,
-	[ "mutant_hand_kontroler" 	 ] = 0.17,
-	[ "mutant_poltergeist_glas"  ] = 0.04,
-	[ "mutant_psevdogigant_hand" ] = 0.34,
-	[ "mutant_tail_cat" 		 ] = 0.06,
-	[ "mutant_chimera_kogot" 	 ] = 0.18,
-	[ "mutant_flesh_shkura" 	 ] = 0.21,
-	[ "mutant_e_chimera_kidney"	 ] = 0.12,
+local actor      = db.actor
+local monster    = nil
+local snd        = nil
+local knf_time_k = 1                             -- время отрезания, 2 секунды + коэфф. запчасти
+local knf_brk_k  = {                             -- веротность поломки ножа по запчастям
+    [ "mutant_flesh_eye"         ] = 0.03,
+    [ "mutant_boar_leg"          ] = 0.08,
+    [ "mutant_dog_tail"          ] = 0.02,
+    [ "mutant_psevdodog_tail"    ] = 0.07,
+    [ "mutant_krovosos_jaw"      ] = 0.12,
+    [ "mutant_burer_hand"        ] = 0.14,
+    [ "mutant_zombie_hand"       ] = 0.10,
+    [ "mutant_snork_leg"         ] = 0.15,
+    [ "mutant_face_tushkano"     ] = 0.03,
+    [ "mutant_hand_kontroler"    ] = 0.17,
+    [ "mutant_poltergeist_glas"  ] = 0.04,
+    [ "mutant_psevdogigant_hand" ] = 0.31,
+    [ "mutant_tail_cat"          ] = 0.06,
+    [ "mutant_chimera_kogot"     ] = 0.16,
+    [ "mutant_flesh_shkura"      ] = 0.21,
+    [ "mutant_e_chimera_kidney"  ] = 0.12,
 }
 
 function on_part_take( obj )
-	local b = strposx( obj:section(), "mutant_" )
-	if not ( monster and b ) then return end
-	knf_time_k = 1
-	local koeff_by_monster = knf_brk_k[ obj:section() ]
-	local sc = actor:item_in_slot(0):section()
-	if sc and sc == "wpn_knife_m1" then knf_time_k = 0.5 end
-	level.start_stop_menu( level.main_input_receiver(), true )
-	sak.actor_hide_weapon()
-	level.add_cam_effector( "camera_effects\\item_use_slow.anm", 8553, false, "" )
-	if  dsh.get_next_random( "monster_parts.on_part_take" ) > koeff_by_monster * knf_time_k then
-		schedule.add( "loot_monster_snd", "monster_parts.loot_monster_sound()", 600 )
-		-- sak.send_tip(
-		--              "Отрезаем: " ..
-		--              obj:section() ..
-		--              ", шанс поломки ножа: " ..
-		--              100*koeff_by_monster*knf_time_k ..
-		--              "%",
-		--              "",
-		--              2, 20,	"uniq", "sak", "red" )
-	else
-		schedule.add( "knife_break_snd", "monster_parts.knife_break()", 1000 )
-		if dsh.get_next_random( "monster_parts.on_part_take" ) > 0.65 then misc.release_obj( obj ) end
-	end
-	schedule.add( "loot_monster_finish", "monster_parts.stop_loot_already()", knf_time_k * ( 2500 + ( 10000 * koeff_by_monster ) ) )
+    local b = strposx( obj:section(), "mutant_" )
+    if not ( monster and b ) then return end
+    knf_time_k = 1
+    local koeff_by_monster = knf_brk_k[ obj:section() ]
+    local sc = actor:item_in_slot( 0 ):section()
+    if sc and sc == "wpn_knife_m1" then knf_time_k = 0.5 end
+    level.start_stop_menu( level.main_input_receiver(), true )
+    sak.actor_hide_weapon()
+    level.add_cam_effector( "camera_effects\\item_use_slow.anm", 8553, false, "" )
+    if dsh.get_next_random( "monster_parts.on_part_take" ) > koeff_by_monster * knf_time_k then
+        schedule.add( "loot_monster_snd", "monster_parts.loot_monster_sound()", 600 )
+    else
+        schedule.add( "knife_break_snd", "monster_parts.knife_break()", 1000 )
+        local take_chns = 0.65
+        if sc and sc == "wpn_knife_m1" then take_chns = 0.85 end
+        if dsh.get_next_random( "monster_parts.on_part_take" ) > take_chns then
+            misc.release_obj( obj )
+        end
+    end
+    schedule.add(
+        "loot_monster_finish", "monster_parts.stop_loot_already()",
+        knf_time_k * ( 2500 + ( 10000 * koeff_by_monster ) )
+    )
 end
 
 function stop_loot_already()
-	-- level.remove_cam_effector( 8553 )
-	if snd and snd:playing() then snd:stop() end
-	sak.restore_weap()
+    if snd and snd:playing() then snd:stop() end
+    sak.restore_weap()
 end
 
 function loot_monster_sound()
-	-- snd = xr_sound.get_safe_sound_object( "zwuk_short\\inv_mutant_loot_"..math.random( 1, 9 ) )
-	snd = xr_sound.get_safe_sound_object( "zwuk_short\\loot_long_" .. lua_random( 1, 2 ) )
-	snd:play_at_pos( actor, vector(), 0, sound_object.s2d )
+    snd = xr_sound.get_safe_sound_object( "zwuk_short\\loot_long_" .. lua_random( 1, 2 ) )
+    snd:play_at_pos( actor, vector(), 0, sound_object.s2d )
 end
 
 function knife_break()
-	local itm = actor:item_in_slot( 0 )
-	if not itm then return end
-	snd = xr_sound.get_safe_sound_object( "rykzack\\trader_script1c_9" )
-	snd:play_no_feedback( actor, sound_object.s2d, 0, vector(), 1.0)
-	misc.release_obj( itm )
-	sak.send_tip( "Амба ножику, похоже...", "Да что ж такое!", 5, 20,	"uniq", "sak", "red" )
+    local itm = actor:item_in_slot( 0 )
+    if not itm then return end
+    snd = xr_sound.get_safe_sound_object( "rykzack\\trader_script1c_9" )
+    snd:play_no_feedback( actor, sound_object.s2d, 0, vector(), 1.0)
+    misc.release_obj( itm )
+    sak.send_tip( "Амба ножику, похоже...", "Да что ж такое!", 5, 20,   "uniq", "sak", "red" )
 end
 
 function on_monster_use( victim, who )
-	xr_s.register_callback( "on_item_take", monster_parts.on_part_take )
-	monster = victim
+    xr_s.register_callback( "on_item_take", monster_parts.on_part_take )
+    monster = victim
 end
 
 function unreg_callback()
-	xr_s.unregister_callback("on_item_take", monster_parts.on_part_take, true)
+    xr_s.unregister_callback( "on_item_take", monster_parts.on_part_take, true )
 end
 
 function on_monster_stop_use()
-	schedule.add( "unreg_timer", "monster_parts.unreg_callback()", 200)
-	monster = nil
+    schedule.add( "unreg_timer", "monster_parts.unreg_callback()", 200)
+    monster = nil
 end
 
 
