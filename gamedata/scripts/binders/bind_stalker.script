@@ -115,13 +115,13 @@ function _G.on_esc_pressed()
 end
 
 function opn_nz()
-    if
-        used_items.can_use_gadget()
-        and self_weapon_hide == false
-        and not db.actor:is_talking()
-    then
-        used_items.used_bag_on_belt( false, true )
-    end
+    -- if
+        -- used_items.can_use_gadget()
+        -- and self_weapon_hide == false
+        -- and not db.actor:is_talking()
+    -- then
+        -- used_items.used_bag_on_belt( false, true )
+    -- end
 end
 
 function opn_flask()
@@ -1113,7 +1113,7 @@ function actor_binder:on_saw_object( obj )
     if obj:section() == "rucksack" then
         obj:set_tip_text( "st_saw_ruckzak" )
     end
-    wprintf( " actor saw~C0A %s~C0D %d~C07", obj:name(), obj:id() )
+    --wprintf( " actor saw~C0A %s~C0D %d~C07", obj:name(), obj:id() )
 end
 
 

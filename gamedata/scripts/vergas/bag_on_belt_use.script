@@ -16,7 +16,7 @@ local matches_id            -- id подсунутых спичек
 ---------------------------------------------------
 
 function set_items_section()
-  return { "matches", "drag_cat_eyes", "batt_torch", "bread", "conserva", "green_kolbasa", "vodka", "suhpay" }
+  return { "matches", "batt_torch", "bread", "conserva", "green_kolbasa", "kolbasa" }
 end
 
 function list_sect_id()
@@ -361,7 +361,7 @@ function clean_holes_table(tbl)
        tbl_tmp:add(rec)       
     end
   end
-  tbl_tmp:set_size(4)  
+  tbl_tmp:set_size(6)  
   return tbl_tmp
 end
 

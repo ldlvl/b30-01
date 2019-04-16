@@ -39,7 +39,7 @@ function bag_dialog:InitControls()
     -- inv_items_list:dump()               -- выключу
     --определ€ю содержимое сумки
     bag_content = bag_on_belt_use.load_bag_content()
-    bag_content:set_size( 4 )
+    bag_content:set_size( 6 )
     -- wprintf(" bag_content dump: ")
     -- bag_content:dump()                  -- выключу
     local i
@@ -143,7 +143,7 @@ function bag_dialog:btn_empty()               -- нопка ¬ыгрузить из сумки
         end
     end
     inv_items_list, inv_items_ids = bag_on_belt_use.inventory_items() -- возвращение на исходные позиции
-    bag_content:set_default( 1, 4 )
+    bag_content:set_default( 1, 6 )
     save_bag_ids = { }
     self:set_bag_pocket()     --обновл€ю иконки
     self:reset_windows()
@@ -190,7 +190,7 @@ function bag_dialog:put_in_bag( btn )
         end
     end
     local brec = inv_items_list( btn )      -- исходный предмет
-    if ( filling_pocket + vergas_lib.set_pr_from_config( "bag_" .. brec.sect, "size" ) ) > 4 then -- больше не поместитс€
+    if ( filling_pocket + vergas_lib.set_pr_from_config( "bag_" .. brec.sect, "size" ) ) > 6 then -- больше не поместитс€
         return
     end
     local void = bag_content:find( 1, "?" ) -- определ€ю пустую €чейку сумки
@@ -274,6 +274,19 @@ function bag_dialog:set_bag_pocket()
         self:set_wnd_pocket_n( 2, 229, 281, 33, 33 )
         self:set_wnd_pocket_n( 3, 265, 281, 33, 33 )
         self:set_wnd_pocket_n( 4, 301, 281, 33, 33 )
+	elseif template == "11111" then
+        self:set_wnd_pocket_n( 1, 193-18, 281, 33, 33 )  --11111
+        self:set_wnd_pocket_n( 2, 229-18, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 265-18, 281, 33, 33 )
+        self:set_wnd_pocket_n( 4, 301-18, 281, 33, 33 )
+		self:set_wnd_pocket_n( 5, 337-18, 281, 33, 33 )
+	elseif template == "111111" then
+        self:set_wnd_pocket_n( 1, 193-36, 281, 33, 33 )  --111111
+        self:set_wnd_pocket_n( 2, 229-36, 281, 33, 33 )
+        self:set_wnd_pocket_n( 3, 265-36, 281, 33, 33 )
+        self:set_wnd_pocket_n( 4, 301-36, 281, 33, 33 )
+		self:set_wnd_pocket_n( 5, 337-36, 281, 33, 33 )
+		self:set_wnd_pocket_n( 6, 373-36, 281, 33, 33 )
     end
 end
 -------------------------------------------------------------------------
@@ -293,7 +306,7 @@ function bag_dialog:del_windows_1_4()      -- убираю объ€вленные статики
 end
 
 function bag_dialog:del_windows_pocket()   -- убираю объ€вленные статики
-    for i = 1, 4 do
+    for i = 1, 6 do
        self:remove_static( "wnd_pocket_" .. tostring( i ) )
     end
 end

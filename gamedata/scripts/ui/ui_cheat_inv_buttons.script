@@ -174,8 +174,9 @@ function rummaged:btn_quit( mode )
         used_items.used_flask_army( true )
     elseif mode == 8 then
         --сумка(быстрая)
-        inv_buttons_use.imitation_closing_inventory( mode )
-        schedule.add( "show_bag_on_belt", "used_items.used_bag_on_belt(false,false)", 300 )
+        inv_buttons_use.imitation_closing_inventory( 0 )
+		used_items.set_use_gadget( true ) -- разрешить использование снова
+        --schedule.add( "show_bag_on_belt", "used_items.used_bag_on_belt(false,false)", 300 )
     elseif mode == 7 then
         --сумка
         used_items.used_bag_on_belt( true, false )
