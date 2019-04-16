@@ -126,7 +126,6 @@ end
 function take_art_update()
     if flag_take_art and counter_hit ~= 0 then
         db.actor.power = -1
-        change_art_on_belt()
         drawing_hits( hit_tbl[ counter_hit ] )
         counter_hit = counter_hit - 1
         if counter_hit == 0 then
@@ -140,6 +139,7 @@ function take_art_update()
             flag_show_power   = true
             finish_time_power = game.time() / 1000 + unit_time_power * table.getn( hit_tbl )
             hit_tbl = {}
+            change_art_on_belt()
         end
     end
     if flag_show_power then show_power() end
@@ -224,33 +224,44 @@ function scheme_4()
     elseif snd_rand == 7 then vergas_lib.s_play( [[characters_voice\human_01\freedom\fight\hit\hit_6]], 1 )
     end
 end
+
 -- для разрядки/зарядки активных артов на поясе
 -- при поднятии арта
 function change_art_on_belt()
-    if not sak.arts_operate then return end
-    local art_id
-    local flag = false
-    while not flag do
-        for sect, id in pairs( sak_inventory.belt_items ) do
-            if dsh.get_next_random( "vergas_art.rnd" ) > 0.5 then 
-                art_id = id[ 1 ]
-                flag   = true
-                break
-            end
+    if not ( 
+        sak.arts_operate
+        and sak.get_accum()
+        --and #sak_inventory.belt_items > 1
+        )
+    then
+        return
+    end
+    local art_id = -1
+    for sect, id in pairs( sak_inventory.belt_items ) do
+        if dsh.get_next_random( "vergas_art.rnd" ) > 0.5 then 
+            art_id = id[ 1 ]
+            wprintf( "[ %s ] art to discharge on belt: section = %s, id = %s", script_name(), sect, art_id )
+            break
         end
     end
-    local amount = dsh.get_next_random( "vergas_art.rnd", 7, 16 ) / 100
-    local cond   = params.get_condition( art_id, 0.9999 )
-    if cond > amount + 0.05 then
-        local new_cond
-        if dsh.get_next_random( "vergas_art.rnd") > 0.7 then
-            new_cond = cond + amount
-            if new_cond > 1 then new_cond = 1 end
+    if art_id ~= -1 then
+        local amount = dsh.get_next_random( "vergas_art.rnd", 7, 16 ) / 100
+        local cond   = params.get_condition( art_id, 0.9999 )
+        if cond > amount + 0.05 then
+            local new_cond = 0
+            if dsh.get_next_random( "vergas_art.rnd" ) > 0.7 then
+                new_cond = cond + amount
+                if new_cond > 1 then new_cond = 1 end
+            else
+                new_cond = cond - amount
+            end
+            params.upd_condition( art_id, new_cond )
+            wprintf(
+                "[ %s ] successfully changed art condition on belt. Old_cond: %s, new_cond = %s",
+                script_name(), cond, new_cond
+            )
         else
-            new_cond = cond - amount
+            misc.release_obj( art_id )
         end
-        params.upd_condition( art_id, new_cond )
-    else
-        misc.release_obj( art_id )
     end
 end
