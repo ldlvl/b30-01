@@ -920,7 +920,7 @@ function read_message(msg_id, custom_msg)
 		elseif string.find (msg_id, "green") then
 			file_msg = "$game_config$/text/rus/string_table_pda_green.xml"
 		elseif string.find (msg_id, "treasure") then
-			file_msg = "$game_config$/text/rus/string_table_pda_treasure.xml"
+			file_msg = "$game_config$\\text\\rus\\string_table_pda_treasure.xml"
 		end
 		
 		local file_text =  FileLoad(file_msg)
