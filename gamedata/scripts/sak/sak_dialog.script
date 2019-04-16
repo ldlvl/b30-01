@@ -15,7 +15,6 @@ table_aart = {
     "af_ameba_slime",
     "af_rusty_thorn"
 }
-
 table_bart = {
     "af_cristal_flower",
     "af_gravi",
@@ -25,7 +24,6 @@ table_bart = {
     "af_ameba_slug",
     "af_rusty_kristall"
 }
-
 table_semart = {
     "af_cristal_flower",
     "af_gravi",
@@ -35,7 +33,6 @@ table_semart = {
     "af_ameba_slug",
     "af_rusty_kristall"
 }
-
 table_good_semart = {
     "af_baloon",
     "af_medus_new",
@@ -45,7 +42,6 @@ table_good_semart = {
     "af_glass_new",
     "af_sul_new"
 }
-
 table_cart = {
     "af_cristall",
     "af_night_star",
@@ -62,7 +58,6 @@ table_cart = {
     "af_dummy_green_vyvert",
     "af_dummy_green_blood"
 }
-
 table_dart = {
     "af_dummy_spring",
     "af_dummy_dummy",
@@ -81,13 +76,11 @@ table_dart = {
     "af_dummy_sparkler",
     "af_dummy_kolobok"
 }
-
 table_red_art = {
     "af_red_dummy_spring",
     "af_red_dummy_battery",
     "af_red_dummy_pellicle"
 }
-
 table_capsule = {
     "af_night_star_capsule",
     "af_gold_fish_capsule",
@@ -103,7 +96,6 @@ table_capsule = {
     "af_dummy_kolobok_capsule",
     "af_dummy_glassbeads_capsule"
 }
-
 table_mayatniks = {
     "af_mayatnik_tuman_new",
     "af_mayatnik_les_new",
@@ -112,7 +104,6 @@ table_mayatniks = {
     "af_mayatnik_stadion_new",
     "af_mayatnik_chaes_new"
 }
-
 table_sakboxes = {
     "inventory_sakbox_05",
     "inventory_sakbox_gar_flame",
@@ -124,13 +115,11 @@ table_sakboxes = {
     "inventory_sakbox_yan_kruglov",
     "inventory_sakbox_mil_skraga"
 }
-
 nagrad = {
     level_7 = {
         "grenade_f1",
         "ammo_9x39_ap",
-        "ammo_5.45x39_ap",
-        "ammo_5.56x45_ap",
+        "ammo_og-7b",
         "ammo_7.62x39_ap",
         "ammo_7.62x54_7h14",
         "ammo_vog-25",
@@ -763,64 +752,63 @@ function shersh()
 end
 
 function add_marsh_treasure()
-    local obj1 = amk.spawn_item( "marsh_inventory_box",
+    local obj = amk.spawn_item( "marsh_inventory_box",
         vector():set( 486.28311157227, 3.3924994468689, 416.65158081055 ), 3564, 469516
     )
-    level.map_add_object_spot( obj1.id, "crlc_big_treasure3", "marsh_treasure" )
-    if obj1 then
-        g_sim:create( "wpn_sig550",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        g_sim:create( "ammo_5.56x45_ap",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        g_sim:create( "ammo_5.56x45_ap",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        g_sim:create( "amk_zapiska_sak",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        sak.off_on( obj1 )
+    level.map_add_object_spot( obj.id, "crlc_big_treasure3", "marsh_treasure" )
+    misc.process_spawn()
+    if obj then
+        for _, v in ipairs({
+            "wpn_sig550",
+            "ammo_5.56x45_ap",
+            "ammo_5.56x45_ap",
+            "ammo_5.56x45_ap",
+            "amk_zapiska_sak"
+        }) do
+            misc.spawn_to( v, obj )
+        end
+        sak.off_on( obj )
     end
-    --start_time( "time_start_provodnik" )
 end
 
 function add_lost_treasure()
-    local obj1 = amk.spawn_item( "rukzak_inventory_box",
+    local obj = amk.spawn_item( "rukzak_inventory_box",
         vector():set( 19.7, 9.73, 29.95 ), 3330, 19297
     )
-    if obj1 then
-        g_sim:create( "af_medus_new",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        g_sim:create( "wpn_saiga12c_m2",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
-        sak.off_on( obj1 )
+    misc.process_spawn()
+    if obj then
+        for _, v in ipairs({
+            "af_medus_new",
+            "wpn_saiga12c_m2",
+            "ammo_7.62x39_ap"
+        }) do
+            misc.spawn_to( v, obj )
+        end
+        sak.off_on( obj )
     end
 end
 
 function fill_hos_treasure()
-    local obj1 = g_sim:story_object( story_ids.hos_treasure_1 )
+    local obj = g_sim:story_object( story_ids.hos_treasure_1 )
     for a = 1, lua_random( 10, 20 ) do
-        g_sim:create( "mixture", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
+        misc.spawn_to( "mixture", obj )
     end
-    g_sim:create( "im_chain", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
-    sak.off_on( obj1 )
+    misc.spawn_to( "im_chain", obj )
+    sak.off_on( obj )
 end
 
 function add_nagrad_pahon()
     sak.create_items( db.actor, "antirad",  3 + math.fmod( ( amk_vars.r_treas_items + timers.Get_Game_Days() ), 3 ) )
-    sak.create_items( db.actor, "conserva", 4 + math.fmod( ( amk_vars.r_task_reward + timers.Get_Game_Days() ), 7 ) )
+    sak.create_items( db.actor, "conserva", 4 + math.fmod( ( amk_vars.r_task_reward + timers.Get_Game_Days() ), 5 ) )
     timers.start_timer( "pahom_buzz_pause", 0, lua_random( 17, 24 ), 0 )
 end
 
 function off_kontainer()
     local a = nlc_vars.kontainer or 0
     if a == 0 then return end
-        local obj = g_sim:object( a )
-        if obj then g_sim:release( obj, true ) end
-        nlc_vars.kontainer = nil
+    local obj = g_sim:object( a )
+    if obj then g_sim:release( obj, true ) end
+    nlc_vars.kontainer = nil
 end
 
 function add_red_sos_spot()
@@ -879,7 +867,7 @@ function is_holiday_prosha()
     local holidays = level.get_time_days()
     local shift    = 5
     for  i = 1, 7 do
-        if holidays == ( shift * i ) then return true end
+        if holidays == shift * i then return true end
     end
     return false
 end
@@ -943,15 +931,20 @@ function clear_ready_time_yan_comp_repair()
 end
 --для спавна документов в рюкзак на радаре, вызываем из диалога с Сахаровым
 function sak_document_radar()
-    local obj1 = amk.spawn_item( "rukzak_inventory_box",
+    local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( 349.999115, -51.753242, -24, 449068 ), 2031, 93051
     )
-    if obj1 then
-        g_sim:create( "medkit_scientic", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
-        g_sim:create( "grenade_f1", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
-        g_sim:create( "grenade_f1", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
-        g_sim:create( "sak_document3", obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
-        sak.off_on( obj1 )
+    misc.process_spawn()
+    if obj then
+        for _, v in ipairs({
+            "medkit_scientic",
+            "grenade_f1",
+            "grenade_f1",
+            "sak_document3"
+        }) do
+            misc.spawn_to( v, obj )
+        end
+        sak.off_on( obj )
     end
 end
 
@@ -981,7 +974,7 @@ function have_x16_documents()
 end
 
 function not_have_x16_documents()
-    if ( ( not have_x16_flash() ) and ( not have_x16_documents() ) ) then return true end
+    if not have_x16_flash() and not have_x16_documents() then return true end
     return false
 end
 
@@ -1353,7 +1346,7 @@ function transfer_any_red_art()
 end
 
 function out_item_section_from_actor( first_speaker, second_speaker, section, amount )
-    local npc   = who_is_npc( first_speaker, second_speaker )
+    local npc   = who_is_npc  ( first_speaker, second_speaker )
     local actor = who_is_actor( first_speaker, second_speaker )
     local i     = 0
     if not amount then amount = 1 end
@@ -1365,12 +1358,12 @@ function out_item_section_from_actor( first_speaker, second_speaker, section, am
                 end
             end
     if amount == "all" then
-        i      = -1
+        i = -1
         actor:iterate_inventory( transfer_object_item, nil )
         amount = ( i + 1 ) * ( -1 )
-        i      = 0
+        i = 0
     elseif amount > 1 then
-        i      = amount
+        i = amount
         actor:iterate_inventory( transfer_object_item, nil )
     elseif amount < 1 then
     else
@@ -1626,17 +1619,16 @@ function add_kruglov_letter() sak.create_items( db.actor, "kruglov_letter", 1 ) 
 function add_esc_mil_habar()
     local obj = g_sim:story_object( story_ids.esc_blokpost_box_01 ) or g_sim:story_object( story_ids.esc_inventory_box_0018 )
     if not obj then return end
-    for i = 1, 3 do
-        g_sim:create( "suhpay", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-        g_sim:create( "medkit_army", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-        g_sim:create( "grenade_rgd5", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    for _, v in ipairs({ "wpn_abakan", "wpn_addon_grenade_launcher" }) do
+        misc.spawn_to( v, obj )
     end
-    for i = 1, 10 do
-        g_sim:create( "ammo_vog-25", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-        g_sim:create( "ammo_5.45x39_ap", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    for _, v in ipairs({ "suhpay", "medkit_army", "grenade_rgd5" }) do
+        for i = 1, 3 do misc.spawn_to( v, obj ) end
     end
-    g_sim:create( "wpn_abakan", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "wpn_addon_grenade_launcher", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    for _, v in ipairs({ "ammo_vog-25", "ammo_5.45x39_ap" }) do
+        for i = 1, 10 do misc.spawn_to( v, obj ) end
+    end
+    sak.off_on( obj )
 end
 
 function add_mil_nagrad_medkit()
@@ -1654,33 +1646,23 @@ function add_mil_nagrad_ammo()
 end
 
 function add_habar_for_borov()
-    local item  = ""
-    local obj   = g_sim:story_object( story_ids.agr_inventory_box_0029 )
-    local count = lua_random( 8, 15 )
-    for i = 1, count do
-        item = nagrad.level_7[ lua_random( table.getn( nagrad.level_7 ) ) ]
-        g_sim:create( item, obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    local obj = g_sim:story_object( story_ids.agr_inventory_box_0029 )
+    for i = 1, lua_random( 8, 15 ) do
+        misc.spawn_to( nagrad.level_7[ lua_random( table.getn( nagrad.level_7 ) ) ], obj )
     end
-    g_sim:create( "dollars50", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars50", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars50", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars50", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "letter_for_borov", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    for _, v in ipairs({ "dollars50", "dollars50", "dollars50", "dollars50", "letter_for_borov" }) do
+        misc.spawn_to( v, obj )
+    end
 end
 
 function add_habar_for_borov2()
-    local item  = ""
-    local obj   = g_sim:story_object( story_ids.agr_inventory_box_0029 )
-    local count = lua_random( 10, 20 )
-    for i = 1, count do
-        item = nagrad.level_6[ lua_random( table.getn( nagrad.level_6 ) ) ]
-        g_sim:create( item, obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    local obj = g_sim:story_object( story_ids.agr_inventory_box_0029 )
+    for i = 1, lua_random( 10, 20 ) do
+        misc.spawn_to( nagrad.level_6[ lua_random( table.getn( nagrad.level_6 ) ) ], obj )
     end
-    g_sim:create( "dollars25", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars25", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars25", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "dollars25", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "letter_for_borov", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    for _, v in ipairs({ "dollars25", "dollars25", "dollars25", "dollars25", "letter_for_borov" }) do
+        misc.spawn_to( v, obj )
+    end
 end
 
 function add_voron_monster_part_1()
@@ -1822,26 +1804,6 @@ function give_som_mutant_boar_leg()
     sak_inventory.release_actor_items( "mutant_boar_leg", kol )
 end
 
-function add_1_chimera_kidney()
-    local obj = g_sim:create("mutant_e_chimera_kidney",
-        db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id(), db.actor:id()
-    )
-    if obj then
-        schedule.add( "o_kidn", "sak_dialog.olded_kidney("..obj.id..")", 250 )
-    end
-    sak.relocate_item( db.actor, "in", "mutant_e_chimera_kidney", 1 )
-end
-
-function olded_kidney( id )
-    local cond = 0.15 + ( level.get_time_hours() / 34 )
-    params.obj_condition( id, cond )
-    local objd     = g_sim:object( id )
-    local pk       = get_netpk( objd, 1 )
-    local data     = pk:get()
-    data.condition = cond
-    pk:set( data )
-end
-
 function have_mutant_e_chimera_kidney()
     return sak.have_items_count( "mutant_e_chimera_kidney", 1 ) ~= false
 end
@@ -1875,10 +1837,8 @@ function upgrade_outfit_precond( trader, actor )
     local item_in_slot_6 = actor_active_item( 6 )
     if
         item_in_slot_6 ~= nil
-        and not ( strpos ( item_in_slot_6:section(), "bandit_veteran_", 1, true )
-            or strpos ( item_in_slot_6:section(), "bandit_master_", 1, true )
-            or strpos ( item_in_slot_6:section(), "super_", 1, true )
-            or strposx( item_in_slot_6:section(), "exo" )
+        and not str_in_tab( item_in_slot_6:section(),
+            { "bandit_veteran_", "bandit_master_", "super_", "exo" }
         )
     then
         return true
@@ -1929,7 +1889,14 @@ function return_upgrade_outfit( first_speaker, second_speaker )
             if strposx( section, "exo" ) then
                 local actor = db.actor
                 rand, hour  = 0, 0
-                if section == "exo_q_outfit" or section == "exo_outfit" then  -- экза нейтралов работает на 12-16ч дольше
+                if
+                    str_in_tab( section, {
+                        "exo_q_outfit",
+                        "exo_outfit",
+                        "monolit_q_exoskeleton",
+                        "monolit_exoskeleton"
+                    })
+                then                                      -- экза нейтралов и монолита работает на 12-16ч дольше
                     hour = lua_random( 12, 16 )
                 end
                 if     actor:has_info( "exo_charge_half_done" ) then rand = 2
@@ -2165,7 +2132,7 @@ function weapon_unload( arg )
 end
 
 function open_dv_seif_flame()
-    local obj1     = g_sim:story_object(story_ids.dv_sak_box_0001)
+    local obj1     = g_sim:story_object( story_ids.dv_sak_box_0001 )
     local ids, cnt = registry.inv_objects( obj1.id, true )
     for n = 1, cnt do
         local id   = ids[ n ]
@@ -2310,19 +2277,12 @@ function psih_food_have()
         and vergas_lib.search_items( "energy_drink", 2, 1 ) ~= false
 end
 
-function give_psih_food() -- забирается вся еда, что ли??????????????????????????????????????????????????
-    for i, k in pairs( sak_inventory.eatable ) do
-        if i == "bread" or i == "kolbasa" or i == "energy_drink" then
-            local kol = #k
-            for m = 1, kol do
-                local obj = g_sim:object( k[ m ] )
-                if obj then g_sim:release( obj, true ) end
-            end
+function give_psih_food()
+    for _, v in ipairs({ "bread", "kolbasa", "energy_drink" }) do
+        if vergas_lib.search_items( v, 2, 1 ) then
+            vergas_lib.search_items( v, 2, 2 )
         end
     end
-    sak.relocate_item( db.actor, "out", "bread", 2 )
-    sak.relocate_item( db.actor, "out", "kolbasa", 2 )
-    sak.relocate_item( db.actor, "out", "energy_drink", 2 )
 end
 
 function food_borov_entres1_have()
@@ -2565,17 +2525,9 @@ function give_cristall_flower() sak_inventory.release_actor_items( "af_cristal_f
 function cristall_flower_have() return sak.have_items_count( "af_cristal_flower", 1 ) ~= false end
 function give_medusa() sak_inventory.release_actor_items( "af_medusa", 1 ) end
 function medusa_have() return sak.have_items_count( "af_medusa", 1 ) ~= false end
-function give_10medusa() sak_inventory.release_actor_items( "af_medusa", 10 ) end
-function medusa10_have() return sak.have_items_count( "af_medusa", 10 ) ~= false end
-function give_7medusa() sak_inventory.release_actor_items( "af_medusa", 7 ) end
-function medusa7_have() return sak.have_items_count( "af_medusa", 7 ) ~= false end
 function give_gravi() sak_inventory.release_actor_items( "af_gravi", 1 ) end
 function gravi_have() return sak.have_items_count( "af_gravi", 1 ) ~= false end
 function take_gravi_dyn() sak.create_items( db.actor, "af_gravi_dyn5d", 1 ) end
-
-function fox_pay_money( actor, npc )
-    treasure_manager.get_treasure_manager():give_treasure( "esc_secret_truck_goods" )
-end
 
 function have_cheques()
     return
@@ -2817,32 +2769,27 @@ function dummy_pellicle_red_have()
 end
 
 function esc_petruha_toz_have()
-  return sak.have_items_count( "wpn_toz34", 1 ) ~= false
+    return sak.have_items_count( "wpn_toz34", 1 ) ~= false
 end
+
 function give_esc_petruha_toz( first_speaker, second_speaker )
     dialogs.relocate_item_section( second_speaker, "wpn_toz34", "out" )
     second_speaker:set_relation( game_object.friend, first_speaker )
 end
+
 function gar_dram_novice_mp5_m1_have()
-  --return sak.have_items_count( "wpn_mp5_m1", 1 ) ~= false
-  return test.have_with_cond( "wpn_mp5_m1", 1, 0.95, true )
+    return test.have_with_cond( "wpn_mp5_m1", 1, 0.95, true )
 end
+
 function give_gar_dram_novice_mp5_m1( first_speaker, second_speaker )
-  --dialogs.relocate_item_section( second_speaker, "wpn_mp5_m1", "out" )
-  test.relocate_with_cond( first_speaker, second_speaker )
-  dialogs.relocate_item_section( second_speaker, "ammo_9x18_fmj", "out" )
-  second_speaker:set_relation( game_object.friend, first_speaker )
+    test.relocate_with_cond( first_speaker, second_speaker )
+    dialogs.relocate_item_section( second_speaker, "ammo_9x18_fmj", "out" )
+    second_speaker:set_relation( game_object.friend, first_speaker )
 end
 
 function yan_kruglov_green_art_have()
-    local rand = amk_vars.r_treas_items or 1
     local arts = { "af_dummy_green_blood", "af_dummy_green_vyvert", "af_dummy_green_medusa" }
-    return sak.have_items_count( arts[ rand ], 1 ) ~= false
-end
-
-function give_esc_shustryi_medusa( first_speaker, second_speaker )
-    sak_inventory.release_actor_items( "af_medusa", 1 )
-    second_speaker:set_relation( game_object.friend, first_speaker )
+    return sak.have_items_count( arts[ amk_vars.r_treas_items or 1 ], 1 ) ~= false
 end
 
 function add_spot_to_hospital()
@@ -2916,8 +2863,8 @@ function add_barmen_find_item()
     }
     for a = 1, #points do
         amk.spawn_item( "ecolog_device",
-        sak.v3f(points[ a ][ 1 ], points[ a ][ 2 ], points[ a ][ 3 ] ),
-        points[ a ][ 5 ], points[ a ][ 4 ]
+            sak.v3f( points[ a ][ 1 ], points[ a ][ 2 ], points[ a ][ 3 ] ),
+            points[ a ][ 5 ], points[ a ][ 4 ]
         )
     end
 end
@@ -3086,14 +3033,14 @@ function docs_X18_nagrad()
                 "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
             )
             test.give_rnd_recipt( 4 )
-            test.add_to_actor( "medkit_scientic", 3 )
+            test.add_to_actor( "medkit_scientic", 6 )
         elseif kol_x18 < spawned and kol_x18 > 0 then
             db.actor:give_talk_message(
                 "Так... Что это? Постовая ведомость. Бухгалтерские документы... Наряды на работы... Мда. Ничего интересного. Жаль. Мы надеялись на большее... Тогда может и награда была бы существеннее. А пока вот, возьмите...",
                 "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
             )
-            test.add_to_actor( "medkit_scientic", 3 )
-            test.add_to_actor( "antirad", 3 )
+            test.add_to_actor( "medkit_scientic", 4 )
+            test.add_to_actor( "antirad", 4 )
         end
     end
     nlc_vars.x18_docs_spawned = nil
@@ -3544,10 +3491,10 @@ end
 -- воробей даст по дням 2000-4000 тыс или 2-4 гранаты
 function text_vorobey_gift()
     local cost1 = 2000 + math.fmod( ( timers.Get_Game_Days() + 5) , 2 )
-    local gr    = 2 + math.fmod( timers.Get_Game_Days(), 2 )
+    local gr    = 2 + math.fmod( timers.Get_Game_Days(), 1 )
     db.actor:give_talk_message(
         "%c[255,216,186,140]Могу деньгами насыпать " .. cost1 ..
-        " рубликов, неплохо а?\\nИли вот есть гранаты к подствольнику, аж " .. gr ..
+        " рубликов, неплохо а?\\nИли вот есть гранаты к подствольнику, " .. gr ..
         " штучки. Соглашайся, ну!", "ui\\ui_iconsTotal",
         Frect():set( 0, 0, 0, 0 ), "simple_answer_item"
     )
@@ -3559,7 +3506,7 @@ function add_vorobey1_gift()
 end
 
 function add_vorobey2_gift()
-    local gr = 2 + math.fmod( timers.Get_Game_Days(), 2 )
+    local gr = 2 + math.fmod( timers.Get_Game_Days(), 1 )
     sak.create_items( db.actor, "ammo_vog-25", gr )
 end
 
@@ -4396,7 +4343,7 @@ function add_drunk_abakan()
         { 64.034172058105, 11.5, 52.59435272216, 32969, 3336 },
     }
     local rand = lua_random( #points )
-    g_sim:create( "wpn_abakan_m2",
+    g_sim:create( "wpn_abakan",
         sak.v3f( points[ rand ][ 1 ], points[ rand ][ 2 ], points[ rand ][ 3 ] ),
         points[ rand ][ 4 ], points[ rand ][ 5 ]
     )
@@ -4434,7 +4381,7 @@ function add_skull_gift()
         local item  = ""
         local count = lua_random( 1, 2 )
         for i = 1, count do
-            item = table_dart[ lua_random( table.getn(table_dart ) ) ]
+            item = table_dart[ lua_random( table.getn( table_dart ) ) ]
             g_sim:create( item, obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
         end
     end
@@ -4610,8 +4557,7 @@ end
 
 function rashpil_2treasure()
     local obj1 = g_sim:story_object( story_ids.dsc_inventory_box_09 )
-    local rand = lua_random( 5, 9 )
-    for a = 1, rand do
+    for a = 1, lua_random( 10, 14 ) do
         g_sim:create( "grenade_f1",
             obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
         )
@@ -4828,11 +4774,11 @@ function take_mutant_psevdodog_tail( first_speaker, second_speaker )
 end
 
 function take_psev_tail( id )
-    params.obj_condition ( id, 0.11 )
+    params.obj_condition ( id, 0.2 )
     local objd     = g_sim:object( id )
     local pk       = get_netpk( objd, 1 )
     local data     = pk:get()
-    data.condition = 0.11
+    data.condition = 0.2
     pk:set( data )
 end
 
@@ -4873,14 +4819,13 @@ end
 
 function fill_dead_oreh_treasure()
     local tbl = { "af_cry_3", "af_spirit_3", "af_armor_3", "af_kol_3", "af_babka_3" }
-    local ind = amk_vars.r_task_reward or 1
     local obj = g_sim:story_object( story_ids.dc_inventory_box_cherdak_build )
     level.map_add_object_spot(
         obj.id, "crlc_big_treasure3", "Где-то тут хабар Призрака"
     )
     if obj then
         misc.spawn_to( "wpn_m110", obj )
-        misc.spawn_to( tbl[ ind ], obj )
+        misc.spawn_to( tbl[ amk_vars.r_task_reward or 1 ], obj )
         tbl = { "antirad", "medkit_army", "ammo_7.62x51_ap", "conserva" }
         for _, v in ipairs( tbl ) do
             for i = 1, 6 do misc.spawn_to( v, obj ) end
@@ -5319,6 +5264,7 @@ function added_vil_ranger_treasure()
         sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
         tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
     )
+    misc.process_spawn()
     if obj then
         local tbl = {
             "af_medusa_dyn1d",
@@ -5398,6 +5344,7 @@ function add_rad_zil_treasure()
     local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ), tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
     )
+    misc.process_spawn()
     if obj then
         for i = 1, 3 do
             misc.spawn_to( "ammo_og-7b", obj )
@@ -5419,13 +5366,8 @@ end
 
 function add_af_green()
     local rand = amk_vars.r_treas_items or 1
-    local arts = {"af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert"}
+    local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
     sak.create_items( db.actor, arts[ rand ], 1 )
-end
--- TODO: убрать/переделать/заменить
-function add_freedom_commander_svu()
-    sak.create_items( db.actor, "wpn_svu", 1 )
-    sak.create_items( db.actor, "ammo_7.62x54_7h14", 5 )
 end
 
 --вскрываем капсулу маятника у Сахарова
@@ -5554,6 +5496,7 @@ function add_gungauss()
     local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( 132.852386, 3.822061, -180.043427 ), 926, 329638
     )
+    misc.process_spawn()
     if obj then
         misc.spawn_to( "wpn_gungauss", obj )
         sak.off_on( obj )
@@ -5573,7 +5516,7 @@ function timer_junkman_end()
     db.actor:give_info_portion( "info_outfit_tourist_prize" )
 end
 
-function take_outfit_dolg_prize(first_speaker, second_speaker)
+function take_outfit_dolg_prize( first_speaker, second_speaker )
     local sect = "outfit_dolg_m1"
     if amk_vars.r_treas_items == 2 then sect = "dolg_scientific_outfit" end
     local obj = misc.spawn_to( sect, db.actor )
@@ -5594,6 +5537,7 @@ function take_treasure_dead_oreh()
     local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( -84.221352, 11.228296, 40.612862 ), 3838, 226392
     )
+    misc.process_spawn()
     level.map_add_object_spot( obj.id, "crlc_big_treasure3", "Где-то тут хабар Призрака" )
     if obj then
         local tbl  = { "af_cry_3", "af_spirit_3", "af_armor_3", "af_kol_3", "af_babka_3" }
@@ -5657,16 +5601,12 @@ function warlab_ecolog_body()
     misc.spawn_to( "war_ecolog_pda", obj )
     sak.off_on( obj )
 end
--- монолитовская экза и Компас в танке в РЛ
+-- Компас и рубинка в танке в РЛ
 function fill_tank_inventory_box()
     local ind = amk_vars.r_treas_items
     local tbl = { "af_red_dummy_spring", "af_red_dummy_battery", "af_red_dummy_pellicle" }
     local obj = g_sim:story_object( story_ids.red_q11_n )
-    for _, v in ipairs({
-        --"monolit_exoskeleton",
-        "af_compass_dyn5d",
-        "sak_document4"
-    }) do
+    for _, v in ipairs({ "af_compass_dyn5d", "sak_document4" }) do
         misc.spawn_to( v, obj )
     end
     misc.spawn_to( tbl[ ind ], obj )
@@ -5769,7 +5709,7 @@ function add_bad_part( sect, cond )
     local obj = misc.spawn_to( sect, db.actor )
     misc.process_spawn()
     if obj then
-        params.obj_condition( obj.id, cond )
+        params.upd_condition( obj.id, cond )
         sak.relocate_item( db.actor, "in", sect, 1 )
     end
 end
@@ -5799,6 +5739,7 @@ function spawn_barmen_find_item()
     local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( 469.90, -53.74, -102.74 ), 2051, 154203
     )
+    misc.process_spawn()
     if obj then
         misc.spawn_to( "ecolog_outfit_m1", obj )
         sak.off_on( obj )
@@ -5878,6 +5819,7 @@ function strelok_pri_secret()
     local obj = amk.spawn_item( "rukzak_inventory_box",
         sak.v3f( 111.798965, 3.999500, 121.063812 ), 2182, 222835
     )
+    misc.process_spawn()
     if obj then
         for _, v in ipairs({
             "af_unknown_1_new",
@@ -6119,6 +6061,7 @@ function add_kishka_rukzak()
                     sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
                     tbl[ ind ][ 4 ], tbl[ ind ][ 5 ]
                 )
+    misc.process_spawn()
     if obj and dsh.get_next_random( "generic_rnd" ) > 0.18 then
         misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 2 ), obj )
         misc.spawn_to( "suhpay", obj )
