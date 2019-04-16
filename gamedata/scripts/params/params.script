@@ -490,7 +490,12 @@ function tiredness_add()
         local section  = armor:section()
         local state    = get_actor_obj().state
         local ex_dam_k = 0.001
-        if section == "svoboda_q_exoskeleton" then            -- экза свободы изнашивается медленнее
+        if
+            str_in_tab( section, {
+                "svoboda_q_exoskeleton",
+                "monolit_q_exoskeleton"
+            })
+        then                                                  -- экзы свободы и монолита изнашивается медленнее
             ex_dam_k = ex_dam_k * 0.65
         end
         if strposx( section, "exo" ) and state.sprint then
