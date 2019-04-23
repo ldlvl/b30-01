@@ -3,570 +3,414 @@
 Vergas
 © NLC-6.0
 ]]--
-local ratio_mode
-local hud_watch
-local back_g
-local flag_watch_open
-local flag_sec_show
-local flag_sleep
-local ur_rad_old
+local ratio_mode, hud_watch, back_g
+local flag_watch_open, flag_sec_show, flag_sleep, ur_rad_old
 local timer_old = 0
-local sec_old
-local time_sleep_go
-
+local sec_old, time_sleep_go
 local timer_d
 local timer_h = 24
 local timer_m = 0
 
 function time_minutes()
- local gt = game.get_game_time()
- local y, m, d, hh, mm, ss, ms = gt:get()
- return hh * 60 + mm
- -- return level.get_time_hours() * 60 + level.get_time_minutes()
+    local gt = game.get_game_time()
+    local y, m, d, hh, mm, ss, ms = gt:get()
+    return hh * 60 + mm
 end
 
 function time_days() -- скильки дней
-  local gt = game.get_game_time()
-  local y, m, d, hh, mm, ss, ms = gt:get()
-  local rt = game.CTime()
-  local st = game.CTime()
-  -- формирование дат без времени (чистых)
-  rt:set(y, m, d)
-  st:set(2012, 5, 1)
-  return rt:diffSec(st) / (24 * 3600)
+    local gt = game.get_game_time()
+    local y, m, d, hh, mm, ss, ms = gt:get()
+    local rt = game.CTime()
+    local st = game.CTime()
+    -- формирование дат без времени (чистых)
+    rt:set( y, m, d )
+    st:set( 2012, 5, 1 )
+    return rt:diffSec( st ) / ( 24 * 3600 )
 end
 
-
 function wakeup_gg()
- if sleep_manager.is_sleep_active() then
-    sleep_manager.stopper()
- end
+    if sleep_manager.is_sleep_active() then
+        sleep_manager.stopper()
+    end
 end
 
 class "uber_watch"
 
 function uber_watch:__init()
- if self:alarm_config().f then
-    self:enable_alarm()
- end
+    if self:alarm_config().f then self:enable_alarm() end
 end
 
 function uber_watch:alarm_config()
- if nil == nlc_vars.alarm_time then
-    nlc_vars.alarm_time = { b = false, h = 0, m = 0, d = time_days(), f = false }
- end
- local cfg = nlc_vars.alarm_time
- cfg.h = cfg.h or 0
- cfg.m = cfg.m or 0
- return cfg
+    if nil == nlc_vars.alarm_time then
+        nlc_vars.alarm_time = {
+            b = false,
+            h = 0,
+            m = 0,
+            d = time_days(),
+            f = false
+        }
+    end
+    local cfg = nlc_vars.alarm_time
+    cfg.h     = cfg.h or 0
+    cfg.m     = cfg.m or 0
+    return cfg
 end
 
-function uber_watch:set_update(period)
- if not period then
-    beeper = self:alarm_config().b or false -- сохраненный таймер пищания
-    period = 6000                           -- примерно раз в 30 игровых секунд
-    if beeper then period = 1000 end        -- озвучка чаще
- end
- AddRegularTask("updating_timer", self.update, self, 0, period)
+function uber_watch:set_update( period )
+    if not period then
+        beeper = self:alarm_config().b or false -- сохраненный таймер пищания
+        period = 6000                           -- примерно раз в 30 игровых секунд
+        if beeper then period = 1000 end        -- озвучка чаще
+    end
+    AddRegularTask( "updating_timer", self.update, self, 0, period )
 end
 
-function uber_watch:update(delta, curtime, taskrec)
-  if self ~= g_watch then
-     return
-  end -- отладочный трик
-  self.object = db.actor:object("watch")
-  -- нет часов, нет будильника, да и на паузе нечего обрабатывать
-  if self.object == nil or device():is_paused() or sleep_manager.magic_sleep then
-     -- wprintf("[~T/~B]. #DBG: uber_watch:update() skipped")
-     return
-  end
-
-  local cfg        = self:alarm_config()
-  local wakeup     = cfg.h * 60 + cfg.m     -- число минут для побудки
-  local now_time   = time_minutes()         -- сколько минут от полуночи
-  local prev_time  = self.prev_update or 24 * 60
-  local days       = math.floor ( time_days() ) -- текущий день в зоне (точно)
-  local set        = cfg.f or false
-  local sleep      = sleep_manager.is_sleep_active()
-
-  taskrec = taskrec or task_smart_upd.active_task
-  taskrec = taskrec or {}
-
-  local tts = wakeup - now_time              -- time-to-sleep
-
-  while (tts < 0) and (days < cfg.d) do tts = tts + 24 * 60 end   -- видимо переход через полночь
-
-  -- детектирование смены дня
-  if days ~= (self.prev_days or 0) then
-     prev_time = 0
-     self.prev_days = days
-  end
-
-  if sleep and set and now_time ~= prev_time then
-     wprintf("[~T/~B].~C0E #DBG(alarm_clock): days =~C0F %d/%d->%d~C0E, prev_time =~C0D %d~C0E, now_time =~C0D %d~C0E, wakeup =~C0D %d~C0E, tts  =~C0D %.1f~C07",
-                                              self.prev_days, days, cfg.d, prev_time, now_time, wakeup, tts)
-  end
-
-  if set and sleep and (tts > 1) and (tts < 300) then -- приближение к времени побудки
-     taskrec.period = 1
-     local new_tf = 500 * tts
-     if level.get_time_factor() > new_tf then
-        -- замедлить время, чтобы не слишком промахнуться
-        wprintf("[~T/~B].~CF0 #DBG(alarm_clock): time factor updated from~CFD %f~CF0 to~CFD %f~C07", level.get_time_factor(), new_tf)
-        level.set_time_factor(new_tf)
-     end
-  end
-
-  -- проверка триггера перехода через время пробуждения
-  if set and days == cfg.d and (prev_time <= wakeup) and (now_time >= wakeup) then
-     wprintf("[~T/~B].~CE1 #DBG(alarm_clock): wakeup moment reached, beeper enabled.~C07")
-     sleep_manager.reset_tf()
-     local gt = game.get_game_time()
-     gt:updHMS(cfg.h, cfg.m)
-     game.set_game_time(gt)
-     cfg.d = days + 1 -- таймер закончил работу, следующее срабатывание через 24 часа (триггер)
-     cfg.b = 12 * 5   -- включить звук на 5 игровых минут
-     self:play_beeper(taskrec) -- что-то сквозь сон проступает )
-     taskrec.period = 1000 -- замедлить апдейт для работы биппера
-     schedule.add("wakeup_gg", "vergas_watch.wakeup_gg()", 800)
-  end
-
-  self.prev_update = now_time
-  if sleep then return end
-  self:play_beeper(taskrec)
+function uber_watch:update( delta, curtime, taskrec )
+    if self ~= g_watch then return end -- отладочный трик
+    self.object = db.actor:object( "watch" )
+    -- нет часов, нет будильника, да и на паузе нечего обрабатывать
+    if
+        self.object == nil
+        or device():is_paused()
+        or sleep_manager.magic_sleep
+    then
+        return
+    end
+    local cfg        = self:alarm_config()
+    local wakeup     = cfg.h * 60 + cfg.m     -- число минут для побудки
+    local now_time   = time_minutes()         -- сколько минут от полуночи
+    local prev_time  = self.prev_update or 24 * 60
+    local days       = math.floor( time_days() ) -- текущий день в зоне (точно)
+    local set        = cfg.f or false
+    local sleep      = sleep_manager.is_sleep_active()
+    taskrec = taskrec or task_smart_upd.active_task
+    taskrec = taskrec or {}
+    local tts = wakeup - now_time              -- time-to-sleep
+    while tts < 0 and days < cfg.d do tts = tts + 24 * 60 end   -- видимо переход через полночь
+    -- детектирование смены дня
+    if days ~= ( self.prev_days or 0 ) then
+        prev_time      = 0
+        self.prev_days = days
+    end
+    if sleep and set and now_time ~= prev_time then
+        wprintf(
+            "[~T/~B].~C0E #DBG(alarm_clock): days =~C0F %d/%d->%d~C0E, prev_time =~C0D %d~C0E, now_time =~C0D %d~C0E, wakeup =~C0D %d~C0E, tts  =~C0D %.1f~C07",
+            self.prev_days, days, cfg.d, prev_time, now_time, wakeup, tts
+        )
+    end
+    if set and sleep and tts > 1 and tts < 300 then -- приближение к времени побудки
+        taskrec.period = 1
+        local new_tf   = 500 * tts
+        if level.get_time_factor() > new_tf then
+            -- замедлить время, чтобы не слишком промахнуться
+            wprintf(
+                "[~T/~B].~CF0 #DBG(alarm_clock): time factor updated from~CFD %f~CF0 to~CFD %f~C07",
+                level.get_time_factor(), new_tf
+            )
+            level.set_time_factor( new_tf )
+        end
+    end
+    -- проверка триггера перехода через время пробуждения
+    if
+        set and days == cfg.d
+        and prev_time <= wakeup and now_time >= wakeup
+    then
+        wprintf( "[~T/~B].~CE1 #DBG(alarm_clock): wakeup moment reached, beeper enabled.~C07" )
+        sleep_manager.reset_tf()
+        local gt = game.get_game_time()
+        gt:updHMS( cfg.h, cfg.m )
+        game.set_game_time( gt )
+        cfg.d = days + 1            -- таймер закончил работу, следующее срабатывание через 24 часа (триггер)
+        cfg.b = 12 * 5              -- включить звук на 5 игровых минут
+        self:play_beeper( taskrec ) -- что-то сквозь сон проступает )
+        taskrec.period = 1000       -- замедлить апдейт для работы биппера
+        schedule.add( "wakeup_gg", "vergas_watch.wakeup_gg()", 800 )
+    end
+    self.prev_update = now_time
+    if sleep then return end
+    self:play_beeper( taskrec )
 end
 
-function uber_watch:play_beeper(taskrec)
-  local cfg        = self:alarm_config()
-  local beeper     = cfg.b or false
-  if beeper and beeper > 0 then -- активирован звук таймера, пока не надоест игроку или не пройдет 5 минут
-     taskrec.period = 1000
-     beeper = beeper - 1
-     wprintf("[~T/~B]. #DBG: rest~C0D %d~C07 beeper signals,  ", beeper) -- lua_traceback(" ")
-     for i = 1, 2 do
-       vergas_lib.s_play("pda\\timer_signal", 1)
-     end -- for
-  else
-     beeper = false
-     taskrec.period = 6000 -- замедлить апдейт для обычного тиканья
-  end
-  cfg.b = beeper
+function uber_watch:play_beeper( taskrec )
+    local cfg    = self:alarm_config()
+    local beeper = cfg.b or false
+    if beeper and beeper > 0 then -- активирован звук таймера, пока не надоест игроку или не пройдет 5 минут
+        taskrec.period = 1000
+        beeper         = beeper - 1
+        wprintf( "[~T/~B]. #DBG: rest~C0D %d~C07 beeper signals,  ", beeper ) -- lua_traceback(" ")
+        for i = 1, 2 do
+            vergas_lib.s_play( "pda\\timer_signal", 1 )
+        end
+    else
+        beeper         = false
+        taskrec.period = 6000 -- замедлить апдейт для обычного тиканья
+    end
+    cfg.b = beeper
 end
 
 function uber_watch:shut_up() -- утихомирить сигнал будильника
-  self:alarm_config().b = 0
+    self:alarm_config().b = 0
 end
 
 function uber_watch:disable_alarm()
-  self:alarm_config().f = false
+    self:alarm_config().f = false
 end
 
-function uber_watch:enable_alarm(hh, mm)
-  local cfg = self:alarm_config()
-  local days = math.floor ( time_days() )
-  cfg.d = days  -- день на который заведен будильник
-  if hh and mm then
-     cfg.h = hh
-     cfg.m = mm
-  end
-
-  local wakeup = cfg.h * 60 + cfg.m
-  if wakeup <= time_minutes() then
-     cfg.d = days + 1 -- заведен на следующий день
-     wprintf(" alarm enabled at~C0F %02d:%02d~C07 next    ~C0D %d/%d~C07 day", cfg.h, cfg.m, days, cfg.d)
-  else
-     wprintf(" alarm enabled at~C0F %02d:%02d~C07 current ~C0D %d/%d~C07 day", cfg.h, cfg.m, days, cfg.d)
-  end
-
-  self.prev_days = days
-  cfg.f = true
+function uber_watch:enable_alarm( hh, mm )
+    local cfg  = self:alarm_config()
+    local days = math.floor( time_days() )
+    cfg.d = days  -- день на который заведен будильник
+    if hh and mm then
+        cfg.h = hh
+        cfg.m = mm
+    end
+    local wakeup = cfg.h * 60 + cfg.m
+    if wakeup <= time_minutes() then
+        cfg.d = days + 1 -- заведен на следующий день
+        wprintf(
+            " alarm enabled at~C0F %02d:%02d~C07 next    ~C0D %d/%d~C07 day",
+            cfg.h, cfg.m, days, cfg.d
+        )
+    else
+        wprintf(
+            " alarm enabled at~C0F %02d:%02d~C07 current ~C0D %d/%d~C07 day",
+            cfg.h, cfg.m, days, cfg.d
+        )
+    end
+    self.prev_days = days
+    cfg.f = true
 end
 
-function uber_watch:on_sleep_start()    -- время начала сна
-  self.prev_update = time_minutes() -- чтобы не было ложного срабатывания
-  self:set_update(20)               -- нужен частый апдейт, чтобы не промахнуться
-  self:update()
+function uber_watch:on_sleep_start()  -- время начала сна
+    self.prev_update = time_minutes() -- чтобы не было ложного срабатывания
+    self:set_update( 20 )             -- нужен частый апдейт, чтобы не промахнуться
+    self:update()
 end
 
-if this.g_watch == nil then
-   this.g_watch = uber_watch()
-end
+if this.g_watch == nil then this.g_watch = uber_watch() end
 
 function use_watch() -- какие-то манипуляции с респавном
-  if db.actor:object("watch") ~= nil then
-    bind_stalker.hide_weapon()
-    schedule.add('use_watch', 'used_items.used_watch()', 200)
-  else
-    local obj = db.actor:object("timer")
-    if obj then
-       local sobj = alife():object(obj:id())
-       misc.release_obj(sobj, 'vergas_watch.script->use_watch')
-       vergas_lib.spawn_item_in_inv("watch",true)
-       schedule.add('use_watch', 'vergas_watch.use_watch()',300)
+    if db.actor:object( "watch" ) ~= nil then
+        bind_stalker.hide_weapon()
+        schedule.add( 'use_watch', 'used_items.used_watch()', 200 )
+    else
+        local obj = db.actor:object( "timer" )
+        if obj then
+            local sobj = alife():object( obj:id() )
+            misc.release_obj( sobj, 'vergas_watch.script->use_watch' )
+            vergas_lib.spawn_item_in_inv( "watch", true )
+            schedule.add( 'use_watch', 'vergas_watch.use_watch()',300)
+        end
     end
-  end
 end
 
-function set_flag_watch_open(param)
-  flag_watch_open = param
+function set_flag_watch_open( param ) flag_watch_open = param end
+function get_flag_watch_open() return flag_watch_open end
+
+function set_get_flag_sec_show( mode, param )
+    if mode == 1 then
+        flag_sec_show = param
+    else
+        return flag_sec_show
+    end
 end
 
-function get_flag_watch_open()
-  return flag_watch_open
-end
-
-function set_get_flag_sec_show(mode,param)
-  if mode == 1 then
-    flag_sec_show = param
-  else
-    return flag_sec_show
-  end
-end
-
-function set_get_old_sizes(mode,param) -- OBSOLETE: метод странного обращения к локальным переменным
-  -- функция приговорена к вырезанию на потом
---[[mode
-  d - считываю timer_d
-  dd - записываю timer_d
-  h - считываю timer_h
-  hh - записываю timer_h
-  m - считываю timer_m
-  mm - записываю timer_m
-  s - считываю sec_old
-  ss - записываю sec_old
-]]--  
-  if mode == "h" then
-    return g_watch:alarm_config().h
-  elseif mode == "m" then
-    return g_watch:alarm_config().m
-  elseif mode == "s" then
-    return sec_old
-  elseif mode == "ss" then
-    sec_old = param
-  elseif mode == "d" then
-    return timer_d
-  elseif mode == "dd" then
-    timer_d = param
-  end
+function set_get_old_sizes( mode, param ) -- OBSOLETE: метод странного обращения к локальным переменным
+    if     mode == "h"  then return g_watch:alarm_config().h
+    elseif mode == "m"  then return g_watch:alarm_config().m
+    elseif mode == "s"  then return sec_old
+    elseif mode == "ss" then sec_old = param
+    elseif mode == "d"  then return timer_d
+    elseif mode == "dd" then timer_d = param
+    end
 end
 
 function set_watch_textures()
-  local hh = vergas_lib.return_time(4)
-  local mm = vergas_lib.return_time(5)
-  return sprintf("%02d", hh), sprintf("%02d", mm)
+    local hh = vergas_lib.return_time( 4 )
+    local mm = vergas_lib.return_time( 5 )
+    return sprintf( "%02d", hh ), sprintf( "%02d", mm )
 end
 
 function set_radiation_textures()
-  local ur_rad,ur_c,ur_d,t1,t2,t3,t4
-  
-  ur_rad = db.actor.radiation
-  if ur_rad >=0.9 then
-    vergas_lib.s_play([[pda\timer_signal]],1)
-  end
-  if ur_rad == ur_rad_old then
-    return "0","0","0","0"
-  end
-  if ur_rad == 0 then
-    local rnd =tostring(lua_random(65,85))
-    t1 = "0"
-    t2 = string.sub(rnd,1,1)
-    t3 = string.sub(rnd,2,2)
-    t4 = "mkp"
-  else
-    ur_rad = ur_rad*10
-    ur_c = math.modf(ur_rad)
-    if ur_c ~= 0 then
-      t1 = "0"
-      t4 = "p"
-      if ur_c == 10 then
-        t2 = "1"
-        t3 = "0"
-      else
-        t2 = "0"
-        t3 = string.sub(tostring(ur_c),1,1)
-      end
-    else
-      ur_rad = ur_rad*1000
-      ur_c = math.modf(ur_rad)
-      if ur_c ~= 0 then
-        t4 = "mp"
-        if string.len(tostring(ur_c)) == 3 then
-          t1 = string.sub(tostring(ur_c),1,1)
-          t2 = string.sub(tostring(ur_c),2,2)
-          t3 = string.sub(tostring(ur_c),3,3)
-        elseif string.len(tostring(ur_c)) == 2 then  
-          t1 = "0"
-          t2 = string.sub(tostring(ur_c),1,1)
-          t3 = string.sub(tostring(ur_c),2,2)
-        elseif string.len(tostring(ur_c)) == 1 then
-          t1 = "0"
-          t2 = "0"
-          t3 = string.sub(tostring(ur_c),1,1)
-        end
-      else
-        ur_rad = ur_rad*1000
-        ur_c = math.modf(ur_rad)
-        if ur_c ~= 0 then
-          t4 = "mkp"
-          if ur_c <= 0.75 then
-            t1 = "0"
-            t2 = "7"
-            t3 = "5"
-          else
-            if string.len(tostring(ur_c)) == 3 then
-              t1 = string.sub(tostring(ur_c),1,1)
-              t2 = string.sub(tostring(ur_c),2,2)
-              t3 = string.sub(tostring(ur_c),3,3)
-            elseif string.len(tostring(ur_c)) == 2 then
-              t1 = "0"
-              t2 = string.sub(tostring(ur_c),1,1)
-              t3 = string.sub(tostring(ur_c),2,2)
-            end
-          end
-        end
-      end
+    local ur_rad, ur_c, ur_d, t1, t2, t3, t4
+    ur_rad = db.actor.radiation
+    if ur_rad >= 0.9 then
+        vergas_lib.s_play( [[pda\timer_signal]], 1 )
     end
-    ur_rad_old = db.actor.radiation
-  end
-  return t1,t2,t3,t4
+    if ur_rad == ur_rad_old then return "0", "0", "0", "0" end
+    if ur_rad == 0 then
+        local rnd = tostring( lua_random( 65, 85 ) )
+        t1 = "0"
+        t2 = string.sub( rnd, 1, 1 )
+        t3 = string.sub( rnd, 2, 2 )
+        t4 = "mkp"
+    else
+        ur_rad = ur_rad * 10
+        ur_c   = math.modf( ur_rad )
+        if ur_c ~= 0 then
+            t1 = "0"
+            t4 = "p"
+            if ur_c == 10 then
+                t2 = "1"
+                t3 = "0"
+            else
+                t2 = "0"
+                t3 = string.sub( tostring( ur_c ), 1, 1 )
+            end
+        else
+            ur_rad = ur_rad * 1000
+            ur_c   = math.modf( ur_rad )
+            if ur_c ~= 0 then
+                t4 = "mp"
+                if string.len( tostring( ur_c ) ) == 3 then
+                    t1 = string.sub( tostring( ur_c ), 1, 1 )
+                    t2 = string.sub( tostring( ur_c ), 2, 2 )
+                    t3 = string.sub( tostring( ur_c ), 3, 3 )
+                elseif string.len( tostring( ur_c ) ) == 2 then
+                    t1 = "0"
+                    t2 = string.sub( tostring( ur_c ), 1, 1 )
+                    t3 = string.sub( tostring( ur_c ), 2, 2 )
+                elseif string.len( tostring( ur_c ) ) == 1 then
+                    t1 = "0"
+                    t2 = "0"
+                    t3 = string.sub( tostring( ur_c ), 1, 1 )
+                end
+            else
+                ur_rad = ur_rad * 1000
+                ur_c   = math.modf( ur_rad )
+                if ur_c ~= 0 then
+                    t4 = "mkp"
+                    if ur_c <= 0.75 then
+                        t1 = "0"
+                        t2 = "7"
+                        t3 = "5"
+                    else
+                        if string.len( tostring( ur_c ) ) == 3 then
+                            t1 = string.sub( tostring( ur_c ), 1, 1 )
+                            t2 = string.sub( tostring( ur_c ), 2, 2 )
+                            t3 = string.sub( tostring( ur_c ), 3, 3 )
+                        elseif string.len( tostring( ur_c ) ) == 2 then
+                            t1 = "0"
+                            t2 = string.sub( tostring( ur_c ), 1, 1 )
+                            t3 = string.sub( tostring( ur_c ), 2, 2 )
+                        end
+                    end
+                end
+            end
+        end
+        ur_rad_old = db.actor.radiation
+    end
+    return t1, t2, t3, t4
 end
 
 function set_date_textures()
-  local dd = vergas_lib.return_time(3)
-  local mm = vergas_lib.return_time(2)
-  local yy = vergas_lib.return_time(1) % 100
-  return sprintf("%02d", dd), sprintf("%02d", mm), sprintf("%02d", yy)
+    local dd = vergas_lib.return_time( 3 )
+    local mm = vergas_lib.return_time( 2 )
+    local yy = vergas_lib.return_time( 1 ) % 100
+    return sprintf( "%02d", dd ), sprintf( "%02d", mm ), sprintf( "%02d", yy )
 end
 
 function set_day_week_textures()
-  
-  local mm = vergas_lib.return_time(2)
-  local dd = vergas_lib.return_time(3)
-  local tbl
-  local d_w
-  local i
-  
-  if mm == 1 or mm == 5 then
-    tbl = {7,1,2,3,4,5,6}
-  elseif mm == 2 or mm == 3 or mm == 6 then
-    tbl = {4,5,6,7,1,2,3}
-  elseif mm == 4 or mm == 10 then
-    tbl = {1,2,3,4,5,6,7}
-  elseif mm == 7 then
-    tbl = {2,3,4,5,6,7,1}
-  elseif mm == 8 then
-    tbl = {6,7,1,2,3,4,5}
-  elseif mm == 9 or mm == 12 then
-    tbl = {3,4,5,6,7,1,2}
-  elseif mm == 11 then
-    tbl = {5,6,7,1,2,3,4}
-  end
-  
-  local days_month = get_days_month(mm)
-  for i = 1, 7 do
-    local flag = true
-    while flag do
-      if tbl[i] == dd then
-        d_w = "dw_"..i
-        flag = false
-      else
-        tbl[i] = tbl[i]+7
-        if tbl[i] > days_month then
-          flag = false
-        end
-      end
+    local mm = vergas_lib.return_time( 2 )
+    local dd = vergas_lib.return_time( 3 )
+    local tbl, d_w, i
+    if     mm == 1 or mm == 5 then
+        tbl = { 7, 1, 2, 3, 4, 5, 6 }
+    elseif mm == 2 or mm == 3 or mm == 6 then
+        tbl = { 4, 5, 6, 7, 1, 2, 3 }
+    elseif mm == 4 or mm == 10 then
+        tbl = { 1, 2, 3, 4, 5, 6, 7 }
+    elseif mm == 7 then
+        tbl = { 2, 3, 4, 5, 6, 7, 1 }
+    elseif mm == 8 then
+        tbl = { 6, 7, 1, 2, 3, 4, 5 }
+    elseif mm == 9 or mm == 12 then
+        tbl = { 3, 4, 5, 6, 7, 1, 2 }
+    elseif mm == 11 then
+        tbl = { 5, 6, 7, 1, 2, 3, 4 }
     end
-  end
-  
-  return d_w
+    local days_month = get_days_month( mm )
+    for i = 1, 7 do
+        local flag = true
+        while flag do
+            if tbl[ i ] == dd then
+                d_w  = "dw_" .. i
+                flag = false
+            else
+                tbl[ i ] = tbl[ i ] + 7
+                if tbl[ i ] > days_month then flag = false end
+            end
+        end
+    end
+    return d_w
 end
 
 function set_days_in_zont()
-  local d_z = consider_days()
-  local t1,t2,t3
-  
-  if d_z < 10 then
-    t1 = "0"
-    t2 = "0"
-    t3 = tostring(d_z)
-  elseif d_z <=99 then
-    t1 = "0"
-    t2 = string.sub(tostring(d_z),1,1)
-    t3 = string.sub(tostring(d_z),2,2)
-  else
-    t1 = string.sub(tostring(d_z),1,1)
-    t2 = string.sub(tostring(d_z),2,2)
-    t3 = string.sub(tostring(d_z),3,3)
-  end
-  
-  return t1,t2,t3
+    local d_z = consider_days()
+    local t1, t2, t3
+    if d_z < 10 then
+        t1 = "0"
+        t2 = "0"
+        t3 = tostring( d_z )
+    elseif d_z <= 99 then
+        t1 = "0"
+        t2 = string.sub( tostring( d_z ), 1, 1 )
+        t3 = string.sub( tostring( d_z ), 2, 2 )
+    else
+        t1 = string.sub( tostring( d_z ), 1, 1 )
+        t2 = string.sub( tostring( d_z ), 2, 2 )
+        t3 = string.sub( tostring( d_z ), 3, 3 )
+    end
+    return t1, t2, t3
 end
 
 function consider_days()
-  local hh = timers.Get_Game_Hours() - 12
-  local dd = math.modf (hh/24)
-  if math.fmod (hh,24) > 0 then
-    return dd+2
-  else
-    return dd+1
-  end
-end
-
-function get_days_month(mm)
-  if mm == 2 then
-    return 28
-  elseif mm == 4 or mm == 6 or mm == 9 or mm == 11 then
-    return 30
-  else
-    return 31
-  end
-end
-
-function save_watch()    -- OBSOLETE: сохранение значений таймера и секундомера при сохранении
---[[
-  local obj = db.actor:object("watch")
-  local str = ""
-  if obj then
-    if flag_timer_show then
-      str = "1|"..timer_old.."|"
+    local hh = timers.Get_Game_Hours() - 12
+    local dd = math.modf( hh / 24 )
+    if math.fmod( hh, 24 ) > 0 then
+        return dd + 2
     else
-      str = "0|0|"
+        return dd + 1
     end
-    if flag_sec_show then
-      str = str.."1|"..sec_old
-    else
-      str = str.."0|0"
-    end
-    local sobj = alife():object(obj:id())
-    if sobj then
-       local net_pak = get_netpk(sobj,1)
-       local record =  net_pak:get()
-       record.custom_data = str
-       net_pak:set(record)
-    end    
-  end
---]]
-  -- сохранение настроек будильника
 end
 
-function load_watch()    -- OBSOLETE: это при загрузке сохранки
---[[
-  local obj = db.actor:object("watch")
-  local str = ""
-  if obj then
-    local sobj = alife():object(obj:id())
-    if sobj then
-       local net_pak = get_netpk(sobj,1)
-       local record =  net_pak:get()
-       str = record.custom_data
-    end
-  else
-    return
-  end
-  if str ~= "" then
-    local tbl = vergas_lib.str_explode("|",str,true)
-    if tbl[1] == "1" then
-      flag_timer_show = true
+function get_days_month( mm )
+    if mm == 2 then
+        return 28
+    elseif mm == 4 or mm == 6 or mm == 9 or mm == 11 then
+        return 30
     else
-      flag_timer_show = false
+        return 31
     end
-    timer_old = tonumber(tbl[2])
-    if tbl[3] == "1" then
-      flag_sec_show = true
-    else
-      flag_sec_show = false
-    end
-    sec_old = tonumber(tbl[4])
-  else
-    flag_timer_show = false
-    timer_old = 0
-    flag_sec_show = false
-    sec_old = 0
-  end
---]]
 end
 
-function updating_timer()
-
+function save_watch() --OBSOLETE: сохранение значений таймера и секундомера при сохранении
 end
-
+function load_watch() --OBSOLETE: это при загрузке сохранки
+end
+function updating_timer() end
 function sleep_updating_timers()  --обновление таймеров после сна
-  -- истинно понятный код, коментарии не нужны!!!
-  --[[
-  local tbl_go
-  local tbl_stop
-  local time_sleep_1
-  local time_sleep_2
-  
-  flag_sleep = false
-  
-  if flag_timer_show or flag_sec_show   then
-    tbl_go = vergas_lib.str_explode("|", time_sleep_go,true)
-    local i
-    for i = 1, 3 do
-      tbl_go[i] = tonumber(tbl_go[i])
-    end
-    tbl_stop = {vergas_lib.return_time(3),vergas_lib.return_time(4),vergas_lib.return_time(5)}
-  else
-    return
-  end
-  
-  if tbl_go[1] ~= tbl_stop[1] then
-    time_sleep_1 = 60 * 24 - (tbl_go[2]*60 + tbl_go[3])
-    time_sleep_2 = tbl_stop[2]*60 + tbl_stop[3]
-    -- if flag_timer_show then
-      -- timer_old = timer_old - time_sleep_1 - time_sleep_2
-    -- end
-    if flag_sec_show then
-      sec_old = sec_old + time_sleep_1 + time_sleep_2
-    end
-  else
-    time_sleep_1 = 60*24 - (tbl_go[2]*60 + tbl_go[3])
-    time_sleep_2 = 60*24 - (tbl_stop[2]*60 + tbl_stop[3])
-    -- if flag_timer_show then
-      -- timer_old = timer_old - (time_sleep_1 - time_sleep_2)
-    -- end
-    if flag_sec_show then
-      sec_old = sec_old + (time_sleep_1 - time_sleep_2)
-    end
-  end
-  
-  if timer_old < 0 then
-     timer_old = 0
-  end
-  
-  time_sleep_go = nil
-  --]]
 end
 
-function substitution_watch(mode) -- ВНИМАНИЕ: спавн-удаление!
-  local item_del
-  local item_spw
-  if mode == 1 then
-    item_del = "watch"
-    item_spw = "timer"
-  else
-    item_del = "timer"
-    item_spw = "watch"
-  end
-
-  if db.actor:object(item_del) then
-    local obj = db.actor:object(item_del)
-    if obj then
-      local sobj = alife():object(obj:id())
-      misc.release_obj(sobj, 'vergas_watch.script->substitution_watch')
-      vergas_lib.spawn_item_in_inv(item_spw,true)
+function substitution_watch( mode ) -- ВНИМАНИЕ: спавн-удаление!
+    local item_del, item_spw
+    if mode == 1 then
+        item_del = "watch"
+        item_spw = "timer"
+    else
+        item_del = "timer"
+        item_spw = "watch"
     end
-  end
+    if db.actor:object( item_del ) then
+        local obj = db.actor:object( item_del )
+        if obj then
+            local sobj = alife():object( obj:id() )
+            misc.release_obj( sobj, 'vergas_watch.script->substitution_watch' )
+            vergas_lib.spawn_item_in_inv( item_spw, true )
+        end
+    end
 end
 
-
-function init_module()
- g_watch = uber_watch()
-end
-
-function late_init()
- g_watch:set_update()
- -- show_zone_map(false)
-end
+function init_module() g_watch = uber_watch() end
+function late_init() g_watch:set_update() end
 

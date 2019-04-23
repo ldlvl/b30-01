@@ -6,150 +6,240 @@ Vergas
 local tbl_level_mutants = {}
 
 function consider_mutants_level()
-
-	local lname = level.name()
-	counted_mutants_level(lname)
-	
-	set_mutants_in_log("МУТАНТЫ: Обнаружено мутантов(".. lname..")")
-	
-	--приступаю к корректировке количества
-	for i = 1,#tbl_level_mutants do
-		local monstr = tbl_level_mutants[i]
-		local tbl_tmp = tbl_level_mutants[monstr]
-		kill_unnecessary(lname,tbl_tmp,monstr)
-	end
-	tbl_level_mutants = {}
-	counted_mutants_level(lname)
-	set_mutants_in_log("МУТАНТЫ: Коррекция мутантов(".. lname..")")
+    local lname = level.name()
+    counted_mutants_level( lname )
+    set_mutants_in_log( "МУТАНТЫ: Обнаружено мутантов(".. lname ..")" )
+    --приступаю к корректировке количества
+    for i = 1, #tbl_level_mutants do
+        local monstr  = tbl_level_mutants[ i ]
+        local tbl_tmp = tbl_level_mutants[ monstr ]
+        kill_unnecessary( lname, tbl_tmp, monstr )
+    end
+    tbl_level_mutants = {}
+    counted_mutants_level( lname )
+    set_mutants_in_log( "МУТАНТЫ: Коррекция мутантов(" .. lname .. ")" )
 end
 
-function counted_mutants_level(lname)
-	local sect
-	local obj
-	local tbl_tmp = {}
-	
-	for i=1,MAX_OBJ_ID do
-		obj = g_sim:object(i)
-		if obj then
-			sect = obj:section_name()
-		end
-		if obj and lname == obj.level_name and recognition_mutants(sect) then
-			if tbl_level_mutants[sect] then
-				tbl_tmp = tbl_level_mutants[sect]
-				table.insert(tbl_tmp,obj.id)
-				tbl_level_mutants[sect] = tbl_tmp
-			else
-				table.insert(tbl_level_mutants,sect)
-				tbl_tmp = {}
-				table.insert(tbl_tmp,obj.id)
-				tbl_level_mutants[sect] = tbl_tmp
-			end
-		end
-	end
+function counted_mutants_level( lname )
+    local sect, obj
+    local tbl_tmp = {}
+    for i = 1, MAX_OBJ_ID do
+        obj = g_sim:object( i )
+        if obj then sect = obj:section_name() end
+        if obj and lname == obj.level_name and recognition_mutants( sect ) then
+            if tbl_level_mutants[ sect ] then
+                tbl_tmp = tbl_level_mutants[ sect ]
+                table.insert( tbl_tmp, obj.id )
+                tbl_level_mutants[ sect ] = tbl_tmp
+            else
+                table.insert( tbl_level_mutants, sect )
+                tbl_tmp = {}
+                table.insert( tbl_tmp, obj.id )
+                tbl_level_mutants[ sect ] = tbl_tmp
+            end
+        end
+    end
 end
 
-function kill_unnecessary(lname,tbl_monstr_id,monstr)
-	local config_list = "list_"..lname
-	local sum_really = #tbl_monstr_id
-	local sum_config = vergas_lib.set_pr_from_config(config_list,monstr) 
-
-	if sum_config == 0 or sum_config == nil or sum_really <= sum_config then
-		return
-	end
-	
-	local sum_kills = sum_really - sum_config
-	
-	for i = 1,sum_kills do
-		local n = lua_random(1,#tbl_monstr_id)
-		misc.release_obj(tbl_monstr_id[n])
-		table.remove (tbl_monstr_id, n)	
-	end
-	
+function kill_unnecessary( lname, tbl_monstr_id, monstr )
+    local config_list = "list_" .. lname
+    local sum_really  = #tbl_monstr_id
+    local sum_config  = vergas_lib.set_pr_from_config( config_list, monstr )
+    if sum_config == 0 or sum_config == nil or sum_really <= sum_config then
+        return
+    end
+    local sum_kills = sum_really - sum_config
+    for i = 1, sum_kills do
+        local n = lua_random( 1, #tbl_monstr_id )
+        misc.release_obj( tbl_monstr_id[ n ] )
+        table.remove( tbl_monstr_id, n )
+    end
 end
 
-function recognition_mutants(sec)
-	local tbl_mutants = {"m_dog_e","dog_weak","dog_normal","dog_strong",
-						"m_boar_e","boar_weak","boar_normal","boar_strong",
-						"m_flesh_e","flesh_weak","flesh_normal","flesh_strong",
-						"m_pseudodog_e","pseudodog_weak","pseudodog_normal","pseudodog_strong","pseudodog_arena","psy_dog","psy_dog_phantom","psy_dog_radar",
-						"m_tushkano_e","m_tushkano_normal","tushkano_normal","tushkano_strong","electro_tushkano_normal",
-						"m_cat_e","cat_weak","cat_normal","cat_strong",
-						"m_bloodsucker_e","bloodsucker_weak","bloodsucker_normal","bloodsucker_strong",
-						"m_burer_e","burer_weak","burer_normal","burer_strong","burer_hos",
-						"m_chimera_e","chimera_weak","chimera_normal","chimera_strong","electro_chimera",
-						"m_controller_e","m_controller_normal","m_controller_normal_fat","m_controller_old","m_controller_old_fat","controller_tubeman",
-						"m_gigant_e","m_gigant_normal","marsh_gigant","gigant_normal","gigant_strong",
-						"karlik",
-						"m_phantom","phantom_flesh_1","phantom_mutant_boar_1","phantom_pseudodog_1","phantom_dog_1","phantom_dog_2","phantom_psevdogigant_1","phantom_cat_1","phantom_snork_1",
-						"phantom_snork_4","phantom_tushkano_1","phantom_chimera_1","phantom_chimera_2","phantom_krovosos_1","phantom_krovosos_2","phantom_kontroler_1","phantom_zombi_3",
-						"m_poltergeist_e","m_poltergeist_normal","m_poltergeist_normal_tele","m_poltergeist_tele_outdoor","m_poltergeist_normal_flame","m_poltergeist_strong_flame","m_poltergeist_dark_flame",
-						"m_pseudodogfrend_e","dogfrend",
-						"m_snork_e","snork_weak","snork_normal","snork_strong","aes_snork","snork_arena","snork_indoor","snork_outdoor","snork_jumper",
-						"stalker_zombied","stalker_fresh_zombied",
-						"m_zombie_e","zombie_weak","zombie_normal","zombie_strong","zombie_trup","zombie_trup2","zombie_blow","zombie_beee",
-						}
-	
-	for i = 1,#tbl_mutants do
-		if sec == tbl_mutants[i] then
-			return true
-		end
-	end
-	return false
+function recognition_mutants( sec )
+    local tbl_mutants = {
+        "m_dog_e",
+        "dog_weak",
+        "dog_normal",
+        "dog_strong",
+        "m_boar_e",
+        "boar_weak",
+        "boar_normal",
+        "boar_strong",
+        "m_flesh_e",
+        "flesh_weak",
+        "flesh_normal",
+        "flesh_strong",
+        "m_pseudodog_e",
+        "pseudodog_weak",
+        "pseudodog_normal",
+        "pseudodog_strong",
+        "pseudodog_arena",
+        "psy_dog",
+        "psy_dog_phantom",
+        "psy_dog_radar",
+        "m_tushkano_e",
+        "m_tushkano_normal",
+        "tushkano_normal",
+        "tushkano_strong",
+        "electro_tushkano_normal",
+        "m_cat_e",
+        "cat_weak",
+        "cat_normal",
+        "cat_strong",
+        "m_bloodsucker_e",
+        "bloodsucker_weak",
+        "bloodsucker_normal",
+        "bloodsucker_strong",
+        "m_burer_e",
+        "burer_weak",
+        "burer_normal",
+        "burer_strong",
+        "burer_hos",
+        "m_chimera_e",
+        "chimera_weak",
+        "chimera_normal",
+        "chimera_strong",
+        "electro_chimera",
+        "m_controller_e",
+        "m_controller_normal",
+        "m_controller_normal_fat",
+        "m_controller_old",
+        "m_controller_old_fat",
+        "controller_tubeman",
+        "m_gigant_e",
+        "m_gigant_normal",
+        "marsh_gigant",
+        "gigant_normal",
+        "gigant_strong",
+        "karlik",
+        "m_phantom",
+        "phantom_flesh_1",
+        "phantom_mutant_boar_1",
+        "phantom_pseudodog_1",
+        "phantom_dog_1",
+        "phantom_dog_2",
+        "phantom_psevdogigant_1",
+        "phantom_cat_1",
+        "phantom_snork_1",
+        "phantom_snork_4",
+        "phantom_tushkano_1",
+        "phantom_chimera_1",
+        "phantom_chimera_2",
+        "phantom_krovosos_1",
+        "phantom_krovosos_2",
+        "phantom_kontroler_1",
+        "phantom_zombi_3",
+        "m_poltergeist_e",
+        "m_poltergeist_normal",
+        "m_poltergeist_normal_tele",
+        "m_poltergeist_tele_outdoor",
+        "m_poltergeist_normal_flame",
+        "m_poltergeist_strong_flame",
+        "m_poltergeist_dark_flame",
+        "m_pseudodogfrend_e",
+        "dogfrend",
+        "m_snork_e",
+        "snork_weak",
+        "snork_normal",
+        "snork_strong",
+        "aes_snork",
+        "snork_arena",
+        "snork_indoor",
+        "snork_outdoor",
+        "snork_jumper",
+        "stalker_zombied",
+        "stalker_fresh_zombied",
+        "m_zombie_e",
+        "zombie_weak",
+        "zombie_normal",
+        "zombie_strong",
+        "zombie_trup",
+        "zombie_trup2",
+        "zombie_blow",
+        "zombie_beee"
+    }
+    for i = 1, #tbl_mutants do
+        if sec == tbl_mutants[ i ] then return true end
+    end
+    return false
 end
 
-function set_mutants_in_log(txt)
-	vergas_lib. logmsg(txt)
-	for i = 1,#tbl_level_mutants do
-		local monstr = tbl_level_mutants[i]
-		local summ = #tbl_level_mutants[monstr]
-		vergas_lib. logmsg("МУТАНТЫ: "..monstr.." = "..summ)			
-	end
-
+function set_mutants_in_log( txt )
+    vergas_lib.logmsg( txt )
+    for i = 1, #tbl_level_mutants do
+        local monstr = tbl_level_mutants[ i ]
+        local summ   = #tbl_level_mutants[ monstr ]
+        vergas_lib.logmsg( "МУТАНТЫ: " .. monstr .. " = " .. summ )
+    end
 end
 ---------------------------------------------------ТЕСТОВЫЕ ФУНКЦИИ--------------------------------------------------
-local level_name = {"l01_escape","l02_garbage","l03_agroprom","l03u_agr_underground","k01_darkscape","l04_darkvalley","l04u_labx18",
-					"l05_bar","l06_rostok","l07_military","marsh","labx10","labx8","hospital","av_peshera","aver","deadcity",
-					"red_forest","warlab","lost_village","limansk","generators","l08_yantar","l08u_brainlab","l10_radar",
-					"l10u_bunker","l11_pripyat","l12_stancia_new","l12_stancia_2_new","l12u_control_monolith","l12u_sarcofag"
-					}
+local level_name = {
+    "l01_escape",
+    "l02_garbage",
+    "l03_agroprom",
+    "l03u_agr_underground",
+    "k01_darkscape",
+    "l04_darkvalley",
+    "l04u_labx18",
+    "l05_bar",
+    "l06_rostok",
+    "l07_military",
+    "marsh",
+    "labx10",
+    "labx8",
+    "hospital",
+    "av_peshera",
+    "aver",
+    "deadcity",
+    "red_forest",
+    "warlab",
+    "lost_village",
+    "limansk",
+    "generators",
+    "l08_yantar",
+    "l08u_brainlab",
+    "l10_radar",
+    "l10u_bunker",
+    "l11_pripyat",
+    "l12_stancia_new",
+    "l12_stancia_2_new",
+    "l12u_control_monolith",
+    "l12u_sarcofag"
+}
 
 function test_levels()
-	for i = 1,#level_name do
-		test_consider_mutants_level(level_name[i])
-	end
+    for i = 1, #level_name do
+        test_consider_mutants_level( level_name[ i ] )
+    end
 end
 
-function test_consider_mutants_level(lname)
-	local sect
-	local obj
-	local tbl_tmp = {}
-	
-	tbl_level_mutants = {}
-	
-	for i=1,MAX_OBJ_ID do
-		obj = g_sim:object(i)
-		if obj then
-			sect = obj:section_name()
-		end
-		if obj and lname == obj.level_name and recognition_mutants(sect) then
-			if tbl_level_mutants[sect] then
-				tbl_tmp = tbl_level_mutants[sect]
-				table.insert(tbl_tmp,obj.id)
-				tbl_level_mutants[sect] = tbl_tmp
-			else
-				table.insert(tbl_level_mutants,sect)
-				tbl_tmp = {}
-				table.insert(tbl_tmp,obj.id)
-				tbl_level_mutants[sect] = tbl_tmp
-			end
-		end
-	end
-	vergas_lib. logmsg("МУТАНТЫ Локация  = "..lname)					---------------------------------------УДАЛИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!
-	for i = 1,#tbl_level_mutants do
-		local monstr = tbl_level_mutants[i]
-		local summ = #tbl_level_mutants[monstr]
-		vergas_lib. logmsg("МУТАНТЫ Найдено "..monstr.." = "..summ)					---------------------------------------УДАЛИТЬ!!!!!!!!!!!!!!!!!!!!!!!!!
-	end
+function test_consider_mutants_level( lname )
+    local sect, obj
+    local tbl_tmp     = {}
+    tbl_level_mutants = {}
+    for i = 1, MAX_OBJ_ID do
+        obj = g_sim:object( i )
+        if obj then sect = obj:section_name() end
+        if obj and lname == obj.level_name and recognition_mutants( sect ) then
+            if tbl_level_mutants[ sect ] then
+                tbl_tmp = tbl_level_mutants[ sect ]
+                table.insert( tbl_tmp, obj.id )
+                tbl_level_mutants[ sect ] = tbl_tmp
+            else
+                table.insert( tbl_level_mutants, sect )
+                tbl_tmp = {}
+                table.insert( tbl_tmp, obj.id )
+                tbl_level_mutants[ sect ] = tbl_tmp
+            end
+        end
+    end
+    vergas_lib.logmsg( "МУТАНТЫ Локация  = " .. lname ) -------------------УДАЛИТЬ!!!!!!!!!!!!
+    for i = 1, #tbl_level_mutants do
+        local monstr = tbl_level_mutants[ i ]
+        local summ   = #tbl_level_mutants[ monstr ]
+        vergas_lib.logmsg( "МУТАНТЫ Найдено " .. monstr .." = " .. summ ) -------------УДАЛИТЬ!!!!!!!!!
+    end
 end
 
 

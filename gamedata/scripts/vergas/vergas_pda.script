@@ -5,1127 +5,872 @@ Vergas
 ]]--
 
 local tbl_spwn_pda = {}
-local tbl_info = {}
-local number_record
-local tbl_sn = {} 	--таблица служебных номеров  ПДА
-local number_pda	--номер текущего ПДА
-local steklo
-
+local tbl_info     = {}
+local tbl_sn       = {}   --таблица служебных номеров  ПДА
+local number_pda          --номер текущего ПДА
+local steklo, number_record
 
 function set_pda_info()
-	local i
-	local j
-	local npc
-	local pda
-	local s_n
-	local name_1
-	local name_2
-        local name
-	local grup_n
-	local grup_s
-	local rang_s
-	local rang_n
-	local login
-	local pass
-	local msg
-	local info_string
-	local shron
-	
-	
-	
-	if table.getn(tbl_spwn_pda) ~= 0 then
-		for i = 1,table.getn(tbl_spwn_pda) do
-			if tbl_spwn_pda[i] ~= 0 then
-				local tbl_inf = vergas_lib.str_explode("|",tbl_spwn_pda[i],true)
-				for j = 1,3 do
-					tbl_inf[j] = tonumber(tbl_inf[j])
-				end
-				npc = client_obj(tbl_inf[1])
-				pda = client_obj(tbl_inf[2])
-				if npc ~= nil and pda ~= nil then
-					tbl_spwn_pda[i] = 0
-						--local m,n = set_2_names(npc:character_name())
-						local m,n = amk_names_lists.get_strings()
-						name_1 = vergas_lib.register_change(m,1)
-						name_2 = vergas_lib.register_change(n,1)
-						name = m.." "..n
-						if string.len (name_2) == 0 then
-							name_2 = name_1
-						end
-						grup_s = npc:character_community()
-						if grup_s ~= "bandit" and grup_s ~= "stalker" and grup_s ~= "dolg" and grup_s ~= "freedom" then
-							grup_s = set_community_str()
-						end
-						if grup_s == "bandit" then
-							--у бандюгана может быть и чужой ПДА(но уже со своим логином и паролем)
-							local k = lua_random(1,10)
-							if k>=8 then
-								grup_s = set_community_str()
-							end
-						end
-						grup_n = set_community(grup_s)
-						rang_s = npc:character_rank() 	--стринг
-						rang_n = npc:rank()				--цифирь
-						s_n = set_s_n(grup_n,rang_s,npc,tbl_inf[3])
-						--формирование последовательностей.
-						local tbl_pos = set_pos()
-						pass = set_pass_section(tbl_pos[1],name_1,name_2,rang_n,grup_n)
-						login = set_pass_login(pass,rang_n)
-						--формирование тайника
-						--shron = treasure_manager.get_treasure_manager():on_death_npc(npc)			--отладка
-						if npc:character_name()=="Меченный" or npc:character_name()=="Меченный" then
-							shron = treasure_manager.get_treasure_manager():use(nil,grup_s,rang_n)
-						else
-							shron = treasure_manager.get_treasure_manager():use(npc)					--работа
-						end
-						msg = set_msg(grup_s,shron)
-						info_string = login.."|"..pass.."|"..name.."|"..s_n.."|"..msg.."|"..shron.."|0"
-						--запись инфо-строки в ПДА
-						set_pda(tbl_inf[2],info_string)
-				end	
-			end
-		end
-		
-		local flag = true
-		for i = 1, table.getn(tbl_spwn_pda) do
-			if tbl_spwn_pda[i] ~= 0 then
-				flag = false
-				break
-			end
-		end
-		if flag then
-			tbl_spwn_pda = {}
-		end	
-	end
-
+    local i, j, npc, pda, s_n, name_1, name_2, name
+    local grup_n, grup_s, rang_s, rang_n
+    local login, pass, msg, info_string, shron
+    if table.getn( tbl_spwn_pda ) ~= 0 then
+        for i = 1, table.getn( tbl_spwn_pda ) do
+            if tbl_spwn_pda[ i ] ~= 0 then
+                local tbl_inf = vergas_lib.str_explode( "|", tbl_spwn_pda[ i ], true )
+                for j = 1, 3 do
+                    tbl_inf[ j ] = tonumber( tbl_inf[ j ] )
+                end
+                npc = client_obj( tbl_inf[ 1 ] )
+                pda = client_obj( tbl_inf[ 2 ] )
+                if npc ~= nil and pda ~= nil then
+                    tbl_spwn_pda[ i ] = 0
+                    local m, n = amk_names_lists.get_strings()
+                    name_1     = vergas_lib.register_change( m, 1 )
+                    name_2     = vergas_lib.register_change( n, 1 )
+                    name       = m .. " " .. n
+                    if string.len( name_2 ) == 0 then name_2 = name_1 end
+                    grup_s = npc:character_community()
+                    if
+                            grup_s ~= "bandit" and grup_s ~= "stalker"
+                        and grup_s ~= "dolg"   and grup_s ~= "freedom"
+                    then
+                        grup_s = set_community_str()
+                    end
+                    if grup_s == "bandit" then
+                        --у бандюгана может быть и чужой ПДА(но уже со своим логином и паролем)
+                        local k = lua_random( 1, 10 )
+                        if k >= 8 then grup_s = set_community_str() end
+                    end
+                    grup_n = set_community( grup_s )
+                    rang_s = npc:character_rank()   --стринг
+                    rang_n = npc:rank()             --цифирь
+                    s_n    = set_s_n( grup_n, rang_s, npc, tbl_inf[ 3 ] )
+                    --формирование последовательностей.
+                    local tbl_pos = set_pos()
+                    pass  = set_pass_section( tbl_pos[ 1 ], name_1, name_2, rang_n, grup_n )
+                    login = set_pass_login( pass, rang_n )
+                    --формирование тайника
+                    if npc:character_name() == "Меченный" or npc:character_name() == "Меченный" then
+                        shron = treasure_manager.get_treasure_manager():use( nil, grup_s, rang_n )
+                    else
+                        shron = treasure_manager.get_treasure_manager():use( npc ) --работа
+                    end
+                    msg = set_msg( grup_s, shron )
+                    info_string = login .. "|" .. pass .. "|" .. name  .. "|"
+                               .. s_n   .. "|" ..  msg .. "|" .. shron .. "|0"
+                    --запись инфо-строки в ПДА
+                    set_pda( tbl_inf[ 2 ], info_string )
+                end
+            end
+        end
+        local flag = true
+        for i = 1, table.getn( tbl_spwn_pda ) do
+            if tbl_spwn_pda[ i ] ~= 0 then
+                flag = false
+                break
+            end
+        end
+        if flag then tbl_spwn_pda = {} end
+    end
 end
 
---[[
-function set_rnd_pda_info(id)
-	local i
-	local j
-	local pda
-	local s_n
-	local name_1
-	local name_2
-	local grup_n
-	local grup_s
-	local rang_s
-	local rang_n
-	local login
-	local pass
-	local msg
-	local info_string
-	local shron
-	local name
-	pda = client_obj(id)
-	if pda ~= nil then
-		local m,n = amk_names_lists.get_strings()
-		name_1 = vergas_lib.register_change(m,1)
-		name_2 = vergas_lib.register_change(n,1)
-		name=m.." "..n
-		grup_s = set_community_str()
-		if grup_s == "bandit" then
-			grup_s = set_community_str()
-		end
-		grup_n = set_community(grup_s)
-		rang_n = lua_random(100,450)
-		if rang_n<300 then rang_s="novice"
-		else rang_s="experienced"
-		end
-		s_n = set_s_n(grup_n,rang_s,nil,"2")
-		local tbl_pos = set_pos()
-		pass = set_pass_section(tbl_pos[1],name_1,name_2,rang_n,grup_n)
-		login = set_pass_login(pass,rang_n)
-		shron = treasure_manager.get_treasure_manager():use(nil,grup_s,rang_n)
-		msg = set_msg(grup_s,shron)
-		info_string = login.."|"..pass.."|"..name.."|"..s_n.."|"..msg.."|"..shron.."|0"
-		set_pda(id,info_string)
-	end	
-end
---]]
-
-function set_msg(grup,shron)
-	
-	local n  		--количество записей в файлах типа string_table_pda_military.xml
-	local i
-	local str = ""
-	
-	n = vergas_lib.set_pr_from_config("list_quantity",grup.."_quantity") 
-	
-	--определяю количество записей в ПДА
-	local msg_min = 2
-	local msg_max = 5
-	
-	--определяю номера записей
-	local tbl = {}
-	for i = 1, n do
-		table.insert(tbl,i)
-	end
-	
-	local tbl_msg = {}
-
-	--выбираю атмосферное 
-	for i = 1, lua_random(msg_min, msg_max) do
-		local k = lua_random(1, #tbl)
-		table.insert(tbl_msg,tostring(tbl[k]))
-		tbl[k] = 0
-		tbl = press_table(tbl)
-	end
-	
-	--добовляю спец-записи 
-	
-	--добовляю запись по схронам 
-	if shron ~= 0 then
-		table.insert(tbl_msg,tostring(vergas_lib.set_pr_from_config("list_treasure_pda",shron)))
-	end
-	
-	--перемешиваю записи
-	tbl = tbl_msg
-	tbl_msg = {}
-	local m = table.getn(tbl)
-	for i = 1, m do
-		local k = lua_random(1,table.getn(tbl))
-		table.insert(tbl_msg,tostring(tbl[k]))
-		tbl[k] = 0
-		tbl = press_table(tbl)
-	end
-	
-	--перевожу номера в стринги
-	tbl = {}
-	for i = 1, table.getn(tbl_msg) do
-		if string.len (tbl_msg[i]) == 1 then
-			str = "00"..tbl_msg[i]
-		elseif string.len (tbl_msg[i]) == 2 then
-			str = "0"..tbl_msg[i]
-		elseif string.len (tbl_msg[i]) == 3 or string.len (tbl_msg[i]) == 4 then
-			str = tbl_msg[i]
-		end
-		table.insert(tbl,str)
-	end
-	tbl_msg = tbl
-	
-	--проверяю записи на многоуровневость
-	tbl_msg = insert_levels_msg(tbl_msg, grup)
-	
-	--формирую стринг
-	str = ""
-	if table.getn(tbl_msg) > 1 then
-		for i = 1,table.getn(tbl_msg) - 1 do
-			str = str..tbl_msg[i]..","
-		end
-	end
-	str = str..tbl_msg[table.getn(tbl_msg)]
-	
-	return str
-	
+function set_msg( grup, shron )
+    local n         --количество записей в файлах типа string_table_pda_military.xml
+    local i
+    local str = ""
+    n = vergas_lib.set_pr_from_config( "list_quantity", grup .. "_quantity" )
+    --определяю количество записей в ПДА
+    local msg_min = 2
+    local msg_max = 5
+    --определяю номера записей
+    local tbl = {}
+    for i = 1, n do table.insert( tbl, i ) end
+    local tbl_msg = {}
+    --выбираю атмосферное
+    for i = 1, lua_random( msg_min, msg_max ) do
+        local k = lua_random( 1, #tbl )
+        table.insert( tbl_msg, tostring( tbl[ k ] ) )
+        tbl[ k ] = 0
+        tbl = press_table( tbl )
+    end
+    --добовляю спец-записи
+    --добовляю запись по схронам
+    if shron ~= 0 then
+        table.insert( tbl_msg, tostring( vergas_lib.set_pr_from_config( "list_treasure_pda", shron ) ) )
+    end
+    --перемешиваю записи
+    tbl     = tbl_msg
+    tbl_msg = {}
+    local m = table.getn( tbl )
+    for i = 1, m do
+        local k = lua_random( 1, table.getn( tbl ) )
+        table.insert( tbl_msg, tostring( tbl[ k ] ) )
+        tbl[ k ] = 0
+        tbl      = press_table( tbl )
+    end
+    --перевожу номера в стринги
+    tbl = {}
+    for i = 1, table.getn( tbl_msg ) do
+        if string.len( tbl_msg[ i ] ) == 1 then
+            str = "00" .. tbl_msg[ i ]
+        elseif string.len( tbl_msg[ i ] ) == 2 then
+            str = "0" .. tbl_msg[ i ]
+        elseif string.len( tbl_msg[ i ] ) == 3 or string.len( tbl_msg[ i ] ) == 4 then
+            str = tbl_msg[ i ]
+        end
+        table.insert( tbl, str )
+    end
+    tbl_msg = tbl
+    --проверяю записи на многоуровневость
+    tbl_msg = insert_levels_msg( tbl_msg, grup )
+    --формирую стринг
+    str = ""
+    if table.getn( tbl_msg ) > 1 then
+        for i = 1, table.getn( tbl_msg ) - 1 do
+            str = str .. tbl_msg[ i ] .. ","
+        end
+    end
+    str = str .. tbl_msg[ table.getn( tbl_msg ) ]
+    return str
 end
 
-function insert_levels_msg(tbl,grup)
---разбираюсь с многоуровневыми msg
-	local i
-	local j
-	local n
-	local tbl_tmp = {}
-	
-	for i = 1, table.getn(tbl) do
-		n = vergas_lib.set_pr_from_config("list_multilevel",grup.."_"..tbl[i])
-		if n ~= 0 then
-			--запись многоуровневая
-			--все брать или нет?
-			if  lua_random() >0.6 then
-				--беру все
-				table.insert(tbl_tmp,tbl[i])
-				for j = 1, n do
-					table.insert(tbl_tmp,tbl[i].."_"..tostring(j))
-				end
-			else
-				--беру случайную запись
-				local nn = lua_random(1,n+1)
-				if nn == n+1 then
-					table.insert(tbl_tmp,tbl[i])
-				else
-					table.insert(tbl_tmp,tbl[i].."_"..tostring(nn))
-				end
-			end
-		else
-			--запись одиночка
-			table.insert(tbl_tmp,tbl[i])
-		end
-	end
-	
-	return tbl_tmp
-end 
-
-function set_2_names(name_npc)
-	local flag = 1
-	local i
-	local symbol
-	local name_1 = ""
-	local name_2 = ""
-	
-	for i = 1, string.len (name_npc) do
-		symbol = string.sub (name_npc, i , i)
-		if symbol ~= " " then
-			if flag == 1 then
-				name_1 = name_1..symbol
-			else
-				name_2 = name_2..symbol
-			end
-		else
-			flag = 2
-		end
-	end
-
-	return name_1, name_2
+function insert_levels_msg( tbl, grup )
+    --разбираюсь с многоуровневыми msg
+    local i, j, n
+    local tbl_tmp = {}
+    for i = 1, table.getn( tbl ) do
+        n = vergas_lib.set_pr_from_config( "list_multilevel", grup .. "_" .. tbl[ i ] )
+        if n ~= 0 then
+            --запись многоуровневая
+            --все брать или нет?
+            if  lua_random() > 0.6 then                         --беру все
+                table.insert( tbl_tmp, tbl[ i ] )
+                for j = 1, n do
+                    table.insert( tbl_tmp,  tbl[ i ] .. "_" .. tostring( j ) )
+                end
+            else
+                --беру случайную запись
+                local nn = lua_random( 1, n + 1 )
+                if nn == n + 1 then
+                    table.insert( tbl_tmp, tbl[ i ] )
+                else
+                    table.insert( tbl_tmp, tbl[ i ] .. "_" .. tostring( nn ) )
+                end
+            end
+        else
+            --запись одиночка
+            table.insert( tbl_tmp, tbl[ i ] )
+        end
+    end
+    return tbl_tmp
 end
 
-function set_community(grup)
-	local grup_n
-	
-	if grup == "stalker" then
-		grup_n = "01"
-	elseif grup == "military" then
-		grup_n = "02"
-	elseif grup == "bandit" then
-		grup_n = "03"
-	elseif grup == "dolg" then
-		grup_n = "04"
-	elseif grup == "freedom" then
-		grup_n = "05"
-	elseif grup == "monolith" then
-		grup_n = "06"
-	elseif grup == "killer" then
-		grup_n = "07"
-	elseif grup == "ecolog" then
-		grup_n = "08"
-	elseif grup == "green" then
-		grup_n = "09"
-	else
-		grup_n = "01"
-	end
-	
-	return grup_n
+function set_2_names( name_npc )
+    local flag = 1
+    local i
+    local symbol
+    local name_1 = ""
+    local name_2 = ""
+    for i = 1, string.len( name_npc ) do
+        symbol = string.sub( name_npc, i , i )
+        if symbol ~= " " then
+            if flag == 1 then
+                name_1 = name_1 .. symbol
+            else
+                name_2 = name_2 .. symbol
+            end
+        else
+            flag = 2
+        end
+    end
+    return name_1, name_2
+end
+
+function set_community( grup )
+    local grup_n
+    if     grup == "stalker"  then grup_n = "01"
+    elseif grup == "military" then grup_n = "02"
+    elseif grup == "bandit"   then grup_n = "03"
+    elseif grup == "dolg"     then grup_n = "04"
+    elseif grup == "freedom"  then grup_n = "05"
+    elseif grup == "monolith" then grup_n = "06"
+    elseif grup == "killer"   then grup_n = "07"
+    elseif grup == "ecolog"   then grup_n = "08"
+    elseif grup == "green"    then grup_n = "09"
+    else grup_n = "01" end
+    return grup_n
 end
 
 function set_community_str()
-	local grup
-	local com_n =lua_random(1,4)
-	if com_n == 1 then
-		grup = "stalker"
-	elseif com_n == 2 then
-		grup = "bandit"
-	elseif com_n == 3 then
-		grup = "dolg"
-	elseif com_n == 4 then
-		grup = "freedom"
-	end
-
-	return grup	
+    local grup
+    local  com_n = lua_random( 1, 4 )
+    if     com_n == 1 then grup = "stalker"
+    elseif com_n == 2 then grup = "bandit"
+    elseif com_n == 3 then grup = "dolg"
+    elseif com_n == 4 then grup = "freedom"
+    end
+    return grup
 end
 
-function set_s_n(grup_n,rang_s,npc, statuc)
-	local s_n = ""
-	local i
-	
-	--две рандомные цифры
-	for i = 1,2 do
-		local a = lua_random(1, 10)
-		if a == 10 then
-			a = 0
-		end
-		s_n = s_n..tostring(a)
-	end
-	
-	-- game_vertex_id
-	if npc then
-		local a = tostring(npc:game_vertex_id())
-		if string.len(a) == 1 then
-			s_n = s_n.."000"..a
-		elseif string.len(a) == 2 then
-			s_n = s_n.."00"..a
-		elseif string.len(a) == 3 then
-			s_n = s_n.."0"..a
-		elseif string.len(a) == 4 then
-			s_n = s_n..a
-		end
-	else
-		local a = tostring(lua_random(1, 2000))
-		s_n = s_n..a
-	end
-	
-	--цифирь группировки
-	s_n = s_n..grup_n
-	
-	--цифирь ранга
-	if string.len(rang_s) == 1 then
-		s_n = s_n.."000"..rang_s
-	elseif string.len(rang_s) == 2 then
-		s_n = s_n.."00"..rang_s
-	elseif string.len(rang_s) == 3 then
-		s_n = s_n.."0"..rang_s
-	elseif string.len(rang_s) == 4 then
-		s_n = s_n..rang_s
-	end
-	
-	--состояние ПДА
-	s_n = s_n..tostring(statuc)
-	
-	return s_n
+function set_s_n( grup_n, rang_s, npc, statuc )
+    local s_n = ""
+    local i
+    --две рандомные цифры
+    for i = 1,2 do
+        local a = lua_random( 1, 10 )
+        if a == 10 then a = 0 end
+        s_n = s_n .. tostring( a )
+    end
+    -- game_vertex_id
+    if npc then
+        local a = tostring( npc:game_vertex_id() )
+        if     string.len( a ) == 1 then s_n = s_n .. "000" .. a
+        elseif string.len( a ) == 2 then s_n = s_n .. "00"..a
+        elseif string.len( a ) == 3 then s_n = s_n .. "0" ..a
+        elseif string.len( a ) == 4 then s_n = s_n .. a
+        end
+    else
+        local a = tostring( lua_random( 1, 2000 ) )
+        s_n = s_n .. a
+    end
+    --цифирь группировки
+    s_n = s_n .. grup_n
+    --цифирь ранга
+    if     string.len( rang_s ) == 1 then s_n = s_n .. "000" .. rang_s
+    elseif string.len( rang_s ) == 2 then s_n = s_n .. "00" .. rang_s
+    elseif string.len( rang_s ) == 3 then s_n = s_n .. "0" .. rang_s
+    elseif string.len( rang_s ) == 4 then s_n = s_n .. rang_s
+    end
+    --состояние ПДА
+    s_n = s_n .. tostring( statuc )
+    return s_n
 end
 
 function set_pos()
-	local tbl_pos = {}
-	local i
-	local j
-	local tbl = {}
-	
-	for i =1,4 do
-		table.insert(tbl,i)
-	end
-	
-	for i = 1,3 do
-		j = lua_random(1, table.getn(tbl))
-		table.insert(tbl_pos,tbl[j])
-		tbl[j] = 0
-		
-		tbl = press_table(tbl)	
-	end
-	table.insert(tbl_pos,tbl[1])
-	
-	return tbl_pos
-
+    local tbl_pos = {}
+    local i, j
+    local tbl = {}
+    for i = 1, 4 do table.insert( tbl, i ) end
+    for i = 1, 3 do
+        j = lua_random( 1, table.getn( tbl ) )
+        table.insert( tbl_pos, tbl[ j ] )
+        tbl[ j ] = 0
+        tbl      = press_table( tbl )
+    end
+    table.insert( tbl_pos, tbl[ 1 ] )
+    return tbl_pos
 end
 
-function press_table(tbl)
-	local tbl_tmp = {}
-	local k
-	for k=1,table.getn(tbl) do
-		if tbl[k] ~= 0 then
-			table.insert(tbl_tmp,tbl[k])
-		end
-	end
-	
-	return tbl_tmp	
-	
+function press_table( tbl )
+    local tbl_tmp = {}
+    local k
+    for k = 1, table.getn( tbl ) do
+        if tbl[ k ] ~= 0 then
+            table.insert( tbl_tmp, tbl[ k ] )
+        end
+    end
+    return tbl_tmp
 end
 
-function set_pass_section(n,name_1,name_2,rang_n,grup_n)
-	local pas
-	
-	if n == 1 then
-		pas = name_1
-	elseif n == 2 then
-		pas = name_2
-	elseif n == 3 then
-		pas = set_pass_rang(rang_n)
-	elseif n == 4 then
-		pas = set_pass_grup(grup_n)
-	end
-
-	return pas
+function set_pass_section( n, name_1, name_2, rang_n, grup_n )
+    local pas
+    if     n == 1 then pas = name_1
+    elseif n == 2 then pas = name_2
+    elseif n == 3 then pas = set_pass_rang( rang_n )
+    elseif n == 4 then pas = set_pass_grup( grup_n )
+    end
+    return pas
 end
 
-function set_pass_login(login,rang_n)
-	
-	local pass = vergas_scrambling.set_number_scrambling(login,rang_n)
-	
-	return pass
+function set_pass_login( login, rang_n )
+    local pass = vergas_scrambling.set_number_scrambling( login, rang_n )
+    return pass
 end
 
-function set_pass_rang(rang_n)
-	local tbl
-	local pass
-	
-	if rang_n < 300 then --novichok
-		tbl = 
-		{
-		{rang = "новичёк"},
-		{rang = "отмычка"},
-		{rang = "первачок"},
-		{rang = "нуб"},
-		{rang = "зелень"},
-		{rang = "дух"},
-		{rang = "лошара"},
-		{rang = "чайник"}
-		}
-	elseif rang_n < 600 then --stalker
-		tbl = 
-		{
-		{rang = "сталкер"},
-		{rang = "опытный"},
-		{rang = "знаток"},
-		{rang = "бывалый"},
-		{rang = "черпак"},
-		{rang = "продвинутый"}
-		}
-	elseif rang_n < 900 then --veteran
-		tbl = 
-		{
-		{rang = "ветеран"},
-		{rang = "проводник"},
-		{rang = "умелец"},
-		{rang = "матёрый"},
-		{rang = "дед"},
-		{rang = "старшой"},
-		{rang = "мудрый"}
-		}
-	elseif rang_n < 2000 then --master
-		tbl = 
-		{
-		{rang = "мастер"},
-		{rang = "профессионал"},
-		{rang = "снайпер"},
-		{rang = "кумир"},
-		{rang = "абсолют"},
-		{rang = "элита"},
-		{rang = "специалист"},
-		{rang = "профи"}
-		}
-	end 
-	pass = tbl[lua_random(1, table.getn(tbl))].rang
-	
-	return pass
+function set_pass_rang( rang_n )
+    local tbl, pass
+    if rang_n < 300 then --novichok
+        tbl = {
+            { rang = "новичёк"  },
+            { rang = "отмычка"  },
+            { rang = "первачок" },
+            { rang = "нуб"      },
+            { rang = "зелень"   },
+            { rang = "дух"      },
+            { rang = "лошара"   },
+            { rang = "чайник"   }
+        }
+    elseif rang_n < 600 then --stalker
+        tbl = {
+            { rang = "сталкер"     },
+            { rang = "опытный"     },
+            { rang = "знаток"      },
+            { rang = "бывалый"     },
+            { rang = "черпак"      },
+            { rang = "продвинутый" }
+        }
+    elseif rang_n < 900 then --veteran
+        tbl = {
+            { rang = "ветеран"   },
+            { rang = "проводник" },
+            { rang = "умелец"    },
+            { rang = "матёрый"   },
+            { rang = "дед"       },
+            { rang = "старшой"   },
+            { rang = "мудрый"    }
+        }
+    elseif rang_n < 2000 then --master
+        tbl = {
+            { rang = "мастер"       },
+            { rang = "профессионал" },
+            { rang = "снайпер"      },
+            { rang = "кумир"        },
+            { rang = "абсолют"      },
+            { rang = "элита"        },
+            { rang = "специалист"   },
+            { rang = "профи"        }
+        }
+    end
+    pass = tbl[ lua_random( 1, table.getn( tbl ) ) ].rang
+    return pass
 end
 
-function set_pass_grup(grup_n)
-	local tbl
-	local pass
-	
-	if grup_n == "01" then
-		tbl = 
-		{
-		{grup = "одиночка"},
-		{grup = "сталкер"},
-		{grup = "свободный"},
-		{grup = "нейтральный"},
-		{grup = "бродяга"},
-		{grup = "мытарь"},
-		{grup = "казак"}
-		}
-	elseif grup_n == "02" then
-		tbl =
-		{
-		{grup = "военный"},
-		{grup = "армия"},
-		{grup = "федерал"},
-		{grup = "дембель"},
-		{grup = "дедушка"},
-		{grup = "черпак"},
-		{grup = "патруль"},
-		{grup = "оцепление"},
-		{grup = "часовой"},
-		{grup = "боец"},
-		{grup = "партизан"},
-		{grup = "служивый"},
-		{grup = "ополченец"},
-		{grup = "дневальный"}
-		}
-	elseif grup_n == "03" then
-		tbl = 
-		{
-		{grup = "бандит"},
-		{grup = "братва"},
-		{grup = "вор"},
-		{grup = "бабки"},
-		{grup = "лаве"},
-		{grup = "урка"},
-		{grup = "общак"},
-		{grup = "босяк"},
-		{grup = "мужик"},
-		{grup = "шнырь"},
-		{grup = "баклан"},
-		{grup = "медвежатник"},
-		{grup = "щипач"},
-		{grup = "полуцвет"},
-		{grup = "фармазон"},
-		{grup = "блатной"},
-		{grup = "беспредел"},
-		{grup = "кореш"},
-		{grup = "хозяйский"}
-		}
-	elseif grup_n == "04" then
-		tbl = 
-		{
-		{grup = "долг"},
-		{grup = "чистильщик"},
-		{grup = "молчун"},
-		{grup = "суровый"},
-		{grup = "сила"},
-		{grup = "точный"},
-		{grup = "верный"},
-		{grup = "квад"},
-		{grup = "прапор"},
-		{grup = "мусор"},
-		{grup = "страж"},
-		{grup = "дежурный"},
-		{grup = "мент"}
-		}
-	elseif grup_n == "05" then
-		tbl = 
-		{
-		{grup = "свобода"},
-		{grup = "воля"},
-		{grup = "лёгкий"},
-		{grup = "резкий"},
-		{grup = "анархия"},
-		{grup = "косяк"},
-		{grup = "хиппи"},
-		{grup = "обкуренный"},
-		{grup = "меломан"},
-		{grup = "анаша"},
-		{grup = "бабник"},
-		{grup = "пыхарь"},
-		{grup = "кумарик"}
-		}
-	elseif grup_n == "06" then
-		tbl = 
-		{
-		{grup = "монолит"},
-		{grup = "вера"},
-		{grup = "правоверный"},
-		{grup = "святой"},
-		{grup = "секта"},
-		{grup = "святоша"},
-		{grup = "иезуит"},
-		{grup = "язычник"},
-		{grup = "приближенный"},
-		{grup = "инквизитор"},
-		{grup = "апостол"},
-		{grup = "праведник"}
-		}
-	elseif grup_n == "07" then
-		tbl = 
-		{
-		{grup = "наёмник"},
-		{grup = "киллер"},
-		{grup = "убийца"},
-		{grup = "аннигилятор"},
-		{grup = "тень"},
-		{grup = "маньяк"},
-		{grup = "ниндзя"},
-		{grup = "головорез"},
-		{grup = "нагибатор"},
-		{grup = "неизбежность"}
-		}
-	elseif grup_n == "08" then
-		tbl = 
-		{
-		{grup = "учёный"},
-		{grup = "эколог"},
-		{grup = "флора"},
-		{grup = "фауна"},
-		{grup = "исследователь"},
-		{grup = "мозголом"},
-		{grup = "яйцеголовый"},
-		{grup = "широколобый"},
-		{grup = "эскулап"},
-		{grup = "гринпис"},
-		{grup = "очкарик"}
-		}
-	elseif grup_n == "09" then
-		tbl = 
-		{
-		{grup = "охотник"},
-		{grup = "хантер"},
-		{grup = "антикровосос"},
-		{grup = "разведчик"},
-		{grup = "следопыт"},
-		{grup = "егерь"},
-		{grup = "стрелок"},
-		{grup = "ковбой"}
-		}
-	end
-	
-	pass = tbl[lua_random(1, table.getn(tbl))].grup
-	
-	return pass
+function set_pass_grup( grup_n )
+    local tbl, pass
 
+    if grup_n == "01" then
+        tbl = {
+            { grup = "одиночка"    },
+            { grup = "сталкер"     },
+            { grup = "свободный"   },
+            { grup = "нейтральный" },
+            { grup = "бродяга"     },
+            { grup = "мытарь"      },
+            { grup = "казак"       }
+        }
+    elseif grup_n == "02" then
+        tbl = {
+            { grup = "военный"    },
+            { grup = "армия"      },
+            { grup = "федерал"    },
+            { grup = "дембель"    },
+            { grup = "дедушка"    },
+            { grup = "черпак"     },
+            { grup = "патруль"    },
+            { grup = "оцепление"  },
+            { grup = "часовой"    },
+            { grup = "боец"       },
+            { grup = "партизан"   },
+            { grup = "служивый"   },
+            { grup = "ополченец"  },
+            { grup = "дневальный" }
+        }
+    elseif grup_n == "03" then
+        tbl = {
+            { grup = "бандит"      },
+            { grup = "братва"      },
+            { grup = "вор"         },
+            { grup = "бабки"       },
+            { grup = "лаве"        },
+            { grup = "урка"        },
+            { grup = "общак"       },
+            { grup = "босяк"       },
+            { grup = "мужик"       },
+            { grup = "шнырь"       },
+            { grup = "баклан"      },
+            { grup = "медвежатник" },
+            { grup = "щипач"       },
+            { grup = "полуцвет"    },
+            { grup = "фармазон"    },
+            { grup = "блатной"     },
+            { grup = "беспредел"   },
+            { grup = "кореш"       },
+            { grup = "хозяйский"   }
+        }
+    elseif grup_n == "04" then
+        tbl = {
+            { grup = "долг"       },
+            { grup = "чистильщик" },
+            { grup = "молчун"     },
+            { grup = "суровый"    },
+            { grup = "сила"       },
+            { grup = "точный"     },
+            { grup = "верный"     },
+            { grup = "квад"       },
+            { grup = "прапор"     },
+            { grup = "мусор"      },
+            { grup = "страж"      },
+            { grup = "дежурный"   },
+            { grup = "мент"       }
+        }
+    elseif grup_n == "05" then
+        tbl = {
+            { grup = "свобода"    },
+            { grup = "воля"       },
+            { grup = "лёгкий"     },
+            { grup = "резкий"     },
+            { grup = "анархия"    },
+            { grup = "косяк"      },
+            { grup = "хиппи"      },
+            { grup = "обкуренный" },
+            { grup = "меломан"    },
+            { grup = "анаша"      },
+            { grup = "бабник"     },
+            { grup = "пыхарь"     },
+            { grup = "кумарик"    }
+        }
+    elseif grup_n == "06" then
+        tbl = {
+            { grup = "монолит"      },
+            { grup = "вера"         },
+            { grup = "правоверный"  },
+            { grup = "святой"       },
+            { grup = "секта"        },
+            { grup = "святоша"      },
+            { grup = "иезуит"       },
+            { grup = "язычник"      },
+            { grup = "приближенный" },
+            { grup = "инквизитор"   },
+            { grup = "апостол"      },
+            { grup = "праведник"    }
+        }
+    elseif grup_n == "07" then
+        tbl = {
+            { grup = "наёмник"      },
+            { grup = "киллер"       },
+            { grup = "убийца"       },
+            { grup = "аннигилятор"  },
+            { grup = "тень"         },
+            { grup = "маньяк"       },
+            { grup = "ниндзя"       },
+            { grup = "головорез"    },
+            { grup = "нагибатор"    },
+            { grup = "неизбежность" }
+        }
+    elseif grup_n == "08" then
+        tbl = {
+            { grup = "учёный"        },
+            { grup = "эколог"        },
+            { grup = "флора"         },
+            { grup = "фауна"         },
+            { grup = "исследователь" },
+            { grup = "мозголом"      },
+            { grup = "яйцеголовый"   },
+            { grup = "широколобый"   },
+            { grup = "эскулап"       },
+            { grup = "гринпис"       },
+            { grup = "очкарик"       }
+        }
+    elseif grup_n == "09" then
+        tbl = {
+            { grup = "охотник"      },
+            { grup = "хантер"       },
+            { grup = "антикровосос" },
+            { grup = "разведчик"    },
+            { grup = "следопыт"     },
+            { grup = "егерь"        },
+            { grup = "стрелок"      },
+            { grup = "ковбой"       }
+        }
+    end
+    pass = tbl[ lua_random( 1, table.getn( tbl ) ) ].grup
+    return pass
 end
 
 function set_status_pda()
-	local n = lua_random(1, 10)
-	
-	if n < 6 then
-		return 1		--пда рабочий
-	elseif n < 9 then
-		return 2		--пда разряженный
-	elseif n <= 10 then
-		return 3		--пда битый
-	end
+    local n = lua_random( 1, 10 )
+    if     n < 6   then return 1        --пда рабочий
+    elseif n < 9   then return 2        --пда разряженный
+    elseif n <= 10 then return 3        --пда битый
+    end
 end
 
-function add_tbl_pda(npc,pda,status)
-	
-	table.insert(tbl_spwn_pda,tostring(npc).."|"..tostring(pda).."|"..tostring(status))
-	
+function add_tbl_pda( npc, pda, status )
+    table.insert(
+        tbl_spwn_pda,
+        tostring( npc ) .. "|" .. tostring( pda ) .. "|" .. tostring( status )
+    )
 end
 
-function get_pda_packet(obj_id)
-	local sobj = alife():object(obj_id)
-	if sobj==nil then
-		return false
-	end
-	return get_netpk(sobj)
+function get_pda_packet( obj_id )
+    local sobj = alife():object( obj_id )
+    if sobj == nil then return false end
+    return get_netpk( sobj )
 end
 
-function get_pda_data(obj_id)
-   local pk = get_pda_packet(obj_id)
-   if pk then         
-      return pk:get()
-   else
-      return false
-   end   
+function get_pda_data( obj_id )
+    local pk = get_pda_packet( obj_id )
+    if pk then return pk:get()
+    else return false end
 end
 
-function get_pda_cdata(obj_id)
-   local data = get_pda_data(obj_id)
-   if data then 
-      return data.custom_data
-   else
-      return false
-   end
-end
-
-
-function set_pda(obj_id,info_str)	
-	local pk = get_pda_packet (obj_id)
-    if pk then
-	  local data = pk:get()
-	  data.custom_data = info_str
-	  pk:set(data)
-	  return true
+function get_pda_cdata( obj_id )
+    local data = get_pda_data( obj_id )
+    if data then
+        return data.custom_data
     else
-      return false
-    end      
+        return false
+    end
 end
 
-function set_info_pda(old_id,new_id)
-
-	local i
-	local j
-	local k
-	
-	for i,k in pairs(sak_inventory.eatable) do
-		if i == "device_pda_npc" then
-			for j = 1,table.getn(k) do
-				if k[j] ~= old_id and k[j] ~= new_id then
-					set_info_pda_record(k[j])
-				end
-			end
-		end
-	end
-
-	set_info_pda_record(new_id)
-	
+function set_pda( obj_id, info_str )
+    local pk = get_pda_packet( obj_id )
+    if pk then
+        local data       = pk:get()
+        data.custom_data = info_str
+        pk:set( data )
+        return true
+    else
+        return false
+    end
 end
 
-function set_info_pda_record(sobj_id)
-	
-	local sobj = alife():object(sobj_id)
-	if sobj then
-		local net_pak = get_netpk(sobj,1)
-		local data =  net_pak:get()
-		table.insert(tbl_info,data.custom_data)
-	end
-end
-	
-function change_info_pda_record(r_old,r_new)
-	local i
-	for i = 1,#tbl_info do
-		if tbl_info[i] == r_old then
-			tbl_info[i] = r_new
-			break
-		end
-	end
+function set_info_pda( old_id, new_id )
+    local i, j, k
+    for i, k in pairs( sak_inventory.eatable ) do
+        if i == "device_pda_npc" then
+            for j = 1, table.getn( k ) do
+                if k[ j ] ~= old_id and k[ j ] ~= new_id then
+                    set_info_pda_record( k[ j ] )
+                end
+            end
+        end
+    end
+    set_info_pda_record( new_id )
 end
 
-function get_pda_info()
-	return tbl_info
+function set_info_pda_record( sobj_id )
+    local sobj = alife():object( sobj_id )
+    if sobj then
+        local net_pak = get_netpk( sobj, 1 )
+        local data    = net_pak:get()
+        table.insert( tbl_info, data.custom_data )
+    end
 end
 
-function set_tbl_sn()
-	tbl_sn = get_pda_sn_tbl()
+function change_info_pda_record( r_old, r_new )
+    local i
+    for i = 1, #tbl_info do
+        if tbl_info[ i ] == r_old then
+            tbl_info[ i ] = r_new
+            break
+        end
+    end
 end
 
-function set_number_pda(param)
-	number_pda = param
-end
-
-function get_number_pda()
-	return number_pda
-end
+function get_pda_info() return tbl_info end
+function set_tbl_sn() tbl_sn = get_pda_sn_tbl() end
+function set_number_pda( param ) number_pda = param end
+function get_number_pda() return number_pda end
 
 function set_tbl_sn_nil()
-	number_pda = nil
-	tbl_sn = {}
+    number_pda = nil
+    tbl_sn     = {}
 end
 
-function start_search_pda(mode) 
-	--mode = 1 - перебор ПДА
-	--mode = 2 - возврат из работающего ПДА в перебор
-	--запускаю перебор ПДА
-	if number_pda == 0 or number_pda == nil then
-		number_pda = 1
-	else
-		if mode == 1 then
-			if number_pda == #tbl_sn then
-				number_pda = 1
-			else
-				number_pda = number_pda + 1
-			end
-		end
-	end
-	
-	local spwn=ui_cheat_pda_menu.cheat(get_hud())
-	level.start_stop_menu(spwn,true)		
+function start_search_pda( mode )
+    --mode = 1 - перебор ПДА
+    --mode = 2 - возврат из работающего ПДА в перебор
+    --запускаю перебор ПДА
+    if number_pda == 0 or number_pda == nil then
+        number_pda = 1
+    else
+        if mode == 1 then
+            if number_pda == #tbl_sn then
+                number_pda = 1
+            else
+                number_pda = number_pda + 1
+            end
+        end
+    end
+    local spwn = ui_cheat_pda_menu.cheat( get_hud() )
+    level.start_stop_menu( spwn, true )
 end
 
 function start_search_pda_after_drop()
-
-	local i
-	local j
-	local k
-	local obj_id = 0
-	local tbl_tmp = {}
-	
-	--нахожу и выбрасываю ПДА
-	for i,k in pairs(sak_inventory.eatable) do
-		if i == "device_pda_npc" then
-			for j = 1,table.getn(k) do
-				local sobj = alife():object(k[j])
-				if sobj then
-					local net_pak = get_netpk(sobj,1)
-					local record =  net_pak:get()
-					if record.custom_data == tbl_info[number_pda] then
-						local obj =  client_obj(sobj.id)
-						if obj then
-							db.actor:drop_item(obj)
-							tbl_info[number_pda] = "0"
-							tbl_sn[number_pda] = "0"
-							break
-						end
-					end
-				end
-			end
-		end
-	end
-	
-	--Обрабатываю таблицу данных ПДА
-	for i = 1, #tbl_info do
-		if tbl_info[i] ~= "0" then
-			table.insert(tbl_tmp,tbl_info[i])
-		end
-	end
-	tbl_info = tbl_tmp
-	
-	tbl_tmp = {}
-	for i = 1, #tbl_sn do
-		if tbl_sn[i] ~= "0" then
-			table.insert(tbl_tmp,tbl_sn[i])
-		end
-	end
-	tbl_sn = tbl_tmp
-	--Запускаю перебор ПДА
-	if #tbl_info ~= 0 then
-		schedule.add("stop_show_pda", "vergas_pda.start_search_pda(2)", 500)
-	else
-		bind_stalker.restore_weapon()		--восстанавливаю руки и оружие на худе
-		used_items.set_get_flag_use_gadget(1,true)
-	end
+    local i, j, k
+    local obj_id  = 0
+    local tbl_tmp = {}
+    --нахожу и выбрасываю ПДА
+    for i, k in pairs( sak_inventory.eatable ) do
+        if i == "device_pda_npc" then
+            for j = 1,table.getn( k ) do
+                local sobj = alife():object( k[ j ] )
+                if sobj then
+                    local net_pak = get_netpk( sobj, 1 )
+                    local record  = net_pak:get()
+                    if record.custom_data == tbl_info[ number_pda ] then
+                        local obj = client_obj( sobj.id )
+                        if obj then
+                            db.actor:drop_item( obj )
+                            tbl_info[ number_pda ] = "0"
+                            tbl_sn[ number_pda ]   = "0"
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+    --Обрабатываю таблицу данных ПДА
+    for i = 1, #tbl_info do
+        if tbl_info[ i ] ~= "0" then
+            table.insert( tbl_tmp, tbl_info[ i ] )
+        end
+    end
+    tbl_info = tbl_tmp
+    tbl_tmp  = {}
+    for i = 1, #tbl_sn do
+        if tbl_sn[ i ] ~= "0" then table.insert( tbl_tmp, tbl_sn[ i ] ) end
+    end
+    tbl_sn = tbl_tmp
+    --Запускаю перебор ПДА
+    if #tbl_info ~= 0 then
+        schedule.add( "stop_show_pda", "vergas_pda.start_search_pda(2)", 500 )
+    else
+        bind_stalker.restore_weapon()       --восстанавливаю руки и оружие на худе
+        used_items.set_get_flag_use_gadget( 1, true )
+    end
 end
 
 function get_pda_sn_tbl()
-	
-	local i
-	local tbl = get_pda_info()
-	local t = {}
-	
-	for i = 1,table.getn(tbl) do
-		local tt = vergas_lib.str_explode("|",tbl[i],true)
-		table.insert(t, tt[4])
-	end
-	
-	return t
+    local i
+    local tbl = get_pda_info()
+    local t   = {}
+    for i = 1,table.getn( tbl ) do
+        local tt = vergas_lib.str_explode( "|", tbl[ i ], true )
+        table.insert( t, tt[ 4 ] )
+    end
+    return t
 end
 
 function get_pda_sn()
-	--вывод служебного номера текущего ПДА
-	local n
-	if not tbl_sn[number_pda] or type(tbl_sn[number_pda])~="string" then 
-		n = "0000000000003"		--битый ПДА
-	else
-		n = tbl_sn[number_pda]
-	end
-	return n
-end
-
-function set_active_pda(serial)
-  number_pda = 1
-  for i, sn in ipairs(tbl_sn) do
-    if sn == serial then 
-       wprintf(" found PDA~C0F %s~C07 at ~C0D %d~C07", serial, i)
-       number_pda = i
+    --вывод служебного номера текущего ПДА
+    local n
+    if not tbl_sn[ number_pda ] or type( tbl_sn[ number_pda ] ) ~= "string" then
+        n = "0000000000003"     --битый ПДА
+    else
+        n = tbl_sn[ number_pda ]
     end
-  end  
+    return n
 end
 
-function set_get_steklo(param)
-	if param ~= nil then
-		steklo = param
-	else
-		return steklo
-	end
+function set_active_pda( serial )
+    number_pda = 1
+    for i, sn in ipairs( tbl_sn ) do
+        if sn == serial then
+            wprintf( " found PDA~C0F %s~C07 at ~C0D %d~C07", serial, i )
+            number_pda = i
+        end
+    end
 end
 
-function set_number_record(n)
-	number_record = n
+function set_get_steklo( param )
+    if param ~= nil then
+        steklo = param
+    else
+        return steklo
+    end
+end
+
+function set_number_record( n )
+    number_record = n
 end
 
 function get_number_record()
-	return(number_record)
+    return( number_record )
 end
 
 function set_info_pda_nil()
-	tbl_info = {}
-	number_record = nil
+    tbl_info      = {}
+    number_record = nil
 end
 
-function read_message(msg_id, custom_msg)
-
-	local text = ""
-	local line
-	local i
-	local file_msg
-	local text_tmp
-
-	if msg_id ~= "custom" then
-
-		if string.find (msg_id, "stalker") then
-			file_msg = "$game_config$/text/rus/string_table_pda_stalker.xml"
-		elseif string.find (msg_id, "military") then
-			file_msg = "$game_config$/text/rus/string_table_pda_military.xml"
-		elseif string.find (msg_id, "bandit") then
-			file_msg = "$game_config$/text/rus/string_table_pda_bandit.xml"
-		elseif string.find (msg_id, "dolg") then
-			file_msg = "$game_config$/text/rus/string_table_pda_dolg.xml"
-		elseif string.find (msg_id, "freedom") then
-			file_msg = "$game_config$/text/rus/string_table_pda_freedom.xml"
-		elseif string.find (msg_id, "monolith") then
-			file_msg = "$game_config$/text/rus/string_table_pda_monolith.xml"
-		elseif string.find (msg_id, "killer") then
-			file_msg = "$game_config$/text/rus/string_table_pda_killer.xml"
-		elseif string.find (msg_id, "ecolog") then
-			file_msg = "$game_config$/text/rus/string_table_pda_ecolog.xml"
-		elseif string.find (msg_id, "green") then
-			file_msg = "$game_config$/text/rus/string_table_pda_green.xml"
-		elseif string.find (msg_id, "treasure") then
-			file_msg = "$game_config$\\text\\rus\\string_table_pda_treasure.xml"
-		end
-		
-		local file_text =  FileLoad(file_msg)
-		local lines = SplitStr( file_text, "\n")
-		local sample = string.format("id=\"%s\"", msg_id)
-		
-		
-		for i, line in pairs(lines) do
-			if string.find (line, sample) then   
-				local lstart = string.find(line, "<text>") + 6
-				local lend = string.find(line, "</text>") - 1
-				text_tmp = string.sub(line, lstart, lend)
-			end
-		end
-
-	end
-
-	if custom_msg then text_tmp = custom_msg end
-
-
-	local on = false
-	local off
-	local sumbol
-	for i = 1,string.len(text_tmp) do
-		sumbol = string.sub(text_tmp,i,i)
-		if sumbol == "\\"  then
-			on = true
-		else
-			if sumbol == "n" and  on then
-				text = text.."|["
-				on = false
-			else
-				text = text..sumbol
-			end
-		end
-	end
-	return text
+function read_message( msg_id, custom_msg )
+    local text = ""
+    local line, i, file_msg, text_tmp
+    if msg_id ~= "custom" then
+        if string.find( msg_id, "stalker" ) then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_stalker.xml"
+        elseif string.find( msg_id, "military") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_military.xml"
+        elseif string.find( msg_id, "bandit") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_bandit.xml"
+        elseif string.find( msg_id, "dolg") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_dolg.xml"
+        elseif string.find( msg_id, "freedom") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_freedom.xml"
+        elseif string.find( msg_id, "monolith") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_monolith.xml"
+        elseif string.find( msg_id, "killer") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_killer.xml"
+        elseif string.find( msg_id, "ecolog") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_ecolog.xml"
+        elseif string.find( msg_id, "green") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_green.xml"
+        elseif string.find( msg_id, "treasure") then
+            file_msg = "$game_config$\\text\\rus\\string_table_pda_treasure.xml"
+        end
+        local file_text = FileLoad( file_msg )
+        local lines     = SplitStr( file_text, "\n" )
+        local sample    = string.format( "id=\"%s\"", msg_id )
+        for i, line in pairs( lines ) do
+            if string.find( line, sample ) then
+                local lstart = string.find( line, "<text>" ) + 6
+                local lend   = string.find( line, "</text>" ) - 1
+                text_tmp     = string.sub( line, lstart, lend )
+            end
+        end
+    end
+    if custom_msg then text_tmp = custom_msg end
+    local on = false
+    local off, sumbol
+    for i = 1, string.len( text_tmp ) do
+        sumbol = string.sub( text_tmp, i, i )
+        if sumbol == "\\" then
+            on = true
+        else
+            if sumbol == "n" and on then
+                text = text .. "|["
+                on   = false
+            else
+                text = text .. sumbol
+            end
+        end
+    end
+    return text
 end
 
 function charge_pda( pda_id )
-	local good   = false
-	local pk     = get_pda_packet( pda_id )
-	local data   = pk:get()
-	local cust   = data.custom_data
-	if cust == "" then return good end
-	local info   = vergas_lib.str_explode( "|", cust, true )
-	local status = string.sub( info[ 4 ], 13, 13 ) or "3"
-	if status == "3" then
-		good = false
-	elseif status == "2" then
-		info[ 4 ] = string.sub( info[ 4 ], 1, 12 ) .. "1"
-		data.custom_data  = info[ 1 ] .. "|" .. info[ 2 ] .. "|" ..
-							info[ 3 ] .. "|" .. info[ 4 ] .. "|" ..
-							info[ 5 ] .. "|" .. info[ 6 ] .. "|" ..
-							info[ 7 ]
-        wprintf( "[~T].~C0F #CODE_OPT:~C07 compare it~C0E \n\t%s~C0F \n\t%s~C07", data.custom_data, table.concat( info, '|') )    
-		pk:set( data )
-		good = true
-	elseif status == "1" then	
-		good = true
-	end
-	return good
+    local good   = false
+    local pk     = get_pda_packet( pda_id )
+    local data   = pk:get()
+    local cust   = data.custom_data
+    if cust == "" then return good end
+    local info   = vergas_lib.str_explode( "|", cust, true )
+    local status = string.sub( info[ 4 ], 13, 13 ) or "3"
+    if status == "3" then
+        good = false
+    elseif status == "2" then
+        info[ 4 ] = string.sub( info[ 4 ], 1, 12 ) .. "1"
+        data.custom_data  = info[ 1 ] .. "|" .. info[ 2 ] .. "|" ..
+                            info[ 3 ] .. "|" .. info[ 4 ] .. "|" ..
+                            info[ 5 ] .. "|" .. info[ 6 ] .. "|" ..
+                            info[ 7 ]
+        wprintf(
+            "[~T].~C0F #CODE_OPT:~C07 compare it~C0E \n\t%s~C0F \n\t%s~C07",
+            data.custom_data, table.concat( info, '|')
+        )
+        pk:set( data )
+        good = true
+    elseif status == "1" then
+        good = true
+    end
+    return good
 end
 
-function good_pda_have( pda_id )	 
-	local info = vergas_lib.str_explode("|", get_pda_cdata (pda_id), true)
-	if not info or not info[4] then return end
-	local status = string.sub(info[4],13,13) or "3"
-	local good = false
-	if status == "3" or status == "2" then
-		good = false
-	elseif status == "1" then	
-		good = true
-	end
-	return good
+function good_pda_have( pda_id )
+    local info = vergas_lib.str_explode( "|", get_pda_cdata( pda_id ), true )
+    if not info or not info[ 4 ] then return end
+    local status = string.sub( info[ 4 ], 13, 13 ) or "3"
+    local good   = false
+    if status == "3" or status == "2" then
+        good = false
+    elseif status == "1" then
+        good = true
+    end
+    return good
 end
 
 function set_left_pda()
-	local i
-	local s_n = ""
-	s_n = tostring(lua_random(10, 99))	
-	s_n = s_n..tostring(lua_random(1000, 9999))
-	s_n = s_n..tostring(lua_random(10, 99))
-	s_n = s_n..tostring(lua_random(1000, 9999))
-	s_n = s_n.."3"
-	local msg = "0|0|0|"..s_n.."|0|0|0"
-	return msg
+    local i
+    local s_n = ""
+    s_n = tostring( lua_random( 10, 99 ) )
+    s_n = s_n .. tostring( lua_random( 1000, 9999 ) )
+    s_n = s_n .. tostring( lua_random( 10, 99 ) )
+    s_n = s_n .. tostring( lua_random( 1000, 9999 ) )
+    s_n = s_n .. "3"
+    local msg = "0|0|0|" .. s_n .. "|0|0|0"
+    return msg
 end
--- а не то ли это, что я ищу????----------------------------------------
-function set_treasure_in_dialog(shron)
-	if  db.actor:object("klava") ~= nil then
-		local msg_id = "treasure".."_"..vergas_lib.set_pr_from_config("list_treasure_pda",shron).."_"..ReadIni(db.stor_ltx, "stor", "r_treas_items")
-		wprintf( "111111111111111111111111111111111111111111111111111111111111111111111111111111111"  .. msg_id )
-		vergas_lib.add_record_in_klava( msg_id )
-	end
-	treasure_manager.get_treasure_manager():give_treasure(shron,true)
+
+function set_treasure_in_dialog( shron )
+    if db.actor:object( "klava" ) ~= nil then
+        local msg_id = "treasure" .. "_" .. vergas_lib.set_pr_from_config( "list_treasure_pda", shron )
+                    .. "_" .. ReadIni( db.stor_ltx, "stor", "r_treas_items" )
+        vergas_lib.add_record_in_klava( msg_id )
+    end
+    treasure_manager.get_treasure_manager():give_treasure( shron, true )
 end
-------------------------------------------------------------------------
 ------------------------------------------------
 --Функции обработки стекла ПДА
 ------------------------------------------------
 function set_steklo()
-	
-	local i
-	local n = 9
-	local str = "123456789"
-	local tbl_tmp = {}
-	
-	for i = 1,8 do
-		local m = lua_random(1,n)
-		table.insert(tbl_tmp,string.sub(str,m,m))
-		str = string.sub(str,1,m-1)..string.sub(str,m+1,string.len(str))
-		n = n-1
-	end
-	
-	table.insert(tbl_tmp,str)
-	
-	str = ""
-	for i = 1,9 do
-		str = str..tbl_tmp[i]
-	end
-	
-	return str
-	
+    local i
+    local n       = 9
+    local str     = "123456789"
+    local tbl_tmp = {}
+    for i = 1, 8 do
+        local m = lua_random( 1, n )
+        table.insert( tbl_tmp, string.sub( str, m, m ) )
+        str = string.sub( str, 1, m - 1 ) .. string.sub( str, m + 1, string.len( str ) )
+        n = n - 1
+    end
+    table.insert( tbl_tmp, str )
+    str = ""
+    for i = 1, 9 do str = str .. tbl_tmp[ i ] end
+    return str
 end
 --------------------------------------------
 --Функции обработки разрешения экрана
 --------------------------------------------
-function set_ratio(mode)
---mode = 1 расчет основного окна (подложка)
---mode = 2 вывод окна ПДА
---mode = 3 вывод стекла
---mode = 4 вывод сл. номера
-
-	local x
-	local y
-	local dx
-	local dy
-	--нахожу коэф. горизонтали и вертикали
-	local cof_g = device().width/1024		--горизонталь
-	local cof_v = device().height/768		--вертикаль
-	
-	if mode == 1 then
-		x = math.ceil (256*cof_g)
-		y = math.ceil (192*cof_v)
-		dx = 1024-x
-		dy = 768-y
-	elseif mode == 2 then
-		x = math.ceil (256*cof_g)
-		y = math.ceil (192*cof_v)
-		dx = 1024-x
-		dy = 768-y
-		x = 0
-		y = 0
-	elseif mode == 3 then
-		x = math.ceil(97*cof_g)
-		y = math.ceil(84*cof_v)
-		dx = 784-(x - 97)
-		dy = 535-(y - 84)
-		
-	elseif mode == 4 then
-		x = math.ceil(90*cof_g)
-		y = math.ceil(40*cof_v)
-		dx = 50-(x-90)
-		dy = 24-(y-40)
-	end
-	
-	return x,y,dx,dy
-
+function set_ratio( mode )
+    --mode = 1 расчет основного окна (подложка)
+    --mode = 2 вывод окна ПДА
+    --mode = 3 вывод стекла
+    --mode = 4 вывод сл. номера
+    local x, y, dx, dy
+    --нахожу коэф. горизонтали и вертикали
+    local cof_g = device().width / 1024       --горизонталь
+    local cof_v = device().height / 768       --вертикаль
+    if mode == 1 then
+        x  = math.ceil( 256 * cof_g )
+        y  = math.ceil( 192 * cof_v )
+        dx = 1024 - x
+        dy = 768 - y
+    elseif mode == 2 then
+        x  = math.ceil( 256 * cof_g )
+        y  = math.ceil( 192 * cof_v )
+        dx = 1024 - x
+        dy = 768 - y
+        x  = 0
+        y  = 0
+    elseif mode == 3 then
+        x  = math.ceil( 97 * cof_g )
+        y  = math.ceil( 84 * cof_v )
+        dx = 784 - ( x - 97 )
+        dy = 535 - ( y - 84 )
+    elseif mode == 4 then
+        x  = math.ceil( 90 * cof_g )
+        y  = math.ceil( 40 * cof_v )
+        dx = 50 - ( x - 90 )
+        dy = 24 - ( y - 40 )
+    end
+    return x, y, dx, dy
 end
 
 function set_ratio_mode()
-	
-	local ratio = device().height/device().width
-	local mode = 0
-	
-	if ratio >= 0.8 then
-		mode = 4
-	elseif ratio > 0.625 and ratio < 0.8 then
-		mode = 3									-- 5x4 4x3 									
-	elseif ratio > 0.5625 and ratio <= 0.625 then
-		mode = 2									-- 16x10    								
-	elseif ratio <= 0.5625 then
-		mode = 1									-- 16x9 1366x768 и очень широкоформатные	
-	end
-	
-	return mode
+    local ratio = device().height / device().width
+    local mode  = 0
+    if ratio >= 0.8 then
+        mode = 4
+    elseif ratio > 0.625 and ratio < 0.8 then
+        mode = 3                                    -- 5x4 4x3
+    elseif ratio > 0.5625 and ratio <= 0.625 then
+        mode = 2                                    -- 16x10
+    elseif ratio <= 0.5625 then
+        mode = 1                                    -- 16x9 1366x768 и очень широкоформатные
+    end
+    return mode
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

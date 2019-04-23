@@ -5,691 +5,630 @@ Vergas
 ]]--
 init_xvars()
 
-function s_play(path, vol)
--- path - путь на ogg-файл от папки sounds (она корневая), т.е device\pda\medik_2
--- vol - уровень громкости. Пределы от 0 до 1
-  local fs = getFS()
-  if not fs:exist("$game_sounds$", path..".ogg") then
-     wprintf("~C0C #WARN:~C07 s_play cannot locate sound file~C0A %s~C07", path)
-  end
-
-  local snd_obj = xr_sound.get_safe_sound_object(path)
-  snd_obj:play_at_pos(db.actor, vector ():set (0, 0, 0), 0, sound_object.s2d)
-  if vol == nil then
-    vol = 1
-  end
-  snd_obj.volume = vol
-  return snd_obj
+function s_play( path, vol )
+    local fs = getFS()
+    if not fs:exist( "$game_sounds$", path .. ".ogg" ) then
+        wprintf( "~C0C #WARN:~C07 s_play cannot locate sound file~C0A %s~C07", path )
+    end
+    local snd_obj = xr_sound.get_safe_sound_object( path )
+    snd_obj:play_at_pos( db.actor, vector():set( 0, 0, 0 ), 0, sound_object.s2d )
+    if vol == nil then vol = 1 end
+    snd_obj.volume = vol
+    return snd_obj
 end
 
-function spawn_item_in_inv(spawn_item,param,npc)
---spawn_item - имя предмета (например "medkit" - стандартная аптечка)
---param - (true - спавн для разгрузки. false - спавн без разгрузки)
-
-  if npc == nil then
-     npc = db.actor
-  end
-
-    wprintf(" spawn~C0A %-25s~C07 into~C0F %s~C07 ", spawn_item, DumpVar(npc))
-  local l_obj = misc.spawn_to(spawn_item, npc)
-  if param then
-       wprintf(" trying take spawned %d into razgruzka ", l_obj.id)
-     razgruzka.save_take_obj(l_obj.id)
-  else
-       wprintf(" dropping spawned %d ", l_obj.id)
-     vergas_rucksack.set_fo_drop_items(l_obj.id)
-  end
-
-  return l_obj
+function spawn_item_in_inv( spawn_item, param, npc )
+    --spawn_item - имя предмета (например "medkit" - стандартная аптечка)
+    --param - (true - спавн для разгрузки. false - спавн без разгрузки)
+    if npc == nil then npc = db.actor end
+    wprintf( " spawn~C0A %-25s~C07 into~C0F %s~C07 ", spawn_item, DumpVar( npc ) )
+    local l_obj = misc.spawn_to( spawn_item, npc )
+    if param then
+        wprintf( " trying take spawned %d into razgruzka ", l_obj.id )
+        razgruzka.save_take_obj( l_obj.id )
+    else
+        wprintf( " dropping spawned %d ", l_obj.id )
+        vergas_rucksack.set_fo_drop_items( l_obj.id )
+    end
+    return l_obj
 end
 
-function spawn_ammo_into (section, total_ammo, param, target)
---section - имя патрона
---total_ammo - количество патронов
---param - (true - спавн для разгрузки. false - спавн без учета разгрузки)
-  local l_obj
-
-  if (section ~= "?") and section and total_ammo and (total_ammo > 0) then
-    local sim = alife()
-    local box_size = get_box_size(section)
-        local full_count = math.floor(total_ammo / box_size)
-        local full_ammo = full_count * box_size
-        local rest_ammo = total_ammo - full_ammo
-        local spawned = {}
-        wprintf(" spawn_ammo_into: total = %3d, box_size = %d, full_count = %2d, rest_ammo = %d",
-                                  total_ammo, box_size, full_count, rest_ammo)
-
+function spawn_ammo_into( section, total_ammo, param, target )
+    -- section    - имя патрона
+    -- total_ammo - количество патронов
+    -- param      - (true - спавн для разгрузки. false - спавн без учета разгрузки)
+    local l_obj
+    if section ~= "?" and section and total_ammo and total_ammo > 0 then
+        local box_size   = get_box_size( section )
+        local full_count = math.floor( total_ammo / box_size )
+        local full_ammo  = full_count * box_size
+        local rest_ammo  = total_ammo - full_ammo
+        local spawned    = {}
+        wprintf(
+            " spawn_ammo_into: total = %3d, box_size = %d, full_count = %2d, rest_ammo = %d",
+            total_ammo, box_size, full_count, rest_ammo
+        )
         if full_count > 0 then
-           spawned = misc.spawn_multi (section, nil, target, full_count) -- create_ammo
+            spawned = misc.spawn_multi( section, nil, target, full_count ) -- create_ammo
         end
         if rest_ammo > 0 then
-           l_obj = misc.spawn_to(section, target, rest_ammo)
-           table.insert(spawned, l_obj)
+            l_obj = misc.spawn_to( section, target, rest_ammo )
+            table.insert( spawned, l_obj )
         end
-
-        for i, sobj in ipairs(spawned) do
-      if sobj ~= nil then
-        if param then
-          razgruzka.save_take_obj(sobj.id)
-        else
-          wprintf(" spawned ammo %d will be dropped ", sobj.id)
-          vergas_rucksack.set_fo_drop_items(sobj.id)
+        for i, sobj in ipairs( spawned ) do
+            if sobj ~= nil then
+                if param then
+                    razgruzka.save_take_obj( sobj.id )
+                else
+                    wprintf( " spawned ammo %d will be dropped ", sobj.id )
+                    vergas_rucksack.set_fo_drop_items( sobj.id )
+                end
+                if bind_greedy.get_flag_greedy() then
+                    bind_greedy.set_drop_rykzack( sobj.id )
+                end
+            end
         end
-        if bind_greedy.get_flag_greedy() then
-          bind_greedy.set_drop_rykzack(sobj.id)
-        end
-      end -- if sobj
-    end -- for ipairs(spawned)
-  end
+    end
 end
 
-function spawn_ammo_in_inv(section, count, param)
-   spawn_ammo_into(section, count, param, client_obj(0))
+function spawn_ammo_in_inv( section, count, param )
+    spawn_ammo_into( section, count, param, client_obj( 0 ) )
 end
 
-function spawn_ammo_in_hran(hran, section, sum)
+function spawn_ammo_in_hran( hran, section, sum )
     --спавн патронов в хранилище
-  se_respawn.create_ammo(section, hran.position, hran.m_level_vertex_id, hran.m_game_vertex_id, hran.id, sum)
+    se_respawn.create_ammo(
+        section, hran.position, hran.m_level_vertex_id,
+        hran.m_game_vertex_id, hran.id, sum
+    )
 end
 
-function spawn_items_in_hran(hran, section, sum)
-  for i = 1, sum do
-    alife():create(section,hran.position, hran.m_level_vertex_id, hran.m_game_vertex_id, hran.id)
-  end
-end
-
-function add_items_vergas()
-  local tbl_sec = {}
-  if table.getn(tbl_sec) ~= 0 then
-    for i = 1,table.getn(tbl_sec) do
-      spawn_item_in_inv(tbl_sec[i],true)
-      --local obj = alife():story_object(story_ids.esc_inventory_box_0016)
-      --alife():create(tbl_sec[i],obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id)
+function spawn_items_in_hran( hran, section, sum )
+    for i = 1, sum do
+        alife():create(
+            section, hran.position, hran.m_level_vertex_id,
+            hran.m_game_vertex_id, hran.id
+        )
     end
-  end
-
 end
 
-function vergas_spawner()
-  --add_items_vergas()
-  --vergas_pda.add_kill_npc()
-
-end
-
-
-function return_time(param)
-  local y,m,d,h,mint,sec,ms = game.get_game_time():get()
-  if param == 1 then
-    return y
-  elseif param == 2 then
-    return m
-  elseif param == 3 then
-    return d
-  elseif param == 4 then
-    return h
-  elseif param == 5 then
-    return mint
-  elseif param == 6 then
+function return_time( param )
+    local y, m, d, h, mint, sec, ms = game.get_game_time():get()
+    if     param == 1 then return y
+    elseif param == 2 then return m
+    elseif param == 3 then return d
+    elseif param == 4 then return h
+    elseif param == 5 then return mint
+    elseif param == 6 then return sec
+    elseif param == 7 then return ms
+    end
     return sec
-  elseif param == 7 then
-    return ms
-  end
-  return sec
 end
 
-function str_explode(div,str,clear) -- SpitStr but Lua implementation
---Разбивает инфо-строку на составляющие и выводит в виде таблицы
--- div - разделитель
--- str - разбираемая строка
--- clear ставим равное true
-  local t={}
-     if str and div then
-    local cpt = string.find (str, div, 1, true)
-    if cpt then
-      repeat
-      if clear then
-        table.insert( t, trim(string.sub(str, 1, cpt-1)) )
-      else
-        table.insert( t, string.sub(str, 1, cpt-1) )
-      end
-      str = string.sub( str, cpt+string.len(div) )
-      cpt = string.find (str, div, 1, true)
-      until cpt==nil
+function str_explode( div, str, clear ) -- SpitStr but Lua implementation
+    --Разбивает инфо-строку на составляющие и выводит в виде таблицы
+    -- div - разделитель
+    -- str - разбираемая строка
+    -- clear ставим равное true
+    local t = {}
+    if str and div then
+        local cpt = string.find( str, div, 1, true )
+        if cpt then
+            repeat
+                if clear then
+                    table.insert( t, trim( string.sub( str, 1, cpt - 1 ) ) )
+                else
+                    table.insert( t, string.sub( str, 1, cpt - 1 ) )
+                end
+                str = string.sub( str, cpt + string.len( div ) )
+                cpt = string.find( str, div, 1, true )
+            until cpt == nil
+        end
+        if clear then
+            table.insert( t, trim( str ) )
+        else
+            table.insert( t, str )
+        end
+        return t
     end
-    if clear then
-      table.insert(t, trim(str))
-    else
-      table.insert(t, str)
-    end
-    return t
-  end
 end
 
-function trim (s)
+function trim( s )
     return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
-function StringSplit(sStr, Mode, sDiv, sPattern)
---sStr -- cтрока для разбора
---Mode -- режим заполнения таблицы
---sDiv --сепаратор: если указываем, то обязательно указать режим Mode
---sPattern -- свой шаблон:если указываем, то в аргументе sDiv передать nil и обязательно указать режим Mode
 
+function StringSplit( sStr, Mode, sDiv, sPattern )
+    -- sStr     - cтрока для разбора
+    -- Mode     - режим заполнения таблицы
+    -- sDiv     - сепаратор: если указываем, то обязательно указать режим Mode
+    -- sPattern - свой шаблон:если указываем, то в аргументе sDiv передать nil и обязательно указать режим Mode
     local tRet = {}
     local sPatt
     if sDiv and  not sPattern then --// если сепаратор  задан: разделяем по нему
-    --// если нет шаблона - используем универсальный
-    sPatt = '[^%s%'..sDiv..']+'
---// если сепаратор указан как nil, но указан  шаблон: используем его
-    elseif not sDiv and  sPattern then
-    sPatt=sPattern
-    else--/ если сепаратор и шаблон  не указаны: разделяем слова
-    sPatt = '[%w%_]+'
+        --// если нет шаблона - используем универсальный
+        sPatt = '[^%s%'..sDiv..']+'
+        --// если сепаратор указан как nil, но указан  шаблон: используем его
+    elseif not sDiv and sPattern then
+        sPatt = sPattern
+    else --/ если сепаратор и шаблон  не указаны: разделяем слова
+        sPatt = '[%w%_]+'
     end
     if Mode == nil then --// обычный массив
-        for sValue in sStr:gmatch(sPatt) do
-            table.insert(tRet, sValue)
+        for sValue in sStr:gmatch( sPatt ) do
+            table.insert( tRet, sValue )
         end
     elseif Mode == true then --// таблица '[значение]=true'
-        for sValue in sStr:gmatch(sPatt) do
-            tRet[sValue] = true
+        for sValue in sStr:gmatch( sPatt ) do
+            tRet[ sValue ] = true
         end
-    elseif type(Mode) == "number" then --//таблица '[idx] = число или стринг'
-        for sValue in sStr:gmatch(sPatt) do
-        tRet[#tRet+1] = tonumber(sValue) or sValue
+    elseif type( Mode ) == "number" then --//таблица '[idx] = число или стринг'
+        for sValue in sStr:gmatch( sPatt ) do
+            tRet[ #tRet + 1 ] = tonumber( sValue ) or sValue
         end
     end
-  return tRet
+    return tRet
 end
-function get_ammo_size(obj)
-  local size=1
+
+function get_ammo_size( obj )
+    local size = 1
     if obj.get_ammo then -- если клиентский объект
-      local ammo = obj:get_ammo()
-      if ammo then
-         return ammo.current
-      else
-         wprintf("~C0C #ERROR(get_ammo_size):~C07 used for non-ammo object %s from %s", obj:name(), lua_traceback(' '))
-         return 1
-      end
-    end
-
-  --[[local id = obj:id() or obj.id
-  local se_obj = g_sim:object(id)
-  if se_obj == nil then
-    --ODS( sprintf("[~T].~C0C #ERROR: Not found se_obj for #%d, name = %s ~C07", id, obj:name()) )
-     return size
-  end --]]
-
-  if obj then
-      local pk = get_netpk(obj,1)
-      if pk then
-        local data = pk:get()
-        size = data.ammo_left
+        local ammo = obj:get_ammo()
+        if ammo then
+            return ammo.current
+        else
+            wprintf(
+                "~C0C #ERROR(get_ammo_size):~C07 used for non-ammo object %s from %s",
+                obj:name(), lua_traceback(' ')
+            )
+            return 1
         end
-      end
-  return size
-    --]]
+    end
+    if obj then
+        local pk = get_netpk( obj, 1 )
+        if pk then
+            local data = pk:get()
+            size = data.ammo_left
+        end
+    end
+    return size
 end
 
-function get_box_size(section)
-  local ltx = system_ini()
-  local box_size = ltx:r_float(section,"box_size")
-
-  if box_size == nil then
-    box_size = 0
-  end
-  return box_size
+function get_box_size( section )
+    local box_size = system_ini():r_float( section, "box_size" )
+    if box_size == nil then box_size = 0 end
+    return box_size
 end
 
-function set_pr_from_config(section,pr)
-  local ltx = system_ini()
-  local pr_s
-    SetDbgVar("set_pr_from_config", sprintf("%s.%s", section, pr), true)
-  if ltx:line_exist(section,pr) then
-    pr_s = ltx:r_float(section,pr)
-  else
-    pr_s = 0
-  end
-
-  return pr_s
-
+function set_pr_from_config( section, pr )
+    local ltx = system_ini()
+    local pr_s
+    SetDbgVar( "set_pr_from_config", sprintf( "%s.%s", section, pr ), true )
+    if ltx:line_exist( section, pr ) then
+        pr_s = ltx:r_float( section, pr )
+    else
+        pr_s = 0
+    end
+    return pr_s
 end
 
-function set_pr_from_config_str(section,pr)
-  local ltx = system_ini()
-  local pr_s
-    SetDbgVar("set_pr_from_config_str", sprintf("%s.%s", section, pr), true)
-  if ltx:line_exist(section,pr) then
-    pr_s = ltx:r_string(section,pr)
-  else
-    pr_s = "?"
-  end
-
-  return pr_s
+function set_pr_from_config_str( section, pr )
+    local ltx = system_ini()
+    local pr_s
+    SetDbgVar( "set_pr_from_config_str", sprintf( "%s.%s", section, pr ), true )
+    if ltx:line_exist( section, pr ) then
+        pr_s = ltx:r_string( section, pr )
+    else
+        pr_s = "?"
+    end
+    return pr_s
 end
 
-function set_key(param,poz,mode)
-  --param - имя параметра
-  --poz  - начальная позиция считывания
-  --mode   - 1-выводится 1 значение, 2-выводятся оба значения
-
-  local pr = FindConfigStr(param)
-  pr = "key_"..string.sub(pr,poz,string.len (pr))
-
-  local tbl = str_explode("|",set_pr_from_config_str("list_hot_keys",pr),true)
-  tbl[1] = tonumber(tbl[1])
-  tbl[2] = tonumber(tbl[2])
-  if mode == 1 then
-    return tbl[1]
-  elseif mode ==2 then
-    return tbl
-  end
-
+function set_key( param, poz, mode )
+    --param - имя параметра
+    --poz   - начальная позиция считывания
+    --mode  - 1-выводится 1 значение, 2-выводятся оба значения
+    local pr  = FindConfigStr( param )
+    pr        = "key_" .. string.sub( pr, poz, string.len( pr ) )
+    local tbl = str_explode( "|", set_pr_from_config_str( "list_hot_keys", pr ), true )
+    tbl[ 1 ]  = tonumber( tbl[ 1 ] )
+    tbl[ 2 ]  = tonumber( tbl[ 2 ] )
+    if     mode == 1 then return tbl[ 1 ]
+    elseif mode == 2 then return tbl
+    end
 end
+
 local verg_use = {
- klava               = used_items.used_klava,
- notebook_of_artist  = used_items.used_notebook_of_artist,
- zagadka_agro        = used_items.used_zagadka_agro,
- device_pda_npc      = used_items.used_pda_npc,
- repair_boxoutfit    = used_items.used_repair_boxoutfit,
- arc_art_box_1basic  = arc_containers.show_dialog,
- arc_art_box_basic   = arc_containers.show_dialog,
- arc_art_box_8basic  = arc_containers.show_dialog
---flask_army=used_items.used_flask_army_false",
---self_made_decoder="used_items.used_self_made_decoder"
+    klava               = used_items.used_klava,
+    notebook_of_artist  = used_items.used_notebook_of_artist,
+    zagadka_agro        = used_items.used_zagadka_agro,
+    device_pda_npc      = used_items.used_pda_npc,
+    repair_boxoutfit    = used_items.used_repair_boxoutfit,
+    arc_art_box_1basic  = arc_containers.show_dialog,
+    arc_art_box_basic   = arc_containers.show_dialog,
+    arc_art_box_8basic  = arc_containers.show_dialog
 }
-
 
 -- alpet: сколько восстанавливать порций, при использовании
 local use_rest_portions = {
- arc_art_box_1basic = 1,
- arc_art_box_basic  = 1,
- arc_art_box_8basic = 1
+    arc_art_box_1basic = 1,
+    arc_art_box_basic  = 1,
+    arc_art_box_8basic = 1
 }
 
-
-function used_item(obj)
-  local sect=obj:section()
-  local func = verg_use[sect]
-  -- alpet: если восстановить число порций "съедобного" предмета, его не потребуется заново респавнить!
-  local p = use_rest_portions[sect]
-  if obj and p then
-     local eat = obj:get_eatable_item()
-     if eat then
-       wprintf("[~T]. #DBG(used_item):~C0A %s~C07 portions now =~C0D %d~C07, restoring to~C0D %d~C07", obj:name(), eat.eat_portions_num, p)
-       eat.eat_portions_num = p
-     end
-  end
-
-  if func then
-     wprintf("[~T]. #DBG: used_item activating function~C0F %s~C07 for ~C0D %d~C07 ", DumpVar(func), obj:id())
-     func (obj:id()) -- улучшает трассировку стека
-  else
-    test.anim_use_med( sect )
-    vergas_medical_elastic.use_item(obj)
-  end
+function used_item( obj )
+    local sect = obj:section()
+    local func = verg_use[ sect ]
+    -- alpet: если восстановить число порций "съедобного" предмета, его не потребуется заново респавнить!
+    local p = use_rest_portions[ sect ]
+    if obj and p then
+        local eat = obj:get_eatable_item()
+        if eat then
+            wprintf(
+                "[~T]. #DBG(used_item):~C0A %s~C07 portions now =~C0D %d~C07, restoring to~C0D %d~C07",
+                obj:name(), eat.eat_portions_num, p
+            )
+            eat.eat_portions_num = p
+        end
+    end
+    if func then
+        wprintf(
+            "[~T]. #DBG: used_item activating function~C0F %s~C07 for ~C0D %d~C07 ",
+            DumpVar( func ), obj:id()
+        )
+        func( obj:id() ) -- улучшает трассировку стека
+    else
+        test.anim_use_med( sect )
+        vergas_medical_elastic.use_item( obj )
+    end
 end
 
 vergas_lib.used_item = used_item
 
 function update_2()
-  vergas_art.take_art_update()
-  sleeping_bag.remove_sleep_zone()
-  bind_greedy.actor_update()
-  bind_mteleport.actor_update()
-  vergas_rucksack.drop_rykzack_2()
-  amk.on_actor_update_2()
-  vergas_pda.set_pda_info()
+    vergas_art.take_art_update()
+    sleeping_bag.remove_sleep_zone()
+    bind_greedy.actor_update()
+    bind_mteleport.actor_update()
+    vergas_rucksack.drop_rykzack_2()
+    amk.on_actor_update_2()
+    vergas_pda.set_pda_info()
 end
 
-function drop_item(obj)
-  bind_greedy.drop_item(obj)
-  return razgruzka.drop_item_from_inventory(obj)
+function drop_item( obj )
+    bind_greedy.drop_item( obj )
+    return razgruzka.drop_item_from_inventory( obj )
 end
 
 
-function update_dyn_hud()
-  vergas_masks.update_blurs()
-end
+function update_dyn_hud() vergas_masks.update_blurs() end
 
 function game_load()
-  i_hide = false
-  params.command_unbind("inventory")
-  sak.get_command("unbind_sec inventory")
-  vergas_medical_elastic.load()
-  vergas_watch.load_watch()
-  vergas_spawner()
-  -- dim_saves.load_xml()
-  bag_on_belt_use.calculate_bag_weight()
-  inv_buttons_use.set_flag_equipment(false)
-  news_main.load()
+    i_hide = false
+    params.command_unbind( "inventory" )
+    sak.get_command( "unbind_sec inventory" )
+    vergas_medical_elastic.load()
+    vergas_watch.load_watch()
+    bag_on_belt_use.calculate_bag_weight()
+    inv_buttons_use.set_flag_equipment( false )
+    news_main.load()
 end
 
 function game_save()
-  vergas_medical_elastic.save()
-  vergas_watch.save_watch()
-  vergas_masks.save_mask_on_off()
-  news_main.save()
-end
-flag_inventory=true
-function flag_inventory_on()
-  flag_inventory=true
-end
-function inventory_info(i_info)
-  if i_info =="ui_inventory" or i_info == "ui_car_body" or i_info == "ui_trade" then
-	flag_inventory=false
-	schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
-    if i_info == "ui_car_body" or i_info == "ui_trade" then
-      vergas_watch.substitution_watch(1)
-      used_items.set_get_flag_use_gadget(1,false)
-      inv_buttons_use.set_rucksack_mode(4)
-      razgruzka.inventory_on_off(true,true)
-    end
-
-    if i_info =="ui_inventory" then
-      if not inv_buttons_use.get_flag_equipment() then
-        used_items.set_get_flag_use_gadget(1,false)
-        inv_buttons_use.set_rucksack_mode(4)
-        razgruzka.inventory_on_off(true,true)
-      else
-        razgruzka.set_inv_on_off(true)
-      end
-    end
-  elseif i_info =="ui_inventory_hide" or i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then
-  flag_inventory=false
-  schedule.add ("flag_inventory","vergas_lib.flag_inventory_on()",300)
-    if i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then
-      vergas_watch.substitution_watch(2)
-    end
-    used_items.set_get_flag_use_gadget(1,true)
-    inv_buttons_use.transfer_superfluous_in_inventory()
-    razgruzka.inventory_on_off(false)
-    inv_buttons_use.set_flag_equipment(false)
-  end
+    vergas_medical_elastic.save()
+    vergas_watch.save_watch()
+    vergas_masks.save_mask_on_off()
+    news_main.save()
 end
 
-function search_items(section,count,mode,tips)
-  if razgruzka.object_stock_taking(section,count,tips) then
-    if mode == 1 then
-       return true
-    elseif mode == 2  then
-       return sak_inventory.release_actor_items(section, count)
-    end
-  end
-  return false
-end
+flag_inventory = true
 
-function ammo_for_slot(wpn)
-  local tmp_inf
-  if wpn == nil then
-    for i = 1, 3 do
-      table.insert(tmp_inf, "?")
-    end
-  else
-    tmp_inf = vergas_lib.str_explode(",",set_pr_from_config_str(wpn,"ammo_class"),true)
-    if table.getn(tmp_inf) == 1 then
-      table.insert(tmp_inf, "?")
-      table.insert(tmp_inf, "?")
-    elseif table.getn(tmp_inf) == 2 then
-      table.insert(tmp_inf, "?")
-    end
-  end
-  return tmp_inf
-end
+function flag_inventory_on() flag_inventory = true end
 
-function add_record_in_klava(msg_id, custom_msg)
-  local msg_tema = ""
-  local msg_text = ""
-  local message
-  local i
-  local tbl_txt = {}
-  local hvost
-  local perenos
-
-  local tbl_msg
-
-  if msg_id == "custom" then
-    tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id,custom_msg),true)
-    msg_tema = "Инфо по сталкеру"
-    for i = 1,table.getn(tbl_msg) do
-      table.insert(tbl_txt,tbl_msg[i])
-    end
-  else
-    tbl_msg = vergas_lib.str_explode("|",vergas_pda.read_message(msg_id),true)
-    msg_tema = set_data_string()..tbl_msg[1]
-    for i = 2,table.getn(tbl_msg) do
-      table.insert(tbl_txt,tbl_msg[i])
-    end
-  end
-
-  if string.len(msg_tema) < 40 then
-    msg_tema = msg_tema..string.rep(" ", 40-string.len(msg_tema))
-  elseif string.len(msg_tema) > 40 then
-    msg_tema = string.sub(msg_tema,1,40)
-  end
-
-  if table.getn(tbl_txt) < 14 then
-    for i = 1,14-table.getn(tbl_txt) do
-      table.insert(tbl_txt,"")
-    end
-  end
-  for i = 1, table.getn(tbl_txt) do
-    if string.len(tbl_txt[i]) < 45 then
-      if string.sub(tbl_txt[i],1,1) == "[" then
-        tbl_txt[i] = string.sub(tbl_txt[i],2,string.len(tbl_txt[i]))..string.rep(" ", 45-string.len(tbl_txt[i])+1)
-      else
-        tbl_txt[i] = tbl_txt[i]..string.rep(" ", 45-string.len(tbl_txt[i]))
-      end
-    elseif  string.len(tbl_txt[i]) > 45 then
-      if string.sub(tbl_txt[i],1,1) == "[" then
-        hvost = string.sub(tbl_txt[i],47,string.len(tbl_txt[i]))
-        tbl_txt[i] = string.sub(tbl_txt[i],2,46)
-      else
-        hvost = string.sub(tbl_txt[i],46,string.len(tbl_txt[i]))
-        tbl_txt[i] = string.sub(tbl_txt[i],1,45)
-      end
-      if i < 14 then
-        if string.sub(tbl_txt[i+1],1,1) == "[" then
-          tbl_txt = shift_on_one_step(tbl_txt,i+1,table.getn(tbl_txt))
-          tbl_txt[i+1] = hvost
-        else
-          tbl_txt[i+1] = hvost..tbl_txt[i+1]
+function inventory_info( i_info )
+    if
+           i_info == "ui_inventory"
+        or i_info == "ui_car_body"
+        or i_info == "ui_trade"
+    then
+        flag_inventory = false
+        schedule.add( "flag_inventory", "vergas_lib.flag_inventory_on()", 300 )
+        if i_info == "ui_car_body" or i_info == "ui_trade" then
+            vergas_watch.substitution_watch( 1 )
+            used_items.set_get_flag_use_gadget( 1, false )
+            inv_buttons_use.set_rucksack_mode( 4 )
+            razgruzka.inventory_on_off( true, true )
         end
-      end
-    elseif string.len(tbl_txt[i]) == 45 and string.sub(tbl_txt[i],1,1) == "[" then
-      tbl_txt[i] = string.sub(tbl_txt[i],2,string.len(tbl_txt[i])).." "
+        if i_info == "ui_inventory" then
+            if not inv_buttons_use.get_flag_equipment() then
+                used_items.set_get_flag_use_gadget( 1, false )
+                inv_buttons_use.set_rucksack_mode( 4 )
+                razgruzka.inventory_on_off( true, true )
+            else
+                razgruzka.set_inv_on_off( true )
+            end
+        end
+    elseif
+           i_info == "ui_inventory_hide"
+        or i_info == "ui_car_body_hide"
+        or i_info == "ui_trade_hide"
+    then
+        flag_inventory = false
+        schedule.add( "flag_inventory", "vergas_lib.flag_inventory_on()", 300 )
+        if i_info == "ui_car_body_hide" or i_info == "ui_trade_hide" then
+            vergas_watch.substitution_watch( 2 )
+        end
+        used_items.set_get_flag_use_gadget( 1, true )
+        inv_buttons_use.transfer_superfluous_in_inventory()
+        razgruzka.inventory_on_off( false )
+        inv_buttons_use.set_flag_equipment( false )
     end
-  end
-
-  for i = 1, 14 do
-    msg_text = msg_text..tbl_txt[i]
-  end
-  message = archiving_records(msg_tema..msg_text)
-  local sms_tbl = vergas_lib.read_messages()
-  table.insert(sms_tbl,message)
-  vergas_lib.save_messages(sms_tbl)
 end
 
-function shift_on_one_step(tbl,on,off)
-  local i
-  local tbl_tmp = {}
-  for i = 1,off do
-    table.insert(tbl_tmp,tbl[i])
-  end
-  tbl[on] = ""
-  for i = on+1,off do
-    tbl[i] = tbl_tmp[i-1]
-  end
-  return tbl
+function search_items( section, count, mode, tips )
+    if razgruzka.object_stock_taking( section, count, tips ) then
+        if mode == 1 then
+            return true
+        elseif mode == 2  then
+            return sak_inventory.release_actor_items( section, count )
+        end
+    end
+    return false
 end
 
-function archiving_records(message)
-  local i
-  local tbl_tmp = {}
-  local str_on = 1
-  local str_off = 45
-  local merka = string.rep(" ", 45)
-  local dl = 0
-  for i = 1,15 do
-    table.insert(tbl_tmp,"")
-  end
-  tbl_tmp[1] = string.sub(message,1,40)
-  message = string.sub(message,41,670)
-  for i = 2,15 do
-    tbl_tmp[i] = string.sub(message,str_on,str_off)
-    str_on = str_on + 45
-    str_off = str_off + 45
-  end
-  message = ""
-  dl = 40
-  tbl_tmp[1] = vergas_klava.cheat:del_superfluous_space(tbl_tmp[1])
-  if string.len(tbl_tmp[1]) < dl then
-    message = tbl_tmp[1].."|"..tostring(dl - string.len(tbl_tmp[1]))
-  else
-    message = tbl_tmp[1].."|0"
-  end
-
-  dl = 45
-  for i = 2,15 do
-    if tbl_tmp[i] == merka then
-      message = message.."||45"
+function ammo_for_slot( wpn )
+    local tmp_inf
+    if wpn == nil then
+        for i = 1, 3 do table.insert( tmp_inf, "?" ) end
     else
-      tbl_tmp[i] = vergas_klava.cheat:del_superfluous_space(tbl_tmp[i])
-      if string.len(tbl_tmp[i]) <= dl then
-        message = message.."|"..tbl_tmp[i].."|"..tostring(dl - string.len(tbl_tmp[i]))
-      end
+        tmp_inf = vergas_lib.str_explode( ",", set_pr_from_config_str( wpn, "ammo_class" ), true )
+        if table.getn( tmp_inf ) == 1 then
+            table.insert( tmp_inf, "?" )
+            table.insert( tmp_inf, "?" )
+        elseif table.getn( tmp_inf ) == 2 then
+            table.insert( tmp_inf, "?" )
+        end
     end
-  end
-  return message
+    return tmp_inf
+end
+
+function add_record_in_klava( msg_id, custom_msg )
+    local msg_tema, msg_text = "", ""
+    local tbl_txt = {}
+    local message, i, hvost, perenos, tbl_msg
+    if msg_id == "custom" then
+        tbl_msg  = vergas_lib.str_explode(
+                        "|", vergas_pda.read_message( msg_id,custom_msg ), true
+                    )
+        msg_tema = "Инфо по сталкеру"
+        for i = 1, table.getn( tbl_msg ) do
+            table.insert( tbl_txt, tbl_msg[ i ] )
+        end
+    else
+        tbl_msg  = vergas_lib.str_explode(
+                        "|", vergas_pda.read_message( msg_id ), true
+                    )
+        msg_tema = set_data_string() .. tbl_msg[ 1 ]
+        for i = 2, table.getn( tbl_msg ) do
+            table.insert( tbl_txt, tbl_msg[ i ] )
+        end
+    end
+    if string.len( msg_tema ) < 40 then
+        msg_tema = msg_tema .. string.rep( " ", 40 - string.len( msg_tema ) )
+    elseif string.len( msg_tema ) > 40 then
+        msg_tema = string.sub( msg_tema, 1, 40 )
+    end
+    if table.getn( tbl_txt ) < 14 then
+        for i = 1, 14 - table.getn( tbl_txt ) do
+            table.insert( tbl_txt, "" )
+        end
+    end
+    for i = 1, table.getn( tbl_txt ) do
+        if string.len( tbl_txt[ i ] ) < 45 then
+            if string.sub( tbl_txt[ i ], 1, 1 ) == "[" then
+                tbl_txt[ i ] = string.sub( tbl_txt[ i ], 2, string.len( tbl_txt[ i ] ) )
+                                .. string.rep( " ", 45 - string.len( tbl_txt[ i ] ) + 1 )
+            else
+                tbl_txt[ i ] = tbl_txt[ i ] .. string.rep( " ", 45 - string.len( tbl_txt[ i ] ) )
+            end
+        elseif string.len( tbl_txt[ i ] ) > 45 then
+            if string.sub( tbl_txt[ i ], 1, 1 ) == "[" then
+                hvost = string.sub( tbl_txt[ i ], 47, string.len( tbl_txt[ i ] ) )
+                tbl_txt[ i ] = string.sub( tbl_txt[ i ], 2, 46 )
+            else
+                hvost = string.sub( tbl_txt[ i ], 46, string.len( tbl_txt[ i ] ) )
+                tbl_txt[ i ] = string.sub( tbl_txt[ i ], 1, 45 )
+            end
+            if i < 14 then
+                if string.sub( tbl_txt[ i + 1 ], 1, 1 ) == "[" then
+                    tbl_txt = shift_on_one_step( tbl_txt, i + 1, table.getn( tbl_txt ) )
+                    tbl_txt[ i + 1 ] = hvost
+                else
+                    tbl_txt[ i + 1 ] = hvost .. tbl_txt[ i + 1 ]
+                end
+            end
+        elseif
+            string.len( tbl_txt[ i ] ) == 45
+            and string.sub( tbl_txt[ i ], 1, 1 ) == "["
+        then
+            tbl_txt[ i ] = string.sub( tbl_txt[ i ], 2, string.len( tbl_txt[ i ] ) ) .. " "
+        end
+    end
+    for i = 1, 14 do
+        msg_text = msg_text .. tbl_txt[ i ]
+    end
+    message       = archiving_records( msg_tema .. msg_text )
+    local sms_tbl = vergas_lib.read_messages()
+    table.insert( sms_tbl, message )
+    vergas_lib.save_messages( sms_tbl )
+end
+
+function shift_on_one_step( tbl, on, off )
+    local i
+    local tbl_tmp = {}
+    for i = 1, off do
+        table.insert( tbl_tmp, tbl[ i ] )
+    end
+    tbl[ on ] = ""
+    for i = on + 1, off do
+        tbl[ i ] = tbl_tmp[ i - 1 ]
+    end
+    return tbl
+end
+
+function archiving_records( message )
+    local i
+    local tbl_tmp = {}
+    local str_on  = 1
+    local str_off = 45
+    local merka   = string.rep( " ", 45 )
+    local dl      = 0
+    for i = 1, 15 do table.insert( tbl_tmp, "" ) end
+    tbl_tmp[ 1 ] = string.sub( message,  1,  40 )
+    message      = string.sub( message, 41, 670 )
+    for i = 2, 15 do
+        tbl_tmp[ i ] = string.sub( message, str_on, str_off )
+        str_on       = str_on + 45
+        str_off      = str_off + 45
+    end
+    message = ""
+    dl      = 40
+    tbl_tmp[ 1 ] = vergas_klava.cheat:del_superfluous_space( tbl_tmp[ 1 ] )
+    if string.len( tbl_tmp[ 1 ] ) < dl then
+        message = tbl_tmp[ 1 ] .. "|" .. tostring( dl - string.len( tbl_tmp[ 1 ] ) )
+    else
+        message = tbl_tmp[ 1 ] .. "|0"
+    end
+    dl = 45
+    for i = 2, 15 do
+        if tbl_tmp[ i ] == merka then
+            message = message .. "||45"
+        else
+            tbl_tmp[ i ] = vergas_klava.cheat:del_superfluous_space( tbl_tmp[ i ] )
+            if string.len( tbl_tmp[ i ] ) <= dl then
+                message = message .. "|" .. tbl_tmp[ i ] .. "|"
+                          .. tostring( dl - string.len( tbl_tmp[ i ] ) )
+            end
+        end
+    end
+    return message
 end
 
 function set_data_string()
-  local message
-  local str = ""
-  str = vergas_lib.return_time(3)
-  if string.len (str)==1 then
-    message = "0"..str.."/"
-  else
-    message = str.."/"
-  end
-  str = vergas_lib.return_time(2)
-  if string.len (str)==1 then
-    message = message.."0"..str.."/"
-  else
-    message = message..str.."/"
-  end
-  str = string.sub (vergas_lib.return_time(1),3)
-  message = message..str
-  str = vergas_lib.return_time(4)
-  if string.len (str)==1 then
-    message = message.."(0"..str..":"
-  else
-    message = message.."("..str..":"
-  end
-  str = vergas_lib.return_time(5)
-  if string.len (str)==1 then
-    message = message.."0"..str..")"
-  else
-    message = message..str..")"
-  end
-
-  return message
-end
-
-function register_change(str,mode)
-    if mode == 1 then
-       str = str:lower()
+    local message
+    local str = ""
+    str = vergas_lib.return_time( 3 )
+    if string.len( str ) == 1 then
+        message = "0" .. str .. "/"
     else
-       str = str:upper()
+        message = str .. "/"
     end
-    -- wprintf(" mode = %d, str = %s ", mode, str)
-  return str
+    str = vergas_lib.return_time( 2 )
+    if string.len( str ) == 1 then
+        message = message .. "0" .. str .. "/"
+    else
+        message = message .. str .. "/"
+    end
+    str     = string.sub( vergas_lib.return_time( 1 ), 3 )
+    message = message .. str
+    str     = vergas_lib.return_time( 4 )
+    if string.len( str ) == 1 then
+        message = message .. "(0" .. str .. ":"
+    else
+        message = message .. "(" .. str .. ":"
+    end
+    str = vergas_lib.return_time( 5 )
+    if string.len( str ) == 1 then
+        message = message .. "0" .. str .. ")"
+    else
+        message = message .. str .. ")"
+    end
+    return message
 end
 
-
-function show_rad(param)
-  local hud = get_hud()
-  local sh_r = hud:GetCustomStatic("hud_show_rad")
-  if param == 2 then
-    if sh_r ~= nil then
-      hud:RemoveCustomStatic("hud_show_rad")
+function register_change( str, mode )
+    if mode == 1 then
+        str = str:lower()
+    else
+        str = str:upper()
     end
-    return
-  end
-  if sh_r ~= nil then
-    hud:RemoveCustomStatic("hud_show_rad")
-  end
-    hud:AddCustomStatic("hud_show_rad", true)
-    sh_r = hud:GetCustomStatic("hud_show_rad")
-  local str = math.modf(db.actor.radiation*100)
-  if str < 10 then
-    sh_r:wnd():SetText("Радиация 0"..str)
-  else
-    sh_r:wnd():SetText("Радиация "..str)
-  end
+    return str
+end
+
+function show_rad( param )
+    local hud  = get_hud()
+    local sh_r = hud:GetCustomStatic( "hud_show_rad" )
+    if param == 2 then
+        if sh_r ~= nil then
+            hud:RemoveCustomStatic( "hud_show_rad" )
+        end
+        return
+    end
+    if sh_r ~= nil then
+        hud:RemoveCustomStatic( "hud_show_rad" )
+    end
+    hud:AddCustomStatic( "hud_show_rad", true )
+    sh_r = hud:GetCustomStatic( "hud_show_rad" )
+    local str = math.modf( db.actor.radiation * 100 )
+    if str < 10 then
+        sh_r:wnd():SetText( "Радиация 0" .. str )
+    else
+        sh_r:wnd():SetText( "Радиация "  .. str )
+    end
 end
 
 function backpack_search()
-  local i
-  local a
-  local flag = false
-  local rz
-  for a,i in pairs(db.storage) do
-    local objg=client_obj(a)
-    if objg then
-      if (objg and strpos(objg:name(),"rykzack",1,true)) then
-        rz = objg
-        flag = true
-        break
-      end
+    local i, a, rz
+    local flag = false
+    for a, i in pairs( db.storage ) do
+        local objg = client_obj( a )
+        if objg then
+            if objg and strpos( objg:name(), "rykzack", 1, true ) then
+                rz   = objg
+                flag = true
+                break
+            end
+        end
     end
-  end
-  a =  vector()
-  if flag then
-    a = rz:position()
-    db.actor:set_actor_position(a)
-  end
+    a = vector()
+    if flag then
+        a = rz:position()
+        db.actor:set_actor_position( a )
+    end
 end
 
-function ClearDiary()
-  nlc_vars.klava = {}
+function ClearDiary() nlc_vars.klava = {} end
+
+function DiaryReadMessage( id )
+    local text = nlc_vars.klava[ id ] or ""
+    return text
 end
 
-function DiaryReadMessage(id)
-  local text = nlc_vars.klava[id] or ""
-  return text
-end
-
-function DiarySaveMessage(id, text)
-   nlc_vars.klava[id] = text
+function DiarySaveMessage( id, text )
+    nlc_vars.klava[ id ] = text
 end
 
 function read_messages()
-  return xray_vars.load_table (nlc_vars, "klava", {})
+    return xray_vars.load_table( nlc_vars, "klava", {} )
 end
 
-function save_messages(tbl_tmp)
+function save_messages( tbl_tmp )
     local t = {}
     -- просто фильтрация пустых строк
-  for i = 1, table.getn(tbl_tmp) do
-    if tbl_tmp[i] ~= "" then
-            table.insert(t, tbl_tmp[i])
+    for i = 1, table.getn( tbl_tmp ) do
+        if tbl_tmp[ i ] ~= "" then
+            table.insert( t, tbl_tmp[ i ] )
+        end
     end
-  end
     nlc_vars.klava = t
 end
 
-function logmsg(msg)
-  ODS("[~d ~T]. #MSG: "..msg)
-end
+function logmsg( msg ) ODS( "[~d ~T]. #MSG: " .. msg ) end
 
 function init_module()
- if nlc_vars.klava == nil then
-    nlc_vars.klava = {}
- end
+    if nlc_vars.klava == nil then
+        nlc_vars.klava = {}
+    end
 end
 
-function late_init()
-end
-
-function stop_module()
-end
+function late_init() end
+function stop_module() end
