@@ -1029,13 +1029,13 @@ function eternal_start()
         wprintf( "@-------------------------------------  SEMECKY ALREADY SPAVNED IN THIS LVL" )
         return
     end
-    local delay = lua_random( 45, 300 )
+    local delay = lua_random( 3, 8 )
     if not timers.check_timer( "semeneckyi_timer" ) then
-        timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
+        timers.start_timer( "semeneckyi_timer", 0, delay, 0, "news_main.do_eternal_stalker()" )
         wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  min" )
     else
         timers.stop_timer( "semeneckyi_timer" )
-        timers.start_timer( "semeneckyi_timer", 0, 0, delay, "news_main.do_eternal_stalker()" )
+        timers.start_timer( "semeneckyi_timer", 0, delay, 0, "news_main.do_eternal_stalker()" )
         wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
     end
 end

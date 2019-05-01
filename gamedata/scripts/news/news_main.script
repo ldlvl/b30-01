@@ -2311,6 +2311,10 @@ end
 
 function do_eternal_stalker()
 	if str_in_tab( level.name(), { "l05_bar", "hospital" } ) then return end
+	if sak_dialog.not_ready_time_to_game() then
+		wprintf( "@------------- it's too early to spawn semeneckyi art, sorry, bro..." )
+		return
+	end
 	local m_level  = news_data.levels[ lua_random( table.getn( news_data.levels ) - 5 ) ]
 	local b_indoor = news_data.levels_types[ m_level ]
 	if
