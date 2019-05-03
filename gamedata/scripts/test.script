@@ -1623,8 +1623,10 @@ function korovan_timer_end()
     local tbl = xray_vars.load_table( nlc_vars, "korovan_box_id", {} )
     for _, v in ipairs( tbl ) do
         local obj = g_sim:object( v )
-        wprintf( "@---------------- [ %s ] releasing by id: %s", script_name(), obj.id )
-        if obj then misc.release_obj( obj.id ) end
+        if obj and obj.parent_id and ( obj.parent_id == nil or obj.parent_id == BAD_OBJ_ID ) then
+            wprintf( "@---------------- [ %s ] releasing by id: %s", script_name(), obj.id )
+            misc.release_obj( obj.id )
+        end
     end
     nlc_vars.korovan_box_id = nil
 end
