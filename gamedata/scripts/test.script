@@ -1032,11 +1032,11 @@ function eternal_start()
     local delay = lua_random( 3, 8 )
     if not timers.check_timer( "semeneckyi_timer" ) then
         timers.start_timer( "semeneckyi_timer", 0, delay, 0, "news_main.do_eternal_stalker()" )
-        wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  min" )
+        wprintf( "@-------------------------------------  SEMECKY TIMER STARTED TO "..delay.."  hours" )
     else
         timers.stop_timer( "semeneckyi_timer" )
         timers.start_timer( "semeneckyi_timer", 0, delay, 0, "news_main.do_eternal_stalker()" )
-        wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  min" )
+        wprintf( "@-------------------------------------  SEMECKY TIMER STOP-STARTED TO "..delay.."  hours" )
     end
 end
 
@@ -1588,7 +1588,7 @@ function spawn_jolly_roger( level )
 end
 
 function korovan_timer_start()
-    timers.start_timer( "korovan_timer", 4, lua_random( 6, 23 ), 0, "test.korovan_timer_end()" )
+    timers.start_timer( "korovan_timer", 5, lua_random( 4, 16 ), 0, "test.korovan_timer_end()" )
 end
 
 function korovan_timer_end()
