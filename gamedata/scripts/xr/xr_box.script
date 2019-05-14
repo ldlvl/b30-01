@@ -3,7 +3,7 @@ local mul_by_level      = {}
 local count_by_level    = {}
 local ammo_sections     = {}
 local death_ini         = ini_file( "misc\\ph_box_generic.ltx" )
-
+local arts_spawned
 --------------------------------------------------------------------------------------
 
 class "ph_item_box"
@@ -83,6 +83,8 @@ function ph_item_box:spawn_items()
        spawn_items = item_by_community[ "def_box" ]
     end
     if spawn_items == nil then return end
+    misc.dump_table( spawn_items )
+    arts_spawned = 0
     for k, v in pairs( spawn_items ) do
         local number = math.ceil( dsh.get_next_random(
                             "xr_box.ph_item_box",
@@ -119,10 +121,13 @@ function create_items( obj, section, number, rnd )
                     strposx( section, "af_" )
                     and not str_in_tab( section, { "af_dummy_", "_dyn", "_new", "af_full_akkum" } )
                 then
-                    local b = dsh.get_next_random( "xr_box.ph_item_box", 1, 3 )
-                    section = section .. "_dyn" .. b .. "d"
+                    local b      = dsh.get_next_random( "xr_box.ph_item_box", 1, 3 )
+                    section      = section .. "_dyn" .. b .. "d"
+                    arts_spawned = arts_spawned + 1
                 end
-                misc.spawn_obj( section, position )
+                if arts_spawned <= 1 then
+                    misc.spawn_obj( section, position )
+                end
             end
         end
     end
