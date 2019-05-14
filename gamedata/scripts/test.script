@@ -1233,7 +1233,7 @@ function rad_disease_health_handle()
     if db.actor.health >= curr_max_health then
         params.health_add( -0.05 )
     end
-    if lua_random() < 0.1 then
+    if lua_random() < 0.08 then
         misc.easy_sound( "scripts\\actor_gripp" )
         level.add_pp_effector( "eat_drug.ppe", 1039, false )
     end
