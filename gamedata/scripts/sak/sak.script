@@ -3999,6 +3999,18 @@ function breath_poison() -- реализация астмы с учетом противогаза
     local npc     = db.actor
     local act_pos = npc:position()
     local cond    = vergas_masks.mask_condition()
+    ------------------ чтобы в х6 на лестнице во время двухнедельного сна не задыхался -------------
+    if
+        level.name() == "warlab" 
+        and amk.check_npc_in_box(
+            db.actor,
+            { x = 1.803, y = 0.8, z = -3.447 },
+            { x = 9.220, y = 1.5, z = -0.737 }
+        ) ~= false
+    then
+        return
+    end
+    ------------------------------------------------------------------------------------------------
     if
         amk_anoms.check_coordinates( act_pos )
         and (
@@ -8803,7 +8815,7 @@ function marsh_radiation()
                         math.sin( yaw ) * radius + act_pos.x,
                         act_pos.y + 2, math.cos( yaw ) * radius + act_pos.z
                     )
-                    phantom_manager.spawn_phantom( pos )
+                    if lua_random() > 0.66 then phantom_manager.spawn_phantom( pos ) end
                 end
             end
             time_previous_water = time_current
