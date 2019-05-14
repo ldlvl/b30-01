@@ -3261,9 +3261,9 @@
 			<next>43</next>
 		</phrase>
 		<phrase id="41">
-		<precondition>sak_dialog.have_wpnm16</precondition>
+		<precondition>test.have_with_cond("wpn_sig550",1,0.95,true)</precondition>
 			<text>provodnik_senks_dialog_41</text>
-			<action>sak_dialog.give_wpnm16</action>
+			<action>test.have_with_cond("wpn_sig550",1,0.95,true,true)</action>
 			<next>51</next>
 		</phrase>
 		<phrase id="42">
@@ -4788,7 +4788,7 @@
 		</phrase>
 		<phrase id="50732">
 			<text>mar_factory_leader_dialog_start_50732</text>
-			<action>test.add_to_actor("ammo_5.45x39",10)</action>
+			<action>test.add_to_actor("ammo_5.45x39_ap",10)</action>
 			<action>test.add_to_actor("amk_kanistra",1)</action>
 			<next>508</next>
 		</phrase>
