@@ -83,7 +83,7 @@ function ph_item_box:spawn_items()
        spawn_items = item_by_community[ "def_box" ]
     end
     if spawn_items == nil then return end
-    misc.dump_table( spawn_items )
+    --misc.dump_table( spawn_items )
     arts_spawned = 0
     for k, v in pairs( spawn_items ) do
         local number = math.ceil( dsh.get_next_random(
@@ -97,8 +97,8 @@ end
 
 function create_items( obj, section, number, rnd )
     if ammo_sections[ section ] == true then
-        --if dsh.get_next_random( "xr_box.ph_item_box", 100 ) <= rnd then
-        if math.fmod( obj:id(), ( 100 - rnd ) ) < rnd then
+        if dsh.get_next_random( "xr_box.create_items", 100 ) <= rnd then
+        --if math.fmod( obj:id(), ( 100 - rnd ) ) < rnd then
             if number > 0 then
                 local position = vector():set( 0, 0, 0 )
                 position.x = obj:position().x + lua_random( -30, 30 ) / 100
