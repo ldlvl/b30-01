@@ -2311,7 +2311,7 @@ end
 
 function do_eternal_stalker()
 	if str_in_tab( level.name(), { "l05_bar", "hospital" } ) then return end
-	if sak_dialog.not_ready_time_to_game() then
+	if sak_dialog.not_ready_time( "start_on_load_time", 25 ) then
 		wprintf( "@------------- it's too early to spawn semeneckyi art, sorry, bro..." )
 		return
 	end

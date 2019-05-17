@@ -888,11 +888,11 @@ end
 
 function randomize_arts()
 	if timers.check_timer( "bron_safe_rel" ) then return end
-	local rnd_chanse = 0.75
+	local rnd_chanse = 0.77
 	local bino       = db.actor:item_in_slot( 4 )
 	if bino ~= nil then
 		local sc = bino:section()
-		if sc and sc == "wpn_binoc" then rnd_chanse = 0.63 end
+		if sc and sc == "wpn_binoc" then rnd_chanse = 0.67 end
 	end
 	-- здесь будет цикл по телепорту существующих артов
 	if dsh.get_next_random( "amk_anoms.randomize_arts" ) < rnd_chanse then

@@ -434,6 +434,7 @@ function restore_sun()
     end
     if tmp_intro then tmp_intro = false end
     if db.actor then
+        sak_dialog.start_time( "start_on_load_time" )
         sak.detectors_fake( false )
         vergas_art.spawn_art()
     end
