@@ -573,7 +573,8 @@ function fuckup_matches()
                     "От дождя спички отсырели.", "Да ё-моё...",
                     5, 15, "g_g", "sak", "red"
                 )
-                misc.release_obj( ids[ m ] )
+                misc.release_obj( itm )
+                wprintf( "@------------- [ %s ] deleting 1 matches from inventory -------------@", script_name() )
                 return
             end
         end
