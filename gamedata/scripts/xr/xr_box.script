@@ -71,7 +71,7 @@ function ph_item_box:spawn_items()
     local community   = utils.cfg_get_string( ini, "drop_box", "community", self.obj, false, "", "def_box" )
     if r_items( ini, "drop_box", "items" ) ~= nil then
         local items = r_items( ini, "drop_box", "items" )
-        misc.dump_table( items )
+        --misc.dump_table( items )
         for k, v in pairs( items ) do
             create_obligatory_items( self.obj, v.section, v.count )
         end
