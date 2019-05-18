@@ -556,12 +556,14 @@ end
 function fuckup_matches()
     local range       = 9
     local rain_factor = level.rain_factor()
+    local rain_limit  = 0.32
     local RP          = ray_pick(
         db.actor:position(), vector():set( 0, 1, 0 ), 200, rq_target.rqtStatic, nil
     )
     if RP:query() then range = RP:get_distance() end
+    if actor_in_skafandr() then rain_limit = 0.42 end   -- в научнике нужен сильнее дождь, при котором спички сыреть будут
     if
-        rain_factor > 0.35                              -- идёт нормальный дождь
+        rain_factor > rain_limit                        -- идёт нормальный дождь
         and const.ground_levels[ level.name() ]         -- наземные уровни
         and range > 8                                   -- ГГ под открытым небом или дырявой крышей
         -- and not sleep_manager.is_sleep_active()
@@ -602,7 +604,9 @@ end
 
 -- если радейка более 2 рентген, то заражаем жратву по таблице.       -- Апдейт 6 игровых минут.
 function fuckup_food()
-    if db.actor.radiation > 0.2 then
+	local rad_limit = 0.2
+	if actor_in_skafandr() then rad_limit = 0.37 end   -- в научнике лучше хранится еда от радиации
+    if db.actor.radiation > rad_limit then
         for sect, ids in pairs( sak_inventory.eatable ) do
             if food_anim_time[ sect ] then
                 for m = 1, #ids do
@@ -1143,9 +1147,9 @@ function teleport_esc_conserva()
         { -195.81082153320, -17.024044036865, -160.28915405273, 51, 57925 },
         { -201.66215515137, -16.714895248413, -162.32060241699, 53, 50382 },
         { -212.27078247070, -20.285102844238, -171.36308288574, 50, 44596 },
-        { -220.70078247070, -13.535102844238, -167.36108288574, 47, 37901 },
+        --{ -220.70078247070, -13.535102844238, -167.36108288574, 47, 37901 },
         { -224.90269409180, -16.952957077026, -159.98087829590, 47, 30960 },
-        { -254.92146301270, -19.363088607788, -151.32484436035,  8,  7869 },
+        --{ -254.92146301270, -19.363088607788, -151.32484436035,  8,  7869 },
         { -222.85388183594, -15.913737297058, -130.23683898926, 63, 31607 },
         { -229.53066650391, -18.325763320923, -123.29559606934, 65, 25944 },
         { -212.01152038574, -21.103549880981, -120.49135491943, 59, 41981 },
@@ -1824,4 +1828,19 @@ function give_rashpil_items()
         rashpil_tbl[ amk_vars.r_treas_items ][ 1 ],
         rashpil_tbl[ amk_vars.r_treas_items ][ 2 ]        
     )
+end
+
+
+function actor_in_skafandr()
+    local armor = db.actor:item_in_slot( 6 )
+    if
+        armor
+        and str_in_tab(
+            armor:section(),
+            { "scientific_", "ecolog_", "protection_" }
+        )
+        then
+            return true
+        end
+    return false
 end
