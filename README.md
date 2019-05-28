@@ -5,8 +5,9 @@
 Ну и сборка наверное не рассчитана на тех, кто хотя бы раз не прошёл NLC до конца.
 
 Ссылки для скачивания:
-Основная часть: https://drive.google.com/drive/folders/1Dj4xM1WwbOe_FjEAKIYzIUgYRI86S27Q
-Обновления: https://drive.google.com/drive/folders/12HBJccXRPi5EDLdL0kk4L_vQKjniq2XN
+[Основная часть](https://drive.google.com/drive/folders/1Dj4xM1WwbOe_FjEAKIYzIUgYRI86S27Q)
+
+[Обновления](https://drive.google.com/drive/folders/12HBJccXRPi5EDLdL0kk4L_vQKjniq2XN)
 
 Секреты установки и запуска:
 - разархивировать все архивы основной части в одну папку (требования к именам и путям прежние)
