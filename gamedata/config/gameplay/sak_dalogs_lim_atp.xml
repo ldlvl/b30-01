@@ -11219,24 +11219,55 @@
 		<phrase id="31">
 		<precondition>sak_dialog.stepanych_repair_repair_precond</precondition>
 			<text>stepanych_repair_dialog_31</text>
-			<action>sak_dialog.stepanych_repair_costs</action>
-			<next>411</next>
+			<action>sak_dialog.uniform_repair_cost(6,r_stepanych)</action>
+			<next>4111</next>
+			<next>4112</next>
+			<next>4113</next>
 			<next>412</next>
 		</phrase>
+
+		<phrase id="4111">
+			<precondition>sak_dialog.stepanych_repair_precond</precondition>
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_stepanych,"lvl1")</precondition>
+			<precondition>sak_dialog.have_any_aart</precondition>
+			<precondition>sak_dialog.have_vodka</precondition>
+			<text>stepanych_repair_dialog_411</text>
+			<action>sak_dialog.stepanych_repair_armor_s6</action>
+			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.give_vodka</action>
+			<next>5</next>
+		</phrase>
+
+		<phrase id="4112">
+			<precondition>sak_dialog.stepanych_repair_precond</precondition>
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_stepanych,"lvl2")</precondition>
+			<precondition>sak_dialog.have_any_bart</precondition>
+			<precondition>sak_dialog.have_vodka</precondition>
+			<text>stepanych_repair_dialog_411</text>
+			<action>sak_dialog.stepanych_repair_armor_s6</action>
+			<action>sak_dialog.transfer_any_bart</action>
+			<action>sak_dialog.give_vodka</action>
+			<next>5</next>
+		</phrase>
+
+		<phrase id="4113">
+			<precondition>sak_dialog.stepanych_repair_precond</precondition>
+			<precondition>sak_dialog.uniform_check_art_cost(6,r_stepanych,"lvl3")</precondition>
+			<precondition>sak_dialog.have_any_cart</precondition>
+			<precondition>sak_dialog.have_vodka</precondition>
+			<text>stepanych_repair_dialog_411</text>
+			<action>sak_dialog.stepanych_repair_armor_s6</action>
+			<action>sak_dialog.transfer_any_cart</action>
+			<action>sak_dialog.give_vodka</action>
+			<next>5</next>
+		</phrase>
+
 		<phrase id="32">
 		<precondition>sak_dialog.stepanych_not_repair_precond</precondition>
 			<text>stepanych_repair_dialog_32</text>
 			<next>42</next>
 		</phrase>
-		<phrase id="411">
-			<precondition>sak_dialog.stepanych_repair_precond</precondition>
-			<precondition>sak_dialog.stepanych_check_money_s6</precondition>
-			<precondition>sak_dialog.have_vodka</precondition>
-			<text>stepanych_repair_dialog_411</text>
-			<action>sak_dialog.stepanych_repair_armor_s6</action>
-			<action>sak_dialog.give_vodka</action>
-			<next>5</next>
-		</phrase>
+
 		<phrase id="5">
 			<text>stepanych_repair_dialog_5</text>
 			<next>6</next>
