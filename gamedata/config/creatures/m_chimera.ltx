@@ -1,14 +1,14 @@
 [m_chimera_attack_params]
 ;---
-;   anim      | time[0..1] | hit_power | impulse | impulse_dir(x,y,z)  | Field of hit_test (lft,rght, btt, top ) | Test Dist
+;   anim       | time[0..1] | hit_power | impulse | impulse_dir(x,y,z)  | Field of hit_test (lft,rght,btt,top ) | Test Dist
 ;---
-stand_attack_0     = 0.45,     0.80,       200,      0.0, 1.0, 0.0,        -1.0, 1.0, -1.0, 1.0,                      2.5
-stand_attack_1     = 0.45,     0.35,       70,       0.0, 1.0, 0.0,        -1.0, 1.0, -1.0, 1.0,                      2.5
-jump_attack_1      = 0.45,     0.75,       100,      0.0, 1.0, 0.0,        -1.0, 1.0, -1.0, 1.0,                      2.5
-stand_run_attack_0 = 0.75,     0.40,       80,       0.0, 1.0, 1.0,        -0.6, 0.6, -0.6, 0.6,                      2.5
+stand_attack_0     = 0.45,      0.80,       200,      0.0, 1.0, 0.0,             -1.0, 1.0, -1.0, 1.0,               2.5
+stand_attack_1     = 0.45,      0.35,       70,       0.0, 1.0, 0.0,             -1.0, 1.0, -1.0, 1.0,               2.5
+jump_attack_1      = 0.45,      0.75,       100,      0.0, 1.0, 0.0,             -1.0, 1.0, -1.0, 1.0,               2.5
+stand_run_attack_0 = 0.75,      0.40,       80,       0.0, 1.0, 1.0,             -0.6, 0.6, -0.6, 0.6,               2.5
 
 [m_chimera_attack_effector]
-duality_h           = 0.1; 0.01 
+duality_h           = 0.1; 0.01
 duality_v           = 0.01; 0.01
 blur                = 0.01
 gray                = 0.5
@@ -22,17 +22,17 @@ time                = 3.00
 time_attack         = 0.05      ; fade in
 time_release        = 0.50      ; fade out
 ; camera effects
-ce_time             = 0.30 ;time 
-ce_amplitude        = 12.0 
-ce_period_number    = 2.0 
-ce_power            = 1.0 ;0.7 ; power 
+ce_time             = 0.30 ;time
+ce_amplitude        = 12.0
+ce_period_number    = 2.0
+ce_power            = 1.0 ;0.7 ; power
 
 [m_chimera_step_params]
 ;------
 ;   anim            | Cycles | time1 | power1 | time2 | power2 |
 ;------
-stand_walk_fwd_0    =   1,     0.01,    1,      0.25,    0.7,    
-stand_run_fwd_0     =   1,     0.01,    1,      0.25,    0.6,    
+stand_walk_fwd_0    =   1,     0.01,    1,      0.25,    0.7,
+stand_run_fwd_0     =   1,     0.01,    1,      0.25,    0.6,
 ;===========================================================================
 ; IMMUNITIES
 ;===========================================================================
@@ -62,10 +62,10 @@ going_speed                      = 0.7r
 search_speed                     = 1.5 r
 visual                           = monsters\chimera\chimera
 corpse_visual                    = monsters\chimera\chimera
-icon                             = ui_npc_monster_chimera   
+icon                             = ui_npc_monster_chimera
 MaxHealthValue                   = 1500         ; range [0..200]
 DynamicObjectsCount              = 32
-ef_creature_type                 = 20            
+ef_creature_type                 = 20
 ef_weapon_type                   = 3
 ef_detector_type                 = 1
 panic_threshold                  = 0.1
@@ -111,47 +111,45 @@ max_hear_dist                    = 90
 
 ; speed factors         linear | angular_real | angular_path | min |  max
 Velocity_Stand          = 0,        1.4,            1.4,        1,      1
-Velocity_RunFwdNormal   = 8,        2.5,            2.5,        0.2,    1   
+Velocity_RunFwdNormal   = 8,        2.5,            2.5,        0.2,    1
 Velocity_RunFwdDamaged  = 4.5,      4.0,            4.0,        0.2,    1
-Velocity_WalkFwdDamaged = 1.8,      2.0,            2.0,        0.5,    2.0 
+Velocity_WalkFwdDamaged = 1.8,      2.0,            2.0,        0.5,    2.0
 Velocity_WalkFwdNormal  = 2.5,      1.2,            1.2,        0.02,   3.0
 Velocity_Drag           = 1.0,      3.0,            3.0,        1,      1
 Velocity_Steal          = 1.2,      2.0,            2.0,        1,      1
 Velocity_Walk_Upper     = 0.5,      1.2,            1.2,        0.02,   2.0
 Velocity_JumpGround     = 12.0,     0.01,           0.01,       0.4,    1
-Velocity_RunAttack      = 10,       0.01,           0.01,       0.2,    1   
+Velocity_RunAttack      = 10,       0.01,           0.01,       0.2,    1
 Velocity_Run_Attack     = 10,       0.01,           0.01,       0.2,    1
 
 ; acceleration
-Accel_Generic                     = 1.5
-Accel_Calm                        = 4.0
-Accel_Aggressive                  = 12.0
+Accel_Generic    = 1.5
+Accel_Calm       = 4.0
+Accel_Aggressive = 12.0
 
 ;attack parameters
-MinAttackDist                     = 2.8 ;1.2   ;0.5
-MaxAttackDist                     = 4.8 ;2.7   ;3.8
-as_min_dist                       = 0.9
-as_step                           = 0.3
-RunAttack_PathDistance            = 25.0
-RunAttack_StartDistance           = 8.0
+MinAttackDist           = 2.8 ;1.2   ;0.5
+MaxAttackDist           = 4.8 ;2.7   ;3.8
+as_min_dist             = 0.9
+as_step                 = 0.3
+RunAttack_PathDistance  = 25.0
+RunAttack_StartDistance = 8.0
 
-DayTime_Begin                     = 0         ; начала дня для монстра
-DayTime_End                       = 24        ; конец дня для монстра
-Min_Satiety                       = 0.6       ; мин. норма сытости (меньше - уже голодный)
-Max_Satiety                       = 0.9       ; макс. норма сытости (больше - очень сытый)
-
-distance_to_corpse                = 1.2       ; дист. до трупа, при которой он переходит в состояние еды
-
+DayTime_Begin      = 0         ; начала дня для монстра
+DayTime_End        = 24        ; конец дня для монстра
+Min_Satiety        = 0.6       ; мин. норма сытости (меньше - уже голодный)
+Max_Satiety        = 0.9       ; макс. норма сытости (больше - очень сытый)
+distance_to_corpse = 1.2       ; дист. до трупа, при которой он переходит в состояние еды
 
 ;                           fSearchRange,fOptEnemyDistance,fOptEnemyDistanceWeight,fMinEnemyDistance,fMinEnemyDistanceWeight,fMaxEnemyDistance,fMaxEnemyDistanceWeight
-selector_free_hunting    =      20.0,           20.0,              1000.0,                0.0,              10000.0,               1000.0,             10000.0,      
+selector_free_hunting    =      20.0,           20.0,              1000.0,              0.0,              10000.0,             1000.0,             10000.0,
 ;                           fSearchRange,fCoverFromEnemyWeight,fOptEnemyDistance,fOptEnemyDistanceWeight,fMinEnemyDistance,fMinEnemyDistanceWeight,fMaxEnemyDistance,fMaxEnemyDistanceWeight
-selector_cover           =      20.0,          -1000.0,              30.0,                0.0,                 0.0,               100000.0,             100000.0,            1000.0,
-selector_hear_sound      =      20.0,            1.0,                1000.0,              0.0,                 0.0,               1000.0,               10000.0,      
-selector_getaway         =      20.0,            20.0,               1000.0,              0.0,               10000.0,             1000.0,               10000.0,      
-selector_approach        =      20.0,            1.0,                1000.0,              0.0,                 0.0,               1000.0,               10000.0,      
+selector_cover           =      20.0,          -1000.0,            30.0,                0.0,                0.0,               100000.0,             100000.0,            1000.0,
+selector_hear_sound      =      20.0,            1.0,              1000.0,              0.0,                0.0,               1000.0,               10000.0,
+selector_getaway         =      20.0,            20.0,             1000.0,              0.0,              10000.0,             1000.0,               10000.0,
+selector_approach        =      20.0,            1.0,              1000.0,              0.0,                0.0,               1000.0,               10000.0,
 ;                             fSearchRange,fOptEnemyDistance,fOptEnemyDistanceWeight,fMinEnemyDistance,fMinEnemyDistanceWeight,fMaxEnemyDistance,fMaxEnemyDistanceWeight
-selector_walk_around     =      20.0,            6.0,                1000.0,              4.0,               5000.0,                8.0,                5000.0,      
+selector_walk_around     =      20.0,            6.0,              1000.0,              4.0,              5000.0,                8.0,                5000.0,
 
 terrain  = 255,255,255,255,30,40
 hit_type = wound
@@ -211,26 +209,26 @@ eat_sound_delay             = 3000
 attack_sound_delay          = 12000
 sound_distant_idle          = monsters\bloodsucker\idle_
 distant_idle_sound_delay    = 80000
-distant_idle_sound_range    = 100.0 
+distant_idle_sound_range    = 100.0
 min_view_distance           = 0.8
-max_view_distance           = 1.0
-visibility_threshold        = 100.0
-always_visible_distance     = 0.3
+max_view_distance           = 1.8
+visibility_threshold        = 10; 100.0
+always_visible_distance     = 5; 0.3
 time_quant                  = 0.001
 decrease_value              = 0.01
 velocity_factor             = 0.5
 luminocity_factor           = 1.5
-transparency_threshold      = 0.25
+transparency_threshold      = 0.1
 
 ; jump parameters
 jump_delay                 = 2500;3000
-jump_factor                = 1.5
-jump_ground_trace_range    = 1.0
+jump_factor                = 2
+jump_ground_trace_range    = 1.5
 jump_hit_trace_range       = 2.0
-jump_build_line_distance   = 20.0
-jump_min_distance          = 5.0
-jump_max_distance          = 22.0
-jump_max_angle             = 0.5
+jump_build_line_distance   = 18.0
+jump_min_distance          = 0.1
+jump_max_distance          = 16.0
+jump_max_angle             = 0.55
 DamagedThreshold           = 0.3
 material                   = creatures\medium
 DynamicObjectsCount        = 32
@@ -245,10 +243,10 @@ Friend_Community_Overrides = monolith, zombied, stranger
 
 [m_Chimera_damage]
 ;bone_name       = <hit_scale>,-1,<wound_scale>
-;<hit_scale>    - коэфф. изменения хита (уменьшения здоровья) 
+;<hit_scale>    - коэфф. изменения хита (уменьшения здоровья)
 ;<wound_scale>  - коэфф. изменения величины открытой раны
 
-default       = 0.4,    -1, 1.00
+default       = 0.4, -1, 1.00
 ;bip01_pelvis = 0.1, -1, 0.005
 ;bip01_spine  = 0.1, -1, 0.005
 ;bip01_spine1 = 0.1, -1, 0.005
@@ -309,7 +307,7 @@ fire_wound_immunity    = 0.25
 
 ;---------------------------------------amk electro------------------
 [electro_chimera]:chimera_strong
-;bones_particles                  = electro_chimera_particles
+;bones_particles                 = electro_chimera_particles
 immunities_sect                  = electro_chimera_immunities
 visual                           = monsters\chimera\chimera
 corpse_visual                    = monsters\chimera\chimera
