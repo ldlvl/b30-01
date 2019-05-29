@@ -1825,8 +1825,11 @@ function have_gar_dram_novice_mutant_hand()
 end
 
 function greens_have_kolbasa()
-    local id = ( nlc_vars.greens_kolbasa or 0 )
-    if id <= 5 then return true end
+    local day      = timers.Get_Game_Days() or 1
+    local kolb_max = dsh.get_fixed_random( "sak_dialog.greens_have_kolbasa", day, 2, 5 )
+    local id       = ( nlc_vars.greens_kolbasa or 0 )
+    wprintf( "@-------------------  [ %s.script ] DAY: %s   KOLB_MAX: %s  -----------------@", script_name(), day, kolb_max )
+    if id <= kolb_max then return true end
     return false
 end
 
