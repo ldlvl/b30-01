@@ -696,6 +696,15 @@ function generic_object_binder:hit_callback( obj, amount, local_direction, who, 
             "hit_callback", obj, amount, local_direction, who, bone_index
         )
     end
+    -----------------  Добавление зрячести мобу при выстреле по нему   ---------------
+    ----------------- и попытка назначить ГГ его врагом по рецепту dsh ---------------
+    if obj:alive() then
+        local chk_dist = obj:position():distance_to( who:position() )
+        if chk_dist > obj:range() then
+            obj:set_range( chk_dist * 1.1 )
+        end
+        obj:make_object_visible_somewhen( who )
+    end
     ----------------- Убиваем гиганта из РПГ ---------------
     if
         string.find( obj:section(), "gigant", 1, true )
@@ -710,7 +719,11 @@ function generic_object_binder:hit_callback( obj, amount, local_direction, who, 
         end
     end
     ------------------- ХЕДШОТ КРОВОСОСУ? ------------------
-    if bone_index == 14 and string.find( obj:section(), "bloodsucker", 1, true ) then
+    if
+        bone_index == 14
+        and string.find( obj:section(), "bloodsucker", 1, true )
+        and lua_random() < 0.6
+    then
         local c_wpn = db.actor:active_item():clsid()
         if c_wpn ~= WP_WALTH and c_wpn ~= WP_PM and c_wpn ~= WP_USP45 then
             local h     = hit()
