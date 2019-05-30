@@ -1481,17 +1481,19 @@ function fuckup_gg_batteries( flag_all )
                 if flag_all then
                     misc.release_obj( ids[ m ] )
                 else
-                    if lua_random() > 0.83 then misc.release_obj( ids[ m ] ) end
+                    if lua_random() > 0.83 then
+                        misc.release_obj( ids[ m ] )
+                        sak.send_tip(
+                            "Кое-каким батарейкам кирдык, придётся выбросить.", "Ее..понский городовой...",
+                            5, 15, "g_g", "sak", "red"
+                        )
+                        return
+                    end
                 end
             end
             if flag_all then
                 sak.send_tip(
                     "Батарейкам кирдык, придётся выбросить.", "Ее..понский городовой...",
-                    5, 15, "g_g", "sak", "red"
-                )
-            else
-                sak.send_tip(
-                    "Кое-каким батарейкам кирдык, придётся выбросить.", "Ее..понский городовой...",
                     5, 15, "g_g", "sak", "red"
                 )
             end
