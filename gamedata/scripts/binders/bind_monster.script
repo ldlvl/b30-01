@@ -182,15 +182,17 @@ function generic_object_binder:update( delta )
             and posit:distance_to( enemy:position() ) < 13       -- было 3м
             and sfobj:see( enemy )
         then
-            charge_tushkano( sfobj )                                        -- разряд, как от электротушканчика
-            test.fuckup_gg_batteries()                                      -- уничтожение батареек в рюкзаке
-            if lua_random() <= 0.03 then                                    -- шанс поломки ПДА при каждом разряде
-                if not (                                                    -- если нет "изолятора" на поясе
-                    sak.arts_operate == true
-                    and sak_inventory.belt_items[ "af_dummy_dummy_new" ]
-                ) then
-                    if not actor:has_info( "pda_will_be_broken" ) then
-                        actor:give_info_portion( "pda_will_be_broken" )
+            if not strposx( sfobj:section(), "flame" ) then
+                charge_tushkano( sfobj )                                        -- разряд, как от электротушканчика
+                test.fuckup_gg_batteries()                                      -- уничтожение батареек в рюкзаке
+                if lua_random() <= 0.03 then                                    -- шанс поломки ПДА при каждом разряде
+                    if not (                                                    -- если нет "изолятора" на поясе
+                        sak.arts_operate == true
+                        and sak_inventory.belt_items[ "af_dummy_dummy_new" ]
+                    ) then
+                        if not actor:has_info( "pda_will_be_broken" ) then
+                            actor:give_info_portion( "pda_will_be_broken" )
+                        end
                     end
                 end
             end
