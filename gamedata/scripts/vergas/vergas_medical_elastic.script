@@ -191,7 +191,7 @@ end
 function use_antirad()
     if db.actor:object( "antirad" ) ~= nil then
         db.actor:eat( db.actor:object( "antirad" ) )
-        test.add_rad_disease()
+        --test.add_rad_disease()
         --timers.start_timer("antirad_timer",4,"vergas_medical_elastic.end_antirad_timer()")
     else
         sak.send_tip( "А ведь нету антирада", "Тудыть твою железа мать!", 1, 10, "g_g", "sak", "red" )

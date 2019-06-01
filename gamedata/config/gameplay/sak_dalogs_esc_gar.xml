@@ -12222,6 +12222,38 @@
 	</phrase_list>
 </dialog>
 
+
+<dialog id="doctor_rad_disease_dialog">
+<precondition>dialogs.is_not_wounded</precondition>
+<precondition>test.rad_disease_check</precondition>
+<precondition>test.rad_disease_doc_not_healed</precondition>
+	<phrase_list>
+		<phrase id="0">
+			<text>doctor_rad_disease_dialog_0</text> <!-- Заболел доктор, что за фигня -->
+			<next>1</next>
+		</phrase>
+		<phrase id="1"> <!-- не жри антирады, водка выводит тоже, научные аптеки, борян -->
+			<text>doctor_rad_disease_dialog_1</text> 
+			<next>2</next>
+		</phrase>
+		<phrase id="2">
+			<text>doctor_rad_disease_dialog_2</text> <!-- а как же дальше быть -->
+			<next>3</next>
+		</phrase>
+		<phrase id="3">
+			<text>doctor_rad_disease_dialog_3</text>  <!-- вот у меня настойка для таких случаев, немгного осталось, выпей -->
+			<action>test.rad_disease_boryan_heal</action>
+			<action>test.rad_disease_doc_heal</action>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>doctor_rad_disease_dialog_4</text> <!-- Понял, спасибо ещё раз -->
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
+
+
 <dialog id="esc_vlad_start_dialog">
 <precondition>dialogs.is_not_wounded</precondition>
 	<phrase_list>
