@@ -204,8 +204,7 @@ function generic_object_binder:update( delta )
         if npc and npc:id() == actor:id() then
             if sfobj:see( npc ) then
                 if
-                    sak.arts_operate == true
-                    and sak_inventory.belt_items[ "af_dummy_fire" ]
+                    art_is_active( "af_dummy_fire" )
                     and dist_to_actor < bconf.dog_dist_panic
                 then
                     sfobj:set_custom_panic_threshold( 1 )
@@ -215,7 +214,7 @@ function generic_object_binder:update( delta )
             end
         end
     end
-    -----------------------------  Балончик от крова  ------------------------------
+    -----------------------------  Баллончик от крова  ------------------------------
     if classid == CLID_BLOODSUCKER and sfobj:alive() and sfobj.health > 0.05 then
         local npc           = sfobj:get_enemy()
         local active_baloon = baloon_on_belt()
@@ -239,6 +238,15 @@ function generic_object_binder:update( delta )
     if classid == CLID_PSEUDODOG and sfobj:alive() and sfobj.health > 0.05 then
         local npc = sfobj:get_enemy()
         if npc and npc:id() == actor:id() then
+            -- пусть пузырёк пугает и псевдособак тоже
+            if
+                art_is_active( "af_dummy_fire" )
+                and dist_to_actor < bconf.dog_dist_panic
+            then
+                sfobj:set_custom_panic_threshold( 1 )
+            else
+                sfobj:set_custom_panic_threshold( 0.1 )
+            end
             -- вероятность сбивания прицела 40%, в случае если ГГ целит конкретно в эту собаку
             if
                 sfobj:see( npc )
@@ -272,7 +280,7 @@ function generic_object_binder:update( delta )
                     h.type      = hit.telepatic
                     h:bone( "bip01_spine" )
                     h.direction = vector():set( 0, 0, 0 )
-                    h.power     = ( 0.03 + 0.01 * sak.dog_psy ) * mask_k
+                    h.power     = ( 0.015 + 0.01 * sak.dog_psy ) * mask_k
                     if nlc_vars.vodka_psi_block then h.power = h.power * 0.5 end -- если бахнул водки, то половина пси-удара
                     h.impulse   = 0.0
                     actor:hit( h )
@@ -468,17 +476,18 @@ function generic_object_binder:update( delta )
         end
         -----------------------------  КОТЕЙКО  -------------------------------
         if classid == CLID_CAT and sfobj:alive() and sfobj.health > 0.05 then
-            local npc = sfobj:get_enemy()
+            local npc    = sfobj:get_enemy()
+            local prot_k = 1
             if npc and npc:id() == actor:id() then
-                if sfobj:see( npc ) then 
-                    if lua_random() < bconf.cat_attack_prob + ( 0.05 * game_difficulty ) then
+                if sfobj:see( npc ) then
+                    if art_is_active( "af_medus_new" ) then prot_k = 2 end
+                    if lua_random() * prot_k < bconf.cat_attack_prob + ( 0.05 * game_difficulty ) then
                         level.add_pp_effector( "black_cats.ppe", 2015, false )
                         sleep_manager.zevota()
                         if
-                            sak.arts_operate == true
-                            and sak_inventory.belt_items[ "af_medus_new" ]
+                            art_is_active( "af_medus_new" )
                         then
-                            sleep_manager.add_sleepiness( 7 )
+                            sleep_manager.add_sleepiness( 6 )
                             arc_arts.discharge_art_on_belt( "af_medus_new", 0.005 )
                         else
                             sleep_manager.add_sleepiness( 17 )
@@ -560,12 +569,9 @@ function generic_object_binder:update( delta )
             if npc and npc:id() == actor:id() then
                 if sfobj:see( npc ) and dist_to_actor < ch_dist and lua_random() < ch_chns then
                     if
-                        sak.arts_operate == true
-                        and sak_inventory.belt_items[ "af_star_new" ]
-                        --and lua_random() < 0.66
+                        art_is_active( "af_star_new" )
                     then
                         arc_arts.discharge_art_on_belt( "af_star_new", 0.005 )
-                        --sak.send_tip( "Сработало.", "Тест", 11, 20, nil, "news", "green" )
                     else
                         local snd_obj
                         local sound = "monsters\\chimera\\attack_2"
@@ -950,5 +956,15 @@ end
 function actor_in_monolith_outfit()
     local armor = db.actor:item_in_slot( 6 )
     if armor and strposx( armor:section(), "monolit" ) then return true end
+    return false
+end
+
+function art_is_active( art )
+    if
+        sak.arts_operate == true
+        and sak_inventory.belt_items[ art ]
+    then
+        return true
+    end
     return false
 end
