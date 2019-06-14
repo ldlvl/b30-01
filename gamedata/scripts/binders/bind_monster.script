@@ -166,7 +166,7 @@ function generic_object_binder:update( delta )
                 local h     = hit()
                 h.type      = hit.chemical_burn
                 h.direction = vector():set( 0, 0, 0 )
-                h.power     = 0.03 + ( 0.015 * game_difficulty )
+                h.power     = 0.03 + ( 0.012 * game_difficulty )
                 h.impulse   = 0
                 h.draftsman = enemy
                 enemy:hit( h )
@@ -179,7 +179,7 @@ function generic_object_binder:update( delta )
         local enemy = sfobj:best_enemy()
         if
             enemy
-            and posit:distance_to( enemy:position() ) < 13       -- было 3м
+            and posit:distance_to( enemy:position() ) < 12       -- было 3м
             and sfobj:see( enemy )
         then
             if not strposx( sfobj:section(), "flame" ) then
@@ -281,7 +281,7 @@ function generic_object_binder:update( delta )
                     h:bone( "bip01_spine" )
                     h.direction = vector():set( 0, 0, 0 )
                     h.power     = ( 0.015 + 0.01 * sak.dog_psy ) * mask_k
-                    if nlc_vars.vodka_psi_block then h.power = h.power * 0.5 end -- если бахнул водки, то половина пси-удара
+                    if nlc_vars.vodka_psi_block then h.power = h.power * 0.3 end -- если бахнул водки, то половина пси-удара
                     h.impulse   = 0.0
                     actor:hit( h )
                     xr_sound.get_safe_sound_object(
@@ -291,9 +291,9 @@ function generic_object_binder:update( delta )
                     if not string.find( sfobj:section(), "_weak", 1, true ) then
                         panic_item_drop( 0.12 )
                     end
-                    DogTimer = time_global() + 2500 * ( 1 + math.random( -0.2, 0.2 ) ) + 700
+                    DogTimer = time_global() + 2700 * ( 1 + math.random( -0.2, 0.2 ) ) + 700
                 end
-            elseif DogNum and DogTimer < time_global() + 2500 then
+            elseif DogNum and DogTimer < time_global() + 2700 then
                 level.remove_pp_effector( 395 )
                 DogNum = nil
             end
@@ -314,7 +314,7 @@ function generic_object_binder:update( delta )
         end
         local v1, v2   = sfobj:direction(), actor:direction()
         local bur_chns = 0.433
-        if nlc_vars.vodka_psi_block then bur_chns = bur_chns * 0.5 end  -- если бахнул водки, то половина шанса
+        if nlc_vars.vodka_psi_block then bur_chns = bur_chns * 0.3 end  -- если бахнул водки, то половина шанса
         if ( v1.x * v2.x ) + ( v1.z * v2.z ) < -0.6 then
             if lua_random() < bur_chns then actor.power = -1.0 end
             panic_item_drop( bur_chns )
@@ -332,7 +332,7 @@ function generic_object_binder:update( delta )
                 sak.snd_rand_geiger( snd_rand )
                 local h     = hit()
                 h.type      = hit.radiation
-                h.power     = 0.0005 + ( 0.0002 * game_difficulty ) + 0.008 * ( sak.dog_psy )
+                h.power     = 0.0003 + ( 0.0002 * game_difficulty ) + 0.008 * ( sak.dog_psy )
                 h.impulse   = 0.0
                 h:bone( "bip_none" )
                 h.draftsman = sfobj
@@ -363,8 +363,9 @@ function generic_object_binder:update( delta )
                 sak.snd_rand_geiger( snd_rand )
                 local h     = hit()
                 h.type      = hit.radiation
-                h.power     = 0.003 + ( 0.003 * game_difficulty ) + 0.008 * ( sak.dog_psy )
+                h.power     = 0.002 + ( 0.003 * game_difficulty ) + 0.008 * ( sak.dog_psy )
                 h.impulse   = 0.0
+                h:bone( "bip_none" )
                 h.draftsman = sfobj
                 h.direction = sfobj:direction()
                 actor:hit( h )
@@ -407,7 +408,7 @@ function generic_object_binder:update( delta )
                         local h     = hit()
                         h.type      = hit.telepatic
                         h.power     = ( 0.01 + 0.014 * sak.dog_psy ) * mask_k
-                        if nlc_vars.vodka_psi_block then h.power = h.power * 0.5 end  -- от водки половина пси
+                        if nlc_vars.vodka_psi_block then h.power = h.power * 0.3 end  -- от водки половина пси
                         h.impulse   = 0.0
                         h:bone( "bip01_spine" )
                         h.draftsman = sfobj
@@ -476,12 +477,19 @@ function generic_object_binder:update( delta )
         end
         -----------------------------  КОТЕЙКО  -------------------------------
         if classid == CLID_CAT and sfobj:alive() and sfobj.health > 0.05 then
-            local npc    = sfobj:get_enemy()
-            local prot_k = 1
+            local npc      = sfobj:get_enemy()
+            local prot_k   = 1
+            local cat_dist = 25
             if npc and npc:id() == actor:id() then
+                if art_is_active( "af_medus_new" ) then
+                    prot_k   = 2
+                    cat_dist = 15
+                end
                 if sfobj:see( npc ) then
-                    if art_is_active( "af_medus_new" ) then prot_k = 2 end
-                    if lua_random() * prot_k < bconf.cat_attack_prob + ( 0.05 * game_difficulty ) then
+                    if
+                        ( lua_random() * prot_k < bconf.cat_attack_prob + ( 0.05 * game_difficulty ) )
+                        and dist_to_actor < cat_dist
+                    then
                         level.add_pp_effector( "black_cats.ppe", 2015, false )
                         sleep_manager.zevota()
                         if
@@ -518,7 +526,7 @@ function generic_object_binder:update( delta )
                     if sak.arts_operate == true then
                         if sak_inventory.belt_items[ "af_flower_new" ] then
                             if db.actor.satiety < 0.2 then
-                                actor_params.cond_prop( "satiety", 0.2 )
+                                --actor_params.cond_prop( "satiety", 0.2 )
                                 arc_arts.discharge_art_on_belt( "af_flower_new", 0.001 )
                             end
                         else
@@ -532,7 +540,7 @@ function generic_object_binder:update( delta )
         ---------------------------  КРОВОСОС  -----------------------------
         if classid == CLID_BLOODSUCKER and sfobj:alive() and sfobj.health > 0.05 then
             local npc  = sfobj:get_enemy()
-            local chns = 0.5
+            local chns = 0.40
             if actor_in_monolith_outfit() then chns = chns / 2 end
             if npc and npc:id() == actor:id() then
                 if

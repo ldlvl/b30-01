@@ -1873,7 +1873,7 @@
 		<phrase id="307">
 			<text>escape_trader_new_start_dialog_307</text>
 			<give_info>kvest_art_started</give_info>
-			<action>test.spawn_star</action>
+			<!-- <action>test.spawn_star</action> -->
 			<next>3081</next>
 			<next>3082</next>
 		</phrase>
@@ -8166,7 +8166,7 @@
 			<next>111</next>
 		</phrase>
 		<phrase id="1">
-		<precondition>test.isBarterAvailable(75,3)</precondition>
+		<precondition>test.isBarterAvailable(65,3)</precondition>
 		<dont_has_info>capsule_not_ready</dont_has_info>
 			<text>sidor_capsule_have_dialog_1</text>
 			<action>sak_dialog.text_money_sidor_capsule_dialog</action>
@@ -8179,7 +8179,7 @@
 			<text>sidor_capsule_have_dialog_11</text>
 		</phrase>
 		<phrase id="111">
-		<precondition>test.noBarterAvailable(75,3)</precondition>
+		<precondition>test.noBarterAvailable(65,3)</precondition>
 			<text>sidor_capsule_have_dialog_111</text>
 			<next>1111</next>
 		</phrase>
@@ -10346,6 +10346,7 @@
 		</phrase>
 		<phrase id="51">
 			<text>esc_container_dialog_53</text>
+			<action>test.spawn_star</action>
 			<give_info>neumeha_container</give_info>
 			<next>6</next>
 		</phrase>

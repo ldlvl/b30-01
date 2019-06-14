@@ -5042,11 +5042,10 @@ reward_item5 		= ammo_5.45x39_ap, 8, af_gravi_dyn5d
 idle_time 			= 15
 time 				= 72
 
-;--выключен
 [prapor_courier_1];--Отнести артефакт Сидоровичу
 type 				= courier
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(5) +agroprom_military_case_done !is_holiday_sidor_soon()+sak_no_need}
+condlist 			= {=task_day_time(3) =task_time(5) +agroprom_military_case_done !is_holiday_sidor_soon()}
 text 				= prapor_courier_1_text
 description 		= prapor_courier_1_descr
 parent 				= prapor
@@ -5061,18 +5060,18 @@ reward_money5 		= 12000
 reward_reputation 	= +5
 reward_rank 		= 3
 character 			= dolg, 25
-reward_item1 		= medkit, 3, bandage, 5, repair_item_weapon_feik, 2
-reward_item2 		= medkit, 3, bandage, 5, repair_itemoutfit_feik, 2
-reward_item3 		= medkit, 3, bandage, 5, matches, 4, vodka, 2
+reward_item1 		= repair_item_weapon_feik, 5
+reward_item2 		= repair_itemoutfit_feik, 5
+reward_item3 		= medkit, 3, vodka, 6
 reward_item4 		= medkit, 3, bandage, 5, antirad, 2, matches, 2
 reward_item5 		= medkit, 3, bandage, 5, antirad, 2, matches, 2
 idle_time 			= 15
 time 				= 24
-;--выключен
+
 [prapor_courier_2];--Отнести части монстров на Болота
 type 				= courier
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(1) +bar_x18_documents_know +sak_no_need}
+condlist 			= {=task_day_time(1) =task_time(1) +bar_x18_documents_know}
 text 				= prapor_courier_2_text
 description 		= prapor_courier_2_descr
 parent 				= prapor
@@ -5087,18 +5086,18 @@ reward_money5 		= 14000
 reward_reputation 	= +5
 reward_rank 		= 3
 character 			= dolg, 25
-reward_item1 		= medkit_scientic, 2, antirad, 3, matches, 4 
-reward_item2 		= medkit_army, 4, antirad, 2, conserva, 2
-reward_item3 		= medkit_army, 4, antirad, 2, batt_torch, 2
+reward_item1 		= medkit_scientic, 4
+reward_item2 		= medkit_scientic, 3
+reward_item3 		= medkit_scientic, 3
 reward_item4 		= medkit_scientic, 2, antirad, 3
 reward_item5 		= medkit_scientic, 2, antirad, 3 
 idle_time 			= 15
 time 				= 36
-;--выключен
+
 [prapor_courier_3];--Отнести части монстров В Кишку
 type 				= courier
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(2) +agroprom_military_case_done +sak_no_need}
+condlist 			= {=task_day_time(2) =task_time(2) +agroprom_military_case_done}
 text 				= prapor_courier_3_text
 description 		= prapor_courier_3_descr
 parent 				= prapor
@@ -5113,13 +5112,14 @@ reward_money5 		= 13000
 reward_reputation 	= +5
 reward_rank 		= 3
 character 			= dolg, 25
-reward_item1 		= mutant_flesh_shkura, green_kolbasa, 3
-reward_item2 		= mutant_flesh_shkura, green_kolbasa, 4
-reward_item3 		= mutant_flesh_shkura, green_kolbasa, 4
+reward_item1 		= mutant_flesh_shkura, green_kolbasa, 5
+reward_item2 		= mutant_flesh_shkura, green_kolbasa, 6
+reward_item3 		= mutant_flesh_shkura, green_kolbasa, 7
 reward_item4 		= green_kolbasa, 5
 reward_item5 		= green_kolbasa, 5
 idle_time 			= 15
 time 				= 36
+
 ;--выключен
 [prapor_courier_4];--Отнести документы на Янтарь
 type 				= courier

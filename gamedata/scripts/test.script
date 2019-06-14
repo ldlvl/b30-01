@@ -1856,3 +1856,15 @@ function actor_in_skafandr()
         end
     return false
 end
+
+function art_satiety_restore()
+    if
+        sak.arts_operate == true
+        and sak_inventory.belt_items[ "af_flower_new" ]
+    then
+        if db.actor.satiety < 0.2 then
+            actor_params.cond_prop( "satiety", 0.2 )
+            arc_arts.discharge_art_on_belt( "af_flower_new", 0.003 )
+        end
+    end
+end

@@ -368,6 +368,7 @@ function stopper()    -- конец сна, просыпание
     schedule.add("restore_bio", "sleep_manager.end_sleeping()", 300 )
     get_shadow_inv():after_sleep()
     sleep_in_sleeping_bag = 1
+    sak_dialog.start_time( "start_antichit_time" )
 end
 
 sleep_manager.stopper = stopper

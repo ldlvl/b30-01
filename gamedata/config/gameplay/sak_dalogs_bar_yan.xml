@@ -1349,6 +1349,8 @@
 			<text>bar_korovan_done_dialog_211</text>
 			<action>sak_inventory.release_actor_items("weapon_box",1)</action>
 			<next>311</next>
+			<next>312</next>
+			<next>313</next>
 			<next>31</next>
 		</phrase>
 
@@ -1361,10 +1363,29 @@
 		</phrase>
 
 		<phrase id="311">
+			<precondition>sak_dialog.rand_game_1</precondition>
 			<dont_has_info>val_borov_dead</dont_has_info>
 			<text>bar_korovan_done_dialog_311</text>
 			<give_info>bar_korovan_done</give_info>
 			<action>test.add_to_actor("af_eye_dyn5d",1)</action>
+			<next>4</next>
+		</phrase>
+
+		<phrase id="312">
+			<precondition>sak_dialog.rand_game_2</precondition>
+			<dont_has_info>val_borov_dead</dont_has_info>
+			<text>bar_korovan_done_dialog_311</text>
+			<give_info>bar_korovan_done</give_info>
+			<action>test.add_to_actor("af_eye_dyn5d",1)</action>
+			<next>4</next>
+		</phrase>
+
+		<phrase id="313">
+			<precondition>sak_dialog.rand_game_3</precondition>
+			<dont_has_info>val_borov_dead</dont_has_info>
+			<text>bar_korovan_done_dialog_313</text>
+			<give_info>bar_korovan_done</give_info>
+			<action>test.add_to_actor("wpn_addon_1p78",1)</action>
 			<next>4</next>
 		</phrase>
 
@@ -7410,7 +7431,7 @@
 			<next>111</next>
 		</phrase>
 		<phrase id="1">
-		<precondition>test.isBarterAvailable(78,6)</precondition>
+		<precondition>test.isBarterAvailable(67,6)</precondition>
 		<dont_has_info>barman_capsule_not_ready</dont_has_info>
 			<text>barman_capsule_have_dialog_1</text>
 			<action>sak_dialog.text_money_barmen_capsule_dialog</action>
@@ -7423,7 +7444,7 @@
 			<text>barman_capsule_have_dialog_11</text>
 		</phrase>
 		<phrase id="111">
-		<precondition>test.noBarterAvailable(78,6)</precondition>
+		<precondition>test.noBarterAvailable(67,6)</precondition>
 			<text>sidor_capsule_have_dialog_111</text>
 			<next>1111</next>
 		</phrase>
@@ -9696,15 +9717,31 @@
 	<precondition>dialogs.is_not_wounded</precondition>
 	<precondition>sak_dialog.charge_pda_have</precondition>
 	<phrase_list>
+
 		<phrase id="0">
 			<text>saharov_charge_pda_0</text>
 			<next>100</next>
+			<next>900</next>
 		</phrase>
+
 		<phrase id="100">
+			<precondition>test.isBarterAvailable(65,3)</precondition>
 			<text>saharov_charge_pda_100</text>
 			<next>101</next>
 			<next>22</next>
 		</phrase>
+
+		<phrase id="900">
+			<precondition>test.noBarterAvailable(65,3)</precondition>
+			<text>saharov_charge_pda_13</text>
+			<next>901</next>
+		</phrase>
+
+		<phrase id="901">
+			<text>saharov_charge_pda_133</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+
 		<phrase id="101">
 			<text>saharov_charge_pda_101</text>
 			<action>sak_dialog.give_saharov_uncharge_pda</action>

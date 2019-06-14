@@ -724,7 +724,7 @@ function actor_on_marsh()             return level.name() == "marsh" end
 function actor_not_on_marsh()         return not actor_on_marsh() end
 function podsumok_have()              return sak.have_items_count( "podsumok", 1 ) end
 function podsumok_not_have()          return not podsumok_have() end
-function have_razgruzka()             return sak.have_items_count( "razgruzka", 1 ) ~= false end
+function have_razgruzka()             return sak.have_items_count( "razgruzka", 1 ) end
 function not_have_razgruzka()         return not have_razgruzka() end
 
 function actor_on_bar()
