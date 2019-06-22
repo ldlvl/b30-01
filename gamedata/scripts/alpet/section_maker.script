@@ -1,122 +1,115 @@
 local black_list = {}
 
-function inherite_add(ini, name, from)
- local src = ini[from]
- if src then                   
-    src.auto_type = true
-    local new = ini:add_section(name)
-    local cnt = new:sync_items(src)
-    return new, src, cnt
- else
-    return false, nil, 0
- end
-end
-
-function dump_section(sc)
-  for i = 0, (sc.lines_count or 0) - 1 do
-    local r, k, v = sc:r_line(i)    
-    wprintf(" ~C0F %-35s~C0B =~C0E %s~C07", k or 'nil', v or 'nil')
-  end  
-end
-
-
-function _G.create_ini_section(ini, name)
- if not name then
-    wprintf("[~T].~C0C #FATAL:~C07 create_ini_section name == nil ")
-    return false
- end
-
- local path_file = SplitStr(ini.file_name or 'nil', "\\")    
- local qf_name = path_file[#path_file]..':'..name
- qf_name = qf_name:gsub(".ltx", "")
- if black_list[qf_name] then return false end 
- 
- if name:sub(1, 4) == "wpn_" and name:sub(-7) == "_wscope" then 
-    local parent = name:sub(1, name:len() - 7)
-    wprintf(" trying construct section~C0F %s~C07 from~C0E %s~C07", name, src)
-    local new, src, cnt = inherite_add(ini, name, parent)
-    if new and src and cnt > 0 then
-       new.scope_status = '2'
-       wprintf(" lines =~C0D %d~C07, old section scope status =~C0F %s~C07, new =~C0E %s ~C07", cnt, src.scope_status or 'nil', new.scope_status or 'nil') 
-    end                    
-    return new          
- end
-  
- if strpos(name, "wpn_q_") then
-    local parent = name:gsub('_q_', '_')
-    local new, src, cnt = inherite_add(ini, name, parent)
-    if new and src and cnt > 0 then
-       new.condition_shot_dec = (src.condition_shot_dec or 0) / 5
-       -- wprintf("[~T]. #SECTION_MAKER: создан укрепленный ствол~C0F %s~C07", name)
-    end      
-    return new  
- end
- if name == "wpn_g36_old" then -- error fix temporary!
-    local new, src, cnt = inherite_add(ini, name, "wpn_g36")
-    if new and src and cnt > 0 then
-       new.fire_dispersion_base = 0.33
-       new.cost = 15000
-       new.rpm  = 700 
-       return new
-    end
- end                 
- 
- if strpos(name, "_q_") then
-    local parent = name:gsub('_q_', '_')
-    local src = ini[parent] 
-    if src and tonumber(src.slot or 0) == 6 then -- outfit detected
-       local new, src, cnt = inherite_add(ini, name, parent)
-       if strposx ( name, "exo" ) then
-        new.icon_group = 6
-        new.additional_inventory_weight   = 70
-        new.additional_inventory_weight2  = 70
-       else
-        new.immunity_coef   = 0.25
-        new.protection_coef = 1.2
-        new.additional_inventory_weight   = math.floor((src.additional_inventory_weight or 0) * 1.35)
-        new.additional_inventory_weight2  = math.floor((src.additional_inventory_weight2 or 0) * 1.35)     
-        new.inv_weight                    = math.floor( src.inv_weight * 105 ) * 0.01   
-       -- wprintf("[~T]. #SECTION_MAKER: создан укрепленный костюм~C0F %s~C07, config lines =~C0D %d~C07", name, cnt )
-       -- dump_section(new)
-       end
-       black_list[name] = false       
-       return new
+function inherite_add( ini, name, from )
+    local src = ini[ from ]
+    if src then
+        src.auto_type = true
+        local new = ini:add_section( name )
+        local cnt = new:sync_items( src )
+        return new, src, cnt
     else
-       wprintf("[~T].~C0C #WARN:~C07 для создания костюма не найден базовый прототип ~C0A %s~C07", parent)
-    end              
- end 
- if strpos(name, "^af_") and strpos(name, "_capsule")then  
-  local parent = name:gsub("_capsule", "")
-  if ini[parent] then
-    local new, src, cnt = inherite_add(ini, name, "capsule")
-    if new and src and cnt > 0 then
-       wprintf("[~T]. #SECTION_MAKER: создана капсула артефакта~C0F %s~C07", name)
-       new.hit_absorbation_sect = "absorbation_fake"
-       return new
+        return false, nil, 0
     end
-  else
-    wprintf("[~T].~C0C #WARN:~C07 для создания капсулы не найден базовый артефакт~C0A %s~C07", parent)  
-  end 
- end 
- 
- 
- -- if not strposx(qf_name, "script_sound:") then
- --    wprintf("[~T].~C0C #WARN:~C0F section_maker.script black listed section~C0A %s~C07", qf_name)
- -- end   
- black_list[qf_name] = true                                                     
- -- wprintf("[~T].~C0C #WARN:~C07 cannot handle section name~C0F %s~C07", name)
- return false
 end
 
+function dump_section( sc )
+    for i = 0, ( sc.lines_count or 0 ) - 1 do
+    local r, k, v = sc:r_line( i )
+    wprintf( " ~C0F %-35s~C0B =~C0E %s~C07", k or 'nil', v or 'nil' )
+    end
+end
+
+function _G.create_ini_section( ini, name )
+    if not name then
+        wprintf( "[~T].~C0C #FATAL:~C07 create_ini_section name == nil " )
+        return false
+    end
+    local path_file = SplitStr( ini.file_name or 'nil', "\\" )
+    local qf_name   = path_file[ #path_file ] .. ':' .. name
+    qf_name = qf_name:gsub( ".ltx", "" )
+    if black_list[ qf_name ] then return false end
+    if name:sub( 1, 4 ) == "wpn_" and name:sub( -7 ) == "_wscope" then
+        local parent = name:sub( 1, name:len() - 7 )
+        wprintf( " trying construct section~C0F %s~C07 from~C0E %s~C07", name, src )
+        local new, src, cnt = inherite_add( ini, name, parent )
+        if new and src and cnt > 0 then
+            new.scope_status = '2'
+            wprintf(
+                " lines =~C0D %d~C07, old section scope status =~C0F %s~C07, new =~C0E %s ~C07",
+                cnt, src.scope_status or 'nil', new.scope_status or 'nil'
+            )
+        end
+        return new
+    end
+    if strpos( name, "wpn_q_" ) then
+        local parent        = name:gsub( '_q_', '_' )
+        local new, src, cnt = inherite_add( ini, name, parent )
+        if new and src and cnt > 0 then
+            new.condition_shot_dec = ( src.condition_shot_dec or 0 ) / 5
+            -- wprintf("[~T]. #SECTION_MAKER: создан укрепленный ствол~C0F %s~C07", name)
+        end
+        return new
+    end
+    if name == "wpn_g36_old" then -- error fix temporary!
+        local new, src, cnt = inherite_add( ini, name, "wpn_g36" )
+        if new and src and cnt > 0 then
+            new.fire_dispersion_base = 0.33
+            new.cost = 15000
+            new.rpm  = 700
+            return new
+        end
+    end
+    if strpos( name, "_q_" ) then
+        local parent = name:gsub( '_q_', '_' )
+        local src    = ini[ parent ]
+        if src and tonumber( src.slot or 0 ) == 6 then -- outfit detected
+            local new, src, cnt = inherite_add( ini, name, parent )
+            if strposx( name, "exo" ) then
+                new.icon_group                    = 6
+                new.additional_inventory_weight   = 70
+                new.additional_inventory_weight2  = 70
+            else
+                new.immunity_coef                 = 0.25
+                new.protection_coef               = 1.2
+                new.additional_inventory_weight   = math.floor( ( src.additional_inventory_weight or 0 ) * 1.35 )
+                new.additional_inventory_weight2  = math.floor( ( src.additional_inventory_weight2 or 0 ) * 1.35 )
+                new.inv_weight                    = math.floor( src.inv_weight * 105 ) * 0.01
+                -- wprintf("[~T]. #SECTION_MAKER: создан укрепленный костюм~C0F %s~C07, config lines =~C0D %d~C07", name, cnt )
+                -- dump_section(new)
+            end
+            black_list[ name ] = false
+            return new
+        else
+            wprintf( "[~T].~C0C #WARN:~C07 для создания костюма не найден базовый прототип ~C0A %s~C07", parent )
+        end
+    end
+    if strpos( name, "^af_" ) and strpos( name, "_capsule" ) then
+        local parent = name:gsub( "_capsule", "" )
+        if ini[ parent ] then
+            local new, src, cnt = inherite_add( ini, name, "capsule" )
+            if new and src and cnt > 0 then
+                wprintf( "[~T]. #SECTION_MAKER: создана капсула артефакта~C0F %s~C07", name )
+                new.hit_absorbation_sect = "absorbation_fake"
+                return new
+            end
+        else
+            wprintf( "[~T].~C0C #WARN:~C07 для создания капсулы не найден базовый артефакт~C0A %s~C07", parent )
+        end
+    end
+    -- if not strposx(qf_name, "script_sound:") then
+    --    wprintf("[~T].~C0C #WARN:~C0F section_maker.script black listed section~C0A %s~C07", qf_name)
+    -- end
+    black_list[ qf_name ] = true
+    -- wprintf("[~T].~C0C #WARN:~C07 cannot handle section name~C0F %s~C07", name)
+    return false
+end
 
 function test()
-  local sini = system_ini()
-  
-  local name = "wpn_q_rpg7" 
-  
-  if sini:section_exist(name) then
-     wprintf("~C0A success created!~C07")       
-     c.spawn_obj(name)
-  end
+    local sini = system_ini()
+    local name = "wpn_q_rpg7"
+    if sini:section_exist( name ) then
+        wprintf( "~C0A success created!~C07" )
+        c.spawn_obj( name )
+    end
 end
 

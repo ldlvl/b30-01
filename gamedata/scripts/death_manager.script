@@ -445,6 +445,12 @@ function keep_item( npc, item )
     if
         str_in_tab( section, always_offs_items )
         or strposx( section, "outfit" )
+        or (
+                strposx( section, "wpn_" )
+                and item_id ~= npc:active_item():id()
+                and item_id ~= npc:item_in_slot( 1 ):id()
+                and item_id ~= npc:item_in_slot( 2 ):id()
+            )
     then
         alife():release( alife():object( item:id() ), true )
         return true
@@ -516,6 +522,7 @@ function create_items( npc, section, number, rnd )
                         vergas_pda.add_tbl_pda(
                             npc:id(), obj.id, vergas_pda.set_status_pda()
                         )
+                        test.set_pda_condition( id )
                     end
                 end
             end

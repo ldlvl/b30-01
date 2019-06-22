@@ -1,282 +1,175 @@
---[[ скрипт диалога модификации прицелов оружия (респавн).
+--скрипт диалога модификации прицелов оружия (респавн).
 
---]]
-
-
-function scope_info(wlist, suffix)
- local r = {}
- r.weapons = {}
- for n, wps in ipairs(wlist) do
-  r.weapons[wps] = true
- end -- for inner
- r.suffix  = suffix
- return r
+function scope_info( wlist, suffix )
+    local r   = {}
+    r.weapons = {}
+    for n, wps in ipairs( wlist ) do r.weapons[ wps ] = true end
+    r.suffix  = suffix
+    return r
 end
 
 db.scope_db = {}
-local si = {}
+local si    = {}
 
-local list = { "wpn_abakan", "wpn_ak74m", "wpn_ak74pbn", "wpn_ak74_m1", "wpn_ak74_m2", "wpn_ak104", "wpn_ak107", "wpn_ak108", "wpn_famas_f1", "wpn_fn2000", "wpn_g36c", "wpn_m16a4",  "wpn_mosin", "wpn_pp19", "wpn_bizon", "wpn_rpk74", "wpn_sig550", "wpn_svds", "wpn_ump45", "wpn_val", "wpn_lr300", "wpn_vintorez", "wpn_vintorez_m1", "wpn_svu", "wpn_svd", "wpn_svd_m1", "wpn_saiga12c_m2", "wpn_saiga12c_m1", "wpn_saiga12c", "wpn_groza", "wpn_g36", "wpn_mp153", "wpn_sv98", "wpn_awm", "wpn_m110" }
-db.scope_db.wpn_addon_1pso		= scope_info(list, "_1pso")
-db.scope_db.wpn_addon_cobra		= scope_info(list, "_cobra")
-db.scope_db.wpn_addon_acog		= scope_info(list, "_acog")
-db.scope_db.wpn_addon_eotech	= scope_info(list, "_eotech")
-db.scope_db.wpn_addon_pe		= scope_info(list, "_pe")
-db.scope_db.wpn_addon_po		= scope_info(list, "_po")
-db.scope_db.wpn_addon_g36l		= scope_info(list, "_g36l")
-db.scope_db.wpn_addon_1p78		= scope_info(list, "_1p78")
-db.scope_db.wpn_addon_mt		= scope_info(list, "_mt")
+local list = {
+    "wpn_abakan",
+    "wpn_ak74m",
+    "wpn_ak74pbn",
+    "wpn_ak74_m1",
+    "wpn_ak74_m2",
+    "wpn_ak104",
+    "wpn_ak107",
+    "wpn_ak108",
+    "wpn_famas_f1",
+    "wpn_fn2000",
+    "wpn_g36c",
+    "wpn_m16a4",
+    "wpn_mosin",
+    "wpn_pp19",
+    "wpn_bizon",
+    "wpn_rpk74",
+    "wpn_sig550",
+    "wpn_svds",
+    "wpn_ump45",
+    "wpn_val",
+    "wpn_lr300",
+    "wpn_vintorez",
+    "wpn_vintorez_m1",
+    "wpn_svu",
+    "wpn_svd",
+    "wpn_svd_m1",
+    "wpn_saiga12c_m2",
+    "wpn_saiga12c_m1",
+    "wpn_saiga12c",
+    "wpn_groza",
+    "wpn_g36",
+    "wpn_mp153",
+    "wpn_sv98",
+    "wpn_awm",
+    "wpn_m110"
+}
 
+db.scope_db.wpn_addon_1pso   = scope_info( list, "_1pso"   )
+db.scope_db.wpn_addon_cobra  = scope_info( list, "_cobra"  )
+db.scope_db.wpn_addon_acog   = scope_info( list, "_acog"   )
+db.scope_db.wpn_addon_eotech = scope_info( list, "_eotech" )
+db.scope_db.wpn_addon_pe     = scope_info( list, "_pe"     )
+db.scope_db.wpn_addon_po     = scope_info( list, "_po"     )
+db.scope_db.wpn_addon_g36l   = scope_info( list, "_g36l"   )
+db.scope_db.wpn_addon_1p78   = scope_info( list, "_1p78"   )
+db.scope_db.wpn_addon_mt     = scope_info( list, "_mt"     )
 
-function sync_weapon(id, cond, elps, ammo_s)
+function sync_weapon( id, cond, elps, ammo_s ) end
+
+function wpn_scopes.respawn_weapon( id, section )
+    local wpn = client_obj( id )
+    if wpn == nil then return end
+    local obj = wpn:get_weapon()
+    if obj == nil then return end
+    local cond = wpn:condition()
+    local elps = obj.ammo_elapsed
+    wprintf(
+        " old weapon have condition =~C0D %.7f~C07, ammo elapsed =~C0D %d~C07",
+        cond, elps
+    )
+    wpn:set_section( section )
 end
 
-
-function wpn_scopes.respawn_weapon(id, section)
- local wpn = client_obj(id)
- if wpn == nil then return end
- local obj = wpn:get_weapon()
- if obj == nil then return end
- local cond = wpn:condition()
- local elps = obj.ammo_elapsed
- wprintf(" old weapon have condition =~C0D %.7f~C07, ammo elapsed =~C0D %d~C07", cond, elps)
- wpn:set_section(section)
-
- -- misc.release_obj(id, "respawn_weapon", true)
- --[[
- local alt = misc.spawn_to(section, wpn:parent())
- if alt and alt.id then
-    misc.process_spawn()
-    sync_weapon(alt.id, cond, elps) -- задать кондицию и кол-во заряженных патронов
- end
- --]]
-end
-
-
-function _G.on_scope_attach(wpn, sname)
- wprintf("[~T].~C0E #DBG: on_scope_attach executed, wpn =~C0A %s~C07, sname =~C0F %s~C07", DumpVar(wpn), sname)
- if wpn and wpn.section then else return end
- local sc = wpn:section()
- local sini = system_ini()
-
- -- misc.dump_table(db.scope_db)
-
- local si = db.scope_db[sname]
-
- if si and si.weapons[sc] then
-    local rep = sc..si.suffix
-    wprintf("[~T].~C0F #DBG: accepted scope~C0E %s~C0F for weapon~C0A %s~C0F, replace =~C0A %s~C07", sname, sc, rep)
-    schedule.add("respawn_wpn", sprintf("%s.respawn_weapon(%d, '%s')", script_name(), wpn:id(), rep), 200)
- else
-    wprintf("[~T].~C0C #WARN:~C07 weapon section~C0A %s~C07 not supported for attach-replace method", sc)
- end
-end
-
-function _G.on_scope_detach(wpn, sname)
- wprintf("[~T].~C0E #DBG: on_scope_detach executed, wpn =~C0A %s~C0E, sname =~C0F %s~C07", DumpVar(wpn), sname)
- if wpn and wpn.section then else return end
- local sc = wpn:section()
- local sini = system_ini()
- local si = db.scope_db[sname]
- if si and strposx(sc, si.suffix) then
-    wprintf("[~T].~C0F #DBG: accepted scope detach for~C0A %s~C07", sc)
-    sc = sc:gsub(si.suffix..'$', '')
-    if sini:section_exist(sc) then
-       wpn:set_section(sc)
+function _G.on_scope_attach( wpn, sname )
+    wprintf(
+        "[~T].~C0E #DBG: on_scope_attach executed, wpn =~C0A %s~C07, sname =~C0F %s~C07",
+        DumpVar( wpn ), sname
+    )
+    if wpn and wpn.section then else return end
+    local sc   = wpn:section()
+    local sini = system_ini()
+    local si   = db.scope_db[ sname ]
+    if si and si.weapons[ sc ] then
+        local rep = sc .. si.suffix
+        wprintf(
+            "[~T].~C0F #DBG: accepted scope~C0E %s~C0F for weapon~C0A %s~C0F, replace =~C0A %s~C07",
+            sname, sc, rep
+        )
+        schedule.add(
+            "respawn_wpn", sprintf( "%s.respawn_weapon(%d, '%s')", script_name(), wpn:id(), rep ), 200
+        )
     else
-       wprintf("[~T].~C0C #WARN:~C07 not exists cropped section ~C0A %s~C07 ", sc)
+        wprintf(
+            "[~T].~C0C #WARN:~C07 weapon section~C0A %s~C07 not supported for attach-replace method",
+            sc
+        )
     end
- elseif si and si.suffix then
-    wprintf("[~T].~C0C #WARN:~C07 suffix~C0A %s~C07 not contains in section~C0A %s~C07", si.suffix, sc)
- else
-    wprintf("[~T].~C0C #WARN: no scope info for~C0A %s~C07", sname)
- end
-
-
 end
 
+function _G.on_scope_detach( wpn, sname )
+    wprintf(
+        "[~T].~C0E #DBG: on_scope_detach executed, wpn =~C0A %s~C0E, sname =~C0F %s~C07",
+        DumpVar( wpn ), sname
+    )
+    if wpn and wpn.section then else return end
+    local sc   = wpn:section()
+    local sini = system_ini()
+    local si   = db.scope_db[ sname ]
+    if si and strposx( sc, si.suffix ) then
+        wprintf( "[~T].~C0F #DBG: accepted scope detach for~C0A %s~C07", sc )
+        sc = sc:gsub( si.suffix .. '$', '' )
+        if sini:section_exist( sc ) then
+            wpn:set_section( sc )
+        else
+            wprintf(
+                "[~T].~C0C #WARN:~C07 not exists cropped section ~C0A %s~C07 ",
+                sc
+            )
+        end
+    elseif si and si.suffix then
+        wprintf(
+            "[~T].~C0C #WARN:~C07 suffix~C0A %s~C07 not contains in section~C0A %s~C07",
+            si.suffix, sc
+        )
+    else
+        wprintf( "[~T].~C0C #WARN: no scope info for~C0A %s~C07", sname )
+    end
+end
 
-
-function set(what, x, y, z)
-
- local itm = db.actor:active_item()
- if itm and itm.get_weapon and itm:get_weapon() then
-   local wpn = itm:get_weapon()
-   wprintf(" active item =~C0F %s~C07, scope_zoom_factor =~C0D %f~C07, irs_zoom_factor =~C0D %f~C07 ",
-                    DumpVar(itm), wpn.scope_zoom_factor, wpn.ironsight_zoom_factor )
-
-
-   -- wprintf(" scope icon offset = %d x %d ", wpn.scope_x, wpn.scope_y)
-
-   x = tonumber(x or 0)
-   y = tonumber(y or 0)
-   z = tonumber(z or 0)
-
-   -- wpn.scope_x = 65
-   -- wpn.scope_y = 7
-
-   local hud = itm:get_weapon_hud()
-
-   if hud then
-      wprintf(" zoom_offset =~C0E { %s~C07 }", misc.pos2str(hud.zoom_offset))
-      local zo = vector()
-
-      zo:set(hud.zoom_offset)
-
-      if what == 'ofs' or what == 'offset' then
-         zo:set( x, y, z )
-      end
-
-      hud.zoom_offset = zo
-      -- zo:set(-0.105,0.042, 0.53)
-      -- zo:set(-0.068990,0.021157,0.058200)
-
-      if what == 'rot' or what == 'rotate' then
-         hud.zoom_rotate_x		= x
-         hud.zoom_rotate_y		= y
-      end
-
-      -- hud.zoom_rotate_x		= 0.064
-      -- hud.zoom_rotate_y		= 0.035
-
-   end
-   -- wpn.zoom_factor = 40
-   if what == 'factor'then
-      wpn.scope_zoom_factor = x
-      wpn.ironsight_zoom_factor = y
-   end
- end
-
-end -- function set
-
---[[
-
-local scoped_wpns = {}
-scoped_wpns.wpn_sv98_acog    		= "wpn_sv98"
-scoped_wpns.wpn_sv98_eotech  		= "wpn_sv98"
-scoped_wpns.wpn_sv98_mt    			= "wpn_sv98"
-
-scoped_wpns.wpn_m110_acog    		= "wpn_m110"
-scoped_wpns.wpn_m110_eotech  		= "wpn_m110"
-scoped_wpns.wpn_m110_mt    			= "wpn_m110"
-
-scoped_wpns.wpn_awp_acog    		= "wpn_awp"
-scoped_wpns.wpn_awp_eotech  		= "wpn_awp"
-scoped_wpns.wpn_awp_mt    			= "wpn_awp"
-
-scoped_wpns.wpn_saiga12c_m2_1pso    = "wpn_saiga12c_m2"
-scoped_wpns.wpn_saiga12c_m2_1p78    = "wpn_saiga12c_m2"
-scoped_wpns.wpn_saiga12c_m2_cobra   = "wpn_saiga12c_m2"
-
-scoped_wpns.wpn_saiga12c_m1_acog    = "wpn_saiga12c_m1"
-scoped_wpns.wpn_saiga12c_m1_eotech  = "wpn_saiga12c_m1"
-scoped_wpns.wpn_saiga12c_m1_mt    	= "wpn_saiga12c_m1"
-
-scoped_wpns.wpn_ak74_m1_acog        = "wpn_ak74_m1"
-scoped_wpns.wpn_ak74_m1_mt	        = "wpn_ak74_m1"
-scoped_wpns.wpn_ak74_m1_eotech		= "wpn_ak74_m1"
-
-scoped_wpns.wpn_ak74_m2_acog        = "wpn_ak74_m1"
-scoped_wpns.wpn_ak74_m2_mt	        = "wpn_ak74_m1"
-scoped_wpns.wpn_ak74_m2_eotech		= "wpn_ak74_m1"
-
-scoped_wpns.wpn_mp153_acog    		= "wpn_mp153"
-scoped_wpns.wpn_mp153_eotech  		= "wpn_mp153"
-scoped_wpns.wpn_mp153_mt    		= "wpn_mp153"
-
-scoped_wpns.wpn_fn2000_acog       	= "wpn_fn2000"
-scoped_wpns.wpn_fn2000_eotech       = "wpn_fn2000"
-scoped_wpns.wpn_fn2000_mt       	= "wpn_fn2000"
-
-scoped_wpns.wpn_g36c_acog       	= "wpn_g36c"
-scoped_wpns.wpn_g36c_eotech         = "wpn_g36c"
-scoped_wpns.wpn_g36c_mt				= "wpn_g36c"
-
-scoped_wpns.wpn_m16a4_acog       	= "wpn_m16a4"
-scoped_wpns.wpn_m16a4_eotech       	= "wpn_m16a4"
-scoped_wpns.wpn_m16a4_mt       		= "wpn_m16a4"
-
-scoped_wpns.wpn_famas_f1_acog       = "wpn_famas_f1"
-scoped_wpns.wpn_famas_f1_eotech     = "wpn_famas_f1"
-
-scoped_wpns.wpn_sig550_acog       	= "wpn_sig550"
-scoped_wpns.wpn_sig550_eotech       = "wpn_sig550"
-scoped_wpns.wpn_sig550_mt       	= "wpn_sig550"
-
-scoped_wpns.wpn_ump45_eotech        = "wpn_ump45"
-scoped_wpns.wpn_ump45_acog	        = "wpn_ump45"
-scoped_wpns.wpn_ump45_mt	        = "wpn_ump45"
-
-
-scoped_wpns.wpn_saiga12c_1pso    	= "wpn_saiga12c"
-scoped_wpns.wpn_saiga12c_1p78    	= "wpn_saiga12c"
-scoped_wpns.wpn_saiga12c_cobra    	= "wpn_saiga12c"
-
-scoped_wpns.wpn_ak74m_1pso          = "wpn_ak74m"
-scoped_wpns.wpn_ak74m_cobra         = "wpn_ak74m"
-scoped_wpns.wpn_ak74m_1p78          = "wpn_ak74m"
-
-scoped_wpns.wpn_ak74_m1_acog        = "wpn_ak74_m1"
-
-scoped_wpns.wpn_ak74pbn_1pso        = "wpn_ak74pbn"
-scoped_wpns.wpn_ak74pbn_cobra       = "wpn_ak74pbn"
-scoped_wpns.wpn_ak74pbn_1p78        = "wpn_ak74pbn"
-
-scoped_wpns.wpn_abakan_1pso        	= "wpn_abakan"
-scoped_wpns.wpn_abakan_1p78        	= "wpn_abakan"
-scoped_wpns.wpn_abakan_cobra        = "wpn_abakan"
-
-scoped_wpns.wpn_pp19_cobra          = "wpn_pp19"
-scoped_wpns.wpn_pp19_1p78          	= "wpn_pp19"
-scoped_wpns.wpn_pp19_1pso          	= "wpn_pp19"
-
-scoped_wpns.wpn_bizon_cobra         = "wpn_bizon"
-scoped_wpns.wpn_bizon_1p78	        = "wpn_bizon"
-scoped_wpns.wpn_bizon_1pso	        = "wpn_bizon"
-
-scoped_wpns.wpn_vintorez_cobra      = "wpn_vintorez"
-scoped_wpns.wpn_vintorez_1pso       = "wpn_vintorez"
-scoped_wpns.wpn_vintorez_1p78       = "wpn_vintorez"
-
-scoped_wpns.wpn_vintorez_m1_cobra   = "wpn_vintorez_m1"
-scoped_wpns.wpn_vintorez_m1_1pso    = "wpn_vintorez_m1"
-scoped_wpns.wpn_vintorez_m1_1p78    = "wpn_vintorez_m1"
-
-scoped_wpns.wpn_svu_cobra           = "wpn_svu"
-scoped_wpns.wpn_svu_1pso            = "wpn_svu"
-scoped_wpns.wpn_svu_1p78           	= "wpn_svu"
-
-scoped_wpns.wpn_svd_cobra           = "wpn_svd"
-scoped_wpns.wpn_svd_1pso            = "wpn_svd"
-scoped_wpns.wpn_svd_1p78	        = "wpn_svd"
-
-scoped_wpns.wpn_val_cobra           = "wpn_val"
-scoped_wpns.wpn_val_1pso            = "wpn_val"
-scoped_wpns.wpn_val_1p78          	= "wpn_val"
-
-scoped_wpns.wpn_ak104_1pso        	= "wpn_ak104"
-scoped_wpns.wpn_ak104_cobra        	= "wpn_ak104"
-scoped_wpns.wpn_ak104_1p78        	= "wpn_ak104"
-
-scoped_wpns.wpn_ak108_1pso        	= "wpn_ak108"
-scoped_wpns.wpn_ak108_cobra        	= "wpn_ak108"
-scoped_wpns.wpn_ak108_1p78        	= "wpn_ak108"
-
-scoped_wpns.wpn_rpk74_1pso        	= "wpn_rpk74"
-scoped_wpns.wpn_rpk74_1p78        	= "wpn_rpk74"
-scoped_wpns.wpn_rpk74_cobra        	= "wpn_rpk74"
-
-
-scoped_wpns.wpn_groza_po			= "wpn_groza"
-
-scoped_wpns.wpn_g36_g36l			= "wpn_g36"
-
-scoped_wpns.wpn_mosin_pe     		= "wpn_mosin"
-
-scoped_wpns.
-scoped_wpns.
-scoped_wpns.
-scoped_wpns.
-
---]]
+function set( what, x, y, z )
+    local itm = db.actor:active_item()
+    if itm and itm.get_weapon and itm:get_weapon() then
+        local wpn = itm:get_weapon()
+        wprintf(
+            " active item =~C0F %s~C07, scope_zoom_factor =~C0D %f~C07, irs_zoom_factor =~C0D %f~C07 ",
+            DumpVar( itm ), wpn.scope_zoom_factor, wpn.ironsight_zoom_factor
+        )
+        x = tonumber( x or 0 )
+        y = tonumber( y or 0 )
+        z = tonumber( z or 0 )
+        -- wpn.scope_x = 65
+        -- wpn.scope_y = 7
+        local hud = itm:get_weapon_hud()
+        if hud then
+            wprintf(
+                " zoom_offset =~C0E { %s~C07 }",
+                misc.pos2str( hud.zoom_offset )
+            )
+            local zo = vector()
+            zo:set( hud.zoom_offset )
+            if what == 'ofs' or what == 'offset' then
+                zo:set( x, y, z )
+            end
+            hud.zoom_offset = zo
+            -- zo:set(-0.105,0.042, 0.53)
+            -- zo:set(-0.068990,0.021157,0.058200)
+            if what == 'rot' or what == 'rotate' then
+                hud.zoom_rotate_x = x
+                hud.zoom_rotate_y = y
+            end
+            -- hud.zoom_rotate_x    = 0.064
+            -- hud.zoom_rotate_y    = 0.035
+        end
+        -- wpn.zoom_factor = 40
+        if what == 'factor'then
+            wpn.scope_zoom_factor     = x
+            wpn.ironsight_zoom_factor = y
+        end
+    end
+end
 

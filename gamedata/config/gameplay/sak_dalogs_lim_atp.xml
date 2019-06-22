@@ -8276,7 +8276,7 @@
 <has_info>dar_greens_yantar_way_info</has_info>
 <dont_has_info>dar_greens_yantar_way_have</dont_has_info>
 <precondition>sak_dialog.rand_game_2</precondition>
-<precondition>sak.have_items_count("mutant_psevdodog_tail",5)</precondition>
+<precondition>sak.have_items_count("mutant_psevdodog_tail",4)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>dar_greens_yantar_way3_dialog_0</text>
@@ -8288,9 +8288,9 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak.have_items_count("mutant_psevdodog_tail",5)</precondition>
+		<precondition>sak.have_items_count("mutant_psevdodog_tail",4)</precondition>
 			<text>dar_greens_yantar_way3_dialog_21</text>
-			<action>sak_inventory.release_actor_items("mutant_psevdodog_tail",5)</action>
+			<action>sak_inventory.release_actor_items("mutant_psevdodog_tail",4)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">
@@ -16339,6 +16339,7 @@
 			<text>pahom_full_banka_3</text>
 			<action>test.add_to_actor("banka",2)</action>
 			<give_info>pahom_buzz_need</give_info>
+			<action>test.give_garbage_aver_lc</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="4">

@@ -6,1293 +6,1259 @@ _G.GRENADE_SLOT = 3
 _G.BINOC_SLOT   = 4
 _G.BOLT_SLOT    = 5
 
-local no_drop = false
+local no_drop      = false
 local moving_items = {}
-
-local inv_dbg = GetGlobalVar("inventory_debug")
-dbg_dump = (inv_dbg == "yes")  
-
-dbg_printf = function (msg, ...) end
-dbg_filter = ""
+local inv_dbg      = GetGlobalVar( "inventory_debug" )
+dbg_dump           = ( inv_dbg == "yes" )
+dbg_printf         = function( msg, ... ) end
+dbg_filter         = ""
 
 if dbg_dump then
-   dbg_printf = function (msg, ...)
-    msg = sprintf(msg, ...)
-    if (dbg_filter == "") or strpos(msg, dbg_filter) then    
-       ODS(msg)
-    end  
-   end   
+    dbg_printf = function( msg, ... )
+                    msg = sprintf( msg, ... )
+                    if dbg_filter == "" or strpos( msg, dbg_filter ) then
+                        ODS( msg )
+                    end
+                 end
 end
 
 function enable_debug()
- dbg_dump = true
- SetGlobalVar("inventory_debug", "yes")
+    dbg_dump = true
+    SetGlobalVar( "inventory_debug", "yes" )
 end
 
-function item_transfer(src, obj, dst)
- if type(src) == 'userdata' and
-     type(obj) == 'userdata' and
-     type(dst) == 'userdata' then
-     moving_items[obj:id()] = dst:id() -- чтобы избежать перекрестной обработки
-     src:transfer_item(obj, dst, true)
- else
-   wprintf("[~T].~C0C #ERROR:~C07 attempt to call item_transfer(%s, %s, %s) ", DumpVar(src), DumpVar(obj), DumVar(dst))
- end  
+function item_transfer( src, obj, dst )
+    if
+            type( src ) == 'userdata'
+        and type( obj ) == 'userdata'
+        and type( dst ) == 'userdata'
+    then
+        moving_items[ obj:id() ] = dst:id() -- чтобы избежать перекрестной обработки
+        src:transfer_item( obj, dst, true )
+    else
+        wprintf(
+            "[~T].~C0C #ERROR:~C07 attempt to call item_transfer(%s, %s, %s) ",
+            DumpVar( src ), DumpVar( obj ), DumVar( dst )
+        )
+    end
 end
 
-function try_to_slot(obj)
- local act = db.actor
- if act:is_in_slot(obj) then
-    wprintf(" item~C0A %s~C07 already in slot ", obj:name())  
-    return true 
- end
- 
- local itm = obj:get_inventory_item()
- 
- 
- if act and itm then
-   local sl = itm.slots
-   wprintf(" trying put~C0A %s~C07 to on from slots~C0F %s~C07", obj:name(), table.concat(sl, ','))   
-   for i, ns in ipairs(sl) do
-    local used = act:item_in_slot(ns)
-    if nil == used then
-       wprintf("   detected unused slot~C0D %d~C07", ns)
-       itm.slot = ns -- set active slot
-       act:move_to_slot(obj, false)
-       return true
-    elseif used:id() ~= obj:id() then 
-       wprintf("   slot~C0D %d~C07 used by ~C0A %s~C07", ns, used:name())
-    else 
-       return true      
-    end                
-   end
-  
- end -- if
-
- return false
+function try_to_slot( obj )
+    local act = db.actor
+    if act:is_in_slot( obj ) then
+        wprintf( " item~C0A %s~C07 already in slot ", obj:name() )
+        return true
+    end
+    local itm = obj:get_inventory_item()
+    if act and itm then
+        local sl = itm.slots
+        wprintf(
+            " trying put~C0A %s~C07 to on from slots~C0F %s~C07",
+            obj:name(), table.concat( sl, ',' )
+        )
+        for i, ns in ipairs( sl ) do
+            local used = act:item_in_slot( ns )
+            if nil == used then
+                wprintf( "   detected unused slot~C0D %d~C07", ns )
+                itm.slot = ns -- set active slot
+                act:move_to_slot( obj, false )
+                return true
+            elseif used:id() ~= obj:id() then
+                wprintf( "   slot~C0D %d~C07 used by ~C0A %s~C07", ns, used:name() )
+            else
+                return true
+            end
+        end
+    end
+    return false
 end
-
 
 -- важные предметы не будут трансфериться в рюкзак
 important_items = {
-  belt_2_art=true,
-  belt_3_art=true,
-  belt_4_art=true,
-  belt_5_art=true,
-  belt_6_art=true,
---[fake_rucksack]=true,
-  podsumok=true,         
-  podsumok_feik=true,
-  podsumok_mem=true,
-  flask_army_on_belt=true,
-  razgruzka=true,
-  shadow_inventory=true,
-  shadow_inventory2=true,
-  rykzack=true,
-  timer=true,
-  af_dummy_black_tip=true,
-  watch=true,
-  bag_on_belt=true,
-  memory_module=true,
-  self_made_decoder=true,
-  quest_tools=true,
-  scanner_artefact=true,
-  scanner_anomaly=true,
-  sak_resiver_yantar=true,
-  sak_resiver2_yantar=true,
-  lab_x16_documents=true,
-  dar_document1=true,
-  dar_document2=true,
-  dar_document3=true,
-  dar_document4=true,
-  dar_document5=true,
-  x10_document1=true,
-  x10_document2=true,  
-  quest_case_01=true,
-  quest_case_02=true,
-  quest_case_06=true,
-  marsh_pribor=true
+    belt_2_art          = true,
+    belt_3_art          = true,
+    belt_4_art          = true,
+    belt_5_art          = true,
+    belt_6_art          = true,
+    --[fake_rucksack]   = true,
+    podsumok            = true,
+    podsumok_feik       = true,
+    podsumok_mem        = true,
+    flask_army_on_belt  = true,
+    razgruzka           = true,
+    shadow_inventory    = true,
+    shadow_inventory2   = true,
+    rykzack             = true,
+    timer               = true,
+    af_dummy_black_tip  = true,
+    watch               = true,
+    bag_on_belt         = true,
+    memory_module       = true,
+    self_made_decoder   = true,
+    quest_tools         = true,
+    scanner_artefact    = true,
+    scanner_anomaly     = true,
+    sak_resiver_yantar  = true,
+    sak_resiver2_yantar = true,
+    lab_x16_documents   = true,
+    dar_document1       = true,
+    dar_document2       = true,
+    dar_document3       = true,
+    dar_document4       = true,
+    dar_document5       = true,
+    x10_document1       = true,
+    x10_document2       = true,
+    quest_case_01       = true,
+    quest_case_02       = true,
+    quest_case_06       = true,
+    marsh_pribor        = true
 }
-
-
-
 
 _G.shadow_inv = false
 _G.MAX_SLOT   = 15
-_G.get_item_desc = function (item_id) -- возвращает расширенное описание, например для рюкзака
- local id = tonumber(item_id)
- local obj = client_obj(id)
- if nil == obj then 
-    return "nil"
- end
- local cont = obj:get_container()
- if cont then
-    local result = ""
-    if not cont:empty() then 
-       result = "\\n  %c[255,243,122,11]Содержимое:%c[default] \\n " 
-    end
-    local list = {}
-    local names = {}
 
-    for i = 0, cont:object_count() - 1 do
-      local itm = cont:object(i)       
-      if itm and itm.get_ammo and itm.get_item_name then
-         local cnt = 1
-         local ammo = itm:get_ammo() 
-         local sect = itm:section()
-         if ammo then
-            cnt = ammo.current
-         end
-         list[sect] = cnt + (list[sect] or 0)
-         names[sect] = itm:get_item_name()
-         --wprintf("      %s", itm:get_item_name())
-      end 
+_G.get_item_desc = function( item_id ) -- возвращает расширенное описание, например для рюкзака
+    local id  = tonumber( item_id )
+    local obj = client_obj( id )
+    if nil == obj then return "nil" end
+    local cont = obj:get_container()
+    if cont then
+        local result = ""
+        if not cont:empty() then
+            result = "\\n  %c[255,243,122,11]Содержимое:%c[default] \\n "
+        end
+        local list, names = {}, {}
+        for i = 0, cont:object_count() - 1 do
+            local itm = cont:object( i )
+            if itm and itm.get_ammo and itm.get_item_name then
+                local cnt  = 1
+                local ammo = itm:get_ammo()
+                local sect = itm:section()
+                if ammo then cnt = ammo.current end
+                list[ sect ]  = cnt + ( list[ sect ] or 0 )
+                names[ sect ] = itm:get_item_name()
+                --wprintf("      %s", itm:get_item_name())
+            end
+        end
+        for sect, count in pairs( list ) do
+            result = sprintf( "%s %s = %d \\n ", result, names[ sect ], count )
+        end
+        return result
     end
-    
-    for sect, count in pairs(list) do
-        result = sprintf("%s %s = %d \\n ", result, names[sect], count)
-    end
-    return result
- end
- 
- return "script desc not defined!"
+    return "script desc not defined!"
 end
 
-function list_sect_id(name)
- local list = record_list( {"sect", "id"}, {"string", "number"}, {"?", 0})
- list.name = name
- return list
+function list_sect_id( name )
+    local list = record_list( { "sect", "id" }, { "string", "number" }, { "?", 0 } )
+    list.name  = name
+    return list
 end
 
-_G.list_sect_id = list_sect_id 
+_G.list_sect_id = list_sect_id
 
-function list_sect_count (name)
- local list = record_list( {"sect", "count"}, {"string", "number"}, {"?", 0})
- list.name = name
- return list
+function list_sect_count( name )
+    local list = record_list( { "sect", "count" }, { "string", "number" }, { "?", 0 } )
+    list.name  = name
+    return list
 end
 
 _G.list_sect_count = list_sect_count
 
-function amount_in_batch(obj, update)
- if type(obj) ~= "userdata" then  
-    obj  = client_obj(obj)
- end
- -- TODO: add se_object handling
-    
- local ammo = obj:get_ammo() 
- if ammo then 
-    if update then ammo.current = tonumber(update) end 
-    return ammo.current, ammo.size
- else 
-    -- wprintf("~C0C #WARN:~C07 non-ammo object~C0A %s ~C07 ", obj:name())
-    return 1, 1    
- end         
+function amount_in_batch( obj, update )
+    if type( obj ) ~= "userdata" then
+        obj = client_obj( obj )
+    end
+    -- TODO: add se_object handling
+    local ammo = obj:get_ammo()
+    if ammo then
+        if update then ammo.current = tonumber( update ) end
+        return ammo.current, ammo.size
+    else
+        -- wprintf("~C0C #WARN:~C07 non-ammo object~C0A %s ~C07 ", obj:name())
+        return 1, 1
+    end
 end
 
-function check_obj(obj) -- copypaste of razgruzka.check_obj
- if not obj then return false end
- local id = obj:id()
- return g_sim:object(id) -- have cse_alife_dynamic_object instance
+function check_obj( obj ) -- copypaste of razgruzka.check_obj
+    if not obj then return false end
+    local id = obj:id()
+    return g_sim:object( id ) -- have cse_alife_dynamic_object instance
 end
 
-function select_partial_ammo(obj)
- local ammo = obj:get_ammo()
- if ammo and ammo.current < ammo.size then
-    return ammo
- else
+function select_partial_ammo( obj )
+    local ammo = obj:get_ammo()
+    if ammo and ammo.current < ammo.size then
+        return ammo
+    else
+        return false
+    end
+end
+
+function collect_items( inv_holder, bypass ) -- извлечение объектов холдера в список
+    local result = record_list(
+                        { "sect", "id", "amount", "obj" },
+                        { "string", "number", "number", "userdata" },
+                        { "?", 0, 0, nil }
+                    )
+    if bypass == nil then
+        bypass = function( obj ) return true end
+    end
+    if not inv_holder then
+        wprintf(
+            "~C0C #ERROR:~C07 trying to execute collect_items(%s) from %s",
+            DumpVar( inv_holder ), lua_traceback('   ')
+        )
+        return result
+    end
+    for i = 0, inv_holder:object_count() - 1 do
+        local obj  = inv_holder:object( i )
+        local sect = obj:section()
+        if
+            not strpos( sect, "bolt" )
+            and not strpos( sect, "myaso_mem" )
+            and bypass( obj )
+        then
+            --wprintf(" collect_items, accepted~C0A %-35s~C0B =~C0F %s~C07", obj:name(), DumpVar(check_obj(obj)))
+            local id = obj:id()
+            result:add( sect, id, amount_in_batch( id ), obj )
+        else
+            -- wprintf(" collect_items, rejected~C0A %s~C07", DumpVar(obj))
+        end
+    end
+    return result
+end
+
+function collect_items_map( inv_holder, calc_ammo ) -- получение набора пар секция = количество
+    local list = inv_holder
+    if inv_holder.id and inv_holder.name then -- подсунули непися, а не список
+        list = collect_items( inv_holder )
+    end
+    -- list:dump("collect_items_map from ".. (list.name or ""))
+    local map = std_map()
+    for i, rec in list:ipairs() do
+        local amount = rec.count or 1
+        if calc_ammo then amount = rec.amount end
+        -- wprintf(" adding~C0A 215s~C07 =~C0D %d~C07", rec.sect, rec.amount)
+        map:add( rec.sect, amount )
+    end
+    return map
+end
+
+function transfer_items( src, dst, list )
+    for i, rec in list:ipairs() do
+        local obj = client_obj( rec.id )
+        if obj then
+            local owner = obj:parent()
+            if owner == nil then
+                -- wprintf(
+                --     "[~T].~C0C #WARN:~C07 transfer independant object~C0F %s~C07 into~C0A %s~C07",
+                --     obj:name(), dst:name()
+                -- )
+                item_transfer( obj, obj, dst )
+            elseif owner and owner:id() == obj:id() then
+                --wprintf("[~T].~C0C #ERROR:~C07 trying transfer object %s into self ", obj:name())
+            elseif owner and owner:id() == src:id() and src:id() ~= dst:id() then
+                if db.init_stage < 500 then
+                    -- wprintf(
+                    --     "[~T]. #DBG: transfering object~C0F %-35s~C07 from~C0A %s~C07 into ~C0A %s~C07, size =~C0D %d~C07 ",
+                    --     obj:name(), src:name(), dst:name(), amount_in_batch( obj )
+                    -- )
+                end
+                item_transfer( src, obj, dst )
+            else
+                wprintf(
+                    "[~T]. ~C0C #ERROR(transfer_items):~C07 object %d not exist, or not owned by~C0F %s~C07",
+                    rec.id, src:name()
+                )
+            end
+        end
+    end
+    wprintf(
+        "[~T]. #DBG: transfer_items, bind_stalker.taked_items size =~C0D %d~C07 ",
+        #bind_stalker.taked_items
+    )
+end
+
+-- некоторые предметы нельзя так просто убирать из рюкзака,
+-- поэтому они приписаны к виртуальным слотам
+function virtual_slot_item( sect ) 
+    return important_items[ sect ] or ( sect == "detector_simple_fake" )
+end
+
+function item_in_use( obj )
+    local intf = obj:get_inventory_item()
+    if intf then
+        return intf.item_place ~= 3
+    else
+        return false
+    end
+end
+
+function test_can_hide( sect )
+    if virtual_slot_item( sect ) then return false end
+    -- в плане съедобного надо скрывать сложенное в сумку НЗ??
+    -- "^energy", "conserva", "kolbasa", "bread"
+    local sub_list = {
+        "^ammo",
+        "^grenade",
+        "bandage",
+        "antirad",
+        "^medkit",
+        "^detector",
+        "energy_drink"
+    }
+    for i, sub in ipairs( sub_list ) do
+        if strpos( sect, sub ) then  return true end
+    end
     return false
- end    
 end
 
-
-function collect_items(inv_holder, bypass) -- извлечение объектов холдера в список
-  local result = record_list( {"sect", "id", "amount", "obj"}, 
-                              {"string", "number", "number", "userdata" },
-                              {"?", 0, 0, nil})  
-  if bypass == nil then
-     bypass = function(obj) return true end
-  end
-  
-  if not inv_holder then
-     wprintf("~C0C #ERROR:~C07 trying to execute collect_items(%s) from %s", DumpVar(inv_holder), lua_traceback('   ')) 
-     return result
-  end                          
-  
-  for i = 0, inv_holder:object_count() - 1 do
-     local obj = inv_holder:object(i)
-     local sect = obj:section()
-     if not strpos(sect, "bolt") and not strpos(sect, "myaso_mem") and bypass(obj) then
-        --wprintf(" collect_items, accepted~C0A %-35s~C0B =~C0F %s~C07", obj:name(), DumpVar(check_obj(obj)))
-        local id = obj:id()              
-        result:add(sect, id, amount_in_batch(id), obj)
-     else
-        -- wprintf(" collect_items, rejected~C0A %s~C07", DumpVar(obj))   
-     end    
-  end 
-  return result  
+function object_name( id )
+    return client_obj(id):name()
 end
 
-function collect_items_map (inv_holder, calc_ammo) -- получение набора пар секция = количество 
- local list = inv_holder 
- if inv_holder.id and inv_holder.name then -- подсунули непися, а не список
-    list = collect_items(inv_holder)
- end                                                        
- -- list:dump("collect_items_map from ".. (list.name or ""))       
- local map = std_map()
- for i, rec in list:ipairs() do
-    local amount = rec.count or 1 
-    if calc_ammo then amount = rec.amount end            
-    -- wprintf(" adding~C0A 215s~C07 =~C0D %d~C07", rec.sect, rec.amount)
-    map:add(rec.sect, amount)            
- end
- return map
+function compare_amount( a, b ) -- первичный признак сортировки - объем пачки, а вторичный - имя объекта
+    if a and b then
+        local amount_a = amount_in_batch( a.id )
+        local amount_b = amount_in_batch( b.id )
+        if amount_a == amount_b then
+            return object_name( a.id ) < object_name( b.id )
+        else
+            return amount_a < amount_b
+        end
+    else
+        return false
+    end
 end
 
-function transfer_items(src, dst, list)
- for i, rec in list:ipairs() do
-   local obj = client_obj(rec.id)
-   if obj then   
-     local owner = obj:parent()
-     if owner == nil then
-        --wprintf("[~T].~C0C #WARN:~C07 transfer independant object~C0F %s~C07 into~C0A %s~C07", obj:name(), dst:name())
-        item_transfer (obj, obj, dst)
-     elseif owner and owner:id() == obj:id() then
-        --wprintf("[~T].~C0C #ERROR:~C07 trying transfer object %s into self ", obj:name())   
-     elseif owner and owner:id() == src:id() and src:id() ~= dst:id() then
-        if db.init_stage < 500 then
-           -- wprintf("[~T]. #DBG: transfering object~C0F %-35s~C07 from~C0A %s~C07 into ~C0A %s~C07, size =~C0D %d~C07 ", obj:name(), src:name(), dst:name(),  amount_in_batch(obj))
-        end   
-        item_transfer (src, obj, dst)
-     else
-        wprintf("[~T]. ~C0C #ERROR(transfer_items):~C07 object %d not exist, or not owned by~C0F %s~C07", rec.id, src:name()) 
-     end
-   end    
- end
- wprintf("[~T]. #DBG: transfer_items, bind_stalker.taked_items size =~C0D %d~C07 ", #bind_stalker.taked_items)
- 
+function compare_name_id( a, b )
+    local aobj = a.obj
+    local bobj = b.obj
+    local aitm = aobj:get_inventory_item()
+    local bitm = bobj:get_inventory_item()
+    local an   = sprintf( "%d_%s", aitm.item_place, aobj:name() )
+    local bn   = sprintf( "%d_%s", bitm.item_place, bobj:name() )
+    if an == bn then
+        return a.id < b.id
+    else
+        return an < bn
+    end
 end
-
-function virtual_slot_item (sect) -- некоторые предметы нельзя так просто убирать из рюкзака, поэтому они приписаны к виртуальным слотам 
- return important_items[sect] or ( sect == "detector_simple_fake" )
-end
-
-function item_in_use(obj)
-  local intf = obj:get_inventory_item()
-  if intf then 
-     return intf.item_place ~= 3     
-  else
-     return false
-  end   
-end
-
-function test_can_hide(sect)
- if virtual_slot_item(sect) then
-    return false
- end
-  
- -- в плане съедобного надо скрывать сложенное в сумку НЗ??
- -- "^energy", "conserva", "kolbasa", "bread"
- local sub_list = { "^ammo", "^grenade", "bandage", "antirad", "^medkit", "^detector", "energy_drink" }    
- for i, sub in ipairs(sub_list) do
-  if strpos(sect, sub) then  return true end 
- end -- for
- return false
-end
-
-function object_name(id)
- return client_obj(id):name()
-end
-
-
-function compare_amount(a, b) -- первичный признак сортировки - объем пачки, а вторичный - имя объекта
- if a and b then
-   local amount_a = amount_in_batch(a.id)
-   local amount_b = amount_in_batch(b.id)
-   if amount_a == amount_b then
-      return object_name(a.id) < object_name(b.id)
-   else   
-      return amount_a < amount_b
-   end    
- else
-   return false
- end  
-end
-
-function compare_name_id(a, b)
- local aobj = a.obj
- local bobj = b.obj
- local aitm = aobj:get_inventory_item()
- local bitm = bobj:get_inventory_item()
- local an = sprintf("%d_%s", aitm.item_place, aobj:name())
- local bn = sprintf("%d_%s", bitm.item_place, bobj:name())
- if an == bn then
-    return a.id < b.id
- else
-   return an < bn
- end 
-end
-
-
 
 -- класс теневого инвентаря на основе носимого рюказа
--- все доступное к использованию (боеприпасы, еда, медикаменты, детекторы и спички) должно находиться в инвентаре ГГ, когда окно инвентаря/разгрузки/подсумка/СНЗ закрыто
+-- все доступное к использованию (боеприпасы, еда, медикаменты, детекторы и спички)
+-- должно находиться в инвентаре ГГ, когда окно инвентаря/разгрузки/подсумка/СНЗ закрыто
 class "shadow_inventory"
 
-function shadow_inventory:__init ()
- self.holder  = db.actor 
- self.add_hide = {}    -- дополнительный набор списков для скрытия предметов
- self.quantity = std_map() -- количество предметов каждой секции 
- self:update_storage() 
- self.leave_avail = {}     -- набор карт того, чего прятать не надо
- self.leave_avail_ids = {} -- набор предметов, которые не должны прятаться по событию take
- self.need_update = true
- self.take_handlers = {}   -- обработчики поднятия предметов на случай отсутствия рюкзака (в слоты, в разгрузку, в подсумок) 
- db.shadow_inv = self  
- if self.storage then
-    self.items_restored = false
-    self:restore_content()
-    razgruzka.update_avail_items(false)
-    self:hide_content(0)    
- else
-    self.last_hide = -1
-    self.last_op_from = '__init()'
- end 
- 
- self:add_take_handler("to_slot", try_to_slot) 
+function shadow_inventory:__init()
+    self.holder          = db.actor
+    self.add_hide        = {}        -- дополнительный набор списков для скрытия предметов
+    self.quantity        = std_map() -- количество предметов каждой секции
+    self:update_storage()
+    self.leave_avail     = {}        -- набор карт того, чего прятать не надо
+    self.leave_avail_ids = {}        -- набор предметов, которые не должны прятаться по событию take
+    self.need_update     = true
+    self.take_handlers   = {}        -- обработчики поднятия предметов на случай отсутствия рюкзака(в слоты, в разгрузку, в подсумок)
+    db.shadow_inv        = self
+    if self.storage then
+        self.items_restored = false
+        self:restore_content()
+        razgruzka.update_avail_items( false )
+        self:hide_content( 0 )
+    else
+        self.last_hide    = -1
+        self.last_op_from = '__init()'
+    end
+    self:add_take_handler( "to_slot", try_to_slot )
 end
 
-function shadow_inventory:add_take_handler(name, f)
- if type(f) == 'function' then
-    self.take_handlers[name] = f
- end
+function shadow_inventory:add_take_handler( name, f )
+    if type( f ) == 'function' then
+        self.take_handlers[ name ] = f
+    end
 end
 
 function shadow_inventory:after_sleep()
- if self.storage then return end
- -- восстановление позиции рюкзака
- local list = registry.sc_objects("shadow_inventory", true, 7, client_obj)
- local max_dist = 10
- local cp = self.holder:position()
- local actual = nil
- for n, obj in ipairs(list) do
-   local dist = obj:position():distance_to_xz(cp)
-   if dist < max_dist then
-      actual = obj
-      max_dist = dist
-   end -- if
- end -- if
-
- if nil == actual then
-    wprintf("[~T].~C0C #WARN:~C07 no shadow_inventory object in radius %f around actor", max_dist)
-    return
- end
- local rp = actual:position()
- if cp.y - rp.y > 1 then
-    wprintf("[~T]. #DBG: underground position detected, holder.y =~C0D %.1f~C07, rucksack.y =~C0D %.1f~C07. Trying uplift", cp.y, rp.y)
-    rp.y = cp.y + 0.5
-    actual:set_position(rp)
- end
-
+    if self.storage then return end
+    -- восстановление позиции рюкзака
+    local list     = registry.sc_objects( "shadow_inventory", true, 7, client_obj )
+    local max_dist = 10
+    local cp       = self.holder:position()
+    local actual   = nil
+    for n, obj in ipairs( list ) do
+        local dist = obj:position():distance_to_xz( cp )
+        if dist < max_dist then
+            actual   = obj
+            max_dist = dist
+        end
+    end
+    if nil == actual then
+        wprintf(
+            "[~T].~C0C #WARN:~C07 no shadow_inventory object in radius %f around actor",
+            max_dist
+        )
+        return
+    end
+    local rp = actual:position()
+    if cp.y - rp.y > 1 then
+        wprintf(
+            "[~T]. #DBG: underground position detected, holder.y =~C0D %.1f~C07, rucksack.y =~C0D %.1f~C07. Trying uplift",
+            cp.y, rp.y
+        )
+        rp.y = cp.y + 0.5
+        actual:set_position( rp )
+    end
 end
 
-
 function shadow_inventory:drop_storage()
-  if self:update_storage() and self:hide_content(2) then
-     self.storage:get_container():close()
-     self.storage:set_name("dropped_rucksack") 
-     --local pos = test.pos_in_front_of_actor() or db.actor:position()
-     --self.holder:drop_item_and_teleport( self.storage, pos )
-     self.holder:drop_item(self.storage) -- объект отделен от носителя!          
-     misc.process_spawn()                          
-     self:update_storage() -- обработать сброс     
-     self.storage = nil
-  end 
+    if self:update_storage() and self:hide_content( 2 ) then
+        self.storage:get_container():close()
+        self.storage:set_name( "dropped_rucksack" )
+        --local pos = test.pos_in_front_of_actor() or db.actor:position()
+        --self.holder:drop_item_and_teleport( self.storage, pos )
+        self.holder:drop_item( self.storage ) -- объект отделен от носителя!
+        misc.process_spawn()
+        self:update_storage() -- обработать сброс
+        self.storage = nil
+    end
 end
 
 function shadow_inventory:update_storage()
-
- if self.holder == nil then self.holder = client_obj(0) end
- if self.holder == nil then return nil end
- local obj = self.holder:object("shadow_inventory")
- if self.storage == nil and obj then
-    --wprintf(" shadow_inventory changing to~C0D %d~C07", obj:id())
-    -- обработка поднятия большого рюкзака
-    vergas_lib.s_play([[rykzack\give_rykzak_2]],1)
-    sak_inventory.need_update_inventory()    
-    sak.actor_hide_weapon()
-    schedule.add("wpn_ret", "sak.restore_weap()", 3000)
-    params.tiredness_add()
-    self.storage = obj -- give_info_portion вызывает вложенную обработку событий!!
-    obj:set_name("active_rucksack")
-    obj:set_position(self.holder:position()) -- можно аттачить и за спину    
-    self.holder:give_info_portion("ui_inventory_hide")    
- elseif self.storage and obj and self.storage:id() ~= obj:id() then
-    -- обработка замены одного рюкзака другим: тут можно вывести сообщение
-    --wprintf(" shadow_inventory changing from~C0D %d~C07 to~C0D %d~C07", self.storage:id(), id) 
-    db.actor:give_game_news( "st_rucksack_changed", "ui\\ui_iconsTotal", Frect():set(498,280,83,47), 0, 3000)
-    self.storage:set_name("dropped_rucksack")    
-    self.holder:drop_item(self.storage)            
- end 
- 
- self.storage = obj
- 
-  
- 
- if not obj then
-    self.items_restored = false
- end 
- return obj   
+    if self.holder == nil then self.holder = client_obj( 0 ) end
+    if self.holder == nil then return nil end
+    local obj = self.holder:object( "shadow_inventory" )
+    if self.storage == nil and obj then
+        --wprintf(" shadow_inventory changing to~C0D %d~C07", obj:id())
+        -- обработка поднятия большого рюкзака
+        vergas_lib.s_play( [[rykzack\give_rykzak_2]], 1 )
+        sak_inventory.need_update_inventory()
+        sak.actor_hide_weapon()
+        schedule.add( "wpn_ret", "sak.restore_weap()", 3000 )
+        params.tiredness_add()
+        self.storage = obj -- give_info_portion вызывает вложенную обработку событий!!
+        obj:set_name( "active_rucksack" )
+        obj:set_position( self.holder:position() ) -- можно аттачить и за спину
+        self.holder:give_info_portion( "ui_inventory_hide" )
+    elseif self.storage and obj and self.storage:id() ~= obj:id() then
+        -- обработка замены одного рюкзака другим: тут можно вывести сообщение
+        --wprintf(" shadow_inventory changing from~C0D %d~C07 to~C0D %d~C07", self.storage:id(), id)
+        db.actor:give_game_news(
+            "st_rucksack_changed", "ui\\ui_iconsTotal",
+            Frect():set( 498, 280, 83, 47 ), 0, 3000
+        )
+        self.storage:set_name( "dropped_rucksack" )
+        self.holder:drop_item( self.storage )
+    end
+    self.storage = obj
+    if not obj then
+        self.items_restored = false
+    end
+    return obj
 end
 
 function shadow_inventory:check_restored() -- проверка, что в рюкзаке не осталось предметов (вытряхивание в противном случае).
- 
- local hidden = 0   
- for i = 1, 3 do
-  hidden = self.storage:object_count()   
-  if hidden > 0  then
-     --wprintf(" restore attempt~C0D %d~C07, hidden objects =~C0F %d ~C07", i, hidden) 
-     if self.items_restored then
-        --wprintf("[~T].~C0C #ERROR:~C07 flag items_restored was set, but have %d hidden items in storage!", hidden)
-        self.items_restored = false 
-     end                                    
-     self:restore_content()          
-  else
-    break
-  end   
- end -- for
- 
- if hidden > 0  then
-    --wprintf("[~T].~C0C #WARN:~C07 cannot hide content now - storage not restored, items inside = %d ", hidden)
-    local map = collect_items_map(self.storage, true) -- уже сохраненные/неуспевшие переместиться
-    if dbg_dump then
-       map:dump(" now in self.storage: ")
-    end   
-    hidden = map:size()        
- end         
- 
- self.items_restored = ( hidden == 0 )
- 
- return self.items_restored
-end
-
-
-function shadow_inventory:compact_ammo(container)
- if container == nil then 
-    container = self.holder
- end
-
- local ammo_list = collect_items(container, select_partial_ammo)
- -- исключение заблокированных патронов
- for i = ammo_list:size(), 1, -1 do
-   local rec = ammo_list(i)
-   if self.leave_avail_ids[rec.id] then
-      ammo_list:remove(i)
-   end   
- end
- 
- if ammo_list:size() < 5 then return end -- если мало мелких пачек   
- local map = collect_items_map(ammo_list, true)
- local del_count = 0
- 
- for sect, amount in map:pairs() do
-    local in_amount = amount
-    local out_amount = 0
- 
-    for i, rec in ammo_list:ipairs() do       
-       if rec.sect == sect and rec.obj  then
-          local ammo = rec.obj:get_ammo()
-          local can_add = ammo.size - ammo.current          
-          -- 26/30 eath 26 out 0
-          -- can_add = 4                
-          dbg_printf(" in batch~C0D %3d~C07 from~C0D %3d~C07, amount to eat =~C0D %3d~C07, out_amount =~C0D %d~C07", 
-                                        ammo.current, ammo.size, amount, out_amount) 
-           
-          if ammo.size <= amount then -- добавить сколько влезет             
-             ammo.current = ammo.size
-             amount = amount - ammo.size
-             out_amount = out_amount + ammo.size
-          elseif amount > 0 then -- в последнюю пачку добавить остаток
-             ammo.current = amount
-             out_amount = out_amount + ammo.current
-             amount = 0
-          else -- компактизация достигла предела, оставшиеся пачки удаляются             
-             misc.release_obj(rec.id, true)
-             rec.obj = nil
-             del_count = del_count + 1              
-          end
-          
-          
-       end -- if sect
-    end -- for inner
-    if in_amount ~= out_amount then
-      wprintf("[~T/~B].~C0C #ERROR(compact_ammo):~C07 ammo balance changed from~C0D %d~C07 to~C0D %d~C07 for~C0A %s~C07", in_amount, out_amount, sect)
-      SleepEx(13000) -- чтобы не пропустить сей момент 
+    local hidden = 0
+    for i = 1, 3 do
+        hidden = self.storage:object_count()
+        if hidden > 0  then
+            --wprintf(" restore attempt~C0D %d~C07, hidden objects =~C0F %d ~C07", i, hidden)
+            if self.items_restored then
+                --wprintf("[~T].~C0C #ERROR:~C07 flag items_restored was set, but have %d hidden items in storage!", hidden)
+                self.items_restored = false
+            end
+            self:restore_content()
+        else
+            break
+        end
     end
-    
-     
- end -- for outer
- if del_count > 0 then
-    misc.process_spawn()
-    dbg_printf("[~T/~B]. #PERF(compact_ammo): checked~C0D %d~C07 and deleted~C0D %d~C07 ammo batches ", ammo_list:size(), del_count)        
- end     
- 
- 
+    if hidden > 0  then
+        --wprintf("[~T].~C0C #WARN:~C07 cannot hide content now - storage not restored, items inside = %d ", hidden)
+        local map = collect_items_map( self.storage, true ) -- уже сохраненные/неуспевшие переместиться
+        if dbg_dump then
+            map:dump( " now in self.storage: " )
+        end
+        hidden = map:size()
+    end
+    self.items_restored = ( hidden == 0 )
+    return self.items_restored
 end
 
 
-function shadow_inventory:on_ammo_split(list, sect, from, rest)
- if rest == 0 then return end
-
- for i = from, list:size() do
-    local rec = list(i)
-    local ammo = nil
-    if rec.sect == sect and rec.id > 0 then
-       local obj = client_obj(rec.id)
-       if obj then  
-          ammo = obj:get_ammo()
-       else
-          wprintf("~C0C #ERROR:~C07 not found client object #%d", rec.id)     
-       end
-       if ammo then
-          -- остаток поглощается при изменении маленькой пачки
-          local add = ammo.size - ammo.current
-          if add > rest then add = rest end          
-          
-          if add > 0 then              
-             ammo.current = ammo.current + add
-             --wprintf(" for ~C0A %s~C07 added~C0D %d~C07, current =~C0D %d~C07", obj:name(), add, ammo.current)
-             rest = rest - add        
-          end -- if add
-       end -- if ammo 
-    end -- if    
-    
-    if 0 == rest then return end
- end
- 
- -- здесь подразумевается, что rest не превысит размера обычной пачки патронов!
- if rest > 0 then
-    local sobj = misc.spawn_obj (sect, nil, self.holder, rest)
-    if sobj then
-       list:add(sect, sobj.id) -- запомнить объект для обработки и учета
-       wprintf("~C0C #WARN:~C07 added ammo after split, count =~C0D %d~C07, id =~C0D %d~C07, pos =~C0D %d~C07", rest, sobj.id, list:size())
-       -- misc.process_spawn()
-    end    
- end
- return list
+function shadow_inventory:compact_ammo( container )
+    if container == nil then container = self.holder end
+    local ammo_list = collect_items( container, select_partial_ammo )
+    -- исключение заблокированных патронов
+    for i = ammo_list:size(), 1, -1 do
+        local rec = ammo_list( i )
+        if self.leave_avail_ids[ rec.id ] then
+            ammo_list:remove( i )
+        end
+    end
+    if ammo_list:size() < 5 then return end -- если мало мелких пачек
+    local map       = collect_items_map( ammo_list, true )
+    local del_count = 0
+    for sect, amount in map:pairs() do
+        local in_amount  = amount
+        local out_amount = 0
+        for i, rec in ammo_list:ipairs() do
+            if rec.sect == sect and rec.obj then
+                local ammo    = rec.obj:get_ammo()
+                local can_add = ammo.size - ammo.current
+                -- 26/30 eath 26 out 0
+                -- can_add = 4
+                dbg_printf(
+                    " in batch~C0D %3d~C07 from~C0D %3d~C07, amount to eat =~C0D %3d~C07, out_amount =~C0D %d~C07",
+                    ammo.current, ammo.size, amount, out_amount
+                )
+                if ammo.size <= amount then -- добавить сколько влезет
+                    ammo.current = ammo.size
+                    amount       = amount - ammo.size
+                    out_amount   = out_amount + ammo.size
+                elseif amount > 0 then      -- в последнюю пачку добавить остаток
+                    ammo.current = amount
+                    out_amount   = out_amount + ammo.current
+                    amount       = 0
+                else                        -- компактизация достигла предела, оставшиеся пачки удаляются
+                    misc.release_obj( rec.id, true )
+                    rec.obj   = nil
+                    del_count = del_count + 1
+                end
+            end
+        end
+        if in_amount ~= out_amount then
+            wprintf(
+                "[~T/~B].~C0C #ERROR(compact_ammo):~C07 ammo balance changed from~C0D %d~C07 to~C0D %d~C07 for~C0A %s~C07",
+                in_amount, out_amount, sect
+            )
+            SleepEx( 13000 ) -- чтобы не пропустить сей момент
+        end
+    end
+    if del_count > 0 then
+        misc.process_spawn()
+        dbg_printf(
+            "[~T/~B]. #PERF(compact_ammo): checked~C0D %d~C07 and deleted~C0D %d~C07 ammo batches ",
+            ammo_list:size(), del_count
+        )
+    end
 end
 
-function shadow_inventory:get_content(full)
- if full == nil or (self.storage == nil) or (self.holder == nil) then full = true end
-   
- if full and self:update_storage() then 
-   return collect_items(self.storage) + collect_items(self.holder)
- else
-   return collect_items(self.holder)
- end
+function shadow_inventory:on_ammo_split( list, sect, from, rest )
+    if rest == 0 then return end
+    for i = from, list:size() do
+        local rec  = list( i )
+        local ammo = nil
+        if rec.sect == sect and rec.id > 0 then
+            local obj = client_obj( rec.id )
+            if obj then
+                ammo = obj:get_ammo()
+            else
+                wprintf( "~C0C #ERROR:~C07 not found client object #%d", rec.id )
+            end
+            if ammo then
+                -- остаток поглощается при изменении маленькой пачки
+                local add = ammo.size - ammo.current
+                if add > rest then add = rest end
+                if add > 0 then
+                    ammo.current = ammo.current + add
+                    --wprintf(" for ~C0A %s~C07 added~C0D %d~C07, current =~C0D %d~C07", obj:name(), add, ammo.current)
+                    rest = rest - add
+                end
+            end
+        end
+        if 0 == rest then return end
+    end
+    -- здесь подразумевается, что rest не превысит размера обычной пачки патронов!
+    if rest > 0 then
+        local sobj = misc.spawn_obj( sect, nil, self.holder, rest )
+        if sobj then
+            list:add( sect, sobj.id ) -- запомнить объект для обработки и учета
+            wprintf(
+                "~C0C #WARN:~C07 added ammo after split, count =~C0D %d~C07, id =~C0D %d~C07, pos =~C0D %d~C07",
+                rest, sobj.id, list:size()
+            )
+            -- misc.process_spawn()
+        end
+    end
+    return list
 end
 
-
-function shadow_inventory:hidden_items(b_map)
- local result = nil
- if self:update_storage() then
-    result = collect_items (self.storage)
- else
-    result = list_sect_id()
- end
- 
- if b_map then
-    return collect_items_map(result, true)
- else
-   return result
- end 
+function shadow_inventory:get_content( full )
+    if
+        full == nil
+        or ( self.storage == nil )
+        or ( self.holder  == nil )
+    then
+        full = true
+    end
+    if full and self:update_storage() then
+        return collect_items( self.storage ) + collect_items( self.holder )
+    else
+        return collect_items( self.holder )
+    end
 end
 
-function shadow_inventory:need_hide(id)
- for n, list in pairs(self.add_hide) do
-   if list and list:find(2, id) > 0 then
-      return true
-   end
- end
+function shadow_inventory:hidden_items( b_map )
+    local result = nil
+    if self:update_storage() then
+        result = collect_items( self.storage )
+    else
+        result = list_sect_id()
+    end
+    if b_map then
+        return collect_items_map( result, true )
+    else
+        return result
+    end
+end
 
- return false
+function shadow_inventory:need_hide( id )
+    for n, list in pairs( self.add_hide ) do
+        if list and list:find( 2, id ) > 0 then return true end
+    end
+    return false
 end
 
 -- режимы маскировки содержимого:
 -- 0. при закрытии окна инвентаря надо спрятать все расходники, что недолжны быть доступны ГГ во время игрового процесса
 -- 1. при открытии окна инвентаря надо спрятать все, что распределено в разгрузке/подсумке/НЗ
--- 2. при сбросе рюкзака нужно спрятать все, кроме предметов в слотах/разгрузке/подсумке/НЗ    
-
-function shadow_inventory:hide_content(mode)
- if not self:update_storage() then 
-    ODS('~C0C #WARN:~C07 no shadow_inventory in actor inventory, hide content breaked ');
-    return false
- end
- if mode == self.last_hide then
-    return true -- already same hide
- end
-
- moving_items = {}
-
-
- local hide_status = "~CE2 mtv items leave ++"
- if mode == 0 then     
- elseif mode == 1 then    
-    hide_status = "~CE1 mtv items hide"
- elseif mode == 2 then
-    hide_status = "~CE4 mtv items leave only"  
- end
- -- необходимо отследить, что хранилище полностью зачищено
- if not self:check_restored() then 
-    --wprintf("~C0C #ERROR:~C07 shadow_inventory:hide_content(%d) cannot hide non-restored content ", mode)
-    return false
- end
-  
- local items_not_hide = self:items_in_slots(true) -- предметы в слотах, включая виртуальные и исключая гранатки
- items_not_hide[self.storage:id()] = self.storage
- 
- if not self.items_restored then
-    wprintf("~C0C inventory content already hidden~C07, bad call from:\n~C0E %s~C07", lua_traceback("   "))
-    wprintf(" last action from\n~C0F %s~C07", self.hide_from or 'nil')    
-    return true    
- end -- if opened
- 
- reset_interactive(1)
-    
- self.hide_from = lua_traceback("   ")
- self.last_op_from = self.hide_from    
- self.leave_avail_ids = {}
- self.last_hide = 3
- 
- 
- nlc_vars.action_from = nil
- SetDbgVar("inventory_action", "hiding", true) 
- --wprintf("[~T/~B].~CE0 #DBG: shadow_inventory:hide_content start %s ~C07 ", hide_status)
- local that_leave = std_map() 
- for k, leave in pairs(self.leave_avail) do
-   if dbg_dump then leave:dump(" loading "..k.. ": ", "   ") end
-   that_leave:add_map(leave)
- end
-
- 
- if mode ~= 1 then
-   -- учет предметов в быстрых слотах
-   for slot = 12,16 do
-     local obj = self.holder:item_in_slot(slot)
-     if obj then 
-       dbg_printf(" item in slot~C0D %d~C0B =~C0A %s~C07 ", slot, obj:name())
-       that_leave:add(obj:section(), 1) -- это просто мрак :( 
-     end      
-   end
- 
-   -- предметы в слотах и так остаются, упреждение дублирования. Скрытию особенно подлежат гранаты из слота 4
-   local tmp = items_not_hide 
-   for id, obj in pairs(tmp) do       
-      local sc = obj:section()       
-      local cnt = that_leave(sc) or 0
-      if cnt > 0 then
-         dbg_printf("~CDE %-25s~CD0 unregistered from that_leave~C07", obj:name())
-         that_leave:sub(sc, 1)            
-      else
-         items_not_hide[id] = nil -- оставить сей предмет не получиться даже в слоте(!)
-         if strpos("grenade", sc) then
-            dbg_printf("[~T].~C0C #WARN:~C07 item~C0A %-15s~C07 disabled for leave ", obj:name())
-         end        
-      end 
-   end -- for
- else
-   dbg_printf("[~T]. #DBG: hide_mode = 1 ")  
- end -- if
- 
- 
- that_leave:set("?", nil)
- that_leave:optimize()
- 
- local content    = collect_items (self.holder) -- сумма всех объектов в инвентаре
- -- фильтрация того что можно трансферить
- local trans_from_inv = list_sect_id("transfer")
- local avail_map  = collect_items_map(content, true) -- DBG: для контроля количества остатка
- -- avail_map:dump("avail_map:")
- 
- local locked = std_map() 
- 
- for i, rec in content:ipairs() do
-    -- остается все что в слотах, плюс запрещенные предметы
-    local allow_leave = ""   
-    if items_not_hide[rec.id] then
-       allow_leave = "item_not_hide "
+-- 2. при сбросе рюкзака нужно спрятать все, кроме предметов в слотах/разгрузке/подсумке/НЗ
+function shadow_inventory:hide_content( mode )
+    if not self:update_storage() then
+        ODS( '~C0C #WARN:~C07 no shadow_inventory in actor inventory, hide content breaked ' )
+        return false
     end
-    if important_items[rec.sect] then
-       allow_leave = "important_item "
-    end                                      
-    
-    if item_in_use(rec.obj) and not strpos(rec.sect, "^grenade") then -- по гранатам действует правило для всех боеприпасов!          
-       allow_leave = allow_leave .. "item_in_use "
+    if mode == self.last_hide then
+        return true -- already same hide
     end
-    
-    if mode == 0 and not test_can_hide(rec.sect) then -- остаются условно неюзабельные игроком предметы: еда, артефакты, спички
-       allow_leave = allow_leave .. "test_can_hide"
+    moving_items      = {}
+    local hide_status = "~CE2 mtv items leave ++"
+    if     mode == 0 then
+    elseif mode == 1 then
+        hide_status = "~CE1 mtv items hide"
+    elseif mode == 2 then
+        hide_status = "~CE4 mtv items leave only"
     end
-    
-    if self:need_hide(rec.id) then
-       dbg_printf(" hide enforced for~C0A %s~C07", rec.obj:name())
-       allow_leave = ""
+    -- необходимо отследить, что хранилище полностью зачищено
+    if not self:check_restored() then
+        --wprintf("~C0C #ERROR:~C07 shadow_inventory:hide_content(%d) cannot hide non-restored content ", mode)
+        return false
     end
-    
-     
-    if allow_leave ~= "" then           
-       dbg_printf("~C0F hide disabled for~C0A %-35s~C07 due conditions~C0F { %s }~C07", rec.obj:name(), allow_leave)
-       locked:add(rec.sect, rec.amount) -- запомнить залоченное количество, на последний этап
-    else
-       local itm = rec.obj:get_inventory_item()
-       if itm then
-          dbg_printf("~C0E hide enabled for for~C0A %-35s~C0E, item_place =~C0D %d~C07", rec.obj:name(), itm.item_place)
-       end    
-       trans_from_inv:add(rec)   
-    end 
- end -- for                                            
-
- if dbg_dump then that_leave:dump("that_leave dump:", "   ") end
- 
- trans_from_inv:sort(compare_name_id) -- сортировка по имени и id
- local src_map = collect_items_map(trans_from_inv, true)
- if dbg_dump then src_map:dump(" source that test for transfer:") end
- 
- local limit_trans = std_map() -- ограничения по количеству перемещения в пользу avail
- for sect, count in src_map:pairs() do
-    local need_leave = that_leave(sect) or 0  -- имеется достаточно, чтобы переместить часть 
-    if count > need_leave then
-       limit_trans:set(sect, count - need_leave )
-    else
-       limit_trans:set(sect, 0) -- по этой секции заблокировано перемещение
-    end  
- end -- for
- 
- for sc, flag in pairs(important_items) do 
-     limit_trans:set(sc, 0) -- дополнительная мера безопасности
- end -- for        
- 
- if dbg_dump then limit_trans:dump(" transfer limits:") end
-   
- local that_trans  = std_map()
- -- local rest_trans  = std_map()  -- сюда пойдут остатки от сплита патронов
- -- trans_from_inv:dump("sorted source:")
- -- сканирование списка и трансфер
- local n_rec = 1
- local postpone = {}
- 
- -- ================================== ЖИРНЮЩИЙ ЦИКЛ - занимается хитровыделанным трансфером предметов из инвентаря в рюкзк ========================================= 
- -- список сделан расширяемым, за счет сплита пачек патронов
- -- перебираются предметы в заготовленном списке          
-           
-       
- local transfer_single = function(rec)                 
-     local size = 0
-     local sect = rec.sect
-     local obj  = client_obj(rec.id)        
-     if obj == nil then
-       wprintf("~C0C #ERROR(transfer_single):~C07 record~C0D %d~C07 client_obj(~C0D #%d~C07) returned nil ", n_rec, rec.id)
-       -- ODS('$#DUMP_CONTEXT')
-       local sobj = g_sim:object(rec.id)
-       if sobj then       
-          wprintf("~C0F #DEBUG:~C07 postponed transfer item~C0A %s~C07, gvid =~C0D %d~C07, lvid =~C0D %d~C07", sobj:name(), sobj.m_game_vertex_id, sobj.m_level_vertex_id)
-          sobj.m_game_vertex_id   = self.storage:game_vertex_id()
-          sobj.m_level_vertex_id  = self.storage:level_vertex_id()
-          misc.force_online(rec.id)
-          table.insert (postpone, rec)
-       end  
-       -- misc.process_spawn()
-       -- continue(!)     
-     else
-       
-     -- if item_in_use(obj) then return end -- не проверяется на трансфер
-        
-       local leave = that_leave(sect, 0)          
-       local amount, size = amount_in_batch(obj)          
-       local max_trans = limit_trans(sect)
-       local avail = avail_map(sect) or 0
-       if type(avail) ~= "number" then
-          --wprintf("~C0C #ERROR:~C07 avail_map[%s] = %s ", sect, DumpVar(avail))
-          avail = tonumber(avail) 
-       end 
-       -- dbg_printf("~C0E checking~C0A %-15s~C0E for transfer need, leave =~C0D %d~C0E, amount = ~C0D %d~C07", sect, leave, amount)
-       
-       -- amount  == количество в пачке перед изменением её размера
-       -- если оставить меньше, то трансфер объекта допускается частично/полностью
-       -- сначала оставляются разбитые небольшие пачки, в пределах количества leave - это более производительно, чем трансферить их
-       if leave == 0 then  -- leave = 20, amount = 4 x 5          
-          if max_trans > 0 then
-            local amount_trans = amount -- сколько надо переместить                
-            if amount_trans > max_trans then  
-               amount_trans = max_trans
-               dbg_printf("~C0C #WARN:~C07 before transfer  ammo box ~C0A %-25s~C07 will be limited, max_trans =~C0D %d~C07", obj:name(), max_trans)                         
-               amount_trans = amount_in_batch(obj, amount_trans) -- если перемещаются патроны, их количество должно быть в заданных пределах               
-            end   
-            -- лимит сужается по мере использования трансфера
-            max_trans = max_trans - amount_trans
-            limit_trans:set(sect, max_trans)                       
-            if mode == 1 then
-               self.leave_avail_ids[rec.id] = true 
-               dbg_printf("~C0D %4d ~C0E leaved to show in inventory object~C0A %-25s~C07, amount_leave =~C0D %3d~C07 from =~C0D %d~C07, leave =~C0D %3d~C07",n_rec, obj:name(), amount_trans, amount, leave)                    
-            else
-               dbg_printf("~C0D %4d ~C0F transfering from inventory object~C0A %-25s~C07, amount_trans =~C0D %3d~C07 from =~C0D %3d~C07, leave =~C0D %d~C07, max_trans =~C0D %d~C07", n_rec, obj:name(), amount_trans, amount, leave, max_trans)
-               item_transfer (self.holder, obj, self.storage)     -- отправление предмета в теневой инвентарь
-               that_trans:add(sect, amount_trans)     
+    local items_not_hide = self:items_in_slots( true ) -- предметы в слотах, включая виртуальные и исключая гранатки
+    items_not_hide[ self.storage:id() ] = self.storage
+    if not self.items_restored then
+        wprintf(
+            "~C0C inventory content already hidden~C07, bad call from:\n~C0E %s~C07",
+            lua_traceback("   ")
+        )
+        wprintf( " last action from\n~C0F %s~C07", self.hide_from or 'nil' )
+        return true
+    end
+    reset_interactive( 1 )
+    self.hide_from       = lua_traceback("   ")
+    self.last_op_from    = self.hide_from
+    self.leave_avail_ids = {}
+    self.last_hide       = 3
+    nlc_vars.action_from = nil
+    SetDbgVar( "inventory_action", "hiding", true )
+    --wprintf("[~T/~B].~CE0 #DBG: shadow_inventory:hide_content start %s ~C07 ", hide_status)
+    local that_leave = std_map()
+    for k, leave in pairs( self.leave_avail ) do
+        if dbg_dump then leave:dump( " loading "..k.. ": ", "   " ) end
+        that_leave:add_map( leave )
+    end
+    if mode ~= 1 then
+        -- учет предметов в быстрых слотах
+        for slot = 12, 16 do
+            local obj = self.holder:item_in_slot( slot )
+            if obj then
+                dbg_printf( " item in slot~C0D %d~C0B =~C0A %s~C07 ", slot, obj:name() )
+                that_leave:add( obj:section(), 1 ) -- это просто мрак :(
             end
-            avail = avail - amount_trans                  
-          end -- if max_trans                                                    
-       else -- трансфер заблокирован                 
-          local amount_leave = amount
-          if leave < amount then amount_leave = leave end
-          amount_in_batch(obj, amount_leave) -- остается столько патронов, сколько задумано
-          if mode == 1 then -- предмет прячется, вместо того чтобы быть оставленым
-             dbg_printf("~C0D %4d ~C0E transfering from inventory object ~C0A %-25s~C07, amount_trans =~C0D %3d~C07,  from =~C0D %d~C07, leave =~C0D %3d~C07", n_rec, obj:name(), amount_leave, amount, leave)
-             item_transfer(self.holder, obj, self.storage)
-             that_trans:add(sect, amount_leave)
-          else -- предмет остается в инвентаре
-             dbg_printf("~C0D %4d ~C0F leaved to use in inventory object~C0A %-25s~C07, amount_leave =~C0D %3d~C07,  from =~C0D %d~C07, leave =~C0D %3d~C07", n_rec, obj:name(), amount_leave, amount, leave)
-             self.leave_avail_ids[rec.id] = true                   
-          end
-          leave = leave - amount_leave
-          avail = avail - amount_leave
-          that_leave:set(sect, leave)                                              
-          
-          local rest = amount - amount_leave  -- запомнить остаток от пачки                              
-          if leave + max_trans >= rest then
-             self:on_ammo_split (trans_from_inv, sect, n_rec + 1, rest)  -- добавит новую пачку, или расширит имеющиеся впереди - что позволит осуществить трансфер остатка
-          else
-             wprintf("~C0C #ERROR:~C07 ammo balance mistmatch detected. Rest from batch =~C0D %d~C07 ", rest) 
-          end
-       end
-     
-       -- that_leave:set(sect, leave)
-       if avail < 0 then
-          wprintf("~C0C #ERROR:~C07 avail items with section~C0A %s~C07 =~C0D %d~C07 ", sect, avail) 
-       end
-       avail_map:set(sect, avail)          
-     end -- if obj
-     
- end -- local function transfer_single <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-----------------------------------
-     
-     
-     
- while (n_rec <= trans_from_inv:size()) do
-   local rec = trans_from_inv(n_rec)
-   if rec then
-      transfer_single(rec)
-   else
-      wprintf("~C0C#ERROR(transfer_loop):~C07 record~C0D %d~C07 == nil  ", n_rec)   
-   end   
-   n_rec = n_rec + 1
-   if n_rec > 1000 then
-     wprintf("~C0C#ERROR(transfer_loop):~C07 to many transfer records~C0D %d~C07", n_rec)
-     break
-   end          
- end -- while
- 
- 
- -- bind_stalker.handle_take_drop = false   
- misc.process_spawn()  -- обработка сообщений трансфера
-  
- local attempts = 10 
- while #postpone > 0 and (attempts > 0) do
-   local pp = postpone
-   wprintf("[~T].~C0C #WARN~C07: processing~C0D %d~C07 postponed transfers", #pp) 
-   postpone = {}           
-   for i, rec in ipairs(pp) do
-     transfer_single(rec)
-   end
-   misc.process_spawn()  -- обработка сообщений трансфера
-   attempts = attempts - 1   
- end
- 
- bind_stalker.handle_take_drop = true
-     
- --wprintf("[~T/~B]. #PERF: processed~C0D %d~C07 records, sizeof(list) =~C0D %d~C07 ", n_rec, trans_from_inv:size())
- -- исключительная обработка гранат в слоте
- local gren = self.holder:item_in_slot(GRENADE_SLOT)
- if mode ~= 0 and gren then 
-   --wprintf("~C0F move_to_ruck performing for~C0A %s~C07 ", gren:name())
-   self.holder:move_to_ruck(gren)
- end 
-  
-    
- 
- if dbg_dump then that_trans:dump(" that_trans dump:") end
- if dbg_dump then locked:dump(" leaved by lock:") end
- 
- 
- 
- while true do
-   local fake_sec = "detector_simple_fake"
-   local fake_cnt = locked(fake_sec) or 0
-   if fake_cnt <= 1 then break end
- 
-   local obj = self.holder:object(fake_sec)
-   if obj then
-      self.holder:drop_item(obj)
-      wprintf("~C0C #WARN:~C07 удаляется лишний~C0A %s~C07 ", obj:name())
-      misc.release_obj(obj, true)
-      misc.process_spawn()
-      razgruzka.default_detector = false
-   end  
-   locked:sub(fake_sec, 1)      
- end  
-         
- -- начало компенсаций "оставляемого"
- for sect, count in locked:pairs() do 
-     that_leave:sub(sect, count)
- end     
- 
- that_leave:set("?", nil) -- удалить пустышки
- that_leave:optimize()
- 
- 
- if dbg_dump then that_leave:dump(" that_leave dump:") end    
- -- rest_trans:optimize()
- -- rest_trans:dump(" rest_trans dump:")
- 
- -- подравнивание количества патронов оставшихся в инвентаре/рюкзаке
- local target         = self.holder
- local source         = self.storage
- if mode == 1 then 
-    target = self.storage
-    source = self.holder 
- end
- 
- local content        = collect_items (target) -- сумма всех объектов
- 
- -- content:dump("~C0F that rest inventory content:~C07")
- 
- for sect, count in that_leave:pairs() do -- count - количество нераспределенных патронов в инвентарь            
-     
-     for i, rec in content:ipairs() do
-          local obj = client_obj(rec.id)
-          if obj and obj:section() == sect then
-             local ammo = obj:get_ammo()              
-             if ammo and ammo.size > ammo.current then
-                local max_add = ammo.size - ammo.current
-                --wprintf("   resizing~C0F %-15s~C07, current =~C0D %d~C07, size =~C0D %d~C07, max_add =~C0D %d~C07, count_leave =~C0D %d~C07", obj:name(), ammo.current, ammo.size, max_add, count)
-                -- если добавить можно больше требуемого, количество остатка анигилирует                                          
-                if max_add >= count then 
-                   ammo.current = ammo.current + count
-                   count = 0
-                else -- если добавить можно чуть, количество остатка понижается на это "чуть"
-                   ammo.current = ammo.size
-                   count = count - max_add
-                end              
-             end
-          
-          elseif obj == nil then
-             wprintf("~C0C #FATAL:~C07 object %d was disappear from inventory", rec.id)
-          end -- if                
-     end -- for i, rec
-     
-     
-     
-     if count > 0 then -- есть остаток
-        --wprintf("  ~C0C need extra items to~C0F %s~C07, sect =~C0A %s~C07, amount =~C0D %d~C07", target:name(), sect, count)         
-     end 
- end -- for sect 
-
- self:compact_ammo(self.storage)
-     
- nlc_vars.shadow_inv = collect_items_map(self.storage)(true) -- сохранить таблицу для отладки
- self.items_restored = false -- теперь можно разрешить спавн мимо инвентори
- self.last_hide      = mode
- moving_items        = {}    -- разблокировка тейка
-
- --wprintf("[~T/~B].~CE0 #DBG: shadow_inventory:hide_content end, hidden weight =~CED %.1f~CE0 Kg ~C07", self.storage:weight())
- return true
-         
+        end
+        -- предметы в слотах и так остаются, упреждение дублирования.
+        -- Скрытию особенно подлежат гранаты из слота 4
+        local tmp = items_not_hide
+        for id, obj in pairs( tmp ) do
+            local sc  = obj:section()
+            local cnt = that_leave( sc ) or 0
+            if cnt > 0 then
+                dbg_printf( "~CDE %-25s~CD0 unregistered from that_leave~C07", obj:name() )
+                that_leave:sub( sc, 1 )
+            else
+                items_not_hide[ id ] = nil -- оставить сей предмет не получиться даже в слоте(!)
+                if strpos( "grenade", sc ) then
+                    dbg_printf(
+                        "[~T].~C0C #WARN:~C07 item~C0A %-15s~C07 disabled for leave ",
+                        obj:name()
+                    )
+                end
+            end
+        end
+    else
+        dbg_printf( "[~T]. #DBG: hide_mode = 1 " )
+    end
+    that_leave:set( "?", nil )
+    that_leave:optimize()
+    local content = collect_items( self.holder ) -- сумма всех объектов в инвентаре
+    -- фильтрация того что можно трансферить
+    local trans_from_inv = list_sect_id( "transfer" )
+    local avail_map      = collect_items_map( content, true ) -- DBG: для контроля количества остатка
+    -- avail_map:dump("avail_map:")
+    local locked = std_map()
+    for i, rec in content:ipairs() do
+        -- остается все что в слотах, плюс запрещенные предметы
+        local allow_leave = ""
+        if items_not_hide[ rec.id ]    then allow_leave = "item_not_hide "  end
+        if important_items[ rec.sect ] then allow_leave = "important_item " end
+        if
+            item_in_use( rec.obj )
+            and not strpos( rec.sect, "^grenade")
+        then -- по гранатам действует правило для всех боеприпасов!
+            allow_leave = allow_leave .. "item_in_use "
+        end
+        if
+            mode == 0
+            and not test_can_hide( rec.sect )
+        then -- остаются условно неюзабельные игроком предметы: еда, артефакты, спички
+            allow_leave = allow_leave .. "test_can_hide"
+        end
+        if self:need_hide( rec.id ) then
+            dbg_printf( " hide enforced for~C0A %s~C07", rec.obj:name() )
+            allow_leave = ""
+        end
+        if allow_leave ~= "" then
+            dbg_printf(
+                "~C0F hide disabled for~C0A %-35s~C07 due conditions~C0F { %s }~C07",
+                rec.obj:name(), allow_leave
+            )
+            locked:add( rec.sect, rec.amount ) -- запомнить залоченное количество, на последний этап
+        else
+            local itm = rec.obj:get_inventory_item()
+            if itm then
+                dbg_printf(
+                    "~C0E hide enabled for for~C0A %-35s~C0E, item_place =~C0D %d~C07",
+                    rec.obj:name(), itm.item_place
+                )
+            end
+            trans_from_inv:add(rec)
+        end
+    end
+    if dbg_dump then that_leave:dump( "that_leave dump:", "   " ) end
+    trans_from_inv:sort( compare_name_id ) -- сортировка по имени и id
+    local src_map = collect_items_map( trans_from_inv, true )
+    if dbg_dump then src_map:dump( " source that test for transfer:" ) end
+    local limit_trans = std_map() -- ограничения по количеству перемещения в пользу avail
+    for sect, count in src_map:pairs() do
+        local need_leave = that_leave( sect ) or 0  -- имеется достаточно, чтобы переместить часть
+        if count > need_leave then
+            limit_trans:set( sect, count - need_leave )
+        else
+            limit_trans:set( sect, 0 ) -- по этой секции заблокировано перемещение
+        end
+    end
+    for sc, flag in pairs( important_items ) do
+        limit_trans:set( sc, 0 ) -- дополнительная мера безопасности
+    end
+    if dbg_dump then limit_trans:dump( " transfer limits:" ) end
+        local that_trans  = std_map()
+        -- local rest_trans  = std_map()  -- сюда пойдут остатки от сплита патронов
+        -- trans_from_inv:dump("sorted source:")
+        -- сканирование списка и трансфер
+        local n_rec = 1
+        local postpone = {}
+        -- ============= ЖИРНЮЩИЙ ЦИКЛ - занимается хитровыделанным трансфером
+        -- предметов из инвентаря в рюкзк ====================================
+        -- список сделан расширяемым, за счет сплита пачек патронов
+        -- перебираются предметы в заготовленном списке
+        ---------------------------------------------------------------------------------------------------------
+        local transfer_single = function( rec )
+            local size = 0
+            local sect = rec.sect
+            local obj  = client_obj( rec.id )
+            if obj == nil then
+                wprintf(
+                    "~C0C #ERROR(transfer_single):~C07 record~C0D %d~C07 client_obj(~C0D #%d~C07) returned nil ",
+                    n_rec, rec.id
+                )
+                -- ODS('$#DUMP_CONTEXT')
+                local sobj = g_sim:object( rec.id )
+                if sobj then
+                    wprintf(
+                        "~C0F #DEBUG:~C07 postponed transfer item~C0A %s~C07, gvid =~C0D %d~C07, lvid =~C0D %d~C07",
+                        sobj:name(), sobj.m_game_vertex_id, sobj.m_level_vertex_id
+                    )
+                    sobj.m_game_vertex_id  = self.storage:game_vertex_id()
+                    sobj.m_level_vertex_id = self.storage:level_vertex_id()
+                    misc.force_online( rec.id )
+                    table.insert( postpone, rec )
+                end
+                -- misc.process_spawn()
+                -- continue(!)
+            else
+                -- if item_in_use(obj) then return end -- не проверяется на трансфер
+                local leave        = that_leave( sect, 0 )
+                local amount, size = amount_in_batch( obj )
+                local max_trans    = limit_trans( sect )
+                local avail        = avail_map( sect ) or 0
+                if type( avail ) ~= "number" then
+                    --wprintf("~C0C #ERROR:~C07 avail_map[%s] = %s ", sect, DumpVar(avail))
+                    avail = tonumber( avail )
+                end
+                -- dbg_printf(
+                --     "~C0E checking~C0A %-15s~C0E for transfer need, leave =~C0D %d~C0E, amount = ~C0D %d~C07",
+                --     sect, leave, amount
+                -- )
+                -- amount  == количество в пачке перед изменением её размера
+                -- если оставить меньше, то трансфер объекта допускается частично/полностью
+                -- сначала оставляются разбитые небольшие пачки,
+                -- в пределах количества leave - это более производительно, чем трансферить их
+                if leave == 0 then  -- leave = 20, amount = 4 x 5
+                    if max_trans > 0 then
+                        local amount_trans = amount -- сколько надо переместить
+                        if amount_trans > max_trans then
+                            amount_trans = max_trans
+                            dbg_printf(
+                                "~C0C #WARN:~C07 before transfer  ammo box ~C0A %-25s~C07 will be limited, max_trans =~C0D %d~C07",
+                                obj:name(), max_trans
+                            )
+                            -- если перемещаются патроны, их количество должно быть в заданных пределах
+                            amount_trans = amount_in_batch( obj, amount_trans )
+                        end
+                        -- лимит сужается по мере использования трансфера
+                        max_trans = max_trans - amount_trans
+                        limit_trans:set( sect, max_trans )
+                        if mode == 1 then
+                            self.leave_avail_ids[ rec.id ] = true
+                            dbg_printf(
+                                "~C0D %4d ~C0E leaved to show in inventory object~C0A %-25s~C07, amount_leave =~C0D %3d~C07 from =~C0D %d~C07, leave =~C0D %3d~C07",
+                                n_rec, obj:name(), amount_trans, amount, leave
+                            )
+                        else
+                            dbg_printf(
+                                "~C0D %4d ~C0F transfering from inventory object~C0A %-25s~C07, amount_trans =~C0D %3d~C07 from =~C0D %3d~C07, leave =~C0D %d~C07, max_trans =~C0D %d~C07",
+                                n_rec, obj:name(), amount_trans, amount, leave, max_trans
+                            )
+                            item_transfer( self.holder, obj, self.storage ) -- отправление предмета в теневой инвентарь
+                            that_trans:add( sect, amount_trans )
+                        end
+                        avail = avail - amount_trans
+                    end
+                else  -- трансфер заблокирован
+                    local amount_leave = amount
+                    if leave < amount then amount_leave = leave end
+                    amount_in_batch( obj, amount_leave ) -- остается столько патронов, сколько задумано
+                    if mode == 1 then -- предмет прячется, вместо того чтобы быть оставленым
+                        dbg_printf(
+                            "~C0D %4d ~C0E transfering from inventory object ~C0A %-25s~C07, amount_trans =~C0D %3d~C07,  from =~C0D %d~C07, leave =~C0D %3d~C07",
+                            n_rec, obj:name(), amount_leave, amount, leave
+                        )
+                        item_transfer( self.holder, obj, self.storage )
+                        that_trans:add( sect, amount_leave )
+                    else -- предмет остается в инвентаре
+                        dbg_printf(
+                            "~C0D %4d ~C0F leaved to use in inventory object~C0A %-25s~C07, amount_leave =~C0D %3d~C07,  from =~C0D %d~C07, leave =~C0D %3d~C07",
+                            n_rec, obj:name(), amount_leave, amount, leave
+                        )
+                        self.leave_avail_ids[rec.id] = true
+                    end
+                    leave = leave - amount_leave
+                    avail = avail - amount_leave
+                    that_leave:set( sect, leave )
+                    local rest = amount - amount_leave  -- запомнить остаток от пачки
+                    if leave + max_trans >= rest then
+                        --v-- добавит новую пачку, или расширит имеющиеся впереди - что позволит осуществить трансфер остатка
+                        self:on_ammo_split( trans_from_inv, sect, n_rec + 1, rest )
+                    else
+                        wprintf(
+                            "~C0C #ERROR:~C07 ammo balance mistmatch detected. Rest from batch =~C0D %d~C07 ",
+                            rest
+                        )
+                    end
+                end
+                -- that_leave:set(sect, leave)
+                if avail < 0 then
+                    wprintf(
+                        "~C0C #ERROR:~C07 avail items with section~C0A %s~C07 =~C0D %d~C07 ",
+                        sect, avail
+                    )
+                end
+                avail_map:set( sect, avail )
+            end
+        end
+        -------------------------------------------------------------------------------------------
+        while ( n_rec <= trans_from_inv:size() ) do
+            local rec = trans_from_inv( n_rec )
+            if rec then
+                transfer_single( rec )
+            else
+                wprintf( "~C0C#ERROR(transfer_loop):~C07 record~C0D %d~C07 == nil  ", n_rec )
+            end
+            n_rec = n_rec + 1
+            if n_rec > 1000 then
+                wprintf( "~C0C#ERROR(transfer_loop):~C07 to many transfer records~C0D %d~C07", n_rec )
+                break
+            end
+        end
+        misc.process_spawn()  -- обработка сообщений трансфера
+        local attempts = 10
+        while #postpone > 0 and ( attempts > 0 ) do
+            local pp = postpone
+            wprintf( "[~T].~C0C #WARN~C07: processing~C0D %d~C07 postponed transfers", #pp )
+            postpone = {}
+            for i, rec in ipairs( pp ) do transfer_single( rec ) end
+            misc.process_spawn()  -- обработка сообщений трансфера
+            attempts = attempts - 1
+        end
+        bind_stalker.handle_take_drop = true
+        -- wprintf(
+        --     "[~T/~B]. #PERF: processed~C0D %d~C07 records, sizeof(list) =~C0D %d~C07 ",
+        --     n_rec, trans_from_inv:size()
+        -- )
+        -- исключительная обработка гранат в слоте
+        local gren = self.holder:item_in_slot( GRENADE_SLOT )
+        if mode ~= 0 and gren then
+            --wprintf("~C0F move_to_ruck performing for~C0A %s~C07 ", gren:name())
+            self.holder:move_to_ruck( gren )
+        end
+        if dbg_dump then that_trans:dump( " that_trans dump:" ) end
+        if dbg_dump then locked:dump( " leaved by lock:" ) end
+        while true do
+            local fake_sec = "detector_simple_fake"
+            local fake_cnt = locked( fake_sec ) or 0
+            if fake_cnt <= 1 then break end
+            local obj = self.holder:object( fake_sec )
+            if obj then
+            self.holder:drop_item( obj )
+            wprintf( "~C0C #WARN:~C07 удаляется лишний~C0A %s~C07 ", obj:name() )
+            misc.release_obj( obj, true )
+            misc.process_spawn()
+            razgruzka.default_detector = false
+        end
+        locked:sub( fake_sec, 1 )
+    end
+    -- начало компенсаций "оставляемого"
+    for sect, count in locked:pairs() do that_leave:sub( sect, count ) end
+    that_leave:set( "?", nil ) -- удалить пустышки
+    that_leave:optimize()
+    if dbg_dump then that_leave:dump( " that_leave dump:" ) end
+    -- rest_trans:optimize()
+    -- rest_trans:dump(" rest_trans dump:")
+    -- подравнивание количества патронов оставшихся в инвентаре/рюкзаке
+    local target = self.holder
+    local source = self.storage
+    if mode == 1 then
+        target = self.storage
+        source = self.holder
+    end
+    local content = collect_items( target ) -- сумма всех объектов
+    -- content:dump("~C0F that rest inventory content:~C07")
+    for sect, count in that_leave:pairs() do -- count - количество нераспределенных патронов в инвентарь
+        for i, rec in content:ipairs() do
+            local obj = client_obj( rec.id )
+            if obj and obj:section() == sect then
+                local ammo = obj:get_ammo()
+                if ammo and ammo.size > ammo.current then
+                    local max_add = ammo.size - ammo.current
+                    --wprintf("   resizing~C0F %-15s~C07, current =~C0D %d~C07, size =~C0D %d~C07, max_add =~C0D %d~C07, count_leave =~C0D %d~C07", obj:name(), ammo.current, ammo.size, max_add, count)
+                    -- если добавить можно больше требуемого, количество остатка анигилирует
+                    if max_add >= count then
+                        ammo.current = ammo.current + count
+                        count        = 0
+                    else -- если добавить можно чуть, количество остатка понижается на это "чуть"
+                        ammo.current = ammo.size
+                        count = count - max_add
+                    end
+                end
+            elseif obj == nil then
+                wprintf("~C0C #FATAL:~C07 object %d was disappear from inventory", rec.id)
+            end
+        end
+        if count > 0 then -- есть остаток
+            --wprintf("  ~C0C need extra items to~C0F %s~C07, sect =~C0A %s~C07, amount =~C0D %d~C07", target:name(), sect, count)
+        end
+    end
+    self:compact_ammo( self.storage )
+    nlc_vars.shadow_inv = collect_items_map( self.storage )( true ) -- сохранить таблицу для отладки
+    self.items_restored = false -- теперь можно разрешить спавн мимо инвентори
+    self.last_hide      = mode
+    moving_items        = {}    -- разблокировка тейка
+    --wprintf("[~T/~B].~CE0 #DBG: shadow_inventory:hide_content end, hidden weight =~CED %.1f~CE0 Kg ~C07", self.storage:weight())
+    return true
 end
- 
 
 -- восстановление содержимого инвентаря из теневого-инвентаря (носимого рюкзака)
 function shadow_inventory:restore_content()
- if not self:update_storage() then 
-    ODS('~C0C #WARN:~C07 no shadow_inventory in actor inventory, restore content breaked ');
-    return false
- end
-
- 
- if self.items_restored then 
-    wprintf("~C0C inventory content already restored~C07, bad call from:\n~C0E %s~C07", lua_traceback("   "))
-    wprintf(" last action from\n~C0F %s~C07", self.rest_from or 'nil')
-    return false
- else
-    moving_items = {}
-    reset_interactive(1)
-    local p = vector():set (self.holder:position())
-    p.y = p.y + 0.7
-    p:sub(self.holder:direction():mul(0.3)) -- сзади носителя
-    if self.storage then
-       self.storage:set_position(p)
-    end                                                                                       
-    
-    self.items_restored = true
-    self.rest_from = lua_traceback("   ")
-    self.last_op_from = self.rest_from
-    SetDbgVar("inventory_action", "restore", true)
-    --wprintf("[~T/~B].~CB0 #DBG: shadow_inventory:restore_content start~C07")
-    local trans_to_inv  = collect_items (self.storage)    
-    local map = collect_items_map(trans_to_inv, true)
-    if dbg_dump then map:dump("~C0F shadow_inventory:restore_content dump ~C0A "..self.storage:name() .."~C07:") end
-    -- trans_to_inv:dump("~C0F shadow_inventory:restore_content dump:~C07")
-    transfer_items (self.storage, self.holder, trans_to_inv) -- каждый предмет в списке                
-    nlc_vars.shadow_inv = {} -- по логике рюзкак теперь опустел
-    --wprintf("[~T/~B]. processing messages...")
-    -- bind_stalker.handle_take_drop = false
-    misc.process_spawn()    
-    bind_stalker.handle_take_drop = true
-    self:compact_ammo()
-    
-    local flt_ammo = function(obj)
-      return strpos ( obj:section(), "ammo" ) 
-    end                               
-    
-    --wprintf("[~T/~B]. verification...")        
-    local content = collect_items(self.holder, flt_ammo)     
-    map = collect_items_map(content, true)  
-    -- content:dump("~C0E shadow_inventory:restore_content dump result: ~C07")     
-    --wprintf("[~T/~B].~CB0 #DBG: shadow_inventory:restore_content end, container weight = %.3f Kg~C07", self.storage:weight())
-    -- TODO: debug code
-    local mind = self.holder:object("myaso_mem")
-    if mind then
-       misc.release_obj(mind) -- мозги ГГ не нужны, они есть у игрока
+    if not self:update_storage() then
+        ODS( '~C0C #WARN:~C07 no shadow_inventory in actor inventory, restore content breaked ' )
+        return false
     end
-    
-    self.last_hide = -1    
-    moving_items = {}
-    return ( map:size () == 0 )
- end        
+    if self.items_restored then
+        wprintf(
+            "~C0C inventory content already restored~C07, bad call from:\n~C0E %s~C07",
+            lua_traceback("   ")
+        )
+        wprintf( " last action from\n~C0F %s~C07", self.rest_from or 'nil' )
+        return false
+    else
+        moving_items = {}
+        reset_interactive( 1 )
+        local p = vector():set( self.holder:position() )
+        p.y = p.y + 0.7
+        p:sub( self.holder:direction():mul( 0.3 ) ) -- сзади носителя
+        if self.storage then self.storage:set_position( p ) end
+        self.items_restored = true
+        self.rest_from      = lua_traceback("   ")
+        self.last_op_from   = self.rest_from
+        SetDbgVar( "inventory_action", "restore", true )
+        --wprintf("[~T/~B].~CB0 #DBG: shadow_inventory:restore_content start~C07")
+        local trans_to_inv  = collect_items( self.storage )
+        local map           = collect_items_map( trans_to_inv, true )
+        if dbg_dump then
+            map:dump( "~C0F shadow_inventory:restore_content dump ~C0A "..self.storage:name() .."~C07:" )
+        end
+        -- trans_to_inv:dump("~C0F shadow_inventory:restore_content dump:~C07")
+        transfer_items( self.storage, self.holder, trans_to_inv ) -- каждый предмет в списке
+        nlc_vars.shadow_inv = {} -- по логике рюзкак теперь опустел
+        --wprintf("[~T/~B]. processing messages...")
+        -- bind_stalker.handle_take_drop = false
+        misc.process_spawn()
+        bind_stalker.handle_take_drop = true
+        self:compact_ammo()
+        local flt_ammo = function( obj )
+            return strpos( obj:section(), "ammo" )
+        end
+        --wprintf("[~T/~B]. verification...")
+        local content = collect_items( self.holder, flt_ammo )
+        map           = collect_items_map( content, true )
+        -- content:dump("~C0E shadow_inventory:restore_content dump result: ~C07")
+        --wprintf("[~T/~B].~CB0 #DBG: shadow_inventory:restore_content end, container weight = %.3f Kg~C07", self.storage:weight())
+        -- TODO: debug code
+        local mind = self.holder:object( "myaso_mem" )
+        if mind then
+            misc.release_obj( mind ) -- мозги ГГ не нужны, они есть у игрока
+        end
+        self.last_hide = -1
+        moving_items   = {}
+        return ( map:size () == 0 )
+    end
 end
 
-function shadow_inventory:hide_item(obj)  
-  if type(obj) == "number" then obj = client_obj(obj) end
-  if type(obj) == "string" then obj = self.holder:object(obj) end -- извлечение по имени/секции
-  if not obj then
-     wprintf("[~T].~C0C #ERROR(shadow_inventory:hide_item):~C07 cannot hide object == nil")
-     return false
-  end
-  local owner obj:parent()
-  if owner and owner:id() ~= self.holder:id() then
-     wprintf("[~T].~C0C #ERROR(shadow_inventory:hide_item):~C07 cannot hide object~C0A %s~C07 who parent <> self.holder %s", obj:name(), self.holder:name())
-     return false
-  end
-  return self:take_item(obj, true)  
+function shadow_inventory:hide_item( obj )
+    if type( obj ) == "number" then obj = client_obj( obj ) end
+    if type( obj ) == "string" then obj = self.holder:object( obj ) end -- извлечение по имени/секции
+    if not obj then
+        wprintf( "[~T].~C0C #ERROR(shadow_inventory:hide_item):~C07 cannot hide object == nil" )
+    return false
+    end
+    local owner obj:parent()
+    if owner and owner:id() ~= self.holder:id() then
+        wprintf(
+            "[~T].~C0C #ERROR(shadow_inventory:hide_item):~C07 cannot hide object~C0A %s~C07 who parent <> self.holder %s",
+            obj:name(), self.holder:name()
+        )
+        return false
+    end
+    return self:take_item( obj, true )
 end
 
-function shadow_inventory:take_item(obj, target_hide)
-  if type(obj) == "number" then obj = client_obj(obj) end
-  if not obj then
-     wprintf("[~T].~C0C #ERROR(shadow_inventory:take_item):~C07 cannot take object == nil")
-     return false
-  end
-
-  local id   = obj:id()
-  if moving_items[id] then
-     return true -- вложенное событие при трансфере функцией transfer_item
-  end
-
-  local sect = obj:section()
-  local dest = self.holder
-  local holder = obj:parent()
-
-  if sect == "shadow_inventory" then
-     return true -- должно быть обработано в update_storage
-  end
-
-
-  
-  -- пока открыто, не добавлять 
-  -- если нет хранилище, фильтрацию по секциям отключить - для разрешения дропа
-  if target_hide and ( self.items_restored or self.leave_avail_ids[id] or ( not test_can_hide(sect) and self.storage ) ) then
-     --wprintf(" shadow_inventory:take_item disabled hide~C0A %s:%s~C07, items_restored =~C0E %s~C07", obj:name(), sect, tostring(self.items_restored))
-     -- wprintf("~C0E %s~C07", lua_traceback('   '))
-     target_hide = false  
-  end
-
-  if razgruzka.inventory_opened() then target_hide = false end -- не препятствовать работе инвентаря
-
-  if target_hide then dest = self.storage end -- в хранилище его
-  local imm_drop = false    
-  if dest == nil then
-     dest = self.holder
-     imm_drop = true
-  end
-  
-  -- wprintf(" selected destination~C0A %s~C07, imm_drop =~C0E %s~C07", dest:name(), tostring(imm_drop)) 
-  local tf = false
-  
-  
-  if sect == "detector_simple_fake" then
-     local have = self.holder:object(sect)
-     if not razgruzka.is_same (have, obj) then
-        ODS("~C0C #WARN:~C07 not need more fake detectors. Have one+")
-        misc.release_obj(obj)
+function shadow_inventory:take_item( obj, target_hide )
+    if type( obj ) == "number" then obj = client_obj( obj ) end
+    if not obj then
+        wprintf( "[~T].~C0C #ERROR(shadow_inventory:take_item):~C07 cannot take object == nil" )
+        return false
+    end
+    local id = obj:id()
+    if moving_items[ id ] then
+        return true -- вложенное событие при трансфере функцией transfer_item
+    end
+    local sect   = obj:section()
+    local dest   = self.holder
+    local holder = obj:parent()
+    if sect == "shadow_inventory" then
+        return true -- должно быть обработано в update_storage
+    end
+    -- пока открыто, не добавлять
+    -- если нет хранилище, фильтрацию по секциям отключить - для разрешения дропа
+    if
+        target_hide
+        and (
+            self.items_restored or self.leave_avail_ids[ id ]
+            or ( not test_can_hide( sect ) and self.storage )
+            )
+    then
+        --wprintf(" shadow_inventory:take_item disabled hide~C0A %s:%s~C07, items_restored =~C0E %s~C07", obj:name(), sect, tostring(self.items_restored))
+        -- wprintf("~C0E %s~C07", lua_traceback('   '))
+        target_hide = false
+    end
+    if razgruzka.inventory_opened() then target_hide = false end -- не препятствовать работе инвентаря
+    if target_hide then dest = self.storage end -- в хранилище его
+    local imm_drop = false
+    if dest == nil then
+        dest     = self.holder
+        imm_drop = true
+    end
+    -- wprintf(" selected destination~C0A %s~C07, imm_drop =~C0E %s~C07", dest:name(), tostring(imm_drop))
+    local tf = false
+    if sect == "detector_simple_fake" then
+        local have = self.holder:object( sect )
+        if not razgruzka.is_same( have, obj ) then
+            ODS( "~C0C #WARN:~C07 not need more fake detectors. Have one+" )
+            misc.release_obj( obj )
+            return
+        end
+    end
+    if strpos( sect, "_merc" ) then
+        wprintf( " actor not need expensive~C0A %s~C07 ", obj:name() )
+        misc.release_obj( obj )
         return
-     end     
-  end   
-  if strpos(sect, "_merc") then
-     wprintf(" actor not need expensive~C0A %s~C07 ", obj:name())
-     misc.release_obj(obj)
-     return 
-  end
-  
-  
-  if holder and holder:id() ~= dest:id() then
-
-     if strpos(obj:name(), "grenade") then
-        wprintf("~C0E %-25s~C07 transfer item~C0A %-25s~C07 to~C0F %s~C07", holder:name(), obj:name(), dest:name())
-     end
-     item_transfer(holder, obj, dest)
-     tf = true
-  elseif id ~= dest:id() and (holder == nil) then
-     dbg_printf(" received independant item~C0A %-25s~C07 to~C0F %s~C07",   obj:name(), dest:name())
-     if not imm_drop then
-        item_transfer(obj, obj, dest) -- cannot detach independant object :)
-     end   
-     tf = true           
-  end
-
-  --bind_stalker.handle_take_drop = false
-  if tf then misc.process_spawn() end -- обработка сообщений GE_OWNERSHIP
-  bind_stalker.handle_take_drop = true
-  
-  if imm_drop and virtual_slot_item (obj:section()) then
-     wprintf("[~T]. #DBG: items~C0A %s~C07 detected in virtual slot/important list, so no drop", obj:name())
-     imm_drop = false     
-  end
-  
-  local owner = obj:parent()
-  if imm_drop and owner then     
-  
-     for name, f in pairs(self.take_handlers) do
-      if f(obj) then return true end
-     end                                  
-          
-     dbg_printf("[~T].~C0C #WARN:~C07 immediated dropping~C0A %s~C07, due no shadow_inventory ", obj:name())
-     owner:drop_item(obj)
-     vergas_rucksack.sound_no_ruck() -- без рюкзака не сладко     
-     misc.process_spawn()     
-     bind_stalker.handle_dropped (obj)
-     return false                                                            
-  end
-  
-  if sect == "torch"  then
-     sak.torch_id_norm()
-  end
-  
-  sect = sak_inventory.dyn_art_base(sect)
-  self.quantity:add(sect, amount_in_batch(obj))
-   
-  return (owner and owner:id() == dest:id())  
+    end
+    if holder and holder:id() ~= dest:id() then
+        if strpos( obj:name(), "grenade" ) then
+            wprintf(
+                "~C0E %-25s~C07 transfer item~C0A %-25s~C07 to~C0F %s~C07",
+                holder:name(), obj:name(), dest:name()
+            )
+        end
+        item_transfer( holder, obj, dest )
+        tf = true
+    elseif id ~= dest:id() and ( holder == nil ) then
+        dbg_printf(
+            " received independant item~C0A %-25s~C07 to~C0F %s~C07",
+            obj:name(), dest:name()
+        )
+        if not imm_drop then
+            item_transfer( obj, obj, dest ) -- cannot detach independant object :)
+        end
+        tf = true
+    end
+    --bind_stalker.handle_take_drop = false
+    if tf then misc.process_spawn() end -- обработка сообщений GE_OWNERSHIP
+    bind_stalker.handle_take_drop = true
+    if imm_drop and virtual_slot_item( obj:section() ) then
+        wprintf(
+            "[~T]. #DBG: items~C0A %s~C07 detected in virtual slot/important list, so no drop",
+            obj:name()
+        )
+        imm_drop = false
+    end
+    local owner = obj:parent()
+    if imm_drop and owner then
+        for name, f in pairs( self.take_handlers ) do
+            if f( obj ) then return true end
+        end
+        dbg_printf(
+            "[~T].~C0C #WARN:~C07 immediated dropping~C0A %s~C07, due no shadow_inventory ",
+            obj:name()
+        )
+        owner:drop_item( obj )
+        vergas_rucksack.sound_no_ruck() -- без рюкзака не сладко
+        misc.process_spawn()
+        bind_stalker.handle_dropped( obj )
+        return false
+    end
+    if sect == "torch" then sak.torch_id_norm() end
+    sect = sak_inventory.dyn_art_base( sect )
+    self.quantity:add( sect, amount_in_batch( obj ) )
+    return ( owner and owner:id() == dest:id() )
 end
 
-function shadow_inventory:restore_item(param)
-  if not self:update_storage() then return nil end
-  local obj = param  
-  if type(obj) == "number" then obj = client_obj(param) end
-  if type(obj) == "string" then obj = self.storage:object(param) end -- извлечение по имени/секции 
-  if not obj then
-     wprintf("[~T].~C0C #ERROR(shadow_inventory:restore_item):~C07 cannot restore object~C0A { %s }~C07 == nil", DumpVar(param))
-     return false
-  end
-  local owner = obj:parent() 
-  if owner and owner:id() ~= self.storage:id() then
-     wprintf("[~T].~C0C #ERROR(shadow_inventory:restore_item):~C07 cannot hide object~C0A %s~C07 who parent <> self.storage %s", obj:name(), self.storage:name())
-     return false
-  end
-  
-  --wprintf(" restroring object~C0A %-25s~C07 from shadow_inv ", obj:name())
-  return self:take_item(obj, false)    
+function shadow_inventory:restore_item( param )
+    if not self:update_storage() then return nil end
+    local obj = param
+    if type( obj ) == "number" then obj = client_obj( param ) end
+    if type( obj ) == "string" then obj = self.storage:object( param ) end -- извлечение по имени/секции
+    if not obj then
+        wprintf(
+            "[~T].~C0C #ERROR(shadow_inventory:restore_item):~C07 cannot restore object~C0A { %s }~C07 == nil",
+            DumpVar( param )
+        )
+        return false
+    end
+    local owner = obj:parent()
+    if owner and owner:id() ~= self.storage:id() then
+        wprintf(
+            "[~T].~C0C #ERROR(shadow_inventory:restore_item):~C07 cannot hide object~C0A %s~C07 who parent <> self.storage %s",
+            obj:name(), self.storage:name()
+        )
+        return false
+    end
+    --wprintf(" restroring object~C0A %-25s~C07 from shadow_inv ", obj:name())
+    return self:take_item( obj, false )
 end
 
-function shadow_inventory:set_leave(name, map)
- self.leave_avail[name] = map
+function shadow_inventory:set_leave( name, map )
+    self.leave_avail[ name ] = map
 end
 
-function shadow_inventory:items_in_slots(no_grenade)
- local result = {}          
- 
- 
-                         
- for i = 0, MAX_SLOT do
-  local obj = self.holder:item_in_slot(i)
-  if obj and (not no_grenade or i ~= GRENADE_SLOT) then
-     result[obj:id()] = obj
-  end 
- end
- 
- -- предметы запрещенные к трансферу, приписаны к виртуальным слотам 
- local inv_items = collect_items(self.holder, nil)
- for i, rec in inv_items:ipairs() do
-   if virtual_slot_item(rec.sect) then                           
-      result[rec.id] = rec.obj
-   end -- if     
- end -- for  
-  
- -- wprintf(" items_in_slot: ")
- -- dump_table(result, '    ') 
- return result
+function shadow_inventory:items_in_slots( no_grenade )
+    local result = {}
+    for i = 0, MAX_SLOT do
+        local obj = self.holder:item_in_slot( i )
+        if obj and ( not no_grenade or i ~= GRENADE_SLOT ) then
+            result[ obj:id() ] = obj
+        end
+    end
+    -- предметы запрещенные к трансферу, приписаны к виртуальным слотам
+    local inv_items = collect_items( self.holder, nil )
+    for i, rec in inv_items:ipairs() do
+        if virtual_slot_item( rec.sect ) then
+            result[ rec.id ] = rec.obj
+        end
+    end
+    return result
 end
-
 
 function shadow_inventory:update_quantity()
- local items = self:get_content(true)
- local qty   = collect_items_map(items)
- local res   = std_map()
- for sect, count in qty:pairs() do
-   sect = sak_inventory.dyn_art_base(sect)
-   res:add(sect, count)
- end    
- self.quantity = res  
- self.need_update = false
- if dbg_dump then res:dump("updated quantity:") end 
+    local items = self:get_content( true )
+    local qty   = collect_items_map( items )
+    local res   = std_map()
+    for sect, count in qty:pairs() do
+        sect = sak_inventory.dyn_art_base( sect )
+        res:add( sect, count )
+    end
+    self.quantity    = res
+    self.need_update = false
+    if dbg_dump then res:dump( "updated quantity:" ) end
 end
-
 
 function init_module()
- db.shadow_inv = shadow_inventory()
- local save_amount = xray_vars.load_table("save_amount", nlc_vars, {})
- for id, amount in pairs(save_amount) do
-   local ammo = engine_object(id) 
-   if ammo and ammo.current and ammo.current ~= amount then
-      local obj = client_obj(id)
-      wprintf("~C0C #WARN: amount for~C0A %-20s~C0B =~C0D %d~C07, expected~C0D %d~C07", obj:name(), ammo.current, amount)    
-      ammo.current = amount
-   end  
- end   
+    db.shadow_inv     = shadow_inventory()
+    local save_amount = xray_vars.load_table( "save_amount", nlc_vars, {} )
+    for id, amount in pairs( save_amount ) do
+        local ammo = engine_object( id )
+        if ammo and ammo.current and ammo.current ~= amount then
+            local obj = client_obj( id )
+            wprintf(
+                "~C0C #WARN: amount for~C0A %-20s~C0B =~C0D %d~C07, expected~C0D %d~C07",
+                obj:name(), ammo.current, amount
+            )
+            ammo.current = amount
+        end
+    end
 end
 
-function late_init()
-end
+function late_init() end
 
 function on_before_save()
- local itms = get_shadow_inv():get_content(true)
- local save_amount = {}
- 
- for i, rec in itms:ipairs() do
-   local ammo = rec.obj:get_ammo() 
-   if ammo and ammo.current < ammo.size then
-      save_amount[rec.id] = ammo.current
-   end
- end
- 
- ODS("save_amount dump:")
- dump_table(save_amount)
- nlc_vars.save_amount = save_amount 
+    local itms        = get_shadow_inv():get_content( true )
+    local save_amount = {}
+    for i, rec in itms:ipairs() do
+        local ammo = rec.obj:get_ammo()
+        if ammo and ammo.current < ammo.size then
+            save_amount[ rec.id ] = ammo.current
+        end
+    end
+    ODS( "save_amount dump:" )
+    dump_table( save_amount )
+    nlc_vars.save_amount = save_amount
 end
-
-
 
 -- globalization
 _G.get_shadow_inv = function ()
-  if not db.shadow_inv then
-     db.shadow_inv = shadow_inventory()
-  end
-  return db.shadow_inv        
+    if not db.shadow_inv then
+        db.shadow_inv = shadow_inventory()
+    end
+    return db.shadow_inv
 end
 
 db.shadow_inv = shadow_inventory()

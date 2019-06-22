@@ -8,10 +8,11 @@ local rare_list = {
 
         "wpn_toz34",
         "wpn_ak74",
-        "wpn_fort",
         "wpn_pb",
+        "wpn_fort_m1",
 
         "grenade_rgd5",
+        "grenade_f1",
 
         "ammo_12x76_dart",
         "ammo_5.45x39_ap",
@@ -37,12 +38,9 @@ local rare_list = {
         "repair_item_weapon_feik",
         "medkit_army",
         "antirad",
-        "batt_torch",
-        "matches",
         "conserva",
-        "energy_drink",
         "green_kolbasa",
-        "flask_army",
+        "playboy2",
         "vodka"
     },
     experienced_section = {
@@ -63,9 +61,8 @@ local rare_list = {
         "wpn_beretta",
         "wpn_aks47",
         "wpn_bizon",
-
+        "wpn_fort_m1",
         "grenade_f1",
-        "grenade_rgd5",
 
         "ammo_7.62x54_ap",
         "ammo_9x19_pbp",
@@ -100,7 +97,6 @@ local rare_list = {
         "repair_item_weapon_feik",
         "medkit_army",
         "antirad",
-        "amk_kanistra",
     },
     veteran_section = {
         "bandit_master_outfit",
@@ -189,6 +185,7 @@ local rare_list = {
         "wpn_addon_eotech",
         "wpn_groza",
         "wpn_vintorez",
+        "wpn_val",
         "wpn_svu",
         --"wpn_gm94",
         "wpn_mp153_m1",                         -- обрез мп153
@@ -704,6 +701,7 @@ function CTreasure:named_treasure( v )
         --or v.name == "val_secret_0028_name" --Тайник Борова
         --or v.name == "x18_secret_0000_name" --Тайник Копченого
         --or v.name == "yan_secret_0011_name" --Тайник учёного
+        or v.name == "mar_secret_kirpich"
         or v.name == "val_secret_oreh"
         or v.name == "agr_secret_krysyk_name"
         or v.name == "mil_secret_borov_name"

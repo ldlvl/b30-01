@@ -9,6 +9,7 @@ function on_late_init()
         this.fix_mp5_m1_in_inventory,
         this.fix_mil_svoboda_light_bron,
         this.fix_aver_bandit_corpse,
+        this.fix_all_pda_condition,
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -43,6 +44,17 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function fix_all_pda_condition()
+    for id = 1, BAD_OBJ_ID, 1 do
+        local obj = g_sim:object( id )
+        if obj then
+            if obj:section_name() == "device_pda_npc" then
+                test.set_pda_condition( id )
+            end
+        end
+    end
 end
 
 function fix_mil_svoboda_light_bron()

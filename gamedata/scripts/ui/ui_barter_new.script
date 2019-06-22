@@ -138,8 +138,8 @@ local barter_tbl = {
     },
     [ "dan" ] = {
         { "ammo_12x70_buck",            10, "mutant_dog_tail",          8  },
-        { "ammo_12x70_dart",            5,  "mutant_boar_leg",          8  },
-        { "ammo_12x76_dart",            3,  "mutant_flesh_eye",         3  },
+        { "ammo_12x76_dart",            5,  "mutant_boar_leg",          8  },
+        { "ammo_12x76_zhekan",          3,  "mutant_flesh_eye",         3  },
         { "ammo_12x76_dart",            2,  "mutant_face_tushkano",     4  },
         { "ammo_12x76_zhekan",          4,  "mutant_psevdodog_tail",    3  }
     },
@@ -512,7 +512,7 @@ function barter_screen_ui:UpdatePriceStatic()
         price_text = price_text .. ", " .. tostring( self.price_amnt ) .. " шт."
         if strposx( self.price_tbl, "lvl" ) then
             have_amount = gg_n_artof_m_have( self.price_amnt, tbl_translate_arts[ self.price_tbl ], true )
-        elseif strposx( self.price_tbl, "ammo_" ) then
+        elseif str_in_tab( self.price_tbl, { "ammo_", "energy_drink" } ) then
             have_amount = test.count_actor_ammo( self.price_tbl )
         else
             have_amount = sak.calc_items_count( self.price_tbl, nil )
@@ -591,7 +591,7 @@ function barter_screen_ui:DoBarter( ind )
             end
             misc.process_spawn()
         end
-    elseif strposx( need_sect, "ammo_" ) then
+    elseif strin_tab( need_sect, { "ammo_", "energy_drink" } ) then
         if vergas_lib.search_items( need_sect, self.price_amnt, 1 ) ~= false then
             vergas_lib.search_items( need_sect, self.price_amnt, 2 )
             if
@@ -717,7 +717,8 @@ function make_list_by_trader( name )
         tbl_to_show = tbl_
 
     elseif name == "dan" then
-        for k, v in pairs( barter_tbl[ name ] ) do
+        tmptbl1 = barter_tbl[ name ]
+        for k, v in pairs( tmptbl1 ) do
             if v[ 3 ] == "mutant_dog_tail" then
                 v[ 4 ] = v[ 4 ] + math.floor( gdays / 10 )      -- инфл€ци€: хвостов собак каждые 10 дней нужно на 1 больше
                 if v[ 4 ] > 13 then v[ 4 ] = 13 end             -- но до разумных пределов
@@ -729,7 +730,7 @@ function make_list_by_trader( name )
                 if v[ 4 ] > 6 then v[ 4 ] = 6 end
             end
         end
-        tbl_to_show = barter_tbl[ name ]
+        tbl_to_show = tmptbl1
 
     elseif name == "zub" then
         for k, v in pairs( test.tbl_recipt ) do
@@ -747,7 +748,7 @@ function make_list_by_trader( name )
         end
         tbl_  = generate_rnd_list( tmptbl1, 98, 6, 3 )
         tbl__ = generate_rnd_list( tmptbl2, 99, 6, 2 )
-        for k, v in pairs( tbl__ ) do table.insert(tbl_, v) end
+        for k, v in pairs( tbl__ ) do table.insert( tbl_, v ) end
         tbl_to_show = tbl_
     
     elseif name == "menyala" then
