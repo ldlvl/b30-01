@@ -522,6 +522,7 @@ function create_items( npc, section, number, rnd )
                         vergas_pda.add_tbl_pda(
                             npc:id(), obj.id, vergas_pda.set_status_pda()
                         )
+                        misc.process_spawn()
                         test.set_pda_condition( id )
                     end
                 end

@@ -763,7 +763,7 @@ function charge_pda( pda_id )
             data.custom_data, table.concat( info, '|')
         )
         pk:set( data )
-        params.upd_condition( g_sim:object( pda_id ), 1 )
+        params.upd_condition( pda_id, 1 )
         good = true
     elseif status == "1" then
         good = true
