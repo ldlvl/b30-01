@@ -442,14 +442,19 @@ function keep_item( npc, item )
         item:set_condition( lua_random( kond1, kond2 ) / 100 )
         return true
     end
+    local item_slot_1 = npc:item_in_slot( 1 )
+    local item_slot_2 = npc:item_in_slot( 2 )
     if
         str_in_tab( section, always_offs_items )
         or strposx( section, "outfit" )
         or (
                 strposx( section, "wpn_" )
-                and item_id ~= npc:active_item():id()
-                and item_id ~= npc:item_in_slot( 1 ):id()
-                and item_id ~= npc:item_in_slot( 2 ):id()
+                and (
+                           ( item_in_slot:id() ~= nil and item_in_slot:id() ~= item_id )
+                        or ( item_slot_1:id()  ~= nil and item_slot_1:id()  ~= item_id )
+                        or ( item_slot_2:id()  ~= nil and item_slot_2:id()  ~= item_id )
+                    )
+
             )
     then
         alife():release( alife():object( item:id() ), true )
