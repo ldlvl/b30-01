@@ -450,9 +450,9 @@ function keep_item( npc, item )
         or (
                 strposx( section, "wpn_" )
                 and (
-                           ( item_in_slot:id() ~= nil and item_in_slot:id() ~= item_id )
-                        or ( item_slot_1:id()  ~= nil and item_slot_1:id()  ~= item_id )
-                        or ( item_slot_2:id()  ~= nil and item_slot_2:id()  ~= item_id )
+                           ( item_in_slot ~= nil and item_in_slot:id() ~= item_id )
+                        or ( item_slot_1  ~= nil and item_slot_1:id()  ~= item_id )
+                        or ( item_slot_2  ~= nil and item_slot_2:id()  ~= item_id )
                     )
 
             )
