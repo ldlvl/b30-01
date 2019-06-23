@@ -524,11 +524,12 @@ function create_items( npc, section, number, rnd )
                         npc:game_vertex_id(), npc:id()
                     )
                     if obj then
+                        local status_pda = vergas_pda.set_status_pda() or 3
                         vergas_pda.add_tbl_pda(
-                            npc:id(), obj.id, vergas_pda.set_status_pda()
+                            npc:id(), obj.id, status_pda
                         )
                         misc.process_spawn()
-                        test.set_pda_condition( obj.id )
+                        test.set_pda_condition( obj.id, status_pda )
                     end
                 end
             end

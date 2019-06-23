@@ -737,6 +737,7 @@ function on_late_init()
     -- end
     if lua_random() > 0.5 then dsh.get_next_random( "sak.artmod" ) end -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
     prizrak_outfit_prize()
+    sort_actor_pda_on_load()
  end
 
 function add_art_to_vars( id )
@@ -1869,15 +1870,31 @@ function art_satiety_restore()
     end
 end
 
-function set_pda_condition( id )
-    local info = vergas_lib.str_explode( "|", vergas_pda.get_pda_cdata( id ), true )
-    if not info or not info[ 4 ] then return end
-    local status = string.sub( info[ 4 ], 13, 13 ) or "3"
+function set_pda_condition( id, status_pda )
+    local status = 1
+    if status_pda then
+        status = status_pda
+    else
+        local info = vergas_lib.str_explode( "|", vergas_pda.get_pda_cdata( id ), true )
+        if not info or not info[ 4 ] then return end
+        status = string.sub( info[ 4 ], 13, 13 ) or "3"
+    end
     if     status == "3" then
         params.upd_condition( id, 0.5 )
     elseif status == "2" then
         params.upd_condition( id, 0.8 )
     end
+end
+
+function sort_actor_pda_on_load()
+    db.actor:iterate_inventory(
+        function( dummy, item )
+            if item:section() == "device_pda_npc" then
+                set_pda_condition( item:id() )
+            end
+        end,
+        db.actor
+    )
 end
 
 function give_garbage_aver_lc()
