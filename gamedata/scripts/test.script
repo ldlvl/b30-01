@@ -1871,13 +1871,12 @@ end
 
 function set_pda_condition( id )
     local info = vergas_lib.str_explode( "|", vergas_pda.get_pda_cdata( id ), true )
-    if info then
-        local status = string.sub( info[ 4 ], 13, 13 ) or "3"
-        if status == "3" then
-            params.upd_condition( id, 0.5 )
-        elseif status == "2" then
-            params.upd_condition( id, 0.8 )
-        end
+    if not info or not info[ 4 ] then return end
+    local status = string.sub( info[ 4 ], 13, 13 ) or "3"
+    if     status == "3" then
+        params.upd_condition( id, 0.5 )
+    elseif status == "2" then
+        params.upd_condition( id, 0.8 )
     end
 end
 
