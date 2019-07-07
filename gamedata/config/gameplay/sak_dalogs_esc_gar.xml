@@ -8244,7 +8244,7 @@
 	</phrase_list>
 </dialog>
 <dialog id="sidor_flame_load_have_dialog">
-<precondition>sak_dialog.gar_flame_have</precondition>
+<precondition>sak.have_items_count("wpn_flame",1)</precondition>
 	<phrase_list>
 		<phrase id="0">
 			<text>sidor_flame_load_have_dialog_0</text>
@@ -8264,7 +8264,7 @@
 			<text>sidor_flame_load_have_dialog_11</text>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak_dialog.gar_flame_have</precondition>
+		<precondition>sak.have_items_count("wpn_flame",1)</precondition>
 		<precondition>sak_dialog.sidor_flame_load_money_have</precondition>
 		<text>sidor_flame_load_have_dialog_21</text>
 			<action>sak_dialog.give_sidor_flame_load_money</action>
