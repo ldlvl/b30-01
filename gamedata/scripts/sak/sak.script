@@ -2388,6 +2388,13 @@ function check_used_item( obj )
         if act:has_info( "mil_find_prizrak_today" ) and esc_mil_food[ obj.m_story_id ] then
             act:disable_info_portion( "mil_find_prizrak_today" )
         end
+    --------------------------------------------------------------------------------------------------   
+    elseif
+            lvl  == "l08u_brainlab"
+        and sect == "outfit_stalker_m1"
+        and obj:condition() > 0.7
+    then
+        params.upd_condition( obj:id(), 0.65 )
     --------------------------------------------------------------------------------------------------
     elseif
         lvl == "labx10"
