@@ -3356,6 +3356,51 @@
 		</phrase_list>
 	</dialog>
 
+	<dialog id="glassbeads_volkodav_menyala_exchange">
+	<precondition>dialogs.is_not_wounded</precondition>
+	<has_info>art_exchanger_met</has_info>
+	<has_info>volkodav_dt_art_start</has_info>
+	<!-- <has_info>yan_semenov_resiept_done</has_info> -->
+	<dont_has_info>volkodav_dt_art_done</dont_has_info>
+	<dont_has_info>glassbeads_volkodav_menyala_exchange_done</dont_has_info>
+		<phrase_list>
+			<phrase id="0">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_0</text>
+				<next>1</next>
+			</phrase>
+			<phrase id="1">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_1</text>
+				<next>2</next>
+				<next>3</next>
+			</phrase>
+			<phrase id="2">
+				<precondition>ui_barter_new.gg_n_artof_m_have(4,sak_dialog.table_cart)</precondition>
+				<precondition>ui_barter_new.gg_n_artof_m_have(3,sak_dialog.table_bart)</precondition>
+				<text>glassbeads_volkodav_menyala_exchange_dialog_2</text>
+				<action>ui_barter_new.give_n_artof_m(4,sak_dialog.table_cart)</action>
+				<action>ui_barter_new.give_n_artof_m(3,sak_dialog.table_bart)</action>
+				<next>4</next>
+			</phrase>
+			<phrase id="4">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_4</text>
+				<action>test.add_to_actor("af_dummy_glassbeads",1)</action>
+				<next>6</next>
+			</phrase>
+			<phrase id="3">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_3</text>
+				<next>5</next>
+			</phrase>
+			<phrase id="5">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_5</text>
+				<next>6</next>
+			</phrase>
+			<phrase id="6">
+				<text>glassbeads_volkodav_menyala_exchange_dialog_6</text>
+				<action>dialogs.break_dialog</action>
+			</phrase>
+		</phrase_list>
+	</dialog>
+
 	<dialog id="kruglov_art_chan_lev1_dialog">
 	<precondition>dialogs.is_not_wounded</precondition>
 	<precondition>sak_dialog.have_bart</precondition>
