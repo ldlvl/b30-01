@@ -214,15 +214,16 @@ function reset_tf()     -- манипуляции с тайм-фактором игры
     end
 end
 
-function restore_coef() -- установка коэф. высыпаемости от предетов в слотах
-    local act = db.actor
+function restore_coef() -- установка коэф. высыпаемости от предметов в слотах
+    local act  = db.actor
     local coef = 1
     -- вещи в слотах мешают выспаться быстрее
     if act:item_in_slot( 1 )             then coef = coef * 0.93 end  -- левый слот
     if act:item_in_slot( 2 )             then coef = coef * 0.93 end  -- правый слот
     if act:item_in_slot( 6 )             then coef = coef * 0.90 end  -- броня
     if get_shadow_inv():update_storage() then coef = coef * 0.90 end  -- рюкзак
-    if sleep_in_sleeping_bag == 2        then coef = coef * 0.83 end  -- сон в спальнике
+    if sleep_in_sleeping_bag == 1        then coef = coef * 0.83 end  -- сон без спальника
+    if nlc_vars.rad_disease              then coef = coef * 0.83 end  -- ГГ заболел
     return coef
 end
 
