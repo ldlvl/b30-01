@@ -736,7 +736,7 @@ function on_late_init()
     --     xr_statistic.add_pts( "stalkerkills", game.translate_string( "st_pda_saveloads_used" ), p_diff, 0 )
     -- end
     if lua_random() > 0.5 then dsh.get_next_random( "sak.artmod" ) end -- чтобы, зная, что будет следующей зелень по варке, не откатывались назад
-    prizrak_outfit_prize()
+    --prizrak_outfit_prize()
     sort_actor_pda_on_load()
  end
 
@@ -1200,28 +1200,25 @@ function teleport_esc_conserva()
     end 
 end
 
--- спавним-портим костюм Призрака в труп х16
--- чтобы не дергать лишний раз биндер, перенесём эту функцию
--- на загрузку уровня, где будем проверять инфо и флаг в nlc_vars, от дублирования
 function prizrak_outfit_prize()
-    if not nlc_vars.tmp_prizrak_outfit then return end
-    if level.name() ~= "l08u_brainlab" then return end
+    --if not nlc_vars.tmp_prizrak_outfit then return end
+    --if level.name() ~= "l08u_brainlab" then return end
     local parent = g_sim:story_object( story_ids.x16_stalker_pseudo_ghost )
-    local obj = g_sim:create(
-        "outfit_stalker_m1", parent.position,
-        parent.m_level_vertex_id, parent.m_game_vertex_id, parent.id
-    )
-    misc.process_spawn()
-    if obj then
-        local pk       = get_netpk( obj, 1 )
-        local data     = pk:get()
-        data.condition = 0.65
-        pk:set( data )
+    if parent then
+        log2( "@----- test.prizrak_outfit_prize(): x16_stalker_pseudo_ghost exists, proceed..." )
+        misc.spawn_to( "outfit_stalker_m1", parent )
+        misc.process_spawn()
+        -- if obj then
+        --     local pk       = get_netpk( obj, 1 )
+        --     local data     = pk:get()
+        --     data.condition = 0.65
+        --     pk:set( data )
+        -- end
+        -- obj = client_obj( obj.id )
+        -- obj:set_condition( 0.65 )
+        sak.off_on( parent )
     end
-    obj = client_obj( obj.id )
-    obj:set_condition( 0.65 )
-    sak.off_on( parent )
-    nlc_vars.tmp_prizrak_outfit = nil
+    --nlc_vars.tmp_prizrak_outfit = nil
 end
 
 function add_rad_disease()
@@ -1234,15 +1231,23 @@ function add_rad_disease()
 end
 
 function rad_disease_health_handle()
-    if nlc_vars.catched_bt      then return end     -- выход сразу, если есть ЧМ
-    if not nlc_vars.rad_disease then return end     -- выход сразу, если в организме нет последствий антирада
+    if
+        nlc_vars.catched_bt                         -- ГГ поймал ЧМ
+        or sleep_manager.get_sleepiness() < 100     -- ГГ выспавшийся
+        or sleep_manager.is_sleep_active()          -- ГГ спит
+        or not nlc_vars.rad_disease                 -- ГГ не больной
+        or not db.actor:alive()                     -- ГГ не совсем живой
+    then
+        return
+    end
     local curr_max_health = 1 - nlc_vars.rad_disease
     if db.actor.health >= curr_max_health then
         params.health_add( -0.05 )
     end
-    if lua_random() < 0.08 then
+    if lua_random() < 0.06 then
         misc.easy_sound( "scripts\\actor_gripp" )
-        level.add_pp_effector( "eat_drug.ppe", 1039, false )
+        level.add_pp_effector( "black_cats.ppe", 1039, false )
+        params.health_add( -0.01 )
     end
 end
 
@@ -1902,4 +1907,39 @@ function give_garbage_aver_lc()
         sak.add_new_aver_gar_135()
         sak.add_new_gar_aver_151()
     end
+end
+
+function isGamblingAvailable( name )
+    local loses, wins = 0, 0
+    local treshold    = 0.45
+    local day         = timers.Get_Game_Days() or 1
+    if day < 5 then treshold = 0.7 end
+    local tbl    = xray_vars.load_table( nlc_vars, "tbl_gambling", {} )
+    misc.dump_table( tbl )
+    local chance = dsh.get_fixed_random( "test.isGamblingAvailable." .. name, day, 1, 100 ) / 100
+    if tbl[ name ] ~= nil then
+        wins  = tbl[ name ].wins
+        loses = tbl[ name ].loses
+    end
+    treshold = treshold + ( loses / ( wins + 1 ) )
+    wprintf(
+        "@-------------     NPC: %s  |  GAMES: %s  |  WINS: %s  |  LOSES: %s  |  CHANSE: %s  |  TRESHOLD: %s",
+        name, ( wins + loses ), wins, loses, chance, treshold
+    )
+    if chance <= treshold then return true end
+    return false
+end
+
+function noGamblingAvailable( name )
+    return not isGamblingAvailable( name )
+end
+
+function gambling_tbl_add_points( name, n_wins, n_loses )
+    local tbl = xray_vars.load_table( nlc_vars, "tbl_gambling", {} )
+    if tbl ~= nil then misc.dump_table( tbl ) end
+    if tbl[ name ] == nil then tbl[ name ] = { wins = 0, loses = 0 } end
+    tbl[ name ].wins  = tbl[ name ].wins  + n_wins
+    tbl[ name ].loses = tbl[ name ].loses + n_loses
+    misc.dump_table( tbl )
+    nlc_vars.tbl_gambling = tbl
 end

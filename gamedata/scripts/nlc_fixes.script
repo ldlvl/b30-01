@@ -10,6 +10,8 @@ function on_late_init()
         this.fix_mil_svoboda_light_bron,
         this.fix_aver_bandit_corpse,
         this.fix_all_pda_condition,
+        this.fix_trup_x16,
+        this.start_gambling_stats_tbl
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -44,6 +46,23 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function start_gambling_stats_tbl()
+    local tbl = xray_vars.load_table( nlc_vars, "tbl_gambling", {} )
+    for _, name in ipairs({ "stas", "lysyi", "mongol" }) do
+        if tbl[ name ] == nil then tbl[ name ] = { wins = 0, loses = 0 } end
+    end
+    misc.dump_table( tbl )
+    nlc_fixes.tbl_gambling = tbl
+end
+
+function fix_trup_x16()
+    if nlc_vars.tmp_prizrak_outfit then
+        log2( "[ %s.script ]: nlc_vars.tmp_prizrak_outfit exists, proceed...", scr_name )
+        test.prizrak_outfit_prize()
+        nlc_vars.tmp_prizrak_outfit = nil
+    end
 end
 
 function fix_all_pda_condition()

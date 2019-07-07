@@ -450,7 +450,7 @@
 		<phrase id="4061">
 			<text>bar_bar_barmen_new_start_4061</text>
 			<give_info>bar_x16_documents_start</give_info>
-			<action>sak_dialog.prizrak_outfit_prize</action>			
+			<action>test.prizrak_outfit_prize</action>			
 			<next>4071</next>
 		</phrase>
 		<phrase id="4062">
@@ -474,7 +474,7 @@
 		<phrase id="4521">
 			<text>bar_bar_barmen_new_start_4521</text>
 			<give_info>bar_x16_documents_start</give_info>
-			<action>sak_dialog.prizrak_outfit_prize</action>			
+			<action>test.prizrak_outfit_prize</action>			
 			<next>4531</next>
 		</phrase>
 		<phrase id="4522">
@@ -3317,7 +3317,7 @@
 		</phrase>
 		<phrase id="300">
 			<text />
-			<dont_has_info>sak_ros_merk_out</dont_has_info>
+			<!-- <dont_has_info>sak_ros_merk_out</dont_has_info> -->    <!-- ЭТО??????????????????????????????????????? -->
 			<precondition>sak_dialog.volkodav_have_start</precondition>
 			<next>301</next>
 		</phrase>
@@ -5446,7 +5446,7 @@
 		</phrase>
 
 		<phrase id="111">
-			<precondition>sak_dialog.not_ready_time_to_game</precondition>
+			<precondition>test.noGamblingAvailable("lysyi")</precondition>
 			<text>minigame_dialog_111</text>
 			<next>1111</next>
 		</phrase>
@@ -5456,7 +5456,7 @@
 		</phrase>
 
 		<phrase id="112">
-			<precondition>sak_dialog.is_ready_time_to_game</precondition>
+			<precondition>test.isGamblingAvailable("lysyi")</precondition>
 			<text></text>
 			<next>1121</next>
 		</phrase>
@@ -5628,24 +5628,28 @@
 
 		<phrase id="712"><!-- 1ур -->
 			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<action>test.gambling_tbl_add_points("lysyi",0,1)</action>
 			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
 			<next>812</next>
 		</phrase>
 
 		<phrase id="71211"><!-- 2ур -->
 			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<action>test.gambling_tbl_add_points("lysyi",0,1)</action>
 			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
 			<next>81211</next>
 		</phrase>
 
 		<phrase id="713"><!-- 1ур -->
 			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<action>test.gambling_tbl_add_points("lysyi",1,0)</action>
 			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
 			<next>813</next>
 		</phrase>
 
 		<phrase id="71311"><!-- 2ур -->
 			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<action>test.gambling_tbl_add_points("lysyi",1,0)</action>
 			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
 			<next>81311</next>
 		</phrase>
@@ -5893,7 +5897,7 @@
 		</phrase>
 		<phrase id="104">
 			<text></text>
-			<next>111</next>
+			<!-- <next>111</next> -->
 			<next>105</next>
 		</phrase>
 		<phrase id="111">
@@ -5902,7 +5906,7 @@
 			<next>1111</next>
 		</phrase>
 		<phrase id="105">
-			<precondition>sak_dialog.is_ready_time("start_on_load_time",25)</precondition>
+			<!-- <precondition>sak_dialog.is_ready_time("start_on_load_time",25)</precondition> -->
 			<text></text>
 			<next>106</next>
 		</phrase>
@@ -5912,12 +5916,12 @@
 			<next>113</next>
 		</phrase>
 		<phrase id="11">
-			<precondition>sak_dialog.is_time_to_game</precondition>
+			<precondition>test.isGamblingAvailable("stas")</precondition>
 			<text>minigame_dialog_stas_11</text>
 			<next>12</next>
 		</phrase>
 		<phrase id="113">
-			<precondition>sak_dialog.is_no_time_to_game</precondition>
+			<precondition>test.noGamblingAvailable("stas")</precondition>
 			<text>minigame_dialog_stas_113</text>
 			<next>1231</next>
 		</phrase>
@@ -6008,12 +6012,14 @@
 
 		<phrase id="712">
 			<has_info>gg_luser</has_info> <!-- проиграл -->
+			<action>test.gambling_tbl_add_points("stas",0,1)</action>
 			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
 			<next>812</next>
 		</phrase>
 
 		<phrase id="713">
 			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<action>test.gambling_tbl_add_points("stas",1,0)</action>
 			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
 			<next>813</next>
 		</phrase>
@@ -6096,7 +6102,7 @@
 		</phrase>
 
 		<phrase id="13">
-			<precondition>sak_dialog.not_ready_time_to_game</precondition>
+			<precondition>test.noGamblingAvailable("mongol")</precondition>
 			<text>minigame_dialog_bandit_13</text>
 			<next>14</next>
 		</phrase>
@@ -6106,7 +6112,7 @@
 		</phrase>
 
 		<phrase id="11">
-			<precondition>sak_dialog.is_ready_time_to_game</precondition>
+			<precondition>test.isGamblingAvailable("mongol")</precondition>
 			<text>minigame_dialog_bandit_11</text>
 			<action>sak_minigame.mongol_bet_today</action>
 			<next>12</next>
@@ -6180,11 +6186,13 @@
 		<phrase id="712">
 			<has_info>gg_luser</has_info> <!-- проиграл -->
 			<text>minigame_dialog_bandit_712</text> <!-- Вот, чёрт... -->
+			<action>test.gambling_tbl_add_points("mongol",0,1)</action>
 			<next>812</next>
 		</phrase>
 
 		<phrase id="713">
 			<has_info>gg_winner</has_info> <!-- выиграл -->
+			<action>test.gambling_tbl_add_points("mongol",1,0)</action>
 			<text>minigame_dialog_bandit_713</text> <!-- Ага! Я всегда знал! -->
 			<next>813</next>
 		</phrase>
@@ -6218,7 +6226,7 @@
 
 		<phrase id="9">
 			<text>minigame_dialog_bandit_9</text><!-- А давай повторим! -->
-			<next>11</next>
+			<!-- <next>11</next> -->
 		</phrase>
 
 		<phrase id="666">
