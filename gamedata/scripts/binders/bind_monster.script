@@ -455,7 +455,7 @@ function generic_object_binder:update( delta )
                     --phantom_manager.spawn_phantom( actor:position():add( vector():set( dir2.x * 10, 2, dir2.z * 10 ) ) )
                     panic_item_drop()
                     return
-                elseif byaka < 0.4 then -- разворот
+                elseif byaka < 0.45 then -- разворот
                     --level.add_pp_effector("zevok.ppe", 2021, false)
                     local dir    = device().cam_dir
                     local coor_x = dir.x - ( 1.5 - 3 * lua_random() )
@@ -466,7 +466,7 @@ function generic_object_binder:update( delta )
                 elseif byaka < 0.6 then -- самовольное снятие маски
                     if vergas_masks.get_flag_mask() == true then vergas_masks.on_off_mask() end
                     return
-                elseif byaka < 0.8 then -- обездвиживание ГГ
+                elseif byaka < 0.75 then -- обездвиживание ГГ
                     actor.power = -1.0
                     return
                 elseif byaka <= 1  then -- самовольная стрельба
