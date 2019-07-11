@@ -10,194 +10,198 @@ local last_belt      = 1
 local add_dog_psy    = 1
 
 function af_find( x_section, in_inv, in_belt )
-  if in_inv then
-    for id, rec in inv_arts:pairs() do
-      if rec.x_section == x_section then return rec end
+    if in_inv then
+        for id, rec in inv_arts:pairs() do
+            if rec.x_section == x_section then return rec end
+        end
     end
-  end
-  if in_belt then
-    for id, rec in inv_arts:pairs() do          -- TODO: ПОЧЕМУ НЕ belt_arts:pairs() ??????????
-      if rec.x_section == x_section then return rec end
+    if in_belt then
+        for id, rec in inv_arts:pairs() do          -- TODO: ПОЧЕМУ НЕ belt_arts:pairs() ??????????
+            if rec.x_section == x_section then return rec end
+        end
     end
-  end
-  return false    
+    return false
 end
 
 function remove_obj( obj_id )
-  misc.release_obj( obj_id, script_name() .. '.script:2' )
+    misc.release_obj( obj_id, script_name() .. '.script:2' )
 end
 
 function try_delete( list, section, need_cond )
-  local ids = list[ section ]
-  if not ids then return false end
-  for m, id in ipairs( ids ) do
-    local obj = client_obj( id )
-    if obj then
-      local dor = math.floor( ( obj:condition() + 0.0004 ) * 100 )
-      if dor == need_cond or dor == 100 then
-        misc.release_obj( id, script_name() .. 'arc_arts.try_delete' )
-        allcore_mayatniks.remove_from_table(obj:section(), obj:id())
-        on_remove( id )
-        return true
-      end
+    local ids = list[ section ]
+    if not ids then return false end
+    for m, id in ipairs( ids ) do
+        local obj = client_obj( id )
+        if obj then
+            local dor = math.floor( ( obj:condition() + 0.0004 ) * 100 )
+            if dor == need_cond or dor == 100 then
+                misc.release_obj( id, script_name() .. 'arc_arts.try_delete' )
+                allcore_mayatniks.remove_from_table( obj:section(), obj:id() )
+                on_remove( id )
+                return true
+            end
+        end
     end
-  end -- for m
-  return false
+    return false
 end
 
 function remove_item( item_section )
-  local exist = af_find( item_section, true, true )
-  if exist and exist.id then
-    misc.release_obj( exist.id, script_name() .. ".remove_item" )
-     allcore_mayatniks.remove_from_table(exist.section, exist.id)
-    on_remove( exist.id )
-    return true  
-  end
-  local info      = af_decode( item_section )
-  local section   = info.section            
-  local need_cond = info.condition    
-  -- сначала в рюкзаке  потом на поясе
-  if try_delete( sak_inventory.rucksack,   section, need_cond ) or 
-     try_delete( sak_inventory.belt_items, section, need_cond ) then 
-     return true 
-  end
-  wprintf( "[~T].~C0C #CHEAT_BUG:~C07 cannot remove item with section~C0F %s~C07 - not exists", item_section )
-  return false 
+    local exist = af_find( item_section, true, true )
+    if exist and exist.id then
+        misc.release_obj( exist.id, script_name() .. ".remove_item" )
+        allcore_mayatniks.remove_from_table( exist.section, exist.id )
+        on_remove( exist.id )
+        return true
+    end
+    local info      = af_decode( item_section )
+    local section   = info.section
+    local need_cond = info.condition
+    -- сначала в рюкзаке  потом на поясе
+    if
+           try_delete( sak_inventory.rucksack,   section, need_cond )
+        or try_delete( sak_inventory.belt_items, section, need_cond )
+    then
+        return true
+    end
+    wprintf( "[~T].~C0C #CHEAT_BUG:~C07 cannot remove item with section~C0F %s~C07 - not exists", item_section )
+    return false
 end
 
 function give_item( item_section, cond )
-  local a    = db.actor
-  local desc = arc_arts.af_decode( item_section )                   
-  local obj  = misc.spawn_to( arc_arts.af_section( item_section ), a, nil, true )
-  -- alife():create(section, a:position(), a:level_vertex_id(), a:game_vertex_id(), a:id())
-  if cond then desc.condition = cond end  
-  tgt_condition[ obj.id ] = desc.condition  
-  if desc.condition < 0.991 and not strposx ( item_section, "arc_art_box_" ) then
-    wprintf( " for ~C0A %s~C07 planned update condition to~C0D %.3f~C07", obj:name(), desc.condition )
-    params.upd_condition( obj, desc.condition )    
-    local section = arc_arts.af_section( item_section )    
-    local code = sprintf( "params.upd_condition(%d,%.4f)", obj.id, desc.condition )
-    schedule.add( "art_" .. obj.id, code, 300 )
-  end
-  return obj
+    local a    = db.actor
+    local desc = arc_arts.af_decode( item_section )
+    local obj  = misc.spawn_to( arc_arts.af_section( item_section ), a, nil, true )
+    if cond then desc.condition = cond end
+    tgt_condition[ obj.id ] = desc.condition
+    if
+        desc.condition < 0.991
+        and not strposx ( item_section, "arc_art_box_" )
+    then
+        wprintf( " for ~C0A %s~C07 planned update condition to~C0D %.3f~C07", obj:name(), desc.condition )
+        params.upd_condition( obj, desc.condition )
+        local section = arc_arts.af_section( item_section )
+        local code = sprintf( "params.upd_condition(%d,%.4f)", obj.id, desc.condition )
+        schedule.add( "art_" .. obj.id, code, 300 )
+    end
+    return obj
 end
 
 function get_item( obj ) -- перетащено из arc_main
-  local obj_id   = obj:id() 
-  local obj_sect = obj:section()
-  if     strposx( obj_sect, "arc_art_box_" ) then
-    arc_containers.inv_containers:register( obj_id )
-  elseif strposx( obj_sect, "arc_diary" ) then
-    arc_diary.on_get_diary( obj )
-  elseif strposx( obj_sect, "wpn_" )
-      or strposx( obj_sect, "outfit" ) then  
-    amk_mod.last_condition = 0
-    amk_mod.check_armor()
-  end
+    local obj_id   = obj:id()
+    local obj_sect = obj:section()
+    if strposx( obj_sect, "arc_art_box_" ) then
+        arc_containers.inv_containers:register( obj_id )
+    elseif strposx( obj_sect, "arc_diary" ) then
+        arc_diary.on_get_diary( obj )
+    elseif
+           strposx( obj_sect, "wpn_" )
+        or strposx( obj_sect, "outfit" )
+    then
+        amk_mod.last_condition = 0
+        amk_mod.check_armor()
+    end
 end
 
 function round( a )
-  b = math.floor( a )
-  if a - b < 0.5 then return b end
-  return b + 1
+    b = math.floor( a )
+    if a - b < 0.5 then return b end
+    return b + 1
 end
 
 function to_interval( x, a, b )
-  local s = b - a + 1
-  while x < a do x = x + s end
-  while x > b do x = x - s end
-  return x
+    local s = b - a + 1
+    while x < a do x = x + s end
+    while x > b do x = x - s end
+    return x
 end
 
 function compare_part( a, b )
-  local l = math.min( string.len( a ), string.len( b ) )
-  if string.sub( a, 1, l ) == string.sub( b, 1, l ) then
-    return true
-  end
-  return false
+    local l = math.min( string.len( a ), string.len( b ) )
+    if string.sub( a, 1, l ) == string.sub( b, 1, l ) then return true end
+    return false
 end
 
 function af_format( sect, cond ) -- убрано 100500 случаев копипасты
-  if cond >= 1 then cond = 0.9999 end
-  cond = math.floor( cond * 100 )
-  if cond < 10 then cond = "0"..cond end
-  return sect .. ":" .. cond
+    if cond >= 1 then cond = 0.9999 end
+    cond = math.floor( cond * 100 )
+    if cond < 10 then cond = "0" .. cond end
+    return sect .. ":" .. cond
 end
 
 function af_cond_section ( id ) -- артефакты меняют секцию, в зависимости от износа?
-  local sect = client_obj( id ):section()
-  local cond = params.obj_condition( id )  + 0.0004 -- какая-то борьба с округлением?
-  return af_format( sect, cond ) 
+    local sect = client_obj( id ):section()
+    local cond = params.obj_condition( id )  + 0.0004 -- какая-то борьба с округлением?
+    return af_format( sect, cond )
 end
 
 function af_section( sect_cond )
-  local ch = sect_cond:sub( -3, -3 )
-  if ( ch == ":" ) or ( ch == "_" ) then
-    return sect_cond:sub( 1, -4 ) -- crop
-  end
-  return sect_cond
+    local ch = sect_cond:sub( -3, -3 )
+    if ( ch == ":" ) or ( ch == "_" ) then
+        return sect_cond:sub( 1, -4 ) -- crop
+    end
+    return sect_cond
 end
 
 function af_params( section, condition )
-  local tmp     = {}
-  tmp.x_section = section  -- расширенная секция 
-  section       = af_section( section )
-  tmp.section   = section
-  tmp.condition = condition or 0.27
-  tmp.format    = function ( self )
-                    return af_format( self.section, self.condition )  
-                  end
-  local ini     = system_ini()
-  if not ini:section_exist( section ) then return tmp end 
-  tmp.count     = 1                    
-  tmp.tx        = ini:r_u32   ( section, "inv_grid_x" )
-  tmp.ty        = ini:r_u32   ( section, "inv_grid_y" )
-  tmp.weight    = ini:r_float ( section, "inv_weight" )
-  tmp.radiation = ini:r_float ( section, "radiation_restore_speed" )
-  tmp.x_section = tmp:format()
-  return tmp
+    local tmp     = {}
+    tmp.x_section = section  -- расширенная секция
+    section       = af_section( section )
+    tmp.section   = section
+    tmp.condition = condition or 0.27
+    tmp.format    = function( self )
+                        return af_format( self.section, self.condition )
+                    end
+    local ini     = system_ini()
+    if not ini:section_exist( section ) then return tmp end
+    tmp.count     = 1
+    tmp.tx        = ini:r_u32  ( section, "inv_grid_x" )
+    tmp.ty        = ini:r_u32  ( section, "inv_grid_y" )
+    tmp.weight    = ini:r_float( section, "inv_weight" )
+    tmp.radiation = ini:r_float( section, "radiation_restore_speed" )
+    tmp.x_section = tmp:format()
+    return tmp
 end
 
 function af_decode( sect_cond )
-  local tmp   = af_params( sect_cond )
-  tmp.section = af_section( sect_cond )
-  local ch    = sect_cond:sub( -3,-3 )
-  if ( ch == ":" ) or ( ch == "_" ) then
-    local cv = sect_cond:sub( -2 ) -- последние 2 цифры есть кондция
-    tmp.condition = tonumber( cv ) * 0.01 + 0.0004   
-  end
-  tmp.x_section = tmp:format() 
-  return tmp
+    local tmp   = af_params( sect_cond )
+    tmp.section = af_section( sect_cond )
+    local ch    = sect_cond:sub( -3, -3 )
+    if ( ch == ":" ) or ( ch == "_" ) then
+        local cv = sect_cond:sub( -2 ) -- последние 2 цифры есть кондция
+        tmp.condition = tonumber( cv ) * 0.01 + 0.0004
+    end
+    tmp.x_section = tmp:format()
+    return tmp
 end
 
 ----------------------------------------------------------------------
 class "artefacts_map" ( std_map )
 
 function artefacts_map:__init( name ) super()
-  self.name = name
+    self.name = name
 end
 
 function artefacts_map:register_artefact( id )
-  id        = misc.get_object_id( id )
-  local art = client_obj( id )
-  if art and g_sim:object( id ) then else return {} end
-  local tmp = self:get(id)
-  local cv  = tgt_condition[ id ] or params.get_condition( id, 0.9999 )
-  if nil == tmp then
-    local section = art:section()     
-    tmp           = af_params( section, cv )     
-    g_reg_count   = g_reg_count + 1
-    wprintf(
-    "[~T]. #DBG: registered artefact~C0F %-35s~C07 in~C0A %s~C07, condition =~C0D %.3f~C07 <---------",
-    tmp:format(), self.name, cv
-    )
-    params.upd_condition( id, cv )  
-  end
-  tmp.condition = cv  
-  tmp.x_section = tmp:format()
-  tmp.id        = id
-  tmp.object    = client_obj( id )
-  self:set( id, tmp )
+    id        = misc.get_object_id( id )
+    local art = client_obj( id )
+    if art and g_sim:object( id ) then else return {} end
+    local tmp = self:get( id )
+    local cv  = tgt_condition[ id ] or params.get_condition( id, 0.9999 )
+    if nil == tmp then
+        local section = art:section()
+        tmp           = af_params( section, cv )
+        g_reg_count   = g_reg_count + 1
+        wprintf(
+            "[~T]. #DBG: registered artefact~C0F %-35s~C07 in~C0A %s~C07, condition =~C0D %.3f~C07 <---------",
+            tmp:format(), self.name, cv
+        )
+        params.upd_condition( id, cv )
+    end
+    tmp.condition = cv
+    tmp.x_section = tmp:format()
+    tmp.id        = id
+    tmp.object    = client_obj( id )
+    self:set( id, tmp )
 end
 
 inv_arts  = artefacts_map( script_name() .. ".inv_arts"  )
@@ -206,307 +210,318 @@ belt_arts = artefacts_map( script_name() .. ".belt_arts" )
 local ballast_weight = 0
 
 function is_actor_item( id )
-  id = misc.get_object_id( id ) 
-  local sobj = g_sim:object( id )  
-  return sobj and ( 0 == sobj.parent_id )
+    id         = misc.get_object_id( id )
+    local sobj = g_sim:object( id )
+    return sobj and ( 0 == sobj.parent_id )
 end
 
 function check_deleted( art_map )
-  local ids = art_map:keys( true )
-  -- могли быть тихо удалены/перемещены и карта не обновилась
-  for i, id in ipairs( ids ) do
-    if not is_actor_item( id ) then on_remove( id ) end
-  end
+    local ids = art_map:keys( true )
+    -- могли быть тихо удалены/перемещены и карта не обновилась
+    for i, id in ipairs( ids ) do
+        if not is_actor_item( id ) then on_remove( id ) end
+    end
 end
 
 function reg_artefact( obj )
-  local art = obj:get_artefact()
-  if art then
-     local id = obj:id()
-     local ip = art.item_place     
-     -- если на поясе хватает места, регистрировать артефакт
-     if ( ip == 2 ) and ( belt_arts:get( id ) or ( belt_arts:size() < belt_size ) ) then 
-       belt_arts:register_artefact( id )          
-     elseif ( ip == 1 ) or ( ip == 3 ) then 
-       inv_arts:register_artefact( id )
-     end            
-  end   
+    local art = obj:get_artefact()
+    if art then
+        local id = obj:id()
+        local ip = art.item_place
+        -- если на поясе хватает места, регистрировать артефакт
+        if
+            ip == 2
+            and (
+                belt_arts:get( id )
+                or ( belt_arts:size() < belt_size )
+            )
+        then
+            belt_arts:register_artefact( id )
+        elseif ip == 1 or ip == 3 then
+            inv_arts:register_artefact( id )
+        end
+    end
 end
 
 function on_item_take( obj, internal )
-  local belt  = belt_size + 1
-  local class = 0    
-  local sc    = 'nil'
-  local id    = -1    
-  if obj then
-     id    = obj:id()
-     class = obj:clsid()
-     sc    = obj:section()        
-  end
-  if class == CLID_ART and sc ~= "af_full_akkum" then
-    -- wprintf(" checking~C0F %s~C07", obj:name())
-    reg_artefact( obj )   
-  elseif strpos( sc, "belt_[1-9]_art" ) then
-    wprintf( " handling take~C0F %s~C07 ", sc )
-    local z = tonumber( sc:sub( 6, 6 ) )
-    if z > belt then 
-       belt = z
-       belt_size = z - 1              
-    end    
-    if not internal then
-      schedule.add( "check_art", script_name()..".check_artefact()", 100 )
+    local belt  = belt_size + 1
+    local class = 0
+    local sc    = 'nil'
+    local id    = -1
+    if obj then
+        id    = obj:id()
+        class = obj:clsid()
+        sc    = obj:section()
     end
-  end -- if
-  get_item( obj )
+    if class == CLID_ART and sc ~= "af_full_akkum" then
+        -- wprintf(" checking~C0F %s~C07", obj:name())
+        reg_artefact( obj )
+    elseif strpos( sc, "belt_[1-9]_art" ) then
+        wprintf( " handling take~C0F %s~C07 ", sc )
+        local z = tonumber( sc:sub( 6, 6 ) )
+        if z > belt then
+            belt = z
+            belt_size = z - 1
+        end
+        if not internal then
+            schedule.add( "check_art", script_name()..".check_artefact()", 100 )
+        end
+    end
+    get_item( obj )
 end
 
 function check_artefact()
-  consumable_artefacts  = {}
-  belt_size             = 0
-  local ini             = system_ini()
-  local ini_obj         = ini:object()
-  check_deleted( inv_arts  )
-  check_deleted( belt_arts )
-  -- регистрация всех артефактов из рюкзака
-  local objs, count = registry.inv_objects( 0, true, client_obj )
-  -- wprintf(" inventory objects count =~C0D %d~C07", count)
-  for i, obj in ipairs( objs ) do
-    on_item_take( obj, true )
-  end
-  if g_reg_count + g_del_count > 0 then
-     sak_inventory.need_update_inventory()
-     g_del_count = 0
-     g_reg_count = 0
-  end
-  local max_mass    = 0
-  local pwr_rst     = 0
-  local jump_speed  = 0
-  local air_param   = 1
-  local add_sat     = 1
-  local reduce_sat  = 1
-  local add_psy     = 0
-  sak.af_count      = 0
-  local apply_arts  = ( sak.get_accum() and sak.arts_operate );
-  for id, rec in belt_arts:pairs() do
-    sect        = rec.section
-    local class = 0
-    local obj   = rec.object
-    if obj then class = obj:clsid() end              
-    if class == CLID_ART then
-      local scobj = ini_obj[ sect ]            
-      if apply_arts and scobj then
-        -- jump_speed   = jump_speed + scobj.add_jump_speed      or 0  
-        pwr_rst      = pwr_rst    + scobj.power_restore_speed or 0            
-        add_sat      = add_sat    + scobj.add_satiety         or 0            
-        reduce_sat   = reduce_sat + scobj.reduce_satiety      or 0            
-        -- add_psy      = add_psy    + scobj.psy_health_restore_speed or 0            
-        sak.af_count = sak.af_count + 1
-      end -- if apply_arts
-    end -- if class  
-  end -- for id, rec
-  if apply_arts then
-    jump_speed  = 0
-    add_dog_psy = 1
-    for i, k in pairs( sak_inventory.belt_items ) do
-      local ini = system_ini()
-      if ini:section_exist( i ) then
-        local class = ini:r_clsid( i, "class" )
-        if class == CLID_ART then
-          for m = 1, table.getn( k ) do
-            local dog_psy = ini:r_float( i, "add_dog_psy" )
-            local jmp_add = ini:r_float( i, "add_jump_speed" )
-            if dog_psy ~= 1 then  
-              add_dog_psy = add_dog_psy * dog_psy
-            end
-            if jmp_add > 0 then  
-              jump_speed = jump_speed + jmp_add
-            end
-          end
-        end
-      end
+    consumable_artefacts = {}
+    belt_size            = 0
+    local ini            = system_ini()
+    local ini_obj        = ini:object()
+    check_deleted( inv_arts  )
+    check_deleted( belt_arts )
+    -- регистрация всех артефактов из рюкзака
+    local objs, count = registry.inv_objects( 0, true, client_obj )
+    -- wprintf(" inventory objects count =~C0D %d~C07", count)
+    for i, obj in ipairs( objs ) do
+        on_item_take( obj, true )
     end
-  end
-  -- применение суммарных параметров
-  if not sleep_manager.sleeping then 
-     params.max_item_mass_add( 0 )
-     params.psy_restore_speed_add( add_psy )
-     params.jump_speed_add( jump_speed )
-     params.satiety_v_add( add_sat, reduce_sat )
-     params.pwr_restore = ( pwr_rst * 1000 )    
-  end
-  bind_monster.dog_shield = add_dog_psy
-  arc_containers.check_container()
-  if db.actor:has_info( "pda_is_broken" ) and sak.flag_sah == false then
-    sak.out_many_pda_broken()
-  end
-  if last_belt ~= belt_size then
-     last_belt = belt_size    
-     params.belt_param_add( belt_size + 1 )
-  end
-  -- wprintf("~C0E in inventory~C0D %d~C0E artefacts~C0F, active belt slots =~C0D %d~C07", inv_arts:size(), belt_size)
-  local obj = sak.get_accum()
-  if belt_size == 0 and obj then
-     wprintf( "[~T].~C0C #ERROR:~C07 no slots on belt, hidding accum ~C0A %s~C07 ", obj:name() ) 
-     db.actor:move_to_ruck( obj ) -- аккумулятор в рюкзак 
-  end
+    if g_reg_count + g_del_count > 0 then
+        sak_inventory.need_update_inventory()
+        g_del_count = 0
+        g_reg_count = 0
+    end
+    local max_mass    = 0
+    local pwr_rst     = 0
+    local jump_speed  = 0
+    local air_param   = 1
+    local add_sat     = 1
+    local reduce_sat  = 1
+    local add_psy     = 0
+    sak.af_count      = 0
+    local apply_arts  = ( sak.get_accum() and sak.arts_operate );
+    for id, rec in belt_arts:pairs() do
+        sect        = rec.section
+        local class = 0
+        local obj   = rec.object
+        if obj then class = obj:clsid() end
+        if class == CLID_ART then
+            local scobj = ini_obj[ sect ]
+            if apply_arts and scobj then
+                -- jump_speed   = jump_speed + scobj.add_jump_speed      or 0
+                pwr_rst      = pwr_rst    + scobj.power_restore_speed or 0
+                add_sat      = add_sat    + scobj.add_satiety         or 0
+                reduce_sat   = reduce_sat + scobj.reduce_satiety      or 0
+                -- add_psy      = add_psy    + scobj.psy_health_restore_speed or 0
+                sak.af_count = sak.af_count + 1
+            end
+        end
+    end
+    if apply_arts then
+        jump_speed  = 0
+        add_dog_psy = 1
+        for i, k in pairs( sak_inventory.belt_items ) do
+            local ini = system_ini()
+            if ini:section_exist( i ) then
+                local class = ini:r_clsid( i, "class" )
+                if class == CLID_ART then
+                    for m = 1, table.getn( k ) do
+                        local dog_psy = ini:r_float( i, "add_dog_psy" )
+                        local jmp_add = ini:r_float( i, "add_jump_speed" )
+                        if dog_psy ~= 1 then
+                            add_dog_psy = add_dog_psy * dog_psy
+                        end
+                        if jmp_add > 0 then
+                            jump_speed = jump_speed + jmp_add
+                        end
+                    end
+                end
+            end
+        end
+    end
+    -- применение суммарных параметров
+    if not sleep_manager.sleeping then
+        params.max_item_mass_add( 0 )
+        params.psy_restore_speed_add( add_psy )
+        params.jump_speed_add( jump_speed )
+        params.satiety_v_add( add_sat, reduce_sat )
+        params.pwr_restore = ( pwr_rst * 1000 )
+    end
+    bind_monster.dog_shield = add_dog_psy
+    arc_containers.check_container()
+    if db.actor:has_info( "pda_is_broken" ) and sak.flag_sah == false then
+        sak.out_many_pda_broken()
+    end
+    if last_belt ~= belt_size then
+        last_belt = belt_size
+        params.belt_param_add( belt_size + 1 )
+    end
+    -- wprintf("~C0E in inventory~C0D %d~C0E artefacts~C0F, active belt slots =~C0D %d~C07", inv_arts:size(), belt_size)
+    local obj = sak.get_accum()
+    if belt_size == 0 and obj then
+        wprintf( "[~T].~C0C #ERROR:~C07 no slots on belt, hidding accum ~C0A %s~C07 ", obj:name() )
+        db.actor:move_to_ruck( obj ) -- аккумулятор в рюкзак
+    end
 end
 
 function list_cfg_arts()
-  local s = "cfg_arts = "  
-  return s
+    local s = "cfg_arts = "
+    return s
 end
 
 function list_inv_arts()
-  return "inv_arts = {"..table.concat(inv_arts.map, ",").."}"
+    return "inv_arts = {" .. table.concat( inv_arts.map, "," ) .. "}"
 end
 
 function on_remove( id )
-  id = tonumber( id or -1 )
-  if arc_arts.inv_arts:get( id ) then
-    wprintf( "[~T]. #DBG:  removing~C0D %d~C07 from arc_arts.inv_arts ", id )
-    arc_arts.inv_arts:erase( id )
-    g_del_count = g_del_count + 1 
-  end
-  arc_arts.belt_arts:erase( id )
+    id = tonumber( id or -1 )
+    if arc_arts.inv_arts:get( id ) then
+        wprintf( "[~T]. #DBG:  removing~C0D %d~C07 from arc_arts.inv_arts ", id )
+        arc_arts.inv_arts:erase( id )
+        g_del_count = g_del_count + 1
+    end
+    arc_arts.belt_arts:erase( id )
 end
 
-function arc_arts.init_module()
-end
+function arc_arts.init_module() end
 
 function arc_arts.late_init()
- check_artefact()
-end  
+    check_artefact()
+end
 
-function arc_arts.on_cl_spawned(list)
-  local art_count = 0
-  if ( db.init_stage < 500 ) then return end -- опасно во время инициализации чекать
-  for i, id in ipairs( list ) do
-    local obj = client_obj( id )
-    -- wprintf(" arc_arts.on_cl_spawned check~C0D %d~C07 =~C0F %s~C07", id, DumpVar(obj))
-    if obj and obj:clsid() == CLID_ART and is_actor_item( id ) then
-      wprintf(
-        "[~T]. #DBG(arc_arts): artefact spawn captured~C0F %s~C07, condition =~C0D %.3f~C07 ",
-        obj:name(),
-        obj:condition()
-      )
-      art_count = art_count + 1
-      reg_artefact( obj )
+function arc_arts.on_cl_spawned( list )
+    local art_count = 0
+    if ( db.init_stage < 500 ) then return end -- опасно во время инициализации чекать
+    for i, id in ipairs( list ) do
+        local obj = client_obj( id )
+        -- wprintf(" arc_arts.on_cl_spawned check~C0D %d~C07 =~C0F %s~C07", id, DumpVar(obj))
+        if obj and obj:clsid() == CLID_ART and is_actor_item( id ) then
+            wprintf(
+                "[~T]. #DBG(arc_arts): artefact spawn captured~C0F %s~C07, condition =~C0D %.3f~C07 ",
+                obj:name(), obj:condition()
+            )
+            art_count = art_count + 1
+            reg_artefact( obj )
+        end
     end
-  end
-  if ( art_count > 0 ) then check_artefact() end
-  tgt_condition = {} 
+    if ( art_count > 0 ) then check_artefact() end
+    tgt_condition = {}
 end
 
 function damage_from_sect( section )        -- коэфициенты разрядки артов на поясе?
-  local damage = 0.002
-  if       strposx( section, "_buliz" ) then damage = 0.0025
+    local damage = 0.002
+    if     strposx( section, "_buliz" ) then damage = 0.0025
     elseif strposx( section, "dummy_" ) then damage = 0.01
     elseif strpos ( section, "_1", -1 ) then damage = 0.005
     elseif strpos ( section, "_2", -1 ) then damage = 0.0025
     elseif strpos ( section, "_3", -1 ) then damage = 0.001
     elseif strpos ( section, "_4", -1 ) then damage = 0.0005
-  end
-  return damage
+    end
+    return damage
 end
 
 local ds_count = 0
 
 function damage_artefact( obj, coef )               -- разрядка артов на поясе?
-  local obj_id  = obj.id
-  local section = obj:section_name()
-  local cond    = params.get_condition( obj.id, 0.9999 ) -- непонятное увеличение кондиции для округления?
-  if ds_count % 16 == 0 then
-    wprintf(
-      "~C0F[~T]. #ARC_ARTS: damage_artefact name =~C0A %32s~C0F, condition =~C0D %.5f~C07",
-      obj:name(), cond
-    )
-  end
-  if cond > 0.15 then
-    local damage     = damage_from_sect( section )
-    local eff_damage = damage * coef 
-    -- wprintf(" corrupt~C0A %s~C07, damage =~C0D %.5f~C07, eff_damage =~C0D %.5f~C07, condition =~C0D %.7f~C07", obj:name(), damage, eff_damage, cond)
-    params.upd_condition( obj_id, cond - eff_damage )
-    return cond - eff_damage         
-  else
-    misc.release_obj( obj_id )
-    return 0
-  end
+    local obj_id  = obj.id
+    local section = obj:section_name()
+    local cond    = params.get_condition( obj.id, 0.9999 ) -- непонятное увеличение кондиции для округления?
+    if ds_count % 16 == 0 then
+        wprintf(
+            "~C0F[~T]. #ARC_ARTS: damage_artefact name =~C0A %32s~C0F, condition =~C0D %.5f~C07",
+            obj:name(), cond
+        )
+    end
+    if cond > 0.15 then
+        local damage     = damage_from_sect( section )
+        local eff_damage = damage * coef
+        -- wprintf(" corrupt~C0A %s~C07, damage =~C0D %.5f~C07, eff_damage =~C0D %.5f~C07, condition =~C0D %.7f~C07", obj:name(), damage, eff_damage, cond)
+        params.upd_condition( obj_id, cond - eff_damage )
+        return cond - eff_damage
+    else
+        misc.release_obj( obj_id )
+        return 0
+    end
 end
 
 function arc_arts.discharge_artefacts( coef )       -- разрядка артов на поясе?
-  coef = tonumber( coef or 0 )
-  consumable_artefacts = {}
-  for i,k in pairs( sak_inventory.belt_items ) do
-    local ini = system_ini()
-    if ini:section_exist( i ) then
-      local class = ini:r_clsid( i, "class" )
-      if class == CLID_ART then        
-      --[[if ( strposx (i, "dummy_")
-        or strposx (i, "af_compass")
-        or strposx (i, "af_mayatnik")
-        or strpos(i,"_[1-4]")
-        or strpos(i,"_dyn",-6,true) )  and ]]
-		    if  ( not strposx( i, "_dyn6d"   )
-          and not strposx( i, "_fake"    )
-          and not strposx( i, "_capsule" )
-          and not strposx( i, "_akkum"   ) )  then 
-          for s, id_art in ipairs( k ) do
-            -- wprintf(" registered consumable art~C0F %s~C0A %s ~C07", id_art, i) 
-            table.insert( consumable_artefacts, id_art ) 
-          end
-        else
-          -- wprintf(" not consumable artefact~C0A %s~C07", i)  
-        end 
-      end -- if class
-    end -- if ini
-  end -- for  
-  if table.getn( consumable_artefacts ) == 0 then return end
-  for i, obj_id in ipairs( consumable_artefacts ) do
-    obj = g_sim:object( obj_id )
-    if obj then
-      if sak.arts_operate and not level.main_input_receiver()  then
-        local rest = damage_artefact( obj, coef )
-        if rest <= 0 then consumable_artefacts[ i ] = nil end     
-        razgruzka.open_inv_raz_pod = false
-      end -- if obj
-    else
-      wprintf( "~C0C #WARN:~C07 not found server object~C0D %d~C07 in consumable_artefacts", obj_id )
-      consumable_artefacts[ i ] = nil
+    coef = tonumber( coef or 0 )
+    consumable_artefacts = {}
+    for i, k in pairs( sak_inventory.belt_items ) do
+        local ini = system_ini()
+        if ini:section_exist( i ) then
+            local class = ini:r_clsid( i, "class" )
+            if class == CLID_ART then
+                --[[if ( strposx (i, "dummy_")
+                or strposx (i, "af_compass")
+                or strposx (i, "af_mayatnik")
+                or strpos(i,"_[1-4]")
+                or strpos(i,"_dyn",-6,true) )  and ]]
+                if
+                    not str_in_tab( i, {
+                        "_dyn6d",
+                        "_fake",
+                        "_capsule",
+                        "_akkum"
+                    })
+                then
+                    for s, id_art in ipairs( k ) do
+                        -- wprintf(" registered consumable art~C0F %s~C0A %s ~C07", id_art, i)
+                        table.insert( consumable_artefacts, id_art )
+                    end
+                else
+                    -- wprintf(" not consumable artefact~C0A %s~C07", i)
+                end
+            end
+        end
     end
-  end -- for
-  ds_count = ds_count + 1  
+    if table.getn( consumable_artefacts ) == 0 then return end
+    for i, obj_id in ipairs( consumable_artefacts ) do
+        obj = g_sim:object( obj_id )
+        if obj then
+            if
+                sak.arts_operate
+                and not level.main_input_receiver()
+            then
+                local rest = damage_artefact( obj, coef )
+                if rest <= 0 then consumable_artefacts[ i ] = nil end
+                razgruzka.open_inv_raz_pod = false
+            end
+        else
+            wprintf( "~C0C #WARN:~C07 not found server object~C0D %d~C07 in consumable_artefacts", obj_id )
+            consumable_artefacts[ i ] = nil
+        end
+    end
+    ds_count = ds_count + 1
 end
 
 if db.actor then
    -- UpdateRegistry(false)
-   check_artefact()                
+   check_artefact()
    wprintf( "[~T].~C0F #DBG: arc_arts version '%s' check_artefact() results:~C07",
            arc_arts.script_modified or 'nil'
    )
    inv_arts:dump()
-   belt_arts:dump()   
+   belt_arts:dump()
 end
 
 function discharge_art_on_belt( section, amount )
-  local obj_id = -1
-  for i, k in pairs( sak_inventory.belt_items ) do
-    if strpos( i, section, 1, true ) then
-      obj_id = k[ 1 ]
+    local obj_id = -1
+    for i, k in pairs( sak_inventory.belt_items ) do
+        if strpos( i, section, 1, true ) then
+            obj_id = k[ 1 ]
+        end
     end
-  end
-  local cond = params.get_condition( obj_id, 0.9999 )
-  if cond > 0.05 then
-    local new_cond = cond - amount
-    params.upd_condition( obj_id, new_cond )
-  else
-    misc.release_obj( obj_id )
-  end
+    local cond = params.get_condition( obj_id, 0.9999 )
+    if cond > 0.05 then
+        local new_cond = cond - amount
+        params.upd_condition( obj_id, new_cond )
+    else
+        misc.release_obj( obj_id )
+    end
 end
 
 function discharge_all_arts_on_belt( amount )
-  local amnt = amount
-  local tbl = sak_inventory.belt_items or {}
-  for k, v in pairs( tbl ) do
-    discharge_art_on_belt( k, amnt )
-  end
+    local amnt = amount
+    local tbl  = sak_inventory.belt_items or {}
+    for k, v in pairs( tbl ) do
+        discharge_art_on_belt( k, amnt )
+    end
 end
