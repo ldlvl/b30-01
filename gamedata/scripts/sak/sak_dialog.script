@@ -73,6 +73,7 @@ table_dart = {
     "af_eye",
     "af_compass",
     "af_ice",
+    "af_glass_new",
     "af_dummy_sparkler",
     "af_dummy_kolobok"
 }
@@ -5245,9 +5246,8 @@ end
 function add_vil_wolf_letter()
     local obj1 = g_sim:story_object( story_ids.lost_inventory_box_02 )
     if obj1 then
-        g_sim:create( "zapiska_volk",
-            obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id
-        )
+        misc.spawn_to( "zapiska_volk", obj1 )
+        sak.off_on( obj1 )
     end
 end
 
@@ -5728,7 +5728,7 @@ end
 
 function info_kurjer_treasure()
     sak.send_tip(
-        "Может действително стоит поискать на складах. Чем он там расплачиваться собирался?..",
+        "Может действительно стоит поискать на складах. Чем он там расплачиваться собирался?..",
         "Надо запомнить", 5, 15, "g_g", "sak", "yellow"
     )
 end
