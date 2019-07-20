@@ -1943,3 +1943,44 @@ function gambling_tbl_add_points( name, n_wins, n_loses )
     misc.dump_table( tbl )
     nlc_vars.tbl_gambling = tbl
 end
+
+function add_sidor_nagrad()
+    if amk_vars.r_treas_items == 3 then
+        add_to_actor( "medkit_army", 2 )
+        add_to_actor( "antirad", 1 )
+    else
+        add_to_actor( "medkit", 2 )
+    end
+    add_to_actor( "bandage", 6 )
+    add_to_actor( "conserva", 3 )
+end
+
+function check_art_non_rad( flag )
+    local amount = 0
+    local ini    = system_ini()
+    local tbl    = sak_dialog.table_aart
+    for a = 1, #tbl do
+        for i, k in pairs( sak_inventory.rucksack ) do
+            if strposx( i, tbl[ a ] ) then
+                local count = #k
+                for m = 1, count do
+                    local obj  = client_obj( k[ m ] )
+                    if ini:section_exist( obj:section() ) then
+                        local art_rad = ini:r_float( obj:section(), "radiation_restore_speed" )
+                        wprintf( "@---------------  ART RADIATION: " .. tostring( art_rad ) )
+                        if art_rad <= 0 then
+                            amount = amount + 1
+                            if flag then
+                                misc.release_obj( obj )
+                                sak.relocate_item( db.actor, "out", tbl[ a ], 1 )
+                                return
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if amount > 0 then return true end
+    return false
+end
