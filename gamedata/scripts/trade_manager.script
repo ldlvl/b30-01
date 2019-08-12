@@ -16,6 +16,9 @@ function trade_init( npc, cfg )
 
     str = get_string( "trader", "buy_supplies", nil, tt.config )
     if str then
+
+        tt.skip_updates = 10
+
         tt.buy_supplies = xr_logic.parse_condlist( npc, "trade_manager", "buy_supplies", str )
         if not tt.resuply_time then
             local sobj = alife():object( npc:id() )
@@ -35,12 +38,17 @@ function trade_init( npc, cfg )
     end
 end
 
-function update( npc, flag )
+function update( npc )
     local tt = trade_manager[ npc:id() ]
     ASSERT( tt, "trade_manager[ npc:id() ] npc found: %s", npc:name() )
 
-    if tt.update_time and tt.update_time > time_global() and not flag then return end
-    local update_t = math.random( 1800, 2400 ) * 1000                       -- апдейт проверки, пора ли пополнять ассортимент,
+    if tt.skip_updates and tt.skip_updates > 0 then
+        tt.skip_updates = tt.skip_updates - 1
+        return
+    end
+
+    if tt.update_time ~= nil and tt.update_time > time_global() then return end
+    local update_t = math.random( 900, 1800 ) * 1000                       -- апдейт проверки, пора ли пополнять ассортимент,
     tt.update_time = time_global() + update_t                               -- идёт раз в реальных полчаса-час, по рандому
 
     local str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.buy_condition )
