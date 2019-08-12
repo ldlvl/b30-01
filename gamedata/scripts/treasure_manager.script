@@ -684,30 +684,16 @@ function CTreasure:load( p )
 end
 
 function CTreasure:named_treasure( v )
-    if  
-        v.name == "val_secret_krysyk_name"
-        --v.name == "agr_secret_0000_name"  --Тайник Серого
-        --or v.name == "bar_secret_0011_name" --Тайник Арни
-        --or v.name == "esc_secret_0013_name" --Тайник Ворпала
-        --or v.name == "gar_secret_0002_name" --Вещи Гризли
-        --or v.name == "gar_secret_0011_name" --Склад группы Стрелка
-        --or v.name == "gar_secret_0021_name" --Рюкзак Дохляка
-        --or v.name == "pri_secret_0003_name" --Хабар Клыка
-        --or v.name == "pri_secret_0004_name" --Запасы лидера Свободы
-        --or v.name == "rad_secret_0000_name" --Клад Угрюмого
-        --or v.name == "rad_secret_0004_name" --Запас группы отчаянных
-        --or v.name == "ros_secret_0015_name" --Тайник Счастливчика
-        --or v.name == "ros_secret_0018_name" --Ящик с медикаментами
-        --or v.name == "val_secret_0028_name" --Тайник Борова
-        --or v.name == "x18_secret_0000_name" --Тайник Копченого
-        --or v.name == "yan_secret_0011_name" --Тайник учёного
-        or v.name == "mar_secret_kirpich"
-        or v.name == "val_secret_oreh"
-        or v.name == "agr_secret_krysyk_name"
-        or v.name == "mil_secret_borov_name"
-        or v.name == "mil_secret_kruglov_name"
-        or v.name == "yan_secret_kruglov_name"
-        or v.name == "aver_secret_luber_ammunition_name"
+    if str_in_tab( v.name, {
+            "val_secret_krysyk_name",
+            "mar_secret_kirpich",
+            "val_secret_oreh",
+            "agr_secret_krysyk_name",
+            "mil_secret_borov_name",
+            "mil_secret_kruglov_name",
+            "yan_secret_kruglov_name",
+            "aver_secret_luber_ammunition_name"
+        })
     then
         return true
     else
