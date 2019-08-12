@@ -1440,16 +1440,28 @@ function on_boar_kill( obj, who )
 end
 
 function on_burer_kill( obj, who )
-    if obj == nil or level.name() == "l08u_brainlab" or level.name() == "lost_village" then return end
+    if
+        obj == nil
+        --or level.name() == "l08u_brainlab"
+        --or level.name() == "lost_village"
+    then
+        return
+    end
     local obj_sect = obj:section()
     if obj_sect == "burer_hos" then
         amk.spawn_item_in_inv( "mfake_af_dummy_fire", obj )
         return
     end
-    local id = obj:id()
-    if math.fmod( id, 5 ) == 0 then
-        local section = table_aart[ lua_random( 1, #table_aart ) ]
-        local b = lua_random( 2, 4 )
+    local id      = obj:id()
+    local section = ""
+    if math.fmod( id, 4 ) == 0 then
+        local b_rnd = dsh.get_next_random( "on_burer_kill" )
+        if     b_rnd > 0.93 then
+            section = "af_medus_new"
+        else
+            section = table_aart[ dsh.get_next_random( "on_burer_kill", 1, #table_aart ) ]
+        end 
+        local b = dsh.get_next_random( "on_burer_kill", 1, 5 )
         if not strpos( section, "_new", 1, true ) and not strpos( section, "_dummy_", 1, true ) then
             section = "mfake_" .. section .. "_dyn" .. b .. "d"
         elseif strpos( section, "af_medus_new", 1, true ) then
