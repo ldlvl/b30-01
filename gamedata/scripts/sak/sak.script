@@ -1575,18 +1575,16 @@ function add_mil_kurjer_corps()
         v3f( spawn[ 1 ], spawn[ 2 ], spawn[ 3 ] ), spawn[ 5 ], spawn[ 4 ],
         9492, "[known_info]\nmil_kurjer_dead"
     )
-    g_sim:create( "mil_kurjer_pda", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    g_sim:create( "belt_2_art",     obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
+    misc.process_spawn()
+    for _, v in ipairs({ "mil_kurjer_pda", "belt_2_art" }) do
+    	misc.spawn_to( v, obj )
+	end
     amk.spawn_item( "quest_manycase_01_mil_kurjer",
         v3f( spawn2[ 1 ], spawn2[ 2 ], spawn2[ 3 ] ), spawn2[ 5 ], spawn2[ 4 ]
     )
-    item1 = g_sim:create( "af_full_akkum", obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    item2 = g_sim:create( "af_baloon",     obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id )
-    if obj and obj.online then
-        g_sim:set_switch_online ( obj.id, false )
-        g_sim:set_switch_offline( obj.id, true  )
-        amk.convert_npc[ obj.id ] = 1
-    end
+    item1 = misc.spawn_to( "af_full_akkum", obj )
+    item2 = misc.spawn_to( "af_baloon", obj )
+	off_on( obj )
     local pk       = get_netpk( item1 )
     local data     = pk:get()
     data.condition = 0.05
@@ -5998,25 +5996,37 @@ function habar_by_nps( lid )
     end
     -- собственно спавн жратвы и порча её
     for k, v in pairs( table_food ) do
-        if k ~= "energy_drink" and k ~= "conserva" and lua_random() < 0.09 then
+        if
+        	lua_random() < 0.09
+        	and not str_in_tab( k, { "energy_drink", "conserva" } )
+        then
             local obj = misc.spawn_to( k, npc )
-            if k == "bread" or k == "kolbasa" or k == "green_kolbasa" then
+            if str_in_tab( k, { "bread", "kolbasa" } ) then
                 misc.process_spawn()
-                local rand = lua_random( 30, 80 ) / 100
+                local rand = lua_random( 60, 90 ) / 100
                 params.upd_condition( obj, rand )
             end
         end
     end
-    -- спавн артов 1ур ветеранам-мастерам и порча их
+    -- спавн всякой полезной мелочи
     if npc:rank() > 500 then
-        for k, v in pairs( table_aart ) do
-            if lua_random() < 0.03 then
-                local art = k .. "_dyn" .. lua_random( 1, 4 ) .. "d"
-                local obj = misc.spawn_to( art, npc )
+        for _, v in ipairs({
+            "batt_torch",
+            "drag_cat_eyes",
+            "bandage",
+            "ammo_9x18_pmm",
+            "ammo_9x19_pbp",
+            --"ammo_5.45x39_ap",
+            "ammo_7.62x39_fmj",
+            --"ammo_7.62x54_ap",
+            "ammo_9x39_pab9",
+            "ammo_11.43x23_fmj",
+            "ammo_11.43x23_hydro",
+            "ammo_12x70_buck"
+        }) do
+            if lua_random() < 0.05 then
+                misc.spawn_to( v, npc )
                 misc.process_spawn()
-                local rand = lua_random( 30, 80 ) / 100
-                local pk   = get_netpk( obj, 1 )     -- зачем?????
-                params.upd_condition( obj, rand )
                 break
             end
         end
