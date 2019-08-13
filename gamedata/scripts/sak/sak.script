@@ -6003,7 +6003,7 @@ function habar_by_nps( lid )
             local obj = misc.spawn_to( k, npc )
             if str_in_tab( k, { "bread", "kolbasa" } ) then
                 misc.process_spawn()
-                local rand = lua_random( 60, 90 ) / 100
+                local rand = lua_random( 30, 90 ) / 100
                 params.upd_condition( obj, rand )
             end
         end
