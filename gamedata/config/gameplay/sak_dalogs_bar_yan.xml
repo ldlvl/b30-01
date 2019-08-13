@@ -7297,6 +7297,106 @@
 		</phrase>
 	</phrase_list>
 </dialog>
+
+<dialog id="prut_schedule_dialog">
+<precondition>dialogs.is_not_wounded</precondition>
+<has_info>prut2_gg_know</has_info>
+	<phrase_list>
+		<phrase id="0">
+			<text>prut_schedule_dialog_0</text>
+			<next>1</next>
+		</phrase>
+		<phrase id="1">
+			<text>prut_schedule_dialog_1</text>
+			<next>21</next>
+			<next>22</next>
+			<next>23</next>
+			<next>24</next>
+			<next>25</next>
+			<next>26</next>
+			<next>7</next>
+		</phrase>
+		<phrase id="21">
+			<dont_has_info>schedule_sidor</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_21</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>31</next>
+		</phrase>
+		<phrase id="22">
+			<dont_has_info>schedule_kuzya</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_22</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>32</next>
+		</phrase>
+		<phrase id="23">
+			<dont_has_info>schedule_petrenko</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_23</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>33</next>
+		</phrase>
+		<phrase id="24">
+			<dont_has_info>schedule_menyala</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_24</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>34</next>
+		</phrase>
+		<phrase id="25">
+			<dont_has_info>schedule_sherstuk</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_25</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>35</next>
+		</phrase>
+		<phrase id="26">
+			<dont_has_info>schedule_prosha</dont_has_info>
+			<precondition>sak.have_items_count("vodka",2)</precondition>
+			<text>prut_schedule_dialog_26</text>
+			<action>sak_inventory.release_actor_items("vodka",2)</action>
+			<next>36</next>
+		</phrase>
+		<phrase id="31">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_sidor</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="32">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_kuzya</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="33">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_petrenko</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="34">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_menyala</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="35">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_sherstuk</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="36">
+			<text>prut_schedule_dialog_3</text>
+			<give_info>schedule_prosha</give_info>
+			<next>4</next>
+		</phrase>
+		<phrase id="4">
+			<text>prut_schedule_dialog_4</text>
+		</phrase>
+		<phrase id="7">
+			<text>prut_schedule_dialog_7</text>
+			<action>dialogs.break_dialog</action>
+		</phrase>
+	</phrase_list>
+</dialog>
 	
 <dialog id="bar_bio_dialog">
 <precondition>dialogs.is_not_wounded</precondition>
