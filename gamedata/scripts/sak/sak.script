@@ -5911,7 +5911,7 @@ function grabb_seif ( obj_id, lname, actor )
             end
         end
     end
-    if ( have_many > 1390000 ) and not actor:has_info( lname .. "_prot_out" ) then
+    if ( have_many > 1250000 ) and not actor:has_info( lname .. "_prot_out" ) then
         actor:give_info_portion( lname .. "_prot_out" )
         for n = 1, cnt do
             local id   = ids[ n ]
@@ -5949,7 +5949,7 @@ function grabb_bar_seif ( obj_id, actor )
         end
     end
     if
-        ( have_many > 350000 or actor:has_info( "deactivate_radar_fall" ) )
+        ( have_many > 300000 or actor:has_info( "deactivate_radar_fall" ) )
         and not actor:has_info( "bar_seif_prot_out" )
     then
         actor:give_info_portion( "bar_seif_prot_out" )
@@ -6822,21 +6822,19 @@ function off_testobj()
                 or strpos( nname, "amk_zone_greedy_", 1, true )
             then
                 misc.release_obj( obj, 'sak.script:4182' )
-            elseif strpos( nname, "banka_full" ) then
-                if p_obj and p_obj ~= 0 then
-                    local par = g_sim:object( p_obj )
-                    misc.release_obj( obj, 'sak.script:5626' )
-                    if par then misc.spawn_to( "banka", par ) end
-                elseif ( p_obj == nil or p_obj == BAD_OBJ_ID ) then
-                    misc.release_obj( obj, 'sak.script:5633' )
-                end
+            -- elseif strpos( nname, "banka_full" ) then
+            --     if p_obj and p_obj ~= 0 then
+            --         local par = g_sim:object( p_obj )
+            --         misc.release_obj( obj, 'sak.script:5626' )
+            --         if par then misc.spawn_to( "banka", par ) end
+            --     elseif ( p_obj == nil or p_obj == BAD_OBJ_ID ) then
+            --         misc.release_obj( obj, 'sak.script:5633' )
+            --     end
             elseif strpos( nname, "^af_" ) and not strpos( nname, "^af_full" ) then
-                if  (   not strpos( nname, "af_mayatnik_",    1, true )
-                    and not strpos( nname, "af_compass",      1, true )
-                    and not strpos( nname, "af_red_",         1, true )
-                    and not strpos( nname, "af_dummy_green",  1, true )
-                    and not strpos( nname, "af_unknown_",     1, true )
-                    and ( p_obj == nil or p_obj == BAD_OBJ_ID ) )
+                if not str_in_tab( nname, {
+                        "af_mayatnik_", "af_compass", "af_red_", "af_dummy_green", "af_unknown_"
+                    })
+                    and ( p_obj == nil or p_obj == BAD_OBJ_ID )
                 then
                     if
                         obj.position:distance_to( v3f( 350.91, -6.01, -21.23 ) ) < 30
@@ -8104,7 +8102,7 @@ function add_sak_skelets( lname )
 end
 
 local table_monsters = {
-    { "pseudodog_normal", 2 },
+    --{ "pseudodog_normal", 2 },
     { "tushkano_normal",  4 },
     { "dog_normal",       4 },
     { "boar_normal",      2 }
@@ -9429,11 +9427,11 @@ function add_price_arts( obj )
     if not obj then return 0 end
     local art_sect = obj
     local sys_cost = 0
-    local ini  = system_ini()
-    local cond = 1
+    local ini      = system_ini()
+    local cond     = 1
     if type( obj ) ~= "string" then
         art_sect = obj:section()
-        cond = params.get_condition( obj )
+        cond     = params.get_condition( obj )
     end
     -- считает тупо сальдо цены новых артефактов
     if strposx( art_sect, "arc_art_box_" ) then
@@ -9584,6 +9582,15 @@ function changes_art_class( obj_id )
     if lua_random() > 0.15 then return end
     local obj = sim:object( obj_id )
     if obj then
+        --------- чтобы в платных нычках арты не портились ------------
+        if
+            obj.parent_id ~= nil
+            and obj.parent_id ~= BAD_OBJ_ID
+            and obj.parent_id ~= 0
+        then
+            if sak_off_coprses.box_is_protected( g_sim:object( obj.parent_id ) ) then return end
+        end
+        --------- чтобы в платных нычках арты не портились ------------
         local section = obj:section_name()
         local new_art
         if strpos( section, "_dyn", -6, true ) and not strpos( section, "capsule", 1, true ) then
