@@ -11,7 +11,8 @@ function on_late_init()
         this.fix_aver_bandit_corpse,
         this.fix_all_pda_condition,
         this.fix_trup_x16,
-        this.start_gambling_stats_tbl
+        this.start_gambling_stats_tbl,
+        this.remove_yan_ac_barrels
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -46,6 +47,26 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function remove_yan_ac_barrels()
+    for _, name in ipairs({
+        "yan_explosive_barrel_0006",
+        "yan_explosive_barrel_0007",
+        "yan_explosive_barrel_0008",
+        "mil_physic_object_0004",
+        "mil_physic_object_0003",
+        "mil_physic_object_0002",
+        "bochka_open0020",
+        "bochka_open0009",
+        "bochka_open0021"
+    }) do
+        local sobj = g_sim:object( name )
+        if sobj then
+            log2( "[ %s.script ]: found object: %s, releasing...", scr_name, sobj:section_name()  )
+            misc.release_obj( sobj.id )
+        end
+    end
 end
 
 function start_gambling_stats_tbl()
