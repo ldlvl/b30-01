@@ -9588,7 +9588,7 @@ function changes_art_class( obj_id )
             and obj.parent_id ~= BAD_OBJ_ID
             and obj.parent_id ~= 0
         then
-            if sak_off_coprses.box_is_protected( g_sim:object( obj.parent_id ) ) then return end
+            if sak_off_corpses.box_is_protected( g_sim:object( obj.parent_id ) ) then return end
         end
         --------- чтобы в платных нычках арты не портились ------------
         local section = obj:section_name()
