@@ -1309,7 +1309,7 @@ function add_document_wolf() -- документ Волка, ПБ и колбаса
         { 139.124,  3.312, 336.360, 232, 444960, "physics\\decor\\teapot_1"                    }
     }
     amk.spawn_item( "sak_document2", sak.v3f( -80, -1.28, 153 ), 163, 187916 )
-    amk.spawn_item( "wpn_pb",        sak.v3f( -80, -1.20, 153 ), 163, 187916 )
+    --amk.spawn_item( "wpn_pb",        sak.v3f( -80, -1.20, 153 ), 163, 187916 )
     local ind = lua_random( #tbl )
     local par = test.spawn_no_ai( "rukzak_inventory_box",
                     sak.v3f( tbl[ ind ][ 1 ], tbl[ ind ][ 2 ], tbl[ ind ][ 3 ] ),
@@ -1804,14 +1804,14 @@ function sidor_resuply()
     if sobj then
         local gt = game.get_game_time()
         local y, m, d, hh, mm, ss, ms = gt:get()
-        if
-                ( mm >= 0 and mm < 15 )
-            and ( hh == 6 or hh == 12 )
-        then
+        -- if
+        --         ( mm >= 0 and mm < 15 )
+        --     and ( hh == 6 or hh == 12 )
+        -- then
             trade_manager.update( sobj, true )
             sidor_force_updated = true
             sak.send_tip( "Обновили ассортимент проклятому Сидору...", "", 2, 20, "uniq", "sak", "green" )
-        end
+        -- end
     end
 end
 
@@ -1983,4 +1983,19 @@ function check_art_non_rad( flag )
     end
     if amount > 0 then return true end
     return false
+end
+
+function check_sidor()
+    local sobj = g_sim:story_object( story_ids.escape_trader )
+    if not sobj then
+        wprintf( "@---------------  NO SIDOR ---------------@ " )
+    else
+        wprintf( "@---------------  EST SIDOR ---------------@ " )
+        local data
+        if sobj.s_storage and sobj.s_storage ~= "_" then
+            wprintf( "@---------------  SIDOR STORAGE NOT NIL ---------------@ " )
+            data = amk.parse_custom_data( sobj.s_storage )
+            misc.dump_table( data )
+        end
+    end
 end

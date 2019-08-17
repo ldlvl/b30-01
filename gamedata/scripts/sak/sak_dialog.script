@@ -4414,8 +4414,8 @@ function add_hunters_treasure( num )
         local item  = ""
         local count = lua_random( 4, 5 )
         for i = 1, count do
-            item = nagrad.level_4[ lua_random( table.getn( nagrad.level_4 ) ) ]
-            g_sim:create( item, obj1.position, obj1.m_level_vertex_id, obj1.m_game_vertex_id, obj1.id )
+            item = nagrad.level_5[ lua_random( table.getn( nagrad.level_5 ) ) ]
+            misc.spawn_to( item, obj1 )
         end
     end
 end
@@ -6075,6 +6075,7 @@ function add_kishka_rukzak()
     if obj and dsh.get_next_random( "generic_rnd" ) > 0.18 then
         misc.spawn_to( test.rnd_rec_art_info( test.tbl_arts, 2 ), obj )
         misc.spawn_to( "suhpay", obj )
+        misc.spawn_to( "wpn_pb", obj )
         sak.off_on( obj )
     end
 end
