@@ -229,7 +229,7 @@ end
 
 --Фамильное ружье охотника
 function have_hunters_toz(first_speaker, second_speaker)
-	return first_speaker:object("wpn_toz34_m1")~=nil
+	return test.have_with_cond( "wpn_toz34_m1", 1, 0.95, true )
 end
 function give_hunters_toz(first_speaker, second_speaker)
 	dialogs.relocate_item_section(second_speaker, "wpn_toz34_m1", "out")

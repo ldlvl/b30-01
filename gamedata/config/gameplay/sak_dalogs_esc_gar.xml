@@ -44,7 +44,7 @@
 
 
 <dialog id="shustriy_outfit_reward">
-<precondition>sak.have_items_count("outfit_bandit_m1",1)</precondition>
+<precondition>test.have_with_cond("outfit_bandit_m1",1,0.95,false,false)</precondition>
 <has_info>esc_shustryi_outfit_start</has_info>
 <dont_has_info>esc_shustryi_outfit_done</dont_has_info>
 <phrase_list>
@@ -58,9 +58,9 @@
 		<next>22</next>
 	</phrase>
 	<phrase id="2">
-	<precondition>sak.have_items_count("outfit_bandit_m1",1)</precondition>
+	<precondition>test.have_with_cond("outfit_bandit_m1",1,0.95,false,false)</precondition>
 		<text>shustriy_outfit_reward_2</text>
-		<action>sak_inventory.release_actor_items("outfit_bandit_m1",1)</action>
+		<action>test.have_with_cond("outfit_bandit_m1",1,0.95,false,true)</action>
 		<next>3</next>
 	</phrase>
 	<phrase id="22">
@@ -962,7 +962,7 @@
 			<next>112</next>
 		</phrase>
 		<phrase id="112">
-		<precondition>sak_dialog.treasure_time_have("t_stas",3)</precondition>
+		<precondition>sak_dialog.treasure_time_have("t_stas",2)</precondition>
 		<precondition>sak_dialog.no_holiday_sidor</precondition>
 		<precondition>sak_dialog.is_day</precondition>
 			<text>stas_dialog_2_12</text>
@@ -979,7 +979,7 @@
 			<next>6</next>
 		</phrase>
 		<phrase id="1">
-		<precondition>sak_dialog.treasure_time_over("t_stas",3)</precondition>
+		<precondition>sak_dialog.treasure_time_over("t_stas",2)</precondition>
 		<precondition>sak_dialog.no_holiday_sidor</precondition>
 		<precondition>sak_dialog.is_day</precondition>
 			<text>stas_dialog_2_1</text>
@@ -7190,7 +7190,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_5">
-<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
+<precondition>test.have_with_cond("wpn_hunters_toz_new",1,0.95,true)</precondition>
 <dont_has_info>gar_dm_bandits_done</dont_has_info>
 <dont_has_info>gar_dm_bandits_wait</dont_has_info>
 	<phrase_list>
@@ -7222,7 +7222,7 @@
 			<next>612</next>
 		</phrase>
 		<phrase id="611">
-		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
+		<precondition>test.have_with_cond("wpn_hunters_toz_new",1,0.95,true)</precondition>
 			<text>gar_dm_bandits_dialog_5_611</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
@@ -7248,7 +7248,7 @@
 			<next>422</next>
 		</phrase>
 		<phrase id="421">
-		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
+		<precondition>test.have_with_cond("wpn_hunters_toz_new",1,0.95,true)</precondition>
 			<text>gar_dm_bandits_dialog_5_421</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
@@ -7267,7 +7267,7 @@
 </dialog>
 
 <dialog id="gar_dm_bandits_dialog_6">
-<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
+<precondition>test.have_with_cond("wpn_hunters_toz_new",1,0.95,true)</precondition>
 	<dont_has_info>gar_dm_bandits_done</dont_has_info>
 	<dont_has_info>gar_dm_bandits_failed</dont_has_info>
 	<has_info>gar_dm_bandits_wait</has_info>
@@ -7282,7 +7282,7 @@
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
-		<precondition>sak.have_items_count("wpn_hunters_toz_new",1)</precondition>
+		<precondition>test.have_with_cond("wpn_hunters_toz_new",1,0.95,true)</precondition>
 			<text>gar_dm_bandits_dialog_6_21</text>
 			<action>sak_dialog.give_1_dm_bandits</action>
 			<give_info>gar_dm_bandits_done</give_info>
