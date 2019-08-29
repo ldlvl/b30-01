@@ -519,12 +519,12 @@ function have_remove_items_count_cond( section, amount, cond, flag_remove )
     end
 end
 
--- цена зарядки пда по торговцам с повышением через каждые 7 дней
+-- цена зарядки пда по торговцам с повышением через каждые 14 дней
 function calc_pda_recharge_price( vendor )
     local day = timers.Get_Game_Days() or 1
     local price
     if vendor == "vergas" then price = 500 else price = 800 end
-    return math.floor ( math.abs( price + math.floor( day / 7 ) * 1200 - ( 3 * db.actor:character_reputation() ) ) / 500 ) * 500
+    return math.floor ( math.abs( price + math.floor( day / 14 ) * 1200 - ( 3 * db.actor:character_reputation() ) ) / 500 ) * 500
 end
 
 function show_pda_recharge_price( vendor )
