@@ -1999,3 +1999,10 @@ function check_sidor()
         end
     end
 end
+
+function copy_tbl( obj )
+    if type( obj ) ~= 'table' then return obj end
+    local res = {}
+    for k, v in pairs( obj ) do res[ copy_tbl( k ) ] = copy_tbl( v ) end
+    return res
+end

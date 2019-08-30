@@ -57,7 +57,7 @@ local barter_tbl = {
         { "ammo_m209",           4,  "flesh_leather",            1 },
         { "ammo_vog-25",         5,  "flesh_leather",            1 },
         { "ammo_9x39_ap",        5,  "mutant_hand_kontroler",    1 },
-        { "ammo_7.62x54_7h14",   2,  "mutant_poltergeist_glas",  1 },
+        { "ammo_7.62x54_7h14",   3,  "mutant_poltergeist_glas",  1 },
         { "ammo_7.62x51_ap",     2,  "mutant_krovosos_jaw",      1 },
         { "ammo_8.6x70_ap",      3,  "mutant_psevdogigant_hand", 1 },
         { "lvl4",                1,  "mutant_e_chimera_kidney",  1 },
@@ -707,7 +707,7 @@ function make_list_by_trader( name )
     local ttt         = 1
     local ind         = 0
     local gdays       = timers.Get_Game_Days() or 1
-
+    -----------------------------------------------------------------------------
     if name == "sultan" then
         for k, v in pairs ( barter_tbl[ name ] )  do
             ind = ind + 1
@@ -721,23 +721,24 @@ function make_list_by_trader( name )
         tbl__ = generate_rnd_list( tmptbl2, 96, 24, 4, 6 )
         for k, v in pairs( tbl__ ) do table.insert( tbl_, v ) end
         tbl_to_show = tbl_
-
+    -----------------------------------------------------------------------------
     elseif name == "dan" then
-        tmptbl1 = barter_tbl[ name ]
-        for k, v in pairs( tmptbl1 ) do
+        local tbl_dan = test.copy_tbl( barter_tbl[ name ] )
+        for k, v in pairs( tbl_dan ) do
             if v[ 3 ] == "mutant_dog_tail" then
                 v[ 4 ] = v[ 4 ] + math.floor( gdays / 10 )      -- инфл€ци€: хвостов собак каждые 10 дней нужно на 1 больше
                 if v[ 4 ] > 13 then v[ 4 ] = 13 end             -- но до разумных пределов
-            elseif v[ 3 ] == "mutant_psevdodog_tail" then
+            elseif str_in_tab( v[ 3 ], {
+                        "mutant_psevdodog_tail",
+                        "mutant_face_tushkano"
+                    })
+            then
                 v[ 4 ] = v[ 4 ] + math.floor( gdays / 20 )      -- инфл€ци€: хвостов псевд каждые 20 дней нужно на 1 больше
-                if v[ 4 ] > 6 then v[ 4 ] = 6 end
-            elseif v[ 3 ] == "mutant_face_tushkano" then
-                v[ 4 ] = v[ 4 ] + math.floor( gdays / 20 )      -- инфл€ци€: бошек тушканов каждые 20 дней нужно на 1 больше
                 if v[ 4 ] > 6 then v[ 4 ] = 6 end
             end
         end
-        tbl_to_show = tmptbl1
-
+        tbl_to_show = tbl_dan
+    -----------------------------------------------------------------------------
     elseif name == "zub" then
         for k, v in pairs( test.tbl_recipt ) do
             ttt = k
@@ -756,28 +757,27 @@ function make_list_by_trader( name )
         tbl__ = generate_rnd_list( tmptbl2, 99, 6, 2 )
         for k, v in pairs( tbl__ ) do table.insert( tbl_, v ) end
         tbl_to_show = tbl_
-    
+    -----------------------------------------------------------------------------
     elseif name == "menyala" then
         tbl_to_show = generate_rnd_list(
             barter_tbl[ name ], tbl_npc_name_koeff[ name ][ 1 ], 6, 4, 6
         )
-
+    -----------------------------------------------------------------------------
     elseif name == "fuel_esc" or name == "fuel_bar" then
         tbl_to_show = generate_rnd_list(
             barter_tbl[ name ], tbl_npc_name_koeff[ name ][ 1 ], 24, 3, 6
         )
-
+    -----------------------------------------------------------------------------
     elseif strposx( name, "sid_mod" ) then
         tbl_to_show = generate_rnd_list(
             barter_tbl[ name ], tbl_npc_name_koeff[ name ][ 1 ], 24, 5, 7
         )
-
+    -----------------------------------------------------------------------------
     else
         tbl_to_show = barter_tbl[ name ]
     end
-
+    -----------------------------------------------------------------------------
     return tbl_to_show
-
 end
 
 function generate_rnd_list( table_in, npc_koeff, r_update, min, max )
