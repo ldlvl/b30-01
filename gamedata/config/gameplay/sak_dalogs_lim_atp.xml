@@ -15675,7 +15675,7 @@
 
 <dialog id="mar_boryan_green_kolbasa_dialog">
 <has_info>mar_boryan_what_need_info</has_info>
-<precondition>sak.have_items_count("green_kolbasa",2)</precondition>
+<!-- <precondition>sak.have_items_count("green_kolbasa",2)</precondition> -->
 	<phrase_list>
 		<phrase id="0">
 			<text>mar_boryan_green_kolbasa_dialog_0</text>
@@ -15686,7 +15686,9 @@
 			<next>21</next>
 			<next>22</next>
 			<next>23</next>
+			<next>24</next>
 		</phrase>
+
 		<phrase id="21">
 		<precondition>sak.have_items_count("green_kolbasa",2)</precondition>
 			<text>mar_boryan_green_kolbasa_dialog_21</text>
@@ -15707,7 +15709,9 @@
 			<next>21</next>
 			<next>22</next>
 			<next>23</next>
+			<next>24</next>
 		</phrase>
+
 		<phrase id="22">
 		<precondition>sak.have_items_count("green_kolbasa",2)</precondition>
 			<text>mar_boryan_green_kolbasa_dialog_22</text>
@@ -15728,13 +15732,39 @@
 			<next>21</next>
 			<next>22</next>
 			<next>23</next>
+			<next>24</next>
 		</phrase>
+
 		<phrase id="23">
+		<precondition>sak.have_items_count("green_kolbasa",8)</precondition>
 			<text>mar_boryan_green_kolbasa_dialog_23</text>
+			<action>sak_inventory.release_actor_items("green_kolbasa",8)</action>
+			<next>33</next>
+		</phrase>
+		<phrase id="221">
+			<text></text>
+			<next>321</next>
+		</phrase>
+		<phrase id="321">
+			<text></text>
+			<next>32</next>
+		</phrase>
+		<phrase id="33">
+			<text>mar_boryan_green_kolbasa_dialog_32</text>
+			<action>test.add_to_actor("medkit_scientic",1)</action>
+			<next>21</next>
+			<next>22</next>
+			<next>23</next>
+			<next>24</next>
+		</phrase>
+
+		<phrase id="24">
+			<text>mar_boryan_green_kolbasa_dialog_24</text>
 			<action>dialogs.break_dialog</action>
 		</phrase>
 	</phrase_list>
 </dialog>
+
 <!-- new_dialog_lim_fraer -->
 <dialog id="lim_lager_fraer_start_dialog">
 <precondition>dialogs.is_not_wounded</precondition>

@@ -2027,7 +2027,7 @@ function give_harmonica() sak_inventory.release_actor_items( "harmonica_b", 1 ) 
 function add_some_ammo_to_actor( som, sect )
     local actor         = db.actor
     local batch_default = vergas_lib.get_box_size( sect ) or 10
-    local kol   = 1 + math.ceil( som - ( math.ceil( sak.day_money / 10 ) ) * ( som / 10 ) )
+    local kol   = 1 + math.ceil( som - ( math.ceil( sak.day_money / 15 ) ) * ( som / 10 ) )
     if kol <= 0 then kol = 1 end
     local count  = kol
     local pachka = 0
