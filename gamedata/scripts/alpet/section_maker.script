@@ -65,7 +65,7 @@ function _G.create_ini_section( ini, name )
         if src and tonumber( src.slot or 0 ) == 6 then -- outfit detected
             local new, src, cnt = inherite_add( ini, name, parent )
             if strposx( name, "exo" ) then
-                new.icon_group                    = 6
+                new.icon_group                    = 3
                 new.additional_inventory_weight   = 70
                 new.additional_inventory_weight2  = 70
             else
