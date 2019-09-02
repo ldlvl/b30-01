@@ -5391,10 +5391,15 @@ function add_tail()
                         if npc then npc:clear_animations() end
                         if
                             lname ~= sname and sname ~= ""
-                            and obj:community() ~= "military"
-                            and obj:community() ~= "monolith"
-                            and obj:community() ~= "killer"
+                            and not str_in_tab( obj:community(), {
+                                "military", "monolith", "killer", "trader"
+                            })
+                            -- and obj:community() ~= "military"
+                            -- and obj:community() ~= "monolith"
+                            -- and obj:community() ~= "killer"
+                            and obj:clsid() ~= CLID_TRADER
                         then
+                            log2( "@--------- [ sak.script ]: restocking NPC: .......................... %s", nname  )
                             habar_by_nps( a )
                         end
                     end
@@ -5979,10 +5984,10 @@ end
 function habar_by_nps( lid )
     local npc = client_obj( lid )
     if not npc then return end
-    if npc:clsid() == CLID_TRADER then
-        wprintf( "@-------------  detected deletion of food from trader %s, exiting...", npc:name() )
-        return
-    end
+    -- if npc:clsid() == CLID_TRADER then
+    --     wprintf( "@-------------  detected deletion of food from trader %s, exiting...", npc:name() )
+    --     return
+    -- end
     -- удаление из инвентаря по таблицам еды и артов
     local ids, cnt = registry.inv_objects( npc:id(), true )
     for n = 1, cnt do
