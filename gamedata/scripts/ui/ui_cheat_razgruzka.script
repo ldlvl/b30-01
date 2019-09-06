@@ -4,1171 +4,1092 @@ Vergas
 © NLC-6.0
 ]]--
 
--- Расшифровка MTV - Military Tactical Vest  
+-- Расшифровка MTV - Military Tactical Vest
 -- flush !inv_buttons_use.imitation_opening_inventory
 -- flush !used_items.used_podsumok_razgruzka
 
 class "mtv_dialog" (CUIScriptDialog)
 
-local dbg_dump = nlc_container.dbg_dump
+local dbg_dump  = nlc_container.dbg_dump
 local inv_items = {}
 
-local inv_items_map = -- связывание таблицы и номера кнопки 
-      {
-          "ammo_std",
-          "ammo_std",
-          "ammo_std",
-          "ammo_std",
-          "ammo_std",
-          "ammo_std",
-          "grenades",     -- 7
-          "grenades",     -- 8
-          "medications",  -- 9
-          "medications",  -- 10
-          "ammo_gren",    -- 11
-          "ammo_gren",    -- 12
-          "ammo_gren",    -- 13
-          "detectors"     -- 14
-      }   
-local sounds =
-      {
-        "snd_ammo_load",
-        "snd_ammo_load",
-        "snd_ammo_load",
-        "snd_ammo_load",
-        "snd_ammo_load",
-        "snd_ammo_load",                          
-        "snd_grenade_load",
-        "snd_grenade_load",
-        "snd_medkit_load",
-        "snd_medkit_load",
-        "snd_ammo-grenade_load",
-        "snd_ammo-grenade_load",
-        "snd_ammo-grenade_load",
-        "snd_ammo-grenade_load"
-      }
-      
+-- связывание таблицы и номера кнопки
+local inv_items_map = {
+    "ammo_std",
+    "ammo_std",
+    "ammo_std",
+    "ammo_std",
+    "ammo_std",
+    "ammo_std",
+    "grenades",     -- 7
+    "grenades",     -- 8
+    "medications",  -- 9
+    "medications",  -- 10
+    "ammo_gren",    -- 11
+    "ammo_gren",    -- 12
+    "ammo_gren",    -- 13
+    "detectors"     -- 14
+}
+
+local sounds = {
+    "snd_ammo_load",
+    "snd_ammo_load",
+    "snd_ammo_load",
+    "snd_ammo_load",
+    "snd_ammo_load",
+    "snd_ammo_load",
+    "snd_grenade_load",
+    "snd_grenade_load",
+    "snd_medkit_load",
+    "snd_medkit_load",
+    "snd_ammo-grenade_load",
+    "snd_ammo-grenade_load",
+    "snd_ammo-grenade_load",
+    "snd_ammo-grenade_load"
+}
+
 --                1  2  3  4  5  6  7  8  9  A   B   C   D  E
 local offsets = { 0, 0, 0, 0, 0, 0, 6, 6, 8, 8, 10, 10, 10, 13 } -- смещения индексов в таблицах, относительно индекса кнопки
 local sizes   = { 6, 6, 6, 6, 6, 6, 2, 2, 2, 2,  3,  3,  3,  1 }
 
 function clear_inv_items()
-  inv_items.ammo_heavy  = {}    --тяжолое оружие
-  inv_items.ammo_gren   = {}    --подствольные гранаты (кнопки 11-13)
-  inv_items.ammo_std    = {}    --патроны (кнопки 1-6)
-  inv_items.grenades    = {}    --гранаты (кнопки 7-8)
-  inv_items.medications = {}    --медицина (кнопки 9-10)
-  inv_items.detectors   = {}    --детекторы(кнопка14)  
+    inv_items.ammo_heavy  = {}    --тяжолое оружие
+    inv_items.ammo_gren   = {}    --подствольные гранаты (кнопки 11-13)
+    inv_items.ammo_std    = {}    --патроны (кнопки 1-6)
+    inv_items.grenades    = {}    --гранаты (кнопки 7-8)
+    inv_items.medications = {}    --медицина (кнопки 9-10)
+    inv_items.detectors   = {}    --детекторы(кнопка14)
 end
 
-local function get_sound(btn)
-   return vergas_lib.set_pr_from_config_str("razgruzka", sounds[btn])
+local function get_sound( btn )
+    return vergas_lib.set_pr_from_config_str( "razgruzka", sounds[ btn ] )
 end
-
 
 mtv_content = nil --информация по содержимому разгрузки (что лежит)
 
-
-local click  = 0      -- если 0, то по кнопке не кликали, иначе равен номеру клика 1 
+local click     = 0    -- если 0, то по кнопке не кликали, иначе равен номеру клика 1
 local old_click = 0    -- если 0, то по кнопкам не кликали, иначе равен номеру кнопки предыдущего клика
-local button = 0		--номер кнопки по которой произведен первый клик
+local button    = 0    -- номер кнопки по которой произведен первый клик
 
 function class_update()
- if mtv_content then
-    wprintf(" updating mtv_content class version... ")
-    mtv_content = mtv_content:fork() -- обновление версии класса, если что-то пошло не так.
-    if mtv_content.optimize then
-       wprintf(" update was succesfull")
+    if mtv_content then
+        wprintf( " updating mtv_content class version... " )
+        mtv_content = mtv_content:fork() -- обновление версии класса, если что-то пошло не так.
+        if mtv_content.optimize then wprintf( " update was succesfull" ) end
+    else
+        wprintf( " mtv_content undefined " )
+        mtv_content = razgruzka.load_mtv_content()
     end
- else
-    wprintf(" mtv_content undefined ")
-    mtv_content = razgruzka.load_mtv_content()        
- end
 end
-       
+
 class_update()
 
-function load_record(tbl, index) -- универсальная загрузка пары "секция, количество"
- 
- local rec = nil
- if type(tbl) == "userdata" then
-    rec = tbl(index)
- else
-    rec = tbl[index]
- end  
- 
- if rec then
-   if rec.sect ~= nil then
-      return rec.sect, rec.count 
-   else
-      for sect, count in pairs(rec) do
-        return sect, count
-      end
-   end
- else
-   wprintf("~C0C #ERROR:~C07 load_record from tbl[~C0D%d~C0B/~C0F%d~C07] == nil, table dump: ~C0F %s~C07", index, #tbl, DumpVar(tbl))
-   wprintf("  \t called from :\n %s", lua_traceback('  '))  
- end     
- return "?", 0
+function load_record( tbl, index ) -- универсальная загрузка пары "секция, количество"
+    local rec = nil
+    if type( tbl ) == "userdata" then
+        rec = tbl( index )
+    else
+        rec = tbl[ index ]
+    end
+    if rec then
+        if rec.sect ~= nil then
+            return rec.sect, rec.count
+        else
+            for sect, count in pairs( rec ) do
+                return sect, count
+            end
+        end
+    else
+        wprintf(
+            "~C0C #ERROR:~C07 load_record from tbl[~C0D%d~C0B/~C0F%d~C07] == nil, table dump: ~C0F %s~C07",
+            index, #tbl, DumpVar( tbl )
+        )
+        wprintf( "  \t called from :\n %s", lua_traceback('  ') )
+    end
+    return "?", 0
 end
 
-
-function mtv_dialog:__init(owner) super()
-  self.owner = owner
-  self:InitControls()
-  self:InitCallBacks()
+function mtv_dialog:__init( owner ) super()
+    self.owner = owner
+    self:InitControls()
+    self:InitCallBacks()
 end
 
 function mtv_dialog:InitControls()
-  ODS("================================================ ОТКРЫВАЕТСЯ ДИАЛОГ РАЗГРУЗКИ =========================== ")
-  -- Положение и размеры окна
-  self:Init(196,0,632,640)
-  self:SetWindowName("mtv_dialog")
-  -- файл-описатель элементов
-  local xml = CScriptXmlInit()
-  xml:ParseFile("ui_cheat_razgruzka.xml")
-
-  xml:InitStatic("background_3", self)
-  xml:InitStatic("background", self)       --Собственно рамка
-  --xml:InitStatic("background_2", self)     --надпись РАЗГРУЗКА
-  xml:InitStatic("btn_exit_back", self)                           -- Кнопка ВЫХОД
-  xml:InitStatic("btn_empty_back", self)                          -- Кнопка ВЫГРУЗИТЬ
-  
-  self:Register(xml:Init3tButton("btn_stop", self),"btn_stop")    -- Кнопка Выкл
-  self:Register(xml:Init3tButton("btn_empty", self),"btn_empty")    -- Кнопка Выгрузить
-  self:Register(xml:Init3tButton("btn_empty_1", self),"btn_empty_1")  -- Кнопка Выгрузить слот 1
-  self:Register(xml:Init3tButton("btn_empty_2", self),"btn_empty_2")  -- Кнопка Выгрузить слот 2
-  self:Register(xml:Init3tButton("btn_empty_3", self),"btn_empty_3")  -- Кнопка Выгрузить аптечки
-  self:Register(xml:Init3tButton("btn_empty_4", self),"btn_empty_4")  -- Кнопка Выгрузить гранаты
-  self:Register(xml:Init3tButton("btn_empty_5", self),"btn_empty_5")  -- Кнопка Выгрузить подствольные гранаты
-  self:Register(xml:Init3tButton("btn_empty_6", self),"btn_empty_6")  -- Кнопка Выгрузить детекторы
-  
-  self:Register(xml:Init3tButton("btn_1", self),"btn_1")        -- Кнопка 1 патроны
-  self:Register(xml:Init3tButton("btn_2", self),"btn_2")        -- Кнопка 2 патроны
-  self:Register(xml:Init3tButton("btn_3", self),"btn_3")        -- Кнопка 3 патроны
-  self:Register(xml:Init3tButton("btn_4", self),"btn_4")        -- Кнопка 4 патроны
-  self:Register(xml:Init3tButton("btn_5", self),"btn_5")        -- Кнопка 5 патроны
-  self:Register(xml:Init3tButton("btn_6", self),"btn_6")        -- Кнопка 6 патроны
-  self:Register(xml:Init3tButton("btn_7", self),"btn_7")        -- Кнопка 7 гранаты
-  self:Register(xml:Init3tButton("btn_8", self),"btn_8")        -- Кнопка 8 гранаты
-  self:Register(xml:Init3tButton("btn_9", self),"btn_9")        -- Кнопка 9 Медицина
-  self:Register(xml:Init3tButton("btn_10", self),"btn_10")      -- Кнопка 10 Медицина
-  self:Register(xml:Init3tButton("btn_11", self),"btn_11")      -- Кнопка 11 подствольные гранаты 
-  self:Register(xml:Init3tButton("btn_12", self),"btn_12")      -- Кнопка 12 подствольные гранаты 
-  self:Register(xml:Init3tButton("btn_13", self),"btn_13")      -- Кнопка 13 подствольные гранаты 
-  self:Register(xml:Init3tButton("btn_14", self),"btn_14")      -- Кнопка 14 детекторы 
-  
-  self:Register(xml:Init3tButton("btn_left", self),"btn_left")    -- Кнопка прокрутки патронов влево 
-  self:Register(xml:Init3tButton("btn_right", self),"btn_right")    -- Кнопка прокрутки патронов вправо
-  self:Register(xml:Init3tButton("btn_up_1", self),"btn_up_1")    -- Кнопка прокрутки ammo_gren
-  self:Register(xml:Init3tButton("btn_down_1", self),"btn_down_1")  -- Кнопка прокрутки ammo_gren
-  self:Register(xml:Init3tButton("btn_up_2", self),"btn_up_2")    -- Кнопка прокрутки grenades
-  self:Register(xml:Init3tButton("btn_down_2", self),"btn_down_2")  -- Кнопка прокрутки grenades
-  self:Register(xml:Init3tButton("btn_up_3", self),"btn_up_3")    -- Кнопка прокрутки медицины вверх
-  self:Register(xml:Init3tButton("btn_down_3", self),"btn_down_3")  -- Кнопка прокрутки медицины вниз
-  self:Register(xml:Init3tButton("btn_up_4", self),"btn_up_4")    -- Кнопка прокрутки детекторов вверх
-  self:Register(xml:Init3tButton("btn_down_4", self),"btn_down_4")  -- Кнопка прокрутки детекторов вниз
-  
-  clear_inv_items()
-    
-  --собираю борохло по рюкзаку
-  local src_items = razgruzka.inventory_items() -- загрузка в формате MAP, section=count
+    ODS( "============================ ОТКРЫВАЕТСЯ ДИАЛОГ РАЗГРУЗКИ =========================== " )
+    self:Init( 196, 0, 632, 640 )                                           -- Положение и размеры окна
+    self:SetWindowName( "mtv_dialog" )
+    local xml = CScriptXmlInit()                                            -- файл-описатель элементов
+    xml:ParseFile ( "ui_cheat_razgruzka.xml" )
+    xml:InitStatic( "background_3", self     )
+    xml:InitStatic( "background", self       )                              -- Собственно рамка
+    xml:InitStatic( "btn_exit_back", self    )                              -- Кнопка ВЫХОД
+    xml:InitStatic( "btn_empty_back", self   )                              -- Кнопка ВЫГРУЗИТЬ
+    self:Register( xml:Init3tButton( "btn_stop",    self ), "btn_stop"    ) -- Кнопка Выкл
+    self:Register( xml:Init3tButton( "btn_empty",   self ), "btn_empty"   ) -- Кнопка Выгрузить
+    self:Register( xml:Init3tButton( "btn_empty_1", self ), "btn_empty_1" ) -- Кнопка Выгрузить слот 1
+    self:Register( xml:Init3tButton( "btn_empty_2", self ), "btn_empty_2" ) -- Кнопка Выгрузить слот 2
+    self:Register( xml:Init3tButton( "btn_empty_3", self ), "btn_empty_3" ) -- Кнопка Выгрузить аптечки
+    self:Register( xml:Init3tButton( "btn_empty_4", self ), "btn_empty_4" ) -- Кнопка Выгрузить гранаты
+    self:Register( xml:Init3tButton( "btn_empty_5", self ), "btn_empty_5" ) -- Кнопка Выгрузить подствольные гранаты
+    self:Register( xml:Init3tButton( "btn_empty_6", self ), "btn_empty_6" ) -- Кнопка Выгрузить детекторы
+    self:Register( xml:Init3tButton( "btn_1",       self ), "btn_1"       ) -- Кнопка 1 патроны
+    self:Register( xml:Init3tButton( "btn_2",       self ), "btn_2"       ) -- Кнопка 2 патроны
+    self:Register( xml:Init3tButton( "btn_3",       self ), "btn_3"       ) -- Кнопка 3 патроны
+    self:Register( xml:Init3tButton( "btn_4",       self ), "btn_4"       ) -- Кнопка 4 патроны
+    self:Register( xml:Init3tButton( "btn_5",       self ), "btn_5"       ) -- Кнопка 5 патроны
+    self:Register( xml:Init3tButton( "btn_6",       self ), "btn_6"       ) -- Кнопка 6 патроны
+    self:Register( xml:Init3tButton( "btn_7",       self ), "btn_7"       ) -- Кнопка 7 гранаты
+    self:Register( xml:Init3tButton( "btn_8",       self ), "btn_8"       ) -- Кнопка 8 гранаты
+    self:Register( xml:Init3tButton( "btn_9",       self ), "btn_9"       ) -- Кнопка 9 Медицина
+    self:Register( xml:Init3tButton( "btn_10",      self ), "btn_10"      ) -- Кнопка 10 Медицина
+    self:Register( xml:Init3tButton( "btn_11",      self ), "btn_11"      ) -- Кнопка 11 подствольные гранаты
+    self:Register( xml:Init3tButton( "btn_12",      self ), "btn_12"      ) -- Кнопка 12 подствольные гранаты
+    self:Register( xml:Init3tButton( "btn_13",      self ), "btn_13"      ) -- Кнопка 13 подствольные гранаты
+    self:Register( xml:Init3tButton( "btn_14",      self ), "btn_14"      ) -- Кнопка 14 детекторы
+    self:Register( xml:Init3tButton( "btn_left",    self ), "btn_left"    ) -- Кнопка прокрутки патронов влево
+    self:Register( xml:Init3tButton( "btn_right",   self ), "btn_right"   ) -- Кнопка прокрутки патронов вправо
+    self:Register( xml:Init3tButton( "btn_up_1",    self ), "btn_up_1"    ) -- Кнопка прокрутки ammo_gren
+    self:Register( xml:Init3tButton( "btn_down_1",  self ), "btn_down_1"  ) -- Кнопка прокрутки ammo_gren
+    self:Register( xml:Init3tButton( "btn_up_2",    self ), "btn_up_2"    ) -- Кнопка прокрутки grenades
+    self:Register( xml:Init3tButton( "btn_down_2",  self ), "btn_down_2"  ) -- Кнопка прокрутки grenades
+    self:Register( xml:Init3tButton( "btn_up_3",    self ), "btn_up_3"    ) -- Кнопка прокрутки медицины вверх
+    self:Register( xml:Init3tButton( "btn_down_3",  self ), "btn_down_3"  ) -- Кнопка прокрутки медицины вниз
+    self:Register( xml:Init3tButton( "btn_up_4",    self ), "btn_up_4"    ) -- Кнопка прокрутки детекторов вверх
+    self:Register( xml:Init3tButton( "btn_down_4",  self ), "btn_down_4"  ) -- Кнопка прокрутки детекторов вниз
+    clear_inv_items()
+    -- собираю бaрaхло по рюкзаку
+    local src_items = razgruzka.inventory_items() -- загрузка в формате MAP, section=count
     -- src_items:dump("~C0F #DBG: ui_cheat_razgruzka:init:~C07")
-            
- 
-  --сортирую хабар
-  for sect, count in src_items:pairs() do
-    local record = razgruzka.make_record(sect, count)
-    if razgruzka.is_ammo_heavy(sect) then
-      --фенька от тяжолого оружия                
-      table.insert(inv_items.ammo_heavy, record)        
-    else
-      if razgruzka.is_ammo (sect) then
-        if razgruzka.is_ammo_gren(sect) then --подствольные гранаты
-          table.insert(inv_items.ammo_gren, record)            
+    -- сортирую хабар
+    for sect, count in src_items:pairs() do
+        local record = razgruzka.make_record( sect, count )
+        if razgruzka.is_ammo_heavy( sect ) then                -- фенька от тяжолого оружия
+            table.insert( inv_items.ammo_heavy, record )
         else
-          --просто патроны
-          table.insert(inv_items.ammo_std, record)            
+            if razgruzka.is_ammo( sect ) then
+                if razgruzka.is_ammo_gren( sect ) then         -- подствольные гранаты
+                    table.insert( inv_items.ammo_gren, record )
+                else                                           -- просто патроны
+                    table.insert( inv_items.ammo_std, record )
+                end
+            elseif razgruzka.is_grenade( sect ) then           -- гранаты
+                table.insert( inv_items.grenades, record )
+            elseif string.sub( sect, 1, 8 ) == "detector" then -- детекторы
+                table.insert( inv_items.detectors, record )
+            else                                               -- медицина
+                table.insert( inv_items.medications, record )
+            end
         end
-      elseif razgruzka.is_grenade(sect) then
-        --гранаты
-        table.insert(inv_items.grenades, record)          
-      elseif string.sub (sect , 1 , 8) == "detector" then
-        --детекторы
-        table.insert(inv_items.detectors, record)        
-      else
-        --медицина
-        table.insert(inv_items.medications, record)          
-      end
     end
-  end
- 
-  if dbg_dump then
-     wprintf("~C0E #DBG: sorted inv_items: ~C07")
-     misc.dump_table(inv_items)
-  end     
-  
-  
-  --Если надо, добавляю в таблицы записи-пустышки
-  if table.getn(inv_items.ammo_gren) < 3 then
-    inv_items.ammo_gren = razgruzka.add_nope_records(inv_items.ammo_gren,3)
-  end
-  if table.getn(inv_items.ammo_std) < 6 then
-    inv_items.ammo_std = razgruzka.add_nope_records(inv_items.ammo_std,6)
-  end
-  if table.getn(inv_items.grenades) < 2 then
-    inv_items.grenades = razgruzka.add_nope_records(inv_items.grenades, 2)
-  end
-  if table.getn(inv_items.medications) < 2 then
-    inv_items.medications = razgruzka.add_nope_records(inv_items.medications,2)
-  end
-  if table.getn(inv_items.detectors) < 1 then
-    inv_items.detectors = razgruzka.add_nope_records(inv_items.detectors,1)
-  end
-  
-  --[[
-  if table.getn(inv_items.ammo_heavy) < 2 then
-    inv_items.ammo_heavy = razgruzka.add_nope_records(inv_items.ammo_heavy,2)
-  end
-  ]]--
-    -- flush #ui_cheat_razrgruzka.script
-
-  
- 
-  -- расставляю иконки на кнопки
-  self:reset_windows_1_6()  --патроны
-  self:reset_windows_7_8()  --гранаты
-  self:reset_windows_9_10()  --медицина
-  self:reset_windows_11_13()  --подствольные
-  self:reset_windows_14()    --детекторы
-  
-    -- wprintf("inv_items.ammo_heavy dump:")
-    -- misc.dump_table(inv_items.ammo_heavy)
-    -- wprintf("inv_items.ammo_std dump:")
-    -- misc.dump_table(inv_items.ammo_std)
-    -- wprintf("mtv_content dump:")
-    -- misc.dump_table(mtv_content)
-    
-    -- Определяю информацию по содержимому разгрузки    
-  mtv_content = razgruzka.load_mtv_content("mtv_dialog:InitControl")
-  local sz = mtv_content:size() 
-  if sz < #inv_items_map then
-     wprintf("~C0C #FATAL:~C07 size of table = %d ", sz)
-     return
-  end
-
-  if dbg_dump then    
-     mtv_content:dump()
-  end   
-      
-  --расставляю иконки на карманы
+    if dbg_dump then
+        wprintf( "~C0E #DBG: sorted inv_items: ~C07" )
+        misc.dump_table( inv_items )
+    end
+    --Если надо, добавляю в таблицы записи-пустышки
+    if table.getn( inv_items.ammo_gren ) < 3 then
+        inv_items.ammo_gren = razgruzka.add_nope_records( inv_items.ammo_gren, 3 )
+    end
+    if table.getn( inv_items.ammo_std ) < 6 then
+        inv_items.ammo_std = razgruzka.add_nope_records( inv_items.ammo_std, 6 )
+    end
+    if table.getn( inv_items.grenades ) < 2 then
+        inv_items.grenades = razgruzka.add_nope_records( inv_items.grenades, 2 )
+    end
+    if table.getn( inv_items.medications ) < 2 then
+        inv_items.medications = razgruzka.add_nope_records( inv_items.medications, 2 )
+    end
+    if table.getn( inv_items.detectors ) < 1 then
+        inv_items.detectors = razgruzka.add_nope_records( inv_items.detectors, 1 )
+    end
+    -- расставляю иконки на кнопки
+    self:reset_windows_1_6()    -- патроны
+    self:reset_windows_7_8()    -- гранаты
+    self:reset_windows_9_10()   -- медицина
+    self:reset_windows_11_13()  -- подствольные
+    self:reset_windows_14()     -- детекторы
+    -- Определяю информацию по содержимому разгрузки
+    mtv_content = razgruzka.load_mtv_content( "mtv_dialog:InitControl" )
+    local sz = mtv_content:size()
+    if sz < #inv_items_map then
+        wprintf( "~C0C #FATAL:~C07 size of table = %d ", sz )
+        return
+    end
+    if dbg_dump then mtv_content:dump() end
+    --расставляю иконки на карманы
     for i = 1, 6 do
-       if mtv_content(i).count > 0 then
-          self:get_method("set_pocket_ammo_%d", i)(self)
-       end 
+        if mtv_content( i ).count > 0 then
+            self:get_method( "set_pocket_ammo_%d", i )( self )
+        end
     end
-       
     -- Карман 20: граната 1 (разгрузка)
-  if mtv_content(7).count ~= 0 then
-    self:set_pocket_gr_1()
-  end
-
-  -- Карман 21: граната 2 (разгрузка)
-  if mtv_content(8).count ~= 0 then
-    self:set_pocket_gr_2()
-  end
-  
-  -- Карман 22: мудицина 1 (разгрузка)
-  if mtv_content(9).count ~= 0 then
-    self:set_pocket_med_1()
-  end
-  
-  -- Карман 23: медицина 2 (разгрузка)
-  if mtv_content(10).count ~= 0 then
-    self:set_pocket_med_2()
-  end
-
-  -- Карман 24: граната подствольная 1 (разгрузка)
-  if mtv_content(11).count ~= 0 then
-    self:set_pocket_gr_p_1()
-  end
-  
-  -- Карман 25: граната подствольная 2 (разгрузка)
-  if mtv_content(12).count ~= 0 then
-    self:set_pocket_gr_p_2()
-  end
-
-  -- Карман 26: граната подствольная 3 (разгрузка)
-  if mtv_content(13).count ~= 0 then
-    self:set_pocket_gr_p_3()
-  end
-  
-  -- Карман 27: детектор (разгрузка)
-  if mtv_content(14).count ~= 0 then
-    self:set_pocket_det()
-  end
-  
+    if mtv_content( 7 ).count ~= 0  then self:set_pocket_gr_1()   end
+    -- Карман 21: граната 2 (разгрузка)
+    if mtv_content( 8 ).count ~= 0  then self:set_pocket_gr_2()   end
+    -- Карман 22: мудицина 1 (разгрузка)
+    if mtv_content( 9 ).count ~= 0  then self:set_pocket_med_1()  end
+    -- Карман 23: медицина 2 (разгрузка)
+    if mtv_content( 10 ).count ~= 0 then self:set_pocket_med_2()  end
+    -- Карман 24: граната подствольная 1 (разгрузка)
+    if mtv_content( 11 ).count ~= 0 then self:set_pocket_gr_p_1() end
+    -- Карман 25: граната подствольная 2 (разгрузка)
+    if mtv_content( 12 ).count ~= 0 then self:set_pocket_gr_p_2() end
+    -- Карман 26: граната подствольная 3 (разгрузка)
+    if mtv_content( 13 ).count ~= 0 then self:set_pocket_gr_p_3() end
+    -- Карман 27: детектор (разгрузка)
+    if mtv_content( 14 ).count ~= 0 then self:set_pocket_det()    end
 end
 
 function mtv_dialog:InitCallBacks()
-  self:AddCallback("btn_stop", ui_events.BUTTON_CLICKED, self.btn_stop, self)     -- Кнопка Выкл
-  self:AddCallback("btn_empty", ui_events.BUTTON_CLICKED, self.btn_empty, self)     -- Кнопка Выгрузить
-  self:AddCallback("btn_empty_1", ui_events.BUTTON_CLICKED, self.btn_empty_1, self)   -- Кнопка Выгрузить слот 1
-  self:AddCallback("btn_empty_2", ui_events.BUTTON_CLICKED, self.btn_empty_2, self)   -- Кнопка Выгрузить слот 2
-  self:AddCallback("btn_empty_3", ui_events.BUTTON_CLICKED, self.btn_empty_3, self)   -- Кнопка Выгрузить аптечки
-  self:AddCallback("btn_empty_4", ui_events.BUTTON_CLICKED, self.btn_empty_4, self)   -- Кнопка Выгрузить гранаты
-  self:AddCallback("btn_empty_5", ui_events.BUTTON_CLICKED, self.btn_empty_5, self)   -- Кнопка Выгрузить подствольные гранаты
-  self:AddCallback("btn_empty_6", ui_events.BUTTON_CLICKED, self.btn_empty_6, self)   -- Кнопка Выгрузить детекторы
-  
-  self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn_1, self)         -- Кнопка 1 патроны
-  self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn_2, self)         -- Кнопка 2 патроны
-  self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn_3, self)         -- Кнопка 3 патроны
-  self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn_4, self)         -- Кнопка 4 патроны
-  self:AddCallback("btn_5", ui_events.BUTTON_CLICKED, self.btn_5, self)         -- Кнопка 5 патроны
-  self:AddCallback("btn_6", ui_events.BUTTON_CLICKED, self.btn_6, self)         -- Кнопка 6 патроны
-  self:AddCallback("btn_7", ui_events.BUTTON_CLICKED, self.btn_7, self)         -- Кнопка 7 Гранаты
-  self:AddCallback("btn_8", ui_events.BUTTON_CLICKED, self.btn_8, self)         -- Кнопка 8 Гранаты 
-  self:AddCallback("btn_9", ui_events.BUTTON_CLICKED, self.btn_9, self)         -- Кнопка 9 Медицина 
-  self:AddCallback("btn_10", ui_events.BUTTON_CLICKED, self.btn_10, self)       -- Кнопка 10 Медицина 
-  self:AddCallback("btn_11", ui_events.BUTTON_CLICKED, self.btn_11, self)       -- Кнопка 11  подствольные гранаты 
-  self:AddCallback("btn_12", ui_events.BUTTON_CLICKED, self.btn_12, self)       -- Кнопка 12  подствольные гранаты 
-  self:AddCallback("btn_13", ui_events.BUTTON_CLICKED, self.btn_13, self)       -- Кнопка 13  подствольные гранаты 
-  self:AddCallback("btn_14", ui_events.BUTTON_CLICKED, self.btn_14, self)       -- Кнопка 14  детекторы 
-  
-  self:AddCallback("btn_left", ui_events.BUTTON_CLICKED, self.btn_left, self)     -- Кнопка прокрутки патронов влево
-  self:AddCallback("btn_right", ui_events.BUTTON_CLICKED, self.btn_right, self)     -- Кнопка прокрутки патронов вправо
-  self:AddCallback("btn_up_1", ui_events.BUTTON_CLICKED, self.btn_up_1, self)     --  Кнопка прокрутки медицины вверх
-  self:AddCallback("btn_down_1", ui_events.BUTTON_CLICKED, self.btn_down_1, self)   -- Кнопка прокрутки медицины вниз
-  self:AddCallback("btn_up_2", ui_events.BUTTON_CLICKED, self.btn_up_2, self)     -- Кнопка прокрутки подствольных гранат вверх
-  self:AddCallback("btn_down_2", ui_events.BUTTON_CLICKED, self.btn_down_2, self)   -- Кнопка прокрутки подствольных гранат вниз
-  self:AddCallback("btn_up_3", ui_events.BUTTON_CLICKED, self.btn_up_3, self)     -- Кнопка прокрутки гранат вверх
-  self:AddCallback("btn_down_3", ui_events.BUTTON_CLICKED, self.btn_down_3, self)   -- Кнопка прокрутки подствольных  гранат вниз
-  self:AddCallback("btn_up_4", ui_events.BUTTON_CLICKED, self.btn_up_4, self)     -- Кнопка прокрутки детекторов вверх
-  self:AddCallback("btn_down_4", ui_events.BUTTON_CLICKED, self.btn_down_4, self)   -- Кнопка прокрутки детекторов вниз
+    self:AddCallback( "btn_stop",    ui_events.BUTTON_CLICKED, self.btn_stop,    self ) -- Кнопка Выкл
+    self:AddCallback( "btn_empty",   ui_events.BUTTON_CLICKED, self.btn_empty,   self ) -- Кнопка Выгрузить
+    self:AddCallback( "btn_empty_1", ui_events.BUTTON_CLICKED, self.btn_empty_1, self ) -- Кнопка Выгрузить слот 1
+    self:AddCallback( "btn_empty_2", ui_events.BUTTON_CLICKED, self.btn_empty_2, self ) -- Кнопка Выгрузить слот 2
+    self:AddCallback( "btn_empty_3", ui_events.BUTTON_CLICKED, self.btn_empty_3, self ) -- Кнопка Выгрузить аптечки
+    self:AddCallback( "btn_empty_4", ui_events.BUTTON_CLICKED, self.btn_empty_4, self ) -- Кнопка Выгрузить гранаты
+    self:AddCallback( "btn_empty_5", ui_events.BUTTON_CLICKED, self.btn_empty_5, self ) -- Кнопка Выгрузить подствольные гранаты
+    self:AddCallback( "btn_empty_6", ui_events.BUTTON_CLICKED, self.btn_empty_6, self ) -- Кнопка Выгрузить детекторы
+    self:AddCallback( "btn_1",       ui_events.BUTTON_CLICKED, self.btn_1,       self ) -- Кнопка 1 патроны
+    self:AddCallback( "btn_2",       ui_events.BUTTON_CLICKED, self.btn_2,       self ) -- Кнопка 2 патроны
+    self:AddCallback( "btn_3",       ui_events.BUTTON_CLICKED, self.btn_3,       self ) -- Кнопка 3 патроны
+    self:AddCallback( "btn_4",       ui_events.BUTTON_CLICKED, self.btn_4,       self ) -- Кнопка 4 патроны
+    self:AddCallback( "btn_5",       ui_events.BUTTON_CLICKED, self.btn_5,       self ) -- Кнопка 5 патроны
+    self:AddCallback( "btn_6",       ui_events.BUTTON_CLICKED, self.btn_6,       self ) -- Кнопка 6 патроны
+    self:AddCallback( "btn_7",       ui_events.BUTTON_CLICKED, self.btn_7,       self ) -- Кнопка 7 Гранаты
+    self:AddCallback( "btn_8",       ui_events.BUTTON_CLICKED, self.btn_8,       self ) -- Кнопка 8 Гранаты
+    self:AddCallback( "btn_9",       ui_events.BUTTON_CLICKED, self.btn_9,       self ) -- Кнопка 9 Медицина
+    self:AddCallback( "btn_10",      ui_events.BUTTON_CLICKED, self.btn_10,      self ) -- Кнопка 10 Медицина
+    self:AddCallback( "btn_11",      ui_events.BUTTON_CLICKED, self.btn_11,      self ) -- Кнопка 11  подствольные гранаты
+    self:AddCallback( "btn_12",      ui_events.BUTTON_CLICKED, self.btn_12,      self ) -- Кнопка 12  подствольные гранаты
+    self:AddCallback( "btn_13",      ui_events.BUTTON_CLICKED, self.btn_13,      self ) -- Кнопка 13  подствольные гранаты
+    self:AddCallback( "btn_14",      ui_events.BUTTON_CLICKED, self.btn_14,      self ) -- Кнопка 14  детекторы
+    self:AddCallback( "btn_left",    ui_events.BUTTON_CLICKED, self.btn_left,    self ) -- Кнопка прокрутки патронов влево
+    self:AddCallback( "btn_right",   ui_events.BUTTON_CLICKED, self.btn_right,   self ) -- Кнопка прокрутки патронов вправо
+    self:AddCallback( "btn_up_1",    ui_events.BUTTON_CLICKED, self.btn_up_1,    self ) --  Кнопка прокрутки медицины вверх
+    self:AddCallback( "btn_down_1",  ui_events.BUTTON_CLICKED, self.btn_down_1,  self ) -- Кнопка прокрутки медицины вниз
+    self:AddCallback( "btn_up_2",    ui_events.BUTTON_CLICKED, self.btn_up_2,    self ) -- Кнопка прокрутки подствольных гранат вверх
+    self:AddCallback( "btn_down_2",  ui_events.BUTTON_CLICKED, self.btn_down_2,  self ) -- Кнопка прокрутки подствольных гранат вниз
+    self:AddCallback( "btn_up_3",    ui_events.BUTTON_CLICKED, self.btn_up_3,    self ) -- Кнопка прокрутки гранат вверх
+    self:AddCallback( "btn_down_3",  ui_events.BUTTON_CLICKED, self.btn_down_3,  self ) -- Кнопка прокрутки подствольных  гранат вниз
+    self:AddCallback( "btn_up_4",    ui_events.BUTTON_CLICKED, self.btn_up_4,    self ) -- Кнопка прокрутки детекторов вверх
+    self:AddCallback( "btn_down_4",  ui_events.BUTTON_CLICKED, self.btn_down_4,  self ) -- Кнопка прокрутки детекторов вниз
 end
 
-function mtv_dialog:OnKeyboard(dik, keyboard_action)
-  CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
-  if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
-     local handlers = {}
-         
-     handlers[DIK_keys.DIK_ESCAPE] = self.btn_stop -- на выход повесим Esc
-     -- допущение, что у игрока две руки )                                
-     --handlers[DIK_keys.DIK_1]      = self.btn_1
-     --handlers[DIK_keys.DIK_2]      = self.btn_2       
-     --handlers[DIK_keys.DIK_3]      = self.btn_3
-     --handlers[DIK_keys.DIK_4]      = self.btn_4
-     --handlers[DIK_keys.DIK_5]      = self.btn_5
-     --handlers[DIK_keys.DIK_6]      = self.btn_6          
-
-     --handlers[DIK_keys.DIK_A]      = self.btn_left          
-     --handlers[DIK_keys.DIK_D]      = self.btn_right          
-     --handlers[DIK_keys.DIK_W]      = self.btn_up        
-     --handlers[DIK_keys.DIK_S]      = self.btn_down          
-  
-        
-     local handler = handlers[dik]  
-    
-     if handler then
-        handler(self)
-     end    
-  end
-  return true
+function mtv_dialog:OnKeyboard( dik, keyboard_action )
+    CUIScriptWnd.OnKeyboard( self, dik, keyboard_action )
+    if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+        local handlers = {}
+        handlers[ DIK_keys.DIK_ESCAPE ] = self.btn_stop -- на выход повесим Esc
+        -- допущение, что у игрока две руки )
+        --handlers[DIK_keys.DIK_1]      = self.btn_1
+        --handlers[DIK_keys.DIK_2]      = self.btn_2
+        --handlers[DIK_keys.DIK_3]      = self.btn_3
+        --handlers[DIK_keys.DIK_4]      = self.btn_4
+        --handlers[DIK_keys.DIK_5]      = self.btn_5
+        --handlers[DIK_keys.DIK_6]      = self.btn_6
+        --handlers[DIK_keys.DIK_A]      = self.btn_left
+        --handlers[DIK_keys.DIK_D]      = self.btn_right
+        --handlers[DIK_keys.DIK_W]      = self.btn_up
+        --handlers[DIK_keys.DIK_S]      = self.btn_down
+        local handler = handlers[ dik ]
+        if handler then handler( self ) end
+    end
+    return true
 end
 
 function mtv_dialog:btn_up()
-	if click == 1 then
-		if button == 7 or button == 8 then
-			self:btn_up_2()		--кнопка гранат вверх
-		elseif button == 9 or button == 10 then
-			self:btn_up_3()		--кнопка медицины вверх
-		elseif button == 11 or button == 12 or button == 13 then
-			self:btn_up_1()		--кнопка подствольных вверх
-		elseif button == 14 then
-			self:btn_up_4()		--кнопка детекторов вверх
-		end
-	end
+    if click == 1 then
+        if button == 7 or button == 8 then
+            self:btn_up_2()   --кнопка гранат вверх
+        elseif button == 9 or button == 10 then
+            self:btn_up_3()   --кнопка медицины вверх
+        elseif button == 11 or button == 12 or button == 13 then
+            self:btn_up_1()   --кнопка подствольных вверх
+        elseif button == 14 then
+            self:btn_up_4()   --кнопка детекторов вверх
+        end
+    end
 end
 
 function mtv_dialog:btn_down()
-	if click == 1 then
-		if button == 7 or button == 8 then
-			self:btn_down_2()		--кнопка гранат вниз
-		elseif button == 9 or button == 10 then
-			self:btn_down_3()		--кнопка медицины вниз
-		elseif button == 11 or button == 12 or button == 13 then
-			self:btn_down_1()		--кнопка подствольных вниз
-		elseif button == 14 then
-			self:btn_down_4()		--кнопка детекторов вниз
-		end
-	end
+    if click == 1 then
+        if button == 7 or button == 8 then
+            self:btn_down_2()   --кнопка гранат вниз
+        elseif button == 9 or button == 10 then
+            self:btn_down_3()   --кнопка медицины вниз
+        elseif button == 11 or button == 12 or button == 13 then
+            self:btn_down_1()   --кнопка подствольных вниз
+        elseif button == 14 then
+            self:btn_down_4()   --кнопка детекторов вниз
+        end
+    end
 end
 
 function mtv_dialog:btn_stop()      -- Кнопка Выкл
-  self:CloseDialog()
+    self:CloseDialog()
 end
 
 function mtv_dialog:CloseDialog()
-  click  = 0       
-  old_click = 0
-  self:permission_quit()          --восстанавливаю содержимое разгрузки и инвнтаря
-  self:del_statics(1, #inv_items_map)  
-  self:del_windows_pockets()
-  self:del_windows_colour(1)
-  CUIScriptDialog.CloseDialog(self)
+    click     = 0
+    old_click = 0
+    self:permission_quit()          --восстанавливаю содержимое разгрузки и инвнтаря
+    self:del_statics( 1, #inv_items_map )
+    self:del_windows_pockets()
+    self:del_windows_colour( 1 )
+    CUIScriptDialog.CloseDialog( self )
 end
 
 -------------------------------------------------------------------------
 --расстановка иконок и количества на кнопках
 -------------------------------------------------------------------------
-function mtv_dialog:setup_icon(static_name, sect, count, r2, r1)    
-  local ik_t = vergas_lib.set_pr_from_config(sect, "inv_grid_width")
-  local rect = r1
-  if ik_t == 2 then rect = r2 or r1 end    
-
-  return self:add_static(static_name, rect, count, nil, "", sect)   
-end 
-
-function mtv_dialog:set_btn(btn_num)
-   self:get_method("set_btn_%d", btn_num)(self)
+function mtv_dialog:setup_icon( static_name, sect, count, r2, r1 )
+    local new_sect = sect or "?"
+    if str_in_tab(
+        sect, {
+            "ammo_vog-25",
+            "ammo_m209",
+            "grenade_rgd5",
+            "grenade_f1",
+            "grenade_light",
+            "medkit_scientic"
+        })
+    then
+        new_sect = sect .. "_razgr"
+    end
+    local ik_t = vergas_lib.set_pr_from_config( new_sect, "inv_grid_width" )
+    local rect = r1
+    if ik_t == 2 then rect = r2 or r1 end
+    return self:add_static( static_name, rect, count, nil, "", new_sect )
 end
 
-function mtv_dialog:set_btn_x(n_btn, r2, r1)         
-    local static_name = "wnd_" .. tostring(n_btn)
-    local name_t  = inv_items_map[n_btn]   
-    local items_t = inv_items[name_t]    
-    local n_rec = n_btn - offsets[n_btn]  
-    self:remove_static(static_name)
+function mtv_dialog:set_btn( btn_num )
+    self:get_method( "set_btn_%d", btn_num )( self )
+end
+
+function mtv_dialog:set_btn_x( n_btn, r2, r1 )
+    local static_name = "wnd_" .. tostring( n_btn )
+    local name_t      = inv_items_map[ n_btn ]
+    local items_t     = inv_items[ name_t ]
+    local n_rec       = n_btn - offsets[ n_btn ]
+    self:remove_static( static_name )
     if n_rec > #items_t then
-       wprintf("~C0C #ERROR:~C07 set_btn_x unexpected access to~C0F %s[%d/%d]~C07 ", name_t, n_rec, #items_t)
-       return 
+        wprintf(
+            "~C0C #ERROR:~C07 set_btn_x unexpected access to~C0F %s[%d/%d]~C07 ",
+            name_t, n_rec, #items_t
+        )
+        return
     end
-                     
-    local sect, count  = load_record (items_t, n_rec)
-  if count == 0 then return end
-  return self:setup_icon(static_name, sect, count, r2, r1)
+    local sect, count = load_record( items_t, n_rec )
+    if count == 0 then return end
+    return self:setup_icon( static_name, sect, count, r2, r1 )
 end
 
 --расставляет иконки на худе разгрузки
 -- все-бы эти координаты хорошо в XML запихнуть, но лень!
 function mtv_dialog:set_btn_1()          -- Патроны кнопка 1
-   self:set_btn_x(1, {70,576,66,33}, {85,576,33,33})
+   self:set_btn_x( 1, { 70, 576, 66, 33 }, { 85, 576, 33, 33 } )
 end
 
-function mtv_dialog:set_btn_2()            -- Патроны кнопка 2
-   self:set_btn_x(2, {148,576,66,33}, {163,576,33,33})  
+function mtv_dialog:set_btn_2()          -- Патроны кнопка 2
+   self:set_btn_x( 2, { 148, 576, 66, 33 }, { 163, 576, 33, 33 } )
 end
 
 function mtv_dialog:set_btn_3()          -- Патроны кнопка 3
-   self:set_btn_x(3, {214+10,574+2,66,33}, {214+25,574+2,33,33}) 
+   self:set_btn_x( 3, { 214 + 10, 574 + 2, 66, 33 }, { 214 + 25, 574 + 2, 33, 33 } )
 end
 
 function mtv_dialog:set_btn_4()          -- Патроны кнопка 4
-   self:set_btn_x(4, {340+8,574+2,66,33}, {340+23,574+2,33,33}) 
+   self:set_btn_x( 4, { 340 + 8, 574 + 2, 66, 33 }, { 340 + 23, 574 + 2, 33, 33 } )
 end
 
 function mtv_dialog:set_btn_5()          -- Патроны кнопка 5
-   self:set_btn_x(5, {416+10,574+2,66,33}, {416+25,574+2,33,33})   
+   self:set_btn_x( 5, { 416 + 10, 574 + 2, 66, 33 }, { 416 + 25, 574 + 2, 33, 33 } )
 end
 
 function mtv_dialog:set_btn_6()          -- Патроны кнопка 6
-   self:set_btn_x(6, {492+10,574+2,66,33}, {492+25,574+2,33,33})
+   self:set_btn_x( 6, { 492 + 10, 574 + 2, 66, 33 }, { 492 + 25, 574 + 2, 33, 33 } )
 end
 
 function mtv_dialog:set_btn_7()          -- Гранаты кнопка 1
-   self:set_btn_x(7, nil, {593+5,200+3,33,33})
+   self:set_btn_x( 7, nil, { 593 + 5, 200 + 3, 33, 33 } )
    button = 7
 end
 
 function mtv_dialog:set_btn_8()          -- Гранаты кнопка 2
-   self:set_btn_x(8, nil, {593+5,239+7,33,33})  
+   self:set_btn_x( 8, nil, { 593 + 5, 239 + 7, 33, 33 } )
    button = 8
 end
 
 function mtv_dialog:set_btn_9()          -- Медицина кнопка 1
-   self:set_btn_x(9, nil, {593+1,333,33,33})
+   self:set_btn_x( 9, nil, { 593 + 1, 333, 33, 33 } )
    button = 9
 end
 
 function mtv_dialog:set_btn_10()          -- Медицина кнопка 2
-   self:set_btn_x(10, nil, {593+1,372+6,33,33}) 
-	button = 10
+   self:set_btn_x( 10, nil, { 593 + 1, 372 + 6, 33, 33 } )
+  button = 10
 end
 
 function mtv_dialog:set_btn_11()          -- Подствольные гранаты кнопка 1
-   self:set_btn_x(11, nil, {4,253+1+56,33,33})
-	button = 11
+   self:set_btn_x( 11, nil, { 4, 253 + 1 + 56, 33, 33 } )
+  button = 11
 end
 
 function mtv_dialog:set_btn_12()          -- Подствольные гранаты кнопка 2
-   self:set_btn_x(12, nil, {4,292+6+56,33,33})
+   self:set_btn_x( 12, nil, { 4, 292 + 6 + 56, 33, 33 } )
    button = 12
 end
 
 function mtv_dialog:set_btn_13()          -- Подствольные гранаты кнопка 3
-   self:set_btn_x(13, nil, {4,336+6+56,33,33})
-	button = 13   
+   self:set_btn_x( 13, nil, { 4, 336 + 6 + 56, 33, 33 } )
+  button = 13
 end
 
 function mtv_dialog:set_btn_14()          -- Детекторы
-   self:set_btn_x(14, nil, {4,196,33,33})
+   self:set_btn_x( 14, nil, { 4, 196, 33, 33 } )
    button = 14
 end
-
-
 -------------------------------------------------------------------------
---расстановка иконок и количества на карманах
+--  расстановка иконок и количества на карманах
 -------------------------------------------------------------------------
-
-function mtv_dialog:set_pocket_ammo_x(n_rec, r2, r1)
-    --расставляет иконки на карманах разгрузки
-    local wnd_name = "wnd_p"..tostring(n_rec)
-    self:remove_static(wnd_name)
-    local sect, count  = load_record (mtv_content, n_rec)
-    if count == 0 then return end  
-    self:setup_icon (wnd_name, sect, count, r2, r1)  
+function mtv_dialog:set_pocket_ammo_x( n_rec, r2, r1 )
+    -- расставляет иконки на карманах разгрузки
+    local wnd_name = "wnd_p" .. tostring( n_rec )
+    self:remove_static( wnd_name )
+    local sect, count  = load_record( mtv_content, n_rec )
+    if count == 0 then return end
+    self:setup_icon( wnd_name, sect, count, r2, r1 )
     return wnd
 end
 
 function mtv_dialog:set_pocket_ammo_1()
-    self:set_pocket_ammo_x(1, {70,504,66,33}, {85,504,33,33}) 
+    self:set_pocket_ammo_x( 1, { 70, 504, 66, 33 }, { 85, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_ammo_2()
-    self:set_pocket_ammo_x(2, {138+10,504,66,33}, {138+25,504,33,33})  
+    self:set_pocket_ammo_x( 2, { 138 + 10, 504, 66, 33 }, { 138 + 25, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_ammo_3()
-    self:set_pocket_ammo_x(3, {214+10,504,66,33}, {214+25,504,33,33})
+    self:set_pocket_ammo_x( 3, { 214 + 10, 504, 66, 33 }, { 214 + 25, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_ammo_4()
-    self:set_pocket_ammo_x(4, {340+10,504,66,33}, {340+25,504,33,33})  
+    self:set_pocket_ammo_x( 4, { 340 + 10, 504, 66, 33 }, { 340 + 25, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_ammo_5()
-    self:set_pocket_ammo_x(5, {416+10,504,66,33}, {416+25,504,33,33})  
+    self:set_pocket_ammo_x( 5, { 416 + 10, 504, 66, 33 }, { 416 + 25, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_ammo_6()
-    self:set_pocket_ammo_x(6, {492+10,504,66,33}, {492+25,504,33,33})
+    self:set_pocket_ammo_x( 6, { 492 + 10, 504, 66, 33 }, { 492 + 25, 504, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_gr_1()
-    self:set_pocket_ammo_x(7, nil, {522+5,200+5-2,33,33})  
+    self:set_pocket_ammo_x( 7, nil, { 522 + 5, 200 + 5 - 2, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_gr_2()
-    self:set_pocket_ammo_x(8, nil, {522+5,239+5+2,33,33})  
+    self:set_pocket_ammo_x( 8, nil, { 522 + 5, 239 + 5 + 2, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_med_1()
-    self:set_pocket_ammo_x(9, nil, {522+1,333,33,33})  
+    self:set_pocket_ammo_x( 9, nil, { 522 + 1, 333, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_med_2()
-    self:set_pocket_ammo_x(10, nil, {522+1,372+3+5,33,33})  
+    self:set_pocket_ammo_x( 10, nil, { 522 + 1, 372 + 3 + 5, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_gr_p_1()
-   self:set_pocket_ammo_x(11, nil, {75,253+1+56,33,33})  
+   self:set_pocket_ammo_x( 11, nil, { 75, 253 + 1 + 56, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_gr_p_2()
-    self:set_pocket_ammo_x(12, nil, {75,292+4+2+56,33,33})  
+    self:set_pocket_ammo_x( 12, nil, { 75, 292 + 4 + 2 + 56, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_gr_p_3()
-    self:set_pocket_ammo_x(13, nil, {75,336+4+2+56,33,33})  
+    self:set_pocket_ammo_x( 13, nil, { 75, 336 + 4 + 2 + 56, 33, 33 } )
 end
 
 function mtv_dialog:set_pocket_det()
-    self:set_pocket_ammo_x(14, nil, {75,196,33,33})  
+    self:set_pocket_ammo_x( 14, nil, { 75, 196, 33, 33 } )
 end
-
 
 -------------------------------------------------------------------------
 --работа кнопок зарядки разгрузки
 -------------------------------------------------------------------------
-
-function mtv_dialog:get_method(fmt, ...)
- local mname = sprintf(fmt, ...) 
- local m = self[mname]
- if m == nil then        
-    wprintf("~C0C #ERROR:~C07 method self.%s == nil ", mname)       
- end
- return m  
+function mtv_dialog:get_method( fmt, ... )
+    local mname = sprintf( fmt, ... )
+    local m     = self[ mname ]
+    if m == nil then
+        wprintf( "~C0C #ERROR:~C07 method self.%s == nil ", mname )
+    end
+    return m
 end
- 
 
-function mtv_dialog:btn_x(btn_num, rec_num, info_t, rect, btn_name, set_method_name, res_method_name)   
-  self:set_click(btn_num)
-    
-    local sect, count  = load_record (info_t, rec_num)
-  if click == 1 then            -- первый клик
-    --подсвечиваю кнопку
-    self:set_static_colour(rect, btn_name)
-        self:set_btn(btn_num) -- перерисовка кнопки
+function mtv_dialog:btn_x( btn_num, rec_num, info_t, rect, btn_name, set_method_name, res_method_name )
+    self:set_click( btn_num )
+    local sect, count = load_record( info_t, rec_num )
+    if click == 1 then -- первый клик
+        --подсвечиваю кнопку
+        self:set_static_colour( rect, btn_name )
+        self:set_btn( btn_num ) -- перерисовка кнопки
         -- self:get_method("set_btn_%d", btn_num)(self)
-      if count > 0 then
+        if count > 0 then
             -- same
-       -- self:set_windows_capacity( razgruzka.get_capacity_mtv(sect, btn_num) )
+            -- self:set_windows_capacity( razgruzka.get_capacity_mtv(sect, btn_num) )
+        end
+    else -- второй клик
+        self:del_windows_colour()
+        old_click = 0
+        -- процедура загрузки боеприпасов в разгрузку
+        if count ~= 0 then
+            self:take_in_razgruzka( btn_num )
+            self:get_method( set_method_name, rec_num )( self )
+            --self:snd_razgruzka(1)
+            self:get_method( res_method_name )( self )
+        end
     end
-  else                  -- второй клик
-    self:del_windows_colour()
-    
-    old_click = 0
-    -- процедура загрузки боеприпасов в разгрузку
-    if count ~= 0 then
-      self:take_in_razgruzka(btn_num)
-            self:get_method(set_method_name, rec_num)(self)      
-      --self:snd_razgruzka(1)
-            self:get_method(res_method_name)(self)      
-    end
-  end
 end
 
 function mtv_dialog:btn_1()            -- Кнопка 1 патроны
-   self:btn_1_6 (1, 67,574,71,33,  "ui_btn_4") 
+    self:btn_1_6( 1, 67, 574, 71, 33, "ui_btn_4" )
 end
 
-function mtv_dialog:btn_1_6 (btn_num, x, y, w, h, btn_name)
-  self:btn_x(btn_num, btn_num, inv_items.ammo_std, {x, y, w, h}, btn_name, "set_pocket_ammo_%d", "reset_windows_1_6") 
+function mtv_dialog:btn_1_6( btn_num, x, y, w, h, btn_name )
+    self:btn_x(
+        btn_num, btn_num, inv_items.ammo_std, { x, y, w, h }, btn_name,
+        "set_pocket_ammo_%d", "reset_windows_1_6"
+    )
 end
 
 
 function mtv_dialog:btn_2()            -- Кнопка 2 патроны
-    self:btn_1_6(2, 138,574,76,33, "ui_btn_5")
+    self:btn_1_6( 2, 138, 574, 76, 33, "ui_btn_5" )
 end
 
 function mtv_dialog:btn_3()            -- Кнопка 3 патроны
-    self:btn_1_6(3, 214,574,71,33, "ui_btn_6")
+    self:btn_1_6( 3, 214, 574, 71, 33, "ui_btn_6" )
 end
 
 function mtv_dialog:btn_4()            -- Кнопка 4 патроны
-    self:btn_1_6(4, 345,574,71,33, "ui_btn_4")  
+    self:btn_1_6( 4, 345, 574, 71, 33, "ui_btn_4" )
 end
 
 function mtv_dialog:btn_5()            -- Кнопка 5 патроны
-    self:btn_1_6(5, 416,574,76,33, "ui_btn_5")  
+    self:btn_1_6( 5, 416, 574, 76, 33, "ui_btn_5" )
 end
 
 function mtv_dialog:btn_6()            -- Кнопка 6 патроны
-    self:btn_1_6(6, 492,574,71,33, "ui_btn_6")  
+    self:btn_1_6( 6, 492, 574, 71, 33, "ui_btn_6" )
 end
 
-function mtv_dialog:btn_7()            -- Кнопка 7 гранаты     
-    self:btn_x(7, 1, inv_items.grenades, {593,200,33,39}, "ui_btn_10", "set_pocket_gr_%d", "reset_windows_7_8")  
+function mtv_dialog:btn_7()            -- Кнопка 7 гранаты
+    self:btn_x(
+        7, 1, inv_items.grenades, { 593, 200, 33, 39 },
+        "ui_btn_10", "set_pocket_gr_%d", "reset_windows_7_8"
+    )
 end
 
 function mtv_dialog:btn_8()            -- Кнопка 8 гранаты
-    self:btn_x(8, 2, inv_items.grenades, {593,239,33,39}, "ui_btn_11", "set_pocket_gr_%d", "reset_windows_7_8")  
+    self:btn_x(
+        8, 2, inv_items.grenades, { 593, 239, 33, 39 },
+        "ui_btn_11", "set_pocket_gr_%d", "reset_windows_7_8"
+    )
 end
 function mtv_dialog:btn_9()            -- Кнопка 9 медицина
-    self:btn_x(9, 1, inv_items.medications, {593,333,33,39}, "ui_btn_10", "set_pocket_med_%d", "reset_windows_9_10")  
+    self:btn_x(
+        9, 1, inv_items.medications, { 593, 333, 33, 39 },
+        "ui_btn_10", "set_pocket_med_%d", "reset_windows_9_10"
+    )
 end
 
 function mtv_dialog:btn_10()            -- Кнопка 10 медицина
-    self:btn_x(10, 2, inv_items.medications, {593,372,33,39}, "ui_btn_11", "set_pocket_med_%d", "reset_windows_9_10")  
+    self:btn_x(
+        10, 2, inv_items.medications, { 593, 372, 33, 39 },
+        "ui_btn_11", "set_pocket_med_%d", "reset_windows_9_10"
+    )
 end
 
 function mtv_dialog:btn_11()            -- Кнопка 11  подствольные гранаты
-    self:btn_x(11, 1, inv_items.ammo_gren, {4,253+56,33,39}, "ui_btn_7", "set_pocket_gr_p_%d", "reset_windows_11_13")
+    self:btn_x(
+        11, 1, inv_items.ammo_gren, { 4, 253 + 56, 33, 39 },
+        "ui_btn_7", "set_pocket_gr_p_%d", "reset_windows_11_13"
+    )
 end
 
 function mtv_dialog:btn_12()            -- Кнопка 12  подствольные гранаты
-    self:btn_x(12, 2, inv_items.ammo_gren, {4,292+56,33,39}, "ui_btn_8", "set_pocket_gr_p_%d", "reset_windows_11_13")
+    self:btn_x(
+        12, 2, inv_items.ammo_gren, { 4, 292 + 56, 33, 39 },
+        "ui_btn_8", "set_pocket_gr_p_%d", "reset_windows_11_13"
+    )
 end
 
 function mtv_dialog:btn_13()            -- Кнопка 13 подствольные гранаты
-    self:btn_x(13, 3, inv_items.ammo_gren, {4,336+56,33,39}, "ui_btn_9", "set_pocket_gr_p_%d", "reset_windows_11_13")  
+    self:btn_x(
+        13, 3, inv_items.ammo_gren, { 4, 336 + 56, 33, 39 },
+        "ui_btn_9", "set_pocket_gr_p_%d", "reset_windows_11_13"
+    )
 end
 
 function mtv_dialog:btn_14()            -- Кнопка 14 детекторы
-    self:btn_x(14, 1, inv_items.detectors, {4,196,33,33}, "ui_btn_14", "set_pocket_det", "reset_windows_14")
+    self:btn_x(
+        14, 1, inv_items.detectors, { 4, 196, 33, 33 },
+        "ui_btn_14", "set_pocket_det", "reset_windows_14"
+    )
 end
 
 function mtv_dialog:set_click(j)
-  if old_click == 0 then    -- по кнопкам не кликали
-    click = 1        -- кнопка j превый клик
-  elseif old_click == j  then  -- кнопка j уже кликнута
-    click = 2        -- кнопка j второй клик
-  elseif (old_click ~= j) and (old_click ~= 0)  then   -- кликали по другой кнопке
-    click = 1
-  end
-  old_click = j
+    if old_click == 0 then       -- по кнопкам не кликали
+        click = 1                -- кнопка j превый клик
+    elseif old_click == j  then  -- кнопка j уже кликнута
+        click = 2                -- кнопка j второй клик
+    elseif
+        ( old_click ~= j )
+        and ( old_click ~= 0 )
+    then                         -- кликали по другой кнопке
+        click = 1
+    end
+    old_click = j
 end
 
-function mtv_dialog:set_static_colour(rect ,textr)
-  self:remove_static("wnd_colour")
-  self:add_static("wnd_colour", rect, "", textr)  
+function mtv_dialog:set_static_colour( rect ,textr )
+    self:remove_static( "wnd_colour" )
+    self:add_static( "wnd_colour", rect, "", textr )
 end
 
-function mtv_dialog:set_windows_capacity(mag_max)
-  
-end
-
+function mtv_dialog:set_windows_capacity( mag_max ) end
 
 -------------------------------------------------------------------------
---функции перемещения хабара 
+--функции перемещения хабара
 -------------------------------------------------------------------------
-
-
-function mtv_dialog:take_in_razgruzka(btn)
--- переношу боеприпасы в карманы разгрузки
+function mtv_dialog:take_in_razgruzka( btn )
+    -- переношу боеприпасы в карманы разгрузки
     --btn - номер нажатой кнопки
-    local sound = get_sound(btn)      
-  vergas_lib.s_play(sound,1) 
-
-    local name_t = inv_items_map[btn]
-    local tbl    = inv_items[name_t]
-    local rec_k  = btn - offsets[btn]
-             
-  local max_mag = 0
-  local take_max = 0
-  --определяю состояние кармана (а что у нас там лежит и лежит ли?)
-    local rec = mtv_content(btn)
-    local sect  = rec.sect
-    local count = rec.count                
-    local take_rec = tbl[rec_k]            
-    
-  if sect ~= "?" then
-    -- что-то в кармане есть
-    if sect ~= take_rec.sect then
-      --пытаюсь засунуть не то, что уже лежит
-      return tbl
-    end
-    max_mag = razgruzka.get_capacity_mtv(sect,btn)
-    if count == max_mag then
-      --карман заполнен
-      return tbl
-    end
-    
-    --определяю, сколько можно засунуть
-    if max_mag > count then
-      take_max = max_mag - count
-    end
-  else
-    -- в кармане пусто
-    take_max = razgruzka.get_capacity_mtv(take_rec.sect, btn)
-  end
-  
-  --теперь пихаю в карман
-  rec.sect = take_rec.sect
-  if take_rec.count > take_max then
-    if btn <= 6 then
-      rec.count = rec.count + take_max
-            take_rec.count = take_rec.count - take_max      
+    local sound    = get_sound( btn )
+    vergas_lib.s_play( sound, 1 )
+    local name_t   = inv_items_map[ btn ]
+    local tbl      = inv_items[ name_t ]
+    local rec_k    = btn - offsets[ btn ]
+    local max_mag  = 0
+    local take_max = 0
+    --определяю состояние кармана (а что у нас там лежит и лежит ли?)
+    local rec      = mtv_content( btn )
+    local sect     = rec.sect
+    local count    = rec.count
+    local take_rec = tbl[ rec_k ]
+    if sect ~= "?" then
+        -- что-то в кармане есть
+        if sect ~= take_rec.sect then
+            --пытаюсь засунуть не то, что уже лежит
+            return tbl
+        end
+        max_mag = razgruzka.get_capacity_mtv( sect, btn )
+        if count == max_mag then
+             --карман заполнен
+            return tbl
+        end
+        --определяю, сколько можно засунуть
+        if max_mag > count then take_max = max_mag - count end
     else
-      rec.count = rec.count + 1
-      take_rec.count = take_rec.count - 1
+        -- в кармане пусто
+        take_max = razgruzka.get_capacity_mtv( take_rec.sect, btn )
     end
-  else
-    if btn <= 6 then
-            rec.count = rec.count + take_rec.count 
-      take_rec.count = 0
+    --теперь пихаю в карман
+    rec.sect = take_rec.sect
+    if take_rec.count > take_max then
+        if btn <= 6 then
+            rec.count      = rec.count + take_max
+            take_rec.count = take_rec.count - take_max
+        else
+            rec.count      = rec.count + 1
+            take_rec.count = take_rec.count - 1
+        end
     else
-      rec.count = rec.count + 1
-      take_rec.count = take_rec.count - 1
+        if btn <= 6 then
+            rec.count      = rec.count + take_rec.count
+            take_rec.count = 0
+        else
+            rec.count      = rec.count + 1
+            take_rec.count = take_rec.count - 1
+        end
     end
-  end
-    
-    mtv_content:set(btn, rec)
-    tbl[rec_k] = take_rec
-    
-    
-  if take_rec.count == 0 then
-     take_rec.sect = "?"
-     tbl = self:del_pockets_nil(tbl, btn)
-  end
-  
-  return tbl
+    mtv_content:set( btn, rec )
+    tbl[ rec_k ] = take_rec
+    if take_rec.count == 0 then
+        take_rec.sect = "?"
+        tbl = self:del_pockets_nil( tbl, btn )
+    end
+    return tbl
 end
 
-function mtv_dialog:del_pockets_nil(tbl,btn)             
-  local tbl_tmp = {}
-    local need_size = sizes[btn]
-  if table.getn(tbl) == need_size then
-     return tbl
-    end   
-  
-    -- compress 
-  for i, rec in pairs(tbl) do
-    if rec.sect ~= "?" then
-       table.insert(tbl_tmp,rec)      
+function mtv_dialog:del_pockets_nil( tbl, btn )
+    local tbl_tmp   = {}
+    local need_size = sizes[ btn ]
+    if table.getn( tbl ) == need_size then return tbl end
+    -- compress
+    for i, rec in pairs( tbl ) do
+        if rec.sect ~= "?" then table.insert( tbl_tmp, rec ) end
     end
-  end  
-    return razgruzka.add_nope_records(tbl_tmp, need_size)
+    return razgruzka.add_nope_records( tbl_tmp, need_size )
 end
 
 function mtv_dialog:permission_quit()
-  --припасы разгрузки перемещаю в инвентарь, остальное в хранилище
-  if nil == mtv_content then
-     wprintf("[~T].~C0C #ERROR:~C07  mtv_dialog:permission_quit() mtv_content == nil")
-  end
-
-  local info_mtv = {}
-  --собираю все остатки в одну таблицу
-  for i, tab in ipairs(inv_items) do
-      info_mtv = self:add_in_table(info_mtv, tab)
-  end         
-  
-  local sz = mtv_content:size()
-  if sz < #inv_items_map then
-     wprintf("~C0C #FATAL:~C07 size of 'mtv_content' = %d ", sz)
-     return
-  end
-  if dbg_dump then
-     mtv_content:dump("mtv_content before save:")
-  end
-                 
-  mtv_content:save()
-  
-  -- проверка наличия детектора в слоте разгрузки, и если что - миграция оного в слот инвентаря 
-  -- razgruzka.check_detector()
-  local obj = db.actor:item_in_slot(8)
-  
-  local det = mtv_content(14).sect
-        
-  if det ~= "?" and db.actor:object(det) then
-     wprintf("~C0E -------------- active detector in MTV:~C0A %s~C0E ---------------- ~C07 ", det)   
-     
-     if obj and obj:section() == "detector_simple_fake" then
-        wprintf("~C0A %s~C07 moved to ruck", obj:name())
-        db.actor:move_to_ruck(obj)
-     end
-     local active = db.actor:object(det)
-     if active then
-        local ii = active:get_inventory_item()
-        if ii then ii.slot = 8 end
-        local name = active:name()         
-        wprintf(" activating detector in slot ~C0D 8~C0B:~C0A %s~C07", name)          
-        razgruzka.active_detectors[8] = name
-        db.actor:move_to_slot(active)          
-     end               
-  else
-     wprintf("~C0E --------------- disabled detector in MTV -------------- ~C07")       
-     local fake = db.actor:object("detector_simple_fake")
-     
-     -- hide previous detector
-     if obj and obj:section() ~= "detector_simple_fake" then
-        wprintf("~C0A %s~C07 moved to ruck", obj:name())
-        db.actor:move_to_ruck(obj)
-        local ii = obj:get_inventory_item()
-        if ii then ii.slot = 12 end -- disable auto-back to slot 8                                                                                 
-     end       
-     
-     
-     if fake then
-        wprintf(" moved to slot~C07 %d~C0B :~C0A %s~C07", fake:get_inventory_item().slot, fake:name())
-        db.actor:move_to_slot(fake)
-     else     
-        vergas_lib.spawn_item_in_inv("detector_simple_fake",true)
-     end          
-     
-     razgruzka.active_detectors[8] = false                                                   
-  end      
-  
-  clear_inv_items()
-  mtv_content = nil              --информация по содержимому разгрузки (что лежит)
-  bind_stalker.restore_weapon()  --восстанавливаю руки и оружие на худе
-  used_items.set_use_gadget(true)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_deselect"),1)
-  razgruzka.open_inv_raz_pod = false
-  razgruzka.close_inventory()        
-end
-
-function mtv_dialog:add_in_table(hran, tbl)
-  for i, rec in ipairs (tbl) do
-    if rec.sect ~= "?" then
-         table.insert(hran, rec)
+    --припасы разгрузки перемещаю в инвентарь, остальное в хранилище
+    if nil == mtv_content then
+        wprintf( "[~T].~C0C #ERROR:~C07  mtv_dialog:permission_quit() mtv_content == nil" )
     end
-  end  
-  return hran
+    local info_mtv = {}
+    --собираю все остатки в одну таблицу
+    for i, tab in ipairs( inv_items ) do
+        info_mtv = self:add_in_table( info_mtv, tab )
+    end
+    local sz = mtv_content:size()
+    if sz < #inv_items_map then
+        wprintf( "~C0C #FATAL:~C07 size of 'mtv_content' = %d ", sz )
+        return
+    end
+    if dbg_dump then mtv_content:dump( "mtv_content before save:" ) end
+    mtv_content:save()
+    -- проверка наличия детектора в слоте разгрузки, и если что - миграция оного в слот инвентаря
+    -- razgruzka.check_detector()
+    local obj = db.actor:item_in_slot( 8 )
+    local det = mtv_content( 14 ).sect
+    if det ~= "?" and db.actor:object( det ) then
+        wprintf( "~C0E -------------- active detector in MTV:~C0A %s~C0E ---------------- ~C07 ", det )
+        if obj and obj:section() == "detector_simple_fake" then
+            wprintf( "~C0A %s~C07 moved to ruck", obj:name() )
+            db.actor:move_to_ruck( obj )
+        end
+        local active = db.actor:object( det )
+        if active then
+            local ii = active:get_inventory_item()
+            if ii then ii.slot = 8 end
+            local name = active:name()
+            wprintf( " activating detector in slot ~C0D 8~C0B:~C0A %s~C07", name )
+            razgruzka.active_detectors[ 8 ] = name
+            db.actor:move_to_slot( active )
+        end
+    else
+        wprintf( "~C0E --------------- disabled detector in MTV -------------- ~C07" )
+        local fake = db.actor:object( "detector_simple_fake" )
+        -- hide previous detector
+        if obj and obj:section() ~= "detector_simple_fake" then
+            wprintf( "~C0A %s~C07 moved to ruck", obj:name() )
+            db.actor:move_to_ruck( obj )
+            local ii = obj:get_inventory_item()
+            if ii then ii.slot = 12 end -- disable auto-back to slot 8
+        end
+        if fake then
+            wprintf(
+                " moved to slot~C07 %d~C0B :~C0A %s~C07",
+                fake:get_inventory_item().slot, fake:name()
+            )
+            db.actor:move_to_slot( fake )
+        else
+            vergas_lib.spawn_item_in_inv( "detector_simple_fake", true )
+        end
+        razgruzka.active_detectors[ 8 ] = false
+    end
+    clear_inv_items()
+    mtv_content = nil              --информация по содержимому разгрузки (что лежит)
+    bind_stalker.restore_weapon()  --восстанавливаю руки и оружие на худе
+    used_items.set_use_gadget( true )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_deselect" ), 1
+    )
+    razgruzka.open_inv_raz_pod = false
+    razgruzka.close_inventory()
 end
 
-function mtv_dialog:spawn_in_rykzack(tbl)
-  razgruzka.spawn_from_list(tbl) -- TODO: убедится что не используется для мапов
+function mtv_dialog:add_in_table( hran, tbl )
+    for i, rec in ipairs( tbl ) do
+        if rec.sect ~= "?" then table.insert( hran, rec ) end
+    end
+    return hran
+end
+
+function mtv_dialog:spawn_in_rykzack( tbl )
+    razgruzka.spawn_from_list( tbl ) -- TODO: убедится что не используется для мапов
 end
 -------------------------------------------------------------------------
 --работа кнопок выгрузки из карманов
 -------------------------------------------------------------------------
 function mtv_dialog:btn_empty()
-  --убираю подсветку кнопок
-  self:del_windows_colour(2)
-  self:btn_empty_1()
-  self:btn_empty_2()
-  self:btn_empty_3()
-  self:btn_empty_4()
-  self:btn_empty_5()
-  self:btn_empty_6()
+    --убираю подсветку кнопок
+    self:del_windows_colour( 2 )
+    self:btn_empty_1()
+    self:btn_empty_2()
+    self:btn_empty_3()
+    self:btn_empty_4()
+    self:btn_empty_5()
+    self:btn_empty_6()
 end
 
 function mtv_dialog:btn_empty_1()      -- первый патронный слот
-  inv_items.ammo_std = self:empty_pocket(inv_items.ammo_std, 1,3)
-  self:reset_windows_1_6()
+    inv_items.ammo_std = self:empty_pocket( inv_items.ammo_std, 1, 3 )
+    self:reset_windows_1_6()
 end
 
 function mtv_dialog:btn_empty_2()      -- второй патронный слот
-  inv_items.ammo_std = self:empty_pocket(inv_items.ammo_std, 4,3)
-  self:reset_windows_1_6()
+    inv_items.ammo_std = self:empty_pocket( inv_items.ammo_std, 4, 3 )
+    self:reset_windows_1_6()
 end
 
 function mtv_dialog:btn_empty_3()      -- медицинский слот
-  inv_items.medications = self:empty_pocket(inv_items.medications, 9,2)
-  self:reset_windows_9_10()
+    inv_items.medications = self:empty_pocket( inv_items.medications, 9, 2 )
+    self:reset_windows_9_10()
 end
 
 function mtv_dialog:btn_empty_4()      -- слот гранат
-  inv_items.grenades = self:empty_pocket(inv_items.grenades, 7,2)
-  self:reset_windows_7_8()
+    inv_items.grenades = self:empty_pocket( inv_items.grenades, 7, 2 )
+    self:reset_windows_7_8()
 end
 
 function mtv_dialog:btn_empty_5()      -- слот подствольных гранат
-  inv_items.ammo_gren = self:empty_pocket(inv_items.ammo_gren, 11,3)
-  self:reset_windows_11_13()
+    inv_items.ammo_gren = self:empty_pocket( inv_items.ammo_gren, 11, 3 )
+    self:reset_windows_11_13()
 end
 
 function mtv_dialog:btn_empty_6()      -- слот детекторов
-  inv_items.detectors = self:empty_pocket(inv_items.detectors, 14,1)
-  self:reset_windows_14()
+    inv_items.detectors = self:empty_pocket( inv_items.detectors, 14, 1 )
+    self:reset_windows_14()
 end
 
-function mtv_dialog:empty_pocket(tbl, btn, record_sum)      -- общая выгрузка 
--- для пистолетного слота btn = 1
---для автоматного слота btn = 4
---для слота гранат btn=7
---для слота медицины btn=9
---для слота подствольных гранат btn = 11
-
-  local flag_1 = true
-  local flag_2 = true
-  local flag_3 = true
-  
-  local record = btn
-    -- 1..6  | 1..13 = ammo 
-    -- wprintf(" click =~C0D %d~C07, old_click =~C0D %d~C07, btn = record =~C0D %d~C07 ", click, old_click, btn)    
-        
-  local sound = get_sound(btn)
-    
-  if flag_1 then
-    local rec = mtv_content(record) 
-    if rec.count ~= 0 then
-      tbl = razgruzka.reset_records(tbl, rec.sect, rec.count)
-      rec.sect = "?"
-      rec.count = 0
-      if btn == 1 then        
-        self:set_pocket_ammo_1()
-      elseif btn == 4 then        
-        self:set_pocket_ammo_4()
-      elseif btn == 7 then        
-        self:set_pocket_gr_1()
-      elseif btn == 9 then        
-        self:set_pocket_med_1()
-      elseif btn == 11 then      
-        self:set_pocket_gr_p_1()
-      elseif btn == 14 then        
-        self:set_pocket_det()
-            else  
-                return tbl
-      end
-        
-            vergas_lib.s_play(sound,1)
-    end    
-  end
-  
-  if flag_2 and record_sum >= 2 then
-    local rec = mtv_content(record + 1)
-    if rec and rec.count then
-      tbl = razgruzka.reset_records (tbl, rec.sect, rec.count)
-      rec.sect = "?"
-      rec.count = 0
-      if btn == 1 then
-        self:set_pocket_ammo_2()
-      elseif btn == 4 then
-        self:set_pocket_ammo_5()
-      elseif btn == 7 then
-        self:set_pocket_gr_2()
-      elseif btn == 9 then
-        self:set_pocket_med_2()
-      elseif btn == 11 then
-        self:set_pocket_gr_p_2()
-            else 
-               return tbl               
-      end
-            vergas_lib.s_play(sound,1)
-    end
-  end
-
-  if flag_3 and record_sum >= 3 then
-    local rec = mtv_content(record + 2)
-    if rec and rec.count and record_sum > 1 then
-      tbl = razgruzka.reset_records (tbl, rec.sect, rec.count)
-      rec.sect = "?"
-      rec.count = 0
-      if btn == 1 then
-        self:set_pocket_ammo_3()
-      elseif btn == 4 then
-        self:set_pocket_ammo_6()
-      elseif btn == 11 then
-        self:set_pocket_gr_p_3()
+function mtv_dialog:empty_pocket( tbl, btn, record_sum )      -- общая выгрузка
+    -- для пистолетного слота btn = 1
+    -- для автоматного слота btn = 4
+    -- для слота гранат btn=7
+    -- для слота медицины btn=9
+    -- для слота подствольных гранат btn = 11
+    local flag_1 = true
+    local flag_2 = true
+    local flag_3 = true
+    local record = btn
+    -- 1..6  | 1..13 = ammo
+    -- wprintf(" click =~C0D %d~C07, old_click =~C0D %d~C07, btn = record =~C0D %d~C07 ", click, old_click, btn)
+    local sound = get_sound( btn )
+    if flag_1 then
+        local rec = mtv_content( record )
+        if rec.count ~= 0 then
+            tbl = razgruzka.reset_records( tbl, rec.sect, rec.count )
+            rec.sect  = "?"
+            rec.count = 0
+            if btn == 1 then
+                self:set_pocket_ammo_1()
+            elseif btn == 4 then
+                self:set_pocket_ammo_4()
+            elseif btn == 7 then
+                self:set_pocket_gr_1()
+            elseif btn == 9 then
+                self:set_pocket_med_1()
+            elseif btn == 11 then
+                self:set_pocket_gr_p_1()
+            elseif btn == 14 then
+                self:set_pocket_det()
             else
-                return tbl 
-      end
-            vergas_lib.s_play(sound,1)
+                return tbl
+            end
+            vergas_lib.s_play( sound, 1 )
+        end
     end
-  end
-  
-  return tbl
+    if flag_2 and record_sum >= 2 then
+        local rec = mtv_content( record + 1 )
+        if rec and rec.count then
+            tbl       = razgruzka.reset_records( tbl, rec.sect, rec.count )
+            rec.sect  = "?"
+            rec.count = 0
+            if btn == 1 then
+                self:set_pocket_ammo_2()
+            elseif btn == 4 then
+                self:set_pocket_ammo_5()
+            elseif btn == 7 then
+                self:set_pocket_gr_2()
+            elseif btn == 9 then
+                self:set_pocket_med_2()
+            elseif btn == 11 then
+                self:set_pocket_gr_p_2()
+            else
+                return tbl
+            end
+            vergas_lib.s_play( sound, 1 )
+        end
+    end
+    if flag_3 and record_sum >= 3 then
+        local rec = mtv_content( record + 2 )
+        if rec and rec.count and record_sum > 1 then
+            tbl       = razgruzka.reset_records( tbl, rec.sect, rec.count )
+            rec.sect  = "?"
+            rec.count = 0
+            if btn == 1 then
+                self:set_pocket_ammo_3()
+            elseif btn == 4 then
+                self:set_pocket_ammo_6()
+            elseif btn == 11 then
+                self:set_pocket_gr_p_3()
+            else
+                return tbl
+            end
+            vergas_lib.s_play( sound, 1 )
+        end
+    end
+    return tbl
 end
 
 -------------------------------------------------------------------------
 --работа кнопок прокрутки
 -------------------------------------------------------------------------
 function mtv_dialog:btn_left()      --Кнопка прокрутки патронных слотов влево
-  
-  self:del_windows_colour(2)  
-  inv_items.ammo_std = razgruzka.list_step_left (inv_items.ammo_std)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo_scroll"),1)
-  self:reset_windows_1_6()
+    self:del_windows_colour( 2 )
+    inv_items.ammo_std = razgruzka.list_step_left( inv_items.ammo_std )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_ammo_scroll" ), 1
+    )
+    self:reset_windows_1_6()
 end
 
 function mtv_dialog:btn_right()      --Кнопка прокрутки патронных слотов вправо
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo_scroll"),1)
-  inv_items.ammo_std = razgruzka.list_step_right(inv_items.ammo_std)
-  self:reset_windows_1_6()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo_scroll"),1)
+    inv_items.ammo_std = razgruzka.list_step_right(inv_items.ammo_std)
+    self:reset_windows_1_6()
 end
 
 function mtv_dialog:btn_up_2()      --Кнопка прокрутки  слотов гранат вверх
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_grenade_scroll"),1)  
-  inv_items.grenades = razgruzka.list_step_left(inv_items.grenades)
-  self:reset_windows_7_8()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_grenade_scroll" ), 1
+    )
+    inv_items.grenades = razgruzka.list_step_left( inv_items.grenades )
+    self:reset_windows_7_8()
 end
 
 function mtv_dialog:btn_down_2()      --Кнопка прокрутки слотов гранат вниз
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_grenade_scroll"),1)
-  inv_items.grenades = razgruzka.list_step_right(inv_items.grenades)
-  self:reset_windows_7_8()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_grenade_scroll" ), 1
+    )
+    inv_items.grenades = razgruzka.list_step_right( inv_items.grenades )
+    self:reset_windows_7_8()
 end
 
 function mtv_dialog:btn_up_3()      --Кнопка прокрутки  слотов медицины вверх
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_medkit_scroll"),1)  
-  inv_items.medications = razgruzka.list_step_left(inv_items.medications)
-  self:reset_windows_9_10()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_medkit_scroll" ), 1
+    )
+    inv_items.medications = razgruzka.list_step_left( inv_items.medications )
+    self:reset_windows_9_10()
 end
 
 function mtv_dialog:btn_down_3()      --Кнопка прокрутки слотов медицины вниз
-  
-  self:del_windows_colour(2)  
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_medkit_scroll"),1)  
-  inv_items.medications = razgruzka.list_step_right(inv_items.medications)
-  self:reset_windows_9_10()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_medkit_scroll" ), 1
+    )
+    inv_items.medications = razgruzka.list_step_right( inv_items.medications )
+    self:reset_windows_9_10()
 end
 
 function mtv_dialog:btn_up_1()      --Кнопка прокрутки  слотов подствольных гранат вверх
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo-grenade_scroll"),1)    
-  inv_items.ammo_gren = razgruzka.list_step_left(inv_items.ammo_gren)
-  self:reset_windows_11_13()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_ammo-grenade_scroll" ), 1
+    )
+    inv_items.ammo_gren = razgruzka.list_step_left( inv_items.ammo_gren )
+    self:reset_windows_11_13()
 end
 
 function mtv_dialog:btn_down_1()      --Кнопка прокрутки слотов подствольных гранат вниз
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo-grenade_scroll"),1)  
-  inv_items.ammo_gren = razgruzka.list_step_right(inv_items.ammo_gren)
-  self:reset_windows_11_13()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_ammo-grenade_scroll" ), 1
+    )
+    inv_items.ammo_gren = razgruzka.list_step_right( inv_items.ammo_gren )
+    self:reset_windows_11_13()
 end
 
 function mtv_dialog:btn_up_4()      --Кнопка прокрутки  слота детекторов вверх
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo-grenade_scroll"),1)    
-  inv_items.detectors = razgruzka.list_step_left(inv_items.detectors)
-  self:reset_windows_14()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_ammo-grenade_scroll" ), 1
+    )
+    inv_items.detectors = razgruzka.list_step_left( inv_items.detectors )
+    self:reset_windows_14()
 end
 
 function mtv_dialog:btn_down_4()      --Кнопка прокрутки слота детекторов вниз
-  
-  self:del_windows_colour(2)
-  vergas_lib.s_play(vergas_lib.set_pr_from_config_str("razgruzka","snd_ammo-grenade_scroll"),1)  
-  inv_items.detectors = razgruzka.list_step_right(inv_items.detectors)
-  self:reset_windows_14()
+    self:del_windows_colour( 2 )
+    vergas_lib.s_play(
+        vergas_lib.set_pr_from_config_str( "razgruzka", "snd_ammo-grenade_scroll" ), 1
+    )
+    inv_items.detectors = razgruzka.list_step_right( inv_items.detectors )
+    self:reset_windows_14()
 end
 
 -------------------------------------------------------------------------
 --функции общего назначения
 -------------------------------------------------------------------------
 function mtv_dialog:reset_windows_1_6()
-  self:del_statics(1,6)
-  for i = 1, 6 do
-      if (inv_items.ammo_std[i].sect or "?") ~= "?" then
-          self:get_method("set_btn_%d", i)(self) 
-      end  
+    self:del_statics( 1, 6 )
+    for i = 1, 6 do
+        if ( inv_items.ammo_std[ i ].sect or "?" ) ~= "?" then
+            self:get_method( "set_btn_%d", i )( self )
+        end
     end
 end
 
 function mtv_dialog:reset_windows_7_8()
-  self:del_statics(7, 8)
-  -- Кнопка 7: Граната слот 1
-  if inv_items.grenades[1].sect ~= "?" then self:set_btn_7() end
-  
-  -- Кнопка 8: Граната слот 2
-  if inv_items.grenades[2].sect ~= "?" then self:set_btn_8() end
+    self:del_statics( 7, 8 )
+    -- Кнопка 7: Граната слот 1
+    if inv_items.grenades[ 1 ].sect ~= "?" then self:set_btn_7() end
+    -- Кнопка 8: Граната слот 2
+    if inv_items.grenades[ 2 ].sect ~= "?" then self:set_btn_8() end
 end
 
-function mtv_dialog:reset_windows_9_10()                           
-  self:del_statics(9, 10)  
-  -- Кнопка 9: Аптечки слот 1
-  if inv_items.medications[1].sect ~= "?" then self:set_btn_9() end
-  
-  -- Кнопка 10: Аптечки слот 2
-  if inv_items.medications[2].sect ~= "?" then self:set_btn_10() end
+function mtv_dialog:reset_windows_9_10()
+    self:del_statics( 9, 10 )
+    -- Кнопка 9: Аптечки слот 1
+    if inv_items.medications[ 1 ].sect ~= "?" then self:set_btn_9() end
+    -- Кнопка 10: Аптечки слот 2
+    if inv_items.medications[ 2 ].sect ~= "?" then self:set_btn_10() end
 end
 
 function mtv_dialog:reset_windows_11_13()
-  self:del_statics(11,13)
+    self:del_statics( 11, 13 )
     for i = 1, 3 do
-      if (inv_items.ammo_gren[i].sect or "?") ~= "?" then
-          self:get_method("set_btn_%d", 10 + i)(self) 
-      end  
+        if ( inv_items.ammo_gren[ i ].sect or "?" ) ~= "?" then
+            self:get_method( "set_btn_%d", 10 + i )( self )
+        end
     end
 end
 
-function mtv_dialog:reset_windows_14()    
-  self:del_statics(14,14)
-  -- Кнопка 11: детекторы
-  if inv_items.detectors[1].sect ~= "?" then
-    self:set_btn_14()
-  end  
+function mtv_dialog:reset_windows_14()
+    self:del_statics( 14, 14 )
+    -- Кнопка 11: детекторы
+    if inv_items.detectors[ 1 ].sect ~= "?" then self:set_btn_14() end
 end
 
-function mtv_dialog:del_statics(from, to)
-  for i = from, to do
-      self:remove_static("wnd_"..tostring(i))
-  end
+function mtv_dialog:del_statics( from, to )
+    for i = from, to do
+        self:remove_static( "wnd_" .. tostring( i ) )
+    end
 end
 
-function mtv_dialog:del_windows_colour(param)
-  self:remove_static("wnd_colour")
-  if param ==2 then
-     click  = 0       
-     old_click = 0
-  end
+function mtv_dialog:del_windows_colour( param )
+    self:remove_static( "wnd_colour" )
+    if param == 2 then
+        click     = 0
+        old_click = 0
+    end
 end
 
 function mtv_dialog:del_windows_pockets()
-   for i = 1, 4 do 
-       self:remove_static("wnd_p"..tostring(i))
-   end  
+    for i = 1, 4 do
+        self:remove_static( "wnd_p" .. tostring( i ) )
+    end
 end
-
