@@ -12,7 +12,8 @@ function on_late_init()
         this.fix_all_pda_condition,
         this.fix_trup_x16,
         this.start_gambling_stats_tbl,
-        this.remove_yan_ac_barrels
+        this.remove_yan_ac_barrels,
+        this.remove_chairs
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -47,6 +48,38 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function remove_chairs()
+    for _, name in ipairs({
+        "val_phd_stul_0001",
+        "val_phd_stul_0000",
+        "val_phd_stul_0003",
+        "val_phd_stul_0002",
+        "val_physic_destroyable_object_0000",
+        "val_physic_destroyable_object_0001",
+        "esc_stul_vergas_esc_0002",
+        "sak_stul_bar",
+        "mil_stul_1a_0000",
+        "vedro0014",
+        "mil_stul_1a_0032",
+        "mil_stul_1a_0018",
+        "mil_stul_1c_0000",
+        "mil_stul_1c_0001",
+        "mil_physic_object_0027",
+        "mil_physic_object_0115",
+        "mil_physic_object_0114",
+        "mil_physic_object_0116",
+        "mil_physic_object_0045",
+        "mil_physic_destroyable_object_0025",
+        "mil_physic_destroyable_object_0024"
+    }) do
+        local sobj = g_sim:object( name )
+        if sobj then
+            log2( "[ %s.script ]: found object: %s, releasing...", scr_name, sobj:section_name()  )
+            misc.release_obj( sobj.id )
+        end
+    end
 end
 
 function remove_yan_ac_barrels()
