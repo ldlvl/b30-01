@@ -165,6 +165,32 @@ function generic_physics_binder:hit_callback(obj, amount, local_direction, who, 
     		end
     	end
 	end
+	--------------- повреждение ножа при ковырянии всякого ковыряемого ---------------
+	if strposx( obj:section(), "physic_destroyable" ) then
+    	if who and who:id() == 0 then
+    		local active_item = db.actor:active_item()
+    		local active_sect = active_item:section()
+    		if
+    			active_item
+    			and strposx( active_sect, "wpn_knife" )
+    		then
+    			local damage = 0.005
+    			if active_sect == "wpn_knife_m1" then
+    				damage = damage * 0.5
+    			end
+    			local cond = params.get_condition( active_item, 0.999 )
+    			if cond > 0.02 then
+    				params.add_condition( active_item, -damage )
+    				--local new_cond = params.get_condition( active_item, 0.999 )
+    				--log2( "@----------  DAMAGE TO ACTIVE KNIFE: old_cnd = %s, new_cnd = %s", cond, new_cond )
+    			else
+    				misc.release_obj( active_item )
+    				sak.send_tip( "Амба ножику, похоже...", "Да что ж такое!", 5, 20,   "uniq", "sak", "red" )
+    			end
+    		end 
+    	end
+	end
+	----------------------------------------------------------------------------------
 end
 
 function generic_physics_binder:death_callback(victim, who)
