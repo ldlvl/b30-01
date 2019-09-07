@@ -1734,7 +1734,7 @@ function add_new_109item()
         v3f( point_val_case[ point ][ 1 ], point_val_case[ point ][ 2 ], point_val_case[ point ][ 3 ] ),
         point_val_case[ point ][ 5 ], point_val_case[ point ][ 4 ]
     )
-    timers.start_timer( "val_case", 0, 8, 28, "sak.val_case_out("..obj.id..")" )
+    timers.start_timer( "val_case", 0, lua_random( 8, 11 ), 28, "sak.val_case_out("..obj.id..")" )
 end
 
 function val_case_out( id )
