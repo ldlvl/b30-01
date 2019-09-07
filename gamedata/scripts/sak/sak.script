@@ -4240,6 +4240,7 @@ function check_if_repaired( rep_table, name, rep_percent, amnt )
     rep_percent = rep_percent - subtract
     if rep_percent < 0.01 then rep_percent = 0.01 end
     nlc_vars[ rep_table ] = tbl_rep_ids
+    misc.dump_table( nlc_vars[ rep_table ] )
     return rep_percent
 end
 
