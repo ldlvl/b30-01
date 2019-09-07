@@ -1926,7 +1926,12 @@ function isGamblingAvailable( name )
         "@-------------     NPC: %s  |  GAMES: %s  |  WINS: %s  |  LOSES: %s  |  CHANSE: %s  |  TRESHOLD: %s",
         name, ( wins + loses ), wins, loses, chance, treshold
     )
-    if chance <= treshold then return true end
+    if
+        chance <= treshold
+        and sak_dialog.is_ready_time_to_game()
+    then
+        return true
+    end
     return false
 end
 
