@@ -5984,18 +5984,27 @@ end
 -- наполнение хабаром НПС???
 function habar_by_nps( lid )
     local npc = client_obj( lid )
+    local tbl_stuff = { 
+            "batt_torch",
+            "drag_cat_eyes",
+            "matches",
+            "ammo_9x19_pbp",
+            "ammo_7.62x39_fmj",
+            "ammo_9x39_pab9",
+            "ammo_11.43x23_fmj",
+            "ammo_11.43x23_hydro"
+    }
     if not npc then return end
-    -- if npc:clsid() == CLID_TRADER then
-    --     wprintf( "@-------------  detected deletion of food from trader %s, exiting...", npc:name() )
-    --     return
-    -- end
-    -- удаление из инвентаря по таблицам еды и артов
     local ids, cnt = registry.inv_objects( npc:id(), true )
     for n = 1, cnt do
         local id   = ids[ n ]
         local sobj = client_obj( id )
         if sobj then
-            if is_food( sobj ) == true or is_arts( sobj ) == true then
+            if
+                   is_food( sobj ) == true
+                or is_arts( sobj ) == true
+                or str_in_tab( sobj:section(), tbl_stuff )
+            then
                 misc.release_obj( id )
             end
         end
@@ -6016,16 +6025,7 @@ function habar_by_nps( lid )
     end
     -- спавн всякой полезной мелочи
     if npc:rank() > 500 then
-        for _, v in ipairs({
-            "batt_torch",
-            "drag_cat_eyes",
-            "matches",
-            "ammo_9x19_pbp",
-            "ammo_7.62x39_fmj",
-            "ammo_9x39_pab9",
-            "ammo_11.43x23_fmj",
-            "ammo_11.43x23_hydro"
-        }) do
+        for _, v in ipairs( tbl_stuff ) do
             if lua_random() < 0.03 then
                 misc.spawn_to( v, npc )
                 misc.process_spawn()
