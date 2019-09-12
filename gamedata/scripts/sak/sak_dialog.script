@@ -1428,13 +1428,13 @@ end
 
 function on_boar_kill( obj, who )
     local id = obj:id()
-    if math.fmod( id, 10 ) == 0 then
-        misc.spawn_to( "mutant_boar_leg", obj )
-    end
     if math.fmod( id, 20 ) == 0 then
         misc.spawn_to( "mutant_boar_leg", obj )
     end
-    if math.fmod( id, 25 ) == 0 then
+    if math.fmod( id, 30 ) == 0 then
+        misc.spawn_to( "mutant_boar_leg", obj )
+    end
+    if math.fmod( id, 40 ) == 0 then
         misc.spawn_to( "mutant_boar_leg", obj )
     end
 end
@@ -1470,7 +1470,7 @@ function on_burer_kill( obj, who )
         amk.spawn_item_in_inv( section, obj )
         return
     end
-    if math.fmod( id, 6 ) == 0 then
+    if math.fmod( id, 10 ) == 0 then
         amk.spawn_item_in_inv( "mutant_burer_hand", obj )
     end
 end
