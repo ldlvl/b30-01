@@ -40,7 +40,7 @@ local med = {
     energy_drink     = true,
     energy_drink_new = true,
     antirad          = true,
-    -- mixture = true,
+    mixture          = true,
     suvorotka        = true
 }
 
@@ -91,8 +91,14 @@ function use_item( obj )
         flag_help = false
         return
     end
-    if obj_name == "medkit_army" then sleep_manager.add_sleepiness( 15 ) end
-    if obj_name == "medkit_scientic" then nlc_vars.rad_disease = nil end
+    if obj_name == "medkit_army" then
+        sleep_manager.add_sleepiness( 15 )
+    elseif obj_name == "medkit_scientic" then
+        nlc_vars.rad_disease = nil
+    elseif obj_name == "mixture" then
+        db.actor.psy_health = 1
+        sleep_manager.add_sleepiness( -sleep_manager.get_sleepiness( 108 ) )
+    end
     init_treatment()
 end
 
@@ -114,11 +120,10 @@ function init_treatment()
     heal_start      = game.get_game_time()
     heal_last       = game.get_game_time()
     msg_last        = 0
-    if heal_time > 0 and obj_name ~= "energy_drink" then
+    if heal_time > 0 and not str_in_tab( obj_name, { "energy_drink", "mixture" } ) then
        level.add_pp_effector( vis_post_eff[ post_eff ], 1021, true )
     end
     in_progress = true
-    if obj_name == "mixture" then params.psy_health_v_add( 20 ) end
     medical_procedures()
 end
 
