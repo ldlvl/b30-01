@@ -366,8 +366,14 @@ function stopper()    -- конец сна, просыпание
         local name, delay = timers.check_timer( "blow_shift" )
         if not name then amk_mod.start_blow_timer() end
     end
-    schedule.add("restore_bio", "sleep_manager.end_sleeping()", 300 )
+    schedule.add( "restore_bio", "sleep_manager.end_sleeping()", 300 )
     get_shadow_inv():after_sleep()
+    if
+        elapsed > 5
+        and sleep_in_sleeping_bag == 2
+    then
+        schedule.add( "try_rad_disease_heal", "test.try_rad_disease_heal()", 2000 )
+    end
     sleep_in_sleeping_bag = 1
     sak_dialog.start_time( "start_antichit_time" )
 end

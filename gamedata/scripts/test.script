@@ -2011,3 +2011,13 @@ function copy_tbl( obj )
     for k, v in pairs( obj ) do res[ copy_tbl( k ) ] = copy_tbl( v ) end
     return res
 end
+
+function try_rad_disease_heal()
+    if dsh.get_next_random( "test.add_rad_disease" ) > 0.4 then return end
+    if not rad_disease_check() then return end
+    rad_disease_boryan_heal()
+    send_tip(
+        "Неужто кашель этот непонятный отпустил наконец?",
+        "Вроде дышать полегче стало...", 2, 20, "g_g", "rememb", "yellow"
+    )
+end
