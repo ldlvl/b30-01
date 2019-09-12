@@ -372,6 +372,7 @@ function stopper()    -- конец сна, просыпание
         elapsed > 5
         and sleep_in_sleeping_bag == 2
     then
+        params.health_add( 0.05 * elapsed )
         schedule.add( "try_rad_disease_heal", "test.try_rad_disease_heal()", 2000 )
     end
     sleep_in_sleeping_bag = 1
