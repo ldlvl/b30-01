@@ -6004,6 +6004,7 @@ function habar_by_nps( lid )
                    is_food( sobj ) == true
                 or is_arts( sobj ) == true
                 or str_in_tab( sobj:section(), tbl_stuff )
+                or sobj:section() == "wpn_addon_grenade_launcher"
             then
                 misc.release_obj( id )
             end
