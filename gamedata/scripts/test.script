@@ -2017,8 +2017,81 @@ function try_rad_disease_heal()
     if dsh.get_next_random( "test.add_rad_disease" ) > 0.4 then return end
     if not rad_disease_check() then return end
     rad_disease_boryan_heal()
-    send_tip(
+    sak.send_tip(
         "Неужто кашель этот непонятный отпустил наконец?",
         "Вроде дышать полегче стало...", 2, 20, "g_g", "rememb", "yellow"
     )
+end
+
+function blowout_damage_equipment()
+    for a = 1, MAX_OBJ_ID do
+        local obj = g_sim:object( a )
+        if obj then
+            local p_obj = obj.parent_id
+            local nname = obj:name()
+            if
+                str_in_tab( nname, { "arc_art_box", "detector" } )
+                and not strposx( nname, "fake" )
+                and (
+                    p_obj == nil or p_obj == BAD_OBJ_ID or p_obj == 0
+                    or str_in_tab(
+                        g_sim:object( p_obj ):section_name(), { "rucksack", "inventory_box", "shadow_inventory" }
+                ))
+                and ( obj.m_game_vertex_id < 3582 or obj.m_game_vertex_id > 3607 )
+            then
+                log2( "@-- [ test.blowout_damage_equipment() ]: FOUND ITEM TO DAMAGE, NAME: %s, OWNER ID: %s", nname, tostring( p_obj ) )
+                local pk       = get_netpk( obj, 1 )
+                local data     = pk:get()
+                local new_cond = 0.15
+                local cond     = obj.condition or data.condition
+                log2( "@-- [ test.blowout_damage_equipment() ]: ITEM %s CURRENT CONDITION: %s", nname, cond )
+                if strposx( nname, "detector" ) then
+                    new_cond = dsh.get_next_random( "test.blowout_damage_equipment", 10, 20 ) / 100
+                end
+                local sect = game.translate_string( system_ini():r_string( obj:section_name(), "inv_name" ) ) or ""
+                if cond and cond > 0.01 then
+                    local upd_cond = cond - new_cond
+                    if upd_cond < 0 then upd_cond = 0 end
+                    data.condition = upd_cond
+                    local cobj = client_obj( a )
+                    if cobj then
+                        cobj:set_condition( data.condition )
+                    elseif obj.condtion ~= nil then
+                        obj.condition = data.condition
+                    else
+                        pk:set( data )
+                    end
+                    if
+                        upd_cond == 0
+                        and strposx( nname, "arc_art_box" )
+                        and p_obj == 0
+                    then
+                        sak.send_tip(
+                            "Защиту от радиации потерял %c[255,230,255,1]" .. sect,
+                            "Внимание:", 5, 15, "g_g", "sak", "red"
+                        )
+                    end
+                    log2( "@-- [ test.blowout_damage_equipment() ]: ITEM %s NEW CONDITION: %s", nname, upd_cond )
+                else
+                    if strposx( nname, "detector_" ) then
+                        if p_obj == 0 or strposx( g_sim:object( p_obj ):section_name(), "shadow_inventory" ) then
+                            sak.send_tip(
+                                "От Выброса окончательно вышел из строя %c[255,230,255,1]" .. sect,
+                                "Внимание:", 5, 15, "g_g", "sak", "red"
+                            )
+                        end
+                        misc.release_obj( obj, 'tesr.blowout_damage_equipment()' )
+                    end
+                end
+                log2( "@-----------------------------------------------------------" )
+            end
+        end
+    end
+end
+
+function have_any_cont()
+    return
+           sak.have_items_count( "arc_art_box_8basic", 1 )
+        or sak.have_items_count( "arc_art_box_1basic", 1 )
+        or sak.have_items_count( "arc_art_box_basic",  1 )
 end

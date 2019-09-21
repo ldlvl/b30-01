@@ -39,7 +39,7 @@ end
 
 function art_container:load( cont_section )
     self.section = cont_section or self.section
-    self.config  = cfg_containers:get_config( self.section )
+    self.config  = cfg_containers:get_config( self.section, self.id )
     self.arts    = {} -- decoded total
     local sobj   = alife():object( self.id )
     if sobj == nil then
@@ -196,7 +196,7 @@ class "arc_config_map"( std_map )
 
 function arc_config_map:__init() super() end
 
-function arc_config_map:get_config( cont_section )
+function arc_config_map:get_config( cont_section, cont_id )
     local tmp = self:get( cont_section )
     if tmp then return tmp end
     local ini = system_ini()
@@ -207,6 +207,7 @@ function arc_config_map:get_config( cont_section )
         )
         return
     end
+    local cobj     = client_obj( cont_id )
     tmp            = {}
     tmp.section    = cont_section
     tmp.slots      = ini:r_u32(   cont_section, "container_slots" )
@@ -221,6 +222,9 @@ function arc_config_map:get_config( cont_section )
     end
     if ini:line_exist( cont_section, "rad_protection" ) then
         tmp.protection = ini:r_float( cont_section, "rad_protection" )
+    end
+    if cobj then
+        if cobj:condition() < 0.01 then tmp.protection = 0.0 end
     end
     self:set( cont_section, tmp )
     return tmp

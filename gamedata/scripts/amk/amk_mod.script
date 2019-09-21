@@ -1203,6 +1203,7 @@ function Blowout_pp( num )
         xr_statistic.add_pts(
             "stalkerkills", game.translate_string( "st_pda_blowouts_num" ), 1, 0
         )
+        test.blowout_damage_equipment()
         if lua_random() > 0.83 then
             timers.start_timer("fuckup_batt_torch_all", 0, 1, 12, "test.fuckup_gg_batteries(true)")
         end
