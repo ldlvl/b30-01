@@ -7300,6 +7300,7 @@
 			<next>202</next>
 			<next>2021</next>
 			<next>212</next>
+			<next>300</next>
 		</phrase>
 		<phrase id="202">
 			<text>hos_junkman_dialog_start_202</text>
@@ -7396,6 +7397,63 @@
 		<phrase id="1035">
 			<text>hos_junkman_dialog_start_1035</text>
 			<action>dialogs.break_dialog</action>
+		</phrase>
+		<phrase id="300">
+			<precondition>test.have_any_cont</precondition>
+			<text>hos_junkman_dialog_start_300</text>
+			<next>301</next>
+		</phrase>
+		<phrase id="301">
+			<text>hos_junkman_dialog_start_301</text>
+			<next>302</next>
+			<next>303</next>
+			<next>304</next>
+			<next>305</next>
+		</phrase>
+		<phrase id="302">
+			<precondition>sak.have_items_count("arc_art_box_8basic",1)</precondition>
+			<text>hos_junkman_dialog_start_302</text>
+			<action>sak_inventory.release_actor_items("arc_art_box_8basic",1)</action>
+			<next>3021</next>
+		</phrase>
+		<phrase id="3021">
+			<text>hos_junkman_dialog_start_3021</text>
+			<action>sak_dialog.relocate_money(db.actor,4000,"in")</action>
+			<next>3022</next>
+		</phrase>
+		<phrase id="3022">
+			<text>hos_junkman_dialog_start_3022</text>
+		</phrase>
+		<phrase id="303">
+			<precondition>sak.have_items_count("arc_art_box_1basic",1)</precondition>
+			<text>hos_junkman_dialog_start_303</text>
+			<action>sak_inventory.release_actor_items("arc_art_box_1basic",1)</action>
+			<next>3031</next>
+		</phrase>
+		<phrase id="3031">
+			<text>hos_junkman_dialog_start_3021</text>
+			<action>sak_dialog.relocate_money(db.actor,10000,"in")</action>
+			<next>3032</next>
+		</phrase>
+		<phrase id="3032">
+			<text>hos_junkman_dialog_start_3022</text>
+		</phrase>
+		<phrase id="304">
+			<precondition>sak.have_items_count("arc_art_box_basic",1)</precondition>
+			<text>hos_junkman_dialog_start_304</text>
+			<action>sak_inventory.release_actor_items("arc_art_box_basic",1)</action>
+			<next>3041</next>
+		</phrase>
+		<phrase id="3041">
+			<text>hos_junkman_dialog_start_3021</text>
+			<action>sak_dialog.relocate_money(db.actor,25000,"in")</action>
+			<next>3042</next>
+		</phrase>
+		<phrase id="3042">
+			<text>hos_junkman_dialog_start_3022</text>
+		</phrase>
+		<phrase id="305">
+			<text>hos_junkman_dialog_start_305</text>
 		</phrase>
 	</phrase_list>
 </dialog>
