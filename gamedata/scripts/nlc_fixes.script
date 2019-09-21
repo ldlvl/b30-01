@@ -13,7 +13,8 @@ function on_late_init()
         this.fix_trup_x16,
         this.start_gambling_stats_tbl,
         this.remove_yan_ac_barrels,
-        this.remove_chairs
+        this.remove_chairs,
+        this.fix_mil_wpn_gm94
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -48,6 +49,11 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function fix_mil_wpn_gm94()
+    local obj = g_sim:object( "mil_wpn_gm94" )
+    if obj then misc.release_obj( obj.id ) end
 end
 
 function remove_chairs()
