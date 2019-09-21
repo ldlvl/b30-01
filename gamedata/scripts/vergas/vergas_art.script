@@ -94,13 +94,24 @@ function take_art( obj )
         )
         unit_hit = vergas_lib.set_pr_from_config_str( sect, "unit_hit" ) or 0.02
         unit_hit = unit_hit + 0.01 * sak.dog_psy + add_dmg
-        if vergas_masks.get_flag_mask() then     --при надетой маске по 85% от каждого хита из конфига
-            unit_hit = unit_hit * 0.85
+        if vergas_masks.get_flag_mask() then     --при надетой маске по 87% от каждого хита из конфига
+            unit_hit = unit_hit * 0.87
         end   
         local armor = actor:item_in_slot( 6 )
         if armor then
             if strposx( armor:section(), "monolit" ) then  -- костюмы монолита тоже снижают хит.
-                unit_hit = unit_hit * 0.75
+                unit_hit = unit_hit * 0.8
+            end
+        end
+        for _, sect in ipairs({
+            "af_glassbeads_dyn1d",
+            "af_glassbeads_dyn2d",
+            "af_glassbeads_dyn3d",
+            "af_glassbeads_dyn4d",
+            "af_glassbeads_dyn5d",
+        }) do
+            if bind_monster.art_is_active( sect ) then
+                unit_hit = unit_hit * lua_random( 3, 5 ) / 10
             end
         end
         if table.getn( hit_tbl ) ~= 0 then
