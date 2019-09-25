@@ -4349,9 +4349,25 @@
 		</phrase>
 		<phrase id="33">
 			<text>borov_12_dialog_33</text>
+			<next>331</next>
+			<next>332</next>
+		</phrase>
+		<phrase id="331">
+			<text>borov_12_dialog_331</text>
+			<action>test.add_to_actor("bearer_cheque",1)</action>
+			<next>333</next>
+		</phrase>
+		<phrase id="332">
+			<text>borov_12_dialog_332</text>
+			<action>test.add_to_actor("arc_art_box_1basic",1)</action>
+			<action>test.add_to_actor("grenade_f1",4)</action>
+			<action>test.add_to_actor("ammo_vog-25",4)</action>
+			<next>333</next>
+		</phrase>
+		<phrase id="333">
+			<text>borov_12_dialog_333</text>
 			<give_info>val_actor_has_borov_key</give_info>
 			<give_info>borov_11_done</give_info>
-			<action>sak_dialog.add_voron_find_item_2_done</action>
 			<action>mike.add_spots_x18</action>
 			<next>34</next>
 		</phrase>
