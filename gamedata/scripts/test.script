@@ -1883,12 +1883,14 @@ function set_pda_condition( id, status_pda )
     else
         local info = vergas_lib.str_explode( "|", vergas_pda.get_pda_cdata( id ), true )
         if not info or not info[ 4 ] then return end
-        status = string.sub( info[ 4 ], 13, 13 ) or "3"
+        status = tonumber( string.sub( info[ 4 ], 13, 13 ) ) or 3
     end
-    if     status == "3" then
+    if status == 3 then
         params.upd_condition( id, 0.5 )
-    elseif status == "2" then
+        log2( "@---------------------- SET CONDITION FOR BROKEN PDA ----------------------" )
+    elseif status == 2 then
         params.upd_condition( id, 0.8 )
+        log2( "@---------------------- SET CONDITION FOR UNCHARGED PDA ----------------------" )
     end
 end
 

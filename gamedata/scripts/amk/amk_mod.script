@@ -1204,8 +1204,11 @@ function Blowout_pp( num )
             "stalkerkills", game.translate_string( "st_pda_blowouts_num" ), 1, 0
         )
         test.blowout_damage_equipment()
-        if lua_random() > 0.83 then
-            timers.start_timer("fuckup_batt_torch_all", 0, 1, 12, "test.fuckup_gg_batteries(true)")
+        if
+            lua_random() > 0.83
+            and sak.have_items_count( "batt_torch", 1 )
+        then
+            timers.start_timer( "fuckup_batt_torch_all", 0, 0, 32, "test.fuckup_gg_batteries(true)" )
         end
         -- sleep_manager.change_sleepiness(25, true) -- увеличить сонливость, зачем?
     end

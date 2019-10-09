@@ -5395,9 +5395,6 @@ function add_tail()
                             and not str_in_tab( obj:community(), {
                                 "military", "monolith", "killer", "trader"
                             })
-                            -- and obj:community() ~= "military"
-                            -- and obj:community() ~= "monolith"
-                            -- and obj:community() ~= "killer"
                             and obj:clsid() ~= CLID_TRADER
                         then
                             log2( "@--------- [ sak.script ]: restocking NPC: .......................... %s", nname  )
@@ -8650,7 +8647,7 @@ function marsh_radiation()
                         if sak.arts_operate == true then            -- если носим "»зол€тор", то меньше шанс поломки ѕƒј
                             if sak_inventory.belt_items[ "af_dummy_dummy_new" ] then
                                 pda_brk_chns = 0.02
-                                arc_arts.discharge_art_on_belt( "af_dummy_dummy_new", 0.008 )
+                                arc_arts.discharge_art_on_belt( "af_dummy_dummy_new", 0.004 )
                             end
                         end
                         local h     = hit()
@@ -9585,15 +9582,15 @@ function changes_art_class( obj_id )
     if lua_random() > 0.15 then return end
     local obj = sim:object( obj_id )
     if obj then
-        --------- чтобы в платных нычках арты не портились ------------
+        --------- чтобы в платных нычках и в тайниках арты не портились ------------
         if
             obj.parent_id ~= nil
             and obj.parent_id ~= BAD_OBJ_ID
             and obj.parent_id ~= 0
         then
-            if sak_off_corpses.box_is_protected( g_sim:object( obj.parent_id ) ) then return end
+            if amk_offline_alife.box_is_protected( g_sim:object( obj.parent_id ) ) then return end
         end
-        --------- чтобы в платных нычках арты не портились ------------
+        --------- чтобы в платных нычках и в тайниках арты не портились ------------
         local section = obj:section_name()
         local new_art
         if strpos( section, "_dyn", -6, true ) and not strpos( section, "capsule", 1, true ) then

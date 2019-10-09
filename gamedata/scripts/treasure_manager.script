@@ -463,9 +463,7 @@ function CTreasure:give_treasure( k, from_pda )
                                     dsh.get_next_random( "treasure_manager.rnd", 1, 5 )
                                  ) .. "d"
                 end
-                local obj_sp = alife():create(
-                    vv.section, obj.position, obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id
-                )
+                local obj_sp = misc.spawn_to( vv.section, obj )
                 if vv.section == "arc_art_box_basic" then
                     sak_dialog.spawn_arts_cont( obj_sp )
                 elseif
@@ -488,11 +486,8 @@ function CTreasure:give_treasure( k, from_pda )
                         if ammo_tbl ~= nil then
                             local ammo_sect = dsh.get_next_random( "treasure_manager.rnd", table.getn( ammo_tbl ) )
                             local ammo_cnt  = dsh.get_next_random( "treasure_manager.rnd", 1, 3 )
-                            for i = 1, ammo_cnt do
-                                alife():create(
-                                    ammo_tbl[ ammo_sect ], obj.position,
-                                    obj.m_level_vertex_id, obj.m_game_vertex_id, obj.id
-                                )
+                            for j = 1, ammo_cnt do
+                                misc.spawn_to( ammo_tbl[ ammo_sect ], obj )
                             end
                         end
                     end
@@ -505,12 +500,7 @@ function CTreasure:give_treasure( k, from_pda )
         xr_statistic.add_pts(
             "stalkerkills", game.translate_string( "st_pda_treas_found" ), 1, 0
         )
-        local sim = alife()
-        if obj.online then
-            sim:set_switch_online ( obj.id, false )
-            sim:set_switch_offline( obj.id, true  )
-            amk.convert_npc[ obj.id ] = 1
-        end
+        sak.off_on( obj )
     else
     end
 end

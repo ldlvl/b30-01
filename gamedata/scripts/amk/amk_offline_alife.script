@@ -2136,73 +2136,46 @@ function process_trade( npc, vdata )
                         ammo[ sect ] = 1
                     else
                         ammo[ sect ] = ammo[ sect ] + 1
-                        if ammo[ sect ] > 3 then
-                            table.insert( sell_list, v )
-                        end
+                        if ammo[ sect ] > 3 then table.insert( sell_list, v ) end
                     end
                 elseif isArt( v ) then
                     cnt_arts = cnt_arts + 1
-                    if cnt_arts > 2 then
-                        table.insert( sell_list, v )
-                    end             
+                    if cnt_arts > 2 then table.insert( sell_list, v ) end             
                 elseif isOutfit( v ) then     
                     cnt_outfits = cnt_outfits + 1
-                    if cnt_outfits > 1 then
-                        table.insert( sell_list, v )
-                    end 
+                    if cnt_outfits > 1 then table.insert( sell_list, v ) end 
                 elseif isGrenade( v ) then
                     cnt_grenade = cnt_grenade + 1
-                    if cnt_grenade > 2 then
-                        table.insert( sell_list, v )
-                    end                 
+                    if cnt_grenade > 2 then table.insert( sell_list, v ) end                 
                 elseif cl_id == CLID_TORCH then
                     cnt_torch = cnt_torch + 1
-                    if cnt_torch > 1 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_torch > 1 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_MEDKIT then
                     cnt_medkit = cnt_medkit + 1
-                    if cnt_medkit > 2 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_medkit > 2 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_ANTIRAD then
                     cnt_antirad = cnt_antirad + 1
-                    if cnt_antirad > 1 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_antirad > 1 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_BANDAGE then
                     cnt_bandage = cnt_bandage + 1
-                    if cnt_bandage > 3 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_bandage > 3 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_BREAD then
                     cnt_food = cnt_food + 1
-                    if cnt_food > 4 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_food > 4 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_DRINK then
                     cnt_drink = cnt_drink + 1
-                    if cnt_drink > 3 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_drink > 3 then table.insert( sell_list, v ) end
                 elseif cl_id == CLID_DETECTOR then
                     cnt_detector = cnt_detector + 1
-                    if cnt_detector > 2 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_detector > 2 then table.insert( sell_list, v ) end
                 elseif strpos( sect, "wpn_addon_", 1, true ) then
                     cnt_addons = cnt_addons + 1
-                    if cnt_addons > 2 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_addons > 2 then table.insert( sell_list, v ) end
                 elseif strpos( sect, "mutant_", 1, true ) then
                     cnt_mparts = cnt_mparts + 1
-                    if cnt_mparts > 2 then
-                        table.insert( sell_list, v )
-                    end
+                    if cnt_mparts > 2 then table.insert( sell_list, v ) end
                 else
                     table.insert( sell_list, v )
-                    --ODS("[~T]. #DBG: Process_trade: unknown - "..sect.." "..v:name())
                 end         
             end
             table.sort(

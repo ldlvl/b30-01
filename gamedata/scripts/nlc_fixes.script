@@ -14,7 +14,9 @@ function on_late_init()
         this.start_gambling_stats_tbl,
         this.remove_yan_ac_barrels,
         this.remove_chairs,
-        this.fix_mil_wpn_gm94
+        this.fix_mil_wpn_gm94,
+        this.fix_vertel_kishka,
+        this.fix_prices_blokpost_kishka
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -49,6 +51,27 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function fix_prices_blokpost_kishka()
+    local tbl = {
+        { "dsc_greens_flesh_shkura_done",    "price_kishka_shkura"  },
+        { "private_blockpost_vodka_ok",      "price_blokpost_night" },
+        { "mar_boryan_what_need_info",       "price_boryan"         }
+    }
+    for k, v in pairs( tbl ) do
+        if
+            db.actor:has_info( v[ 1 ] )
+            and not db.actor:has_info( v[ 2 ] )
+        then
+            db.actor:give_info_portion( v[ 2 ] )
+        end
+    end
+end
+
+function fix_vertel_kishka()
+    local obj = g_sim:object( "dsc_vertel_boar" )
+    if obj then misc.release_obj( obj.id ) end
 end
 
 function fix_mil_wpn_gm94()

@@ -162,7 +162,7 @@
 	</phrase_list>
 </dialog>
 <dialog id="sidor_dollars_change">
-	<precondition>sak_dialog.actor_have(115000)</precondition>
+	<precondition>sak_dialog.actor_have(110000)</precondition>
 	<has_info>dollars_have_done</has_info>
 	<phrase_list>
 		<phrase id="0">
@@ -7120,12 +7120,19 @@
 		<phrase id="1">
 			<text>ivan_cs_dialog2_1</text>
 			<next>21</next>
+			<next>211</next>
 			<next>22</next>
 		</phrase>
 		<phrase id="21">
 		<precondition>vergas_lib.search_items("ammo_5.45x39_fmj",300,1)</precondition>
 			<text>ivan_cs_dialog2_21</text>
 			<action>vergas_lib.search_items("ammo_5.45x39_fmj",300,2)</action>
+			<next>3</next>
+		</phrase>
+		<phrase id="211">
+		<precondition>vergas_lib.search_items("ammo_5.45x39_ap",300,1)</precondition>
+			<text>ivan_cs_dialog2_211</text>
+			<action>vergas_lib.search_items("ammo_5.45x39_ap",300,2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="22">
@@ -9333,6 +9340,7 @@
 		</phrase>
 		<phrase id="107">
 			<text>private_blockpost_case_107</text>
+			<give_info>price_blokpost_night</give_info>
 			<give_info>private_blockpost_vodka_ok</give_info>
 			<next>108</next>
 		</phrase>
