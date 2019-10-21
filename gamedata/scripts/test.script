@@ -2097,3 +2097,25 @@ function have_any_cont()
         or sak.have_items_count( "arc_art_box_1basic", 1 )
         or sak.have_items_count( "arc_art_box_basic",  1 )
 end
+
+function have_give_any_bart_ao( transfer_switch )
+    local ao_sect = "af_unknown_"
+    if transfer_switch == 0 then
+        return ( 
+            sak_dialog.have_any_bart()
+            or sak.have_items_count( ao_sect, 1 )
+        )
+    else
+        if sak_dialog.have_any_bart() then
+            sak_dialog.transfer_any_bart()
+        elseif sak.have_items_count( ao_sect, 1 ) then
+            for i = 1, 31 do
+                ao_sect = "af_unknown_" .. i .. "_new"
+                if sak.have_items_count( ao_sect, 1 ) then
+                    sak_inventory.release_actor_items( ao_sect, 1 )
+                    return
+                end
+            end
+        end
+    end
+end

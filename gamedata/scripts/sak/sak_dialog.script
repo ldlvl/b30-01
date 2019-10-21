@@ -54,6 +54,7 @@ table_cart = {
     "af_flower_new",
     "af_star_new",
     "af_glass_new",
+    "af_dummy_sparkler",
     "af_dummy_green_medusa",
     "af_dummy_green_vyvert",
     "af_dummy_green_blood"
@@ -74,7 +75,7 @@ table_dart = {
     "af_compass",
     "af_ice",
     "af_glass_new",
-    "af_dummy_sparkler",
+    "af_glassbeads",
     "af_dummy_kolobok"
 }
 table_red_art = {
@@ -5896,21 +5897,22 @@ function take_prapor_artmod_32() sak.create_items( db.actor, "af_electra_flash_d
 
 -- Бром спас
 -- TODO: заменить на квест по абакану на ЗХ?
-function spawn_drunk_dolg_spas() -- спавним спас и пару кровососов - для куражу
-    local points = {
-        { -334.63, -22.05, 217.47, 16460, 1839 },
-        { -329.84, -20.05, 212.79, 19859, 1839 },
-        { -337.12, -23.07, 251.70, 14561, 1835 },
-        { -332.74, -23.07, 253.95, 17972, 1835 },
-        { -332.99, -23.02, 263.95, 17501, 1834 },
-    }
-    local rand = lua_random( #points )
-    g_sim:create( "wpn_spas12",
-        sak.v3f( points[ rand ][ 1 ], points[ rand ][ 2 ], points[ rand ][ 3 ] ),
-        points[ rand ][ 4 ], points[ rand ][ 5 ]
-    )
-    alife():create( "bloodsucker_normal", sak.v3f( -329.84, -20.05, 212.79 ), 19859, 1839 )
-    alife():create( "bloodsucker_normal", sak.v3f( -332.74, -23.07, 253.95 ), 17972, 1835 )
+function spawn_drunk_dolg_spas()
+    if nlc_vars.brom_spas_spawned == nil then
+        local points = {
+            { -334.63, -22.05, 217.47, 16460, 1839 },
+            { -329.84, -20.05, 212.79, 19859, 1839 },
+            { -337.12, -23.07, 251.70, 14561, 1835 },
+            { -332.74, -23.07, 253.95, 17972, 1835 },
+            { -332.99, -23.02, 263.95, 17501, 1834 },
+        }
+        local rand = lua_random( #points )
+        g_sim:create( "wpn_spas12",
+            sak.v3f( points[ rand ][ 1 ], points[ rand ][ 2 ], points[ rand ][ 3 ] ),
+            points[ rand ][ 4 ], points[ rand ][ 5 ]
+        )
+        nlc_vars.brom_spas_spawned = true
+    end
 end
 
 --mil_minigamer_food
