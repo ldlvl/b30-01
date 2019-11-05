@@ -520,7 +520,7 @@ end
 
 function add_n_pda_broken_discharged( amount, threshold )
     for i = 1, amount do
-        if dsh.get_next_random( "generic_rnd" ) <= threshold then
+        if dsh.get_next_random( "generic_rnd" ) > threshold then
             sak.create_items( db.actor, "device_pda_npc" )
         else
             add_device_pda_npc()
