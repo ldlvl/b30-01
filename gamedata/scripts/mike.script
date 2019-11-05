@@ -518,6 +518,17 @@ function add_12_pda_npc()
     sak.send_tip( "12 шт.", "Получены ПДА", 0, 5, "g_g", "", "green" )
 end
 
+function add_n_pda_broken_discharged( amount, threshold )
+    for i = 1, amount do
+        if dsh.get_next_random( "generic_rnd" ) <= threshold then
+            sak.create_items( db.actor, "device_pda_npc" )
+        else
+            add_device_pda_npc()
+        end
+    end
+    sak.send_tip( tostring( amount ) .. " шт.", "Получены ПДА", 0, 5, "g_g", "", "green" )
+end
+
 function add_device_pda_npc()
     local obj = misc.spawn_to( "device_pda_npc", actor )
     if obj then

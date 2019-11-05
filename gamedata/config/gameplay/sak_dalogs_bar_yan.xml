@@ -11111,11 +11111,11 @@
 		<phrase id="0">
 			<text>find_af_dummy_glassbeads_0</text>
 			<next>11</next>
-			<next>12</next>
-			<next>13</next>
+<!-- 			<next>12</next>
+			<next>13</next> -->
 		</phrase>
 		<phrase id="11">
-		<precondition>sak_dialog.rand_game_1</precondition>
+		<!-- <precondition>sak_dialog.rand_game_1</precondition> -->
 			<text>find_af_dummy_glassbeads_11</text>
 			<next>21</next>
 			<next>31</next>
@@ -11145,10 +11145,10 @@
 			<give_info>yan_scientist_find_af_dummy_glassbeads_start</give_info>
 		</phrase>
 		<phrase id="31">
-		<precondition>sak_dialog.dummy_pellicle_have</precondition>
+		<precondition>sak_dialog.gg_n_dart_have(2)</precondition>
 			<text>find_af_dummy_glassbeads_31</text>
 			<give_info>yan_scientist_find_af_dummy_glassbeads_done</give_info>
-			<action>sak_dialog.give_dummy_pellicle</action>
+			<action>sak_dialog.give_n_dart(2)</action>
 			<next>4</next>
 		</phrase>
 		<phrase id="32">
@@ -11192,8 +11192,8 @@
 </dialog>
 
 <dialog id="find_af_dummy_glassbeads_have">
-	<precondition>sak_dialog.rand_game_1</precondition>
-	<precondition>sak_dialog.dummy_pellicle_have</precondition>
+<!-- 	<precondition>sak_dialog.rand_game_1</precondition> -->
+	<precondition>sak_dialog.gg_n_dart_have(2)</precondition>
 	<dont_has_info>yan_scientist_find_af_dummy_glassbeads_done</dont_has_info>
 	<has_info>yan_scientist_find_af_dummy_glassbeads_start</has_info>
 	<phrase_list>
@@ -11207,10 +11207,10 @@
 			<next>21</next>
 		</phrase>
 		<phrase id="2">
-		<precondition>sak_dialog.dummy_pellicle_have</precondition>
+		<precondition>sak_dialog.gg_n_dart_have(2)</precondition>
 			<text>find_af_dummy_glassbeads_have_2</text>
 			<give_info>yan_scientist_find_af_dummy_glassbeads_done</give_info>
-			<action>sak_dialog.give_dummy_pellicle</action>
+			<action>sak_dialog.give_n_dart(2)</action>
 			<next>3</next>
 		</phrase>
 		<phrase id="3">

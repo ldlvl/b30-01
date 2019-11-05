@@ -9616,7 +9616,7 @@ end
 -- апгрейд артефактов при выбросе ( ТЧ )
 function changed_art_class( obj_id )
     if not db.actor:has_info( "marsh_new_theme_done" ) then return end
-    if dsh.get_next_random( "sak.changed_art_class" ) > 0.8 then return end 
+    if dsh.get_next_random( "sak.changed_art_class" ) > 0.95 then return end 
     local obj = sim:object( obj_id )
     if obj then
         local section = obj:section_name()

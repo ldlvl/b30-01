@@ -15917,20 +15917,29 @@
 			<text>lim_lager_fraer_start_dialog_203</text>
 			<next>2041</next>
 			<next>2042</next>
+			<next>2043</next>
 		</phrase>
 		<phrase id="2041">
-		<precondition>sak_dialog.have_any_aart</precondition>
+		<precondition>sak_dialog.have_any_green_art</precondition>
 			<text>lim_lager_fraer_start_dialog_2041</text>
-			<action>sak_dialog.transfer_any_aart</action>
+			<action>sak_dialog.transfer_any_geen_art</action>
 			<next>2051</next>
 		</phrase>
 		<phrase id="2051">
 			<text>lim_lager_fraer_start_dialog_2051</text>
-			<action>mike.add_1_pda_npc</action>
-			<next>2041</next>
-			<next>2042</next>
+			<action>mike.add_n_pda_broken_discharged(4,0.7)</action>
 		</phrase>
 		<phrase id="2042">
+		<precondition>sak_dialog.have_any_red_art</precondition>
+			<text>lim_lager_fraer_start_dialog_2043</text>
+			<action>sak_dialog.transfer_any_red_art</action>
+			<next>2052</next>
+		</phrase>
+		<phrase id="2052">
+			<text>lim_lager_fraer_start_dialog_2051</text>
+			<action>mike.add_n_pda_broken_discharged(10,0.7)</action>
+		</phrase>
+		<phrase id="2043">
 			<text>lim_lager_fraer_start_dialog_2042</text>
 			<next>2052</next>
 		</phrase>

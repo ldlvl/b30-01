@@ -166,12 +166,12 @@ local food_anim_time = {
 function spawn_holod_radio()
     local obj = alife():create( "radio_custom", sak.v3f( -133.7, 2.55, -277.8 ), 78753,  3377)
     if obj then
-        obj.direction = sak.v3f( 0, -1.57, 0 )
-        local pk = get_netpk( obj )
-        local data = pk:get()
+        obj.direction    = sak.v3f( 0, -1.57, 0 )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
         data.custom_data = "[logic]\ncfg = scripts\\march_holod_priemnik.ltx"
         data.fixed_bones = "link"
-        data.mass = 20
+        data.mass        = 20
         pk:set( data )
     end
 end 
@@ -181,12 +181,12 @@ function spawn_sultan_radio()
     if obj1 then misc.release_obj( obj1.id ) end
     local obj = alife():create( "radio_custom", sak.v3f( 75.3, 0.9, 102.7 ), 30900,  1222)
     if obj then
-        obj.direction = sak.v3f( 0, -1.57, 0 )
-        local pk = get_netpk( obj )
-        local data = pk:get()
+        obj.direction    = sak.v3f( 0, -1.57, 0 )
+        local pk         = get_netpk( obj )
+        local data       = pk:get()
         data.custom_data = "[logic]\ncfg = scripts\\bar_sultan_priemnik.ltx"
         data.fixed_bones = "link"
-        data.mass = 20
+        data.mass        = 20
         pk:set( data )
     end
 end

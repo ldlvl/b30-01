@@ -15,6 +15,7 @@ table_aart = {
     "af_ameba_slime",
     "af_rusty_thorn"
 }
+
 table_bart = {
     "af_cristal_flower",
     "af_gravi",
@@ -24,6 +25,7 @@ table_bart = {
     "af_ameba_slug",
     "af_rusty_kristall"
 }
+
 table_semart = {
     "af_cristal_flower",
     "af_gravi",
@@ -33,6 +35,7 @@ table_semart = {
     "af_ameba_slug",
     "af_rusty_kristall"
 }
+
 table_good_semart = {
     "af_baloon",
     "af_medus_new",
@@ -42,6 +45,7 @@ table_good_semart = {
     "af_glass_new",
     "af_sul_new"
 }
+
 table_cart = {
     "af_cristall",
     "af_night_star",
@@ -59,6 +63,7 @@ table_cart = {
     "af_dummy_green_vyvert",
     "af_dummy_green_blood"
 }
+
 table_dart = {
     "af_dummy_spring",
     "af_dummy_dummy",
@@ -78,11 +83,19 @@ table_dart = {
     "af_glassbeads",
     "af_dummy_kolobok"
 }
+
 table_red_art = {
     "af_red_dummy_spring",
     "af_red_dummy_battery",
     "af_red_dummy_pellicle"
 }
+
+table_green_art = {
+    "af_dummy_green_medusa",
+    "af_dummy_green_vyvert",
+    "af_dummy_green_blood"
+}
+
 table_capsule = {
     "af_night_star_capsule",
     "af_gold_fish_capsule",
@@ -1342,6 +1355,22 @@ function transfer_any_red_art()
     for i = 1, table.getn( table_red_art ) do
         if sak.have_items_count( table_red_art[ i ], 1 ) then
             sak_inventory.release_actor_items( table_red_art[ i ], 1 )
+            break
+        end
+    end
+end
+
+function have_any_green_art()
+    for i = 1, table.getn( table_green_art ) do
+        if sak.have_items_count( table_green_art[ i ], 1, false, true ) then return true end
+    end
+    return false
+end
+
+function transfer_any_green_art()
+    for i = 1, table.getn( table_green_art ) do
+        if sak.have_items_count( table_green_art[ i ], 1 ) then
+            sak_inventory.release_actor_items( table_green_art[ i ], 1 )
             break
         end
     end
