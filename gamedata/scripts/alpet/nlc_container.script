@@ -410,10 +410,18 @@ function shadow_inventory:after_sleep()
     end
 end
 
+local dropped_rucksack_id = nil
+
 function shadow_inventory:drop_storage()
     if self:update_storage() and self:hide_content( 2 ) then
         self.storage:get_container():close()
         self.storage:set_name( "dropped_rucksack" )
+        if sak.have_items_count( "amk_metka", 1 ) then
+            dropped_rucksack_id = self.storage:id()
+            amk.add_spot_on_map(
+                dropped_rucksack_id, 'red_location', "Сброшенный рюкзак"
+            )
+        end
         --local pos = test.pos_in_front_of_actor() or db.actor:position()
         --self.holder:drop_item_and_teleport( self.storage, pos )
         self.holder:drop_item( self.storage ) -- объект отделен от носителя!
@@ -430,6 +438,9 @@ function shadow_inventory:update_storage()
     if self.storage == nil and obj then
         --wprintf(" shadow_inventory changing to~C0D %d~C07", obj:id())
         -- обработка поднятия большого рюкзака
+        if dropped_rucksack_id then
+            amk.remove_spot_from_map( dropped_rucksack_id, 'red_location' )
+        end
         vergas_lib.s_play( [[rykzack\give_rykzak_2]], 1 )
         sak_inventory.need_update_inventory()
         sak.actor_hide_weapon()
