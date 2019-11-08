@@ -7,6 +7,7 @@ function show( param )
         end
     elseif param then
         local new = minimap_dialog( get_hud() )
+        -- vergas_masks.set_flag_minimap( true )
         -- level.start_stop_menu(new,true) -- включать диалог не нужно!
     end
 end
@@ -82,9 +83,9 @@ function minimap_dialog:Hide()
     self.comp[ 1 ] = -1000
     self.back_g    = -1050
     -- level.enable_input()
-    --vergas_masks.set_flag_minimap( true )
+    vergas_masks.set_flag_minimap( true )
     self:ToggleMap( false )
-    schedule.add( 'restore_weap', 'bind_stalker.restore_weapon()', 500 )
+    schedule.add( 'restore_weap', 'bind_stalker.restore_weapon()', 300 )
 end
 
 function minimap_dialog:Prepare()
@@ -107,8 +108,8 @@ function minimap_dialog:Prepare()
     end
     self.back_g = 0
     bind_stalker.hide_weapon()
-    --vergas_masks.set_flag_minimap( false )
-    schedule.add( 'draw_minimap', 'ui_minimap.show(true)', 500 )
+    vergas_masks.set_flag_minimap( false )
+    schedule.add( 'draw_minimap', 'ui_minimap.show(true)', 300 )
 end
 
 function minimap_dialog:ToggleMap( param )

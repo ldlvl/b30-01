@@ -4020,7 +4020,8 @@ function breath_poison() -- реализация астмы с учетом противогаза
     if
         amk_anoms.check_coordinates( act_pos )
         and (
-            vergas_masks.get_flag_mask() == false
+                ( vergas_masks.get_flag_mask() == false
+                 and vergas_masks.watch_flag == false )
             or cond < 0.85
             or vergas_masks.mask_definition() == "?"
         )
