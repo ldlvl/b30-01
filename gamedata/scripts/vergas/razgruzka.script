@@ -751,25 +751,34 @@ function use_info()
             )
         end
     end
+    if db.actor:item_in_slot( 11 ) then
+        hud:AddCustomStatic( "accum_hud_icon", true )
+    end
     schedule.add( "info_timer", "razgruzka.end_use_info()", after )
 end
 
 function end_use_info()
-    local hud = get_hud()
-    disp_flag = false
+    local static = nil
+    local hud    = get_hud()
+    disp_flag    = false
     move_static_weapon( -800 )
-    local static     = hud:GetCustomStatic( "hud_info" )
-    local exo_static = hud:GetCustomStatic( "exo_info" )
+    static = hud:GetCustomStatic( "hud_info" )
+    --local exo_static = hud:GetCustomStatic( "exo_info" )
     if static then
         wnd_info = static:wnd()
         wprintf( " end_use_info(), removing statics...\n~C0A %s~C07", lua_traceback(' ') )
         windows.del_simple_statics( wnd_info )
         hud:RemoveCustomStatic( "hud_info" )
     end
-    if exo_static then
-    exo_progr = exo_static:wnd()
-    windows.del_simple_statics( exo_progr )
-    hud:RemoveCustomStatic( "exo_info" )
+    static = hud:GetCustomStatic( "exo_info" )
+    if static then
+        exo_progr = static:wnd()
+        windows.del_simple_statics( exo_progr )
+        hud:RemoveCustomStatic( "exo_info" )
+    end
+    static = hud:GetCustomStatic( "accum_hud_icon" )
+    if static then
+        hud:RemoveCustomStatic( "accum_hud_icon" )
     end
 end
 
@@ -837,6 +846,7 @@ end
 function move_static_weapon( param )
     if xr_build_id > 5500 then
         ui_params.move_mainwnd_static( "static_weapon", nil, param )
+        ui_params.move_mainwnd_static( "artefact_panel", nil, param + 20 )
         return
     end
 end
