@@ -413,10 +413,11 @@ end
 local dropped_rucksack_id = nil
 
 function shadow_inventory:drop_storage()
+    local metka_have = sak.have_items_count( "amk_metka", 1 ) or false
     if self:update_storage() and self:hide_content( 2 ) then
         self.storage:get_container():close()
         self.storage:set_name( "dropped_rucksack" )
-        if sak.have_items_count( "amk_metka", 1 ) then
+        if metka_have then
             dropped_rucksack_id = self.storage:id()
             amk.add_spot_on_map(
                 dropped_rucksack_id, 'red_location', "—брошенный рюкзак"
