@@ -1963,12 +1963,13 @@ function artmodscheck( anom, af, anom_sect )
             anom, af,
             at[ aid .. "81" ][ 1 ], at[ aid .. "81" ][ 2 ],
             at[ aid .. "81" ][ 3 ], at[ aid .. "81" ][ 4 ],
-            at[ aid .. "81" ][ 5 ], at[ aid .. "81" ][ 6 ]
+            at[ aid .. "81" ][ 5 ], at[ aid .. "81" ][ 6 ],
+            anom_sect
         )
     end
 end
 
-function artmod( nearest_anomaly, af, item1, item2, item3, item4, info_artmod, item_targ )
+function artmod( nearest_anomaly, af, item1, item2, item3, item4, info_artmod, item_targ, anom_sect )
     local af_sect    = af:section()
     local pos        = af:position()
     local startflag  = false
@@ -2039,6 +2040,15 @@ function artmod( nearest_anomaly, af, item1, item2, item3, item4, info_artmod, i
                 if rand_goods > 5 then rand_goods = 5 end
                 -- переделаем на dsh-рандомы, чтобы не было соблазна время подгонять под зелень
                 local rand_dyn = dsh.get_next_random( "sak.artmod", rand_goods )
+                -- из ХБМ: зелень можно сварить только в аномалии strong ---
+                if strpos( anom_sect, "_strong", 1, true ) then
+                    rand_dyn = math.min( rand_dyn, 5 )
+                elseif strpos( anom_sect, "_average", 1, true ) then
+                    rand_dyn = math.min( rand_dyn, 4 )
+                else
+                    rand_dyn = math.min( rand_dyn, 1)
+                end
+                ------------------------------------------------------------
                 xr_statistic.addCookingPoints( item_targ )
                 item_targ = ( item_targ .. "_dyn" .. rand_dyn .. "d" )
             end

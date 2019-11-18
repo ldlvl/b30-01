@@ -137,11 +137,12 @@ local barter_tbl = {
         { "af_rusty_thorn_dyn2d",       1,  "lvl2",             1  }
     },
     [ "dan" ] = {
-        { "ammo_12x70_buck",            10, "mutant_dog_tail",          8  },
-        { "ammo_12x76_dart",            5,  "mutant_boar_leg",          8  },
-        { "ammo_12x76_zhekan",          3,  "mutant_flesh_eye",         3  },
-        { "ammo_12x76_dart",            2,  "mutant_face_tushkano",     4  },
-        { "ammo_12x76_zhekan",          4,  "mutant_psevdodog_tail",    3  }
+        { "ammo_12x70_buck",            10, "mutant_dog_tail",        8  },
+        { "ammo_12x76_buck",            4,  "mutant_face_tushkano",   4  },
+        { "ammo_12x76_dart",            4,  "mutant_boar_leg",        8  },
+        { "ammo_12x76_zhekan",          2,  "mutant_flesh_eye",       3  },
+        { "ammo_12x76_zhekan",          4,  "mutant_psevdodog_tail",  3  },
+        { "ammo_7.62x39_ap",            4,  "mutant_tail_cat",        3  }
     },
     [ "fuel_esc" ] = {
         { "ammo_9x18_pmm",              6,  "amk_kanistra",     1  },
@@ -152,8 +153,8 @@ local barter_tbl = {
         { "ammo_5.45x39_fmj",           3,  "amk_kanistra",     1  },
         { "ammo_12x70_buck",            4,  "amk_kanistra",     1  },
         { "antirad",                    2,  "amk_kanistra",     1  },
-        { "repair_item_weapon_feik",    3,  "amk_kanistra",     1  },
-        { "repair_itemoutfit_feik",     3,  "amk_kanistra",     1  }
+        { "repair_item_weapon_feik",    2,  "amk_kanistra",     1  },
+        { "repair_itemoutfit_feik",     2,  "amk_kanistra",     1  }
     },
     [ "fuel_bar" ] = {
         { "ammo_9x19_pbp",              5,  "amk_kanistra",     1  },
@@ -164,8 +165,8 @@ local barter_tbl = {
         { "ammo_5.45x39_fmj",           4,  "amk_kanistra",     1  },
         { "ammo_12x70_buck",            5,  "amk_kanistra",     1  },
         { "antirad",                    3,  "amk_kanistra",     1  },
-        { "repair_item_weapon_feik",    4,  "amk_kanistra",     1  },
-        { "repair_itemoutfit_feik",     4,  "amk_kanistra",     1  }
+        { "repair_item_weapon_feik",    3,  "amk_kanistra",     1  },
+        { "repair_itemoutfit_feik",     3,  "amk_kanistra",     1  }
     },
     [ "sultan" ] = {
         { "wpn_beretta93",              1,  "lvl5",             1  },
@@ -734,15 +735,16 @@ function make_list_by_trader( name )
         local tbl_dan = test.copy_tbl( barter_tbl[ name ] )
         for k, v in pairs( tbl_dan ) do
             if v[ 3 ] == "mutant_dog_tail" then
-                v[ 4 ] = v[ 4 ] + math.floor( gdays / 10 )      -- инфл€ци€: хвостов собак каждые 10 дней нужно на 1 больше
-                if v[ 4 ] > 13 then v[ 4 ] = 13 end             -- но до разумных пределов
+                v[ 2 ] = v[ 2 ] - math.floor( gdays / 10 )      -- инфл€ци€: хвостов собак каждые 10 дней дают на 10 меньше дроби
+                if v[ 2 ] < 4 then v[ 2 ] = 4 end               -- до 4 пачек за 10 хвостов
             elseif str_in_tab( v[ 3 ], {
                         "mutant_psevdodog_tail",
-                        "mutant_face_tushkano"
+                        "mutant_face_tushkano",
+                        "mutant_tail_cat"
                     })
             then
-                v[ 4 ] = v[ 4 ] + math.floor( gdays / 20 )      -- инфл€ци€: хвостов псевд каждые 20 дней нужно на 1 больше
-                if v[ 4 ] > 6 then v[ 4 ] = 6 end
+                v[ 2 ] = v[ 2 ] - math.floor( gdays / 20 )      -- каждые 20 дней
+                if v[ 2 ] < 1 then v[ 2 ] = 1 end
             end
         end
         tbl_to_show = tbl_dan

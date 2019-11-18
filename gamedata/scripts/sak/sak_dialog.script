@@ -1945,10 +1945,15 @@ function return_upgrade_outfit( first_speaker, second_speaker )
                 then                                      -- экза нейтралов и монолита работает на 12-16ч дольше
                     hour = lua_random( 12, 16 )
                 end
-                if     actor:has_info( "exo_charge_half_done" ) then rand = 2
-                elseif actor:has_info( "exo_charge_full_done" ) then rand = 4
+                if actor:has_info( "exo_charge_half_done" ) then
+                    rand = 2
+                    actor:disable_info_portion( "exo_charge_half_done" )
+                elseif actor:has_info( "exo_charge_full_done" ) then
+                    rand = 4
+                    actor:disable_info_portion( "exo_charge_full_done" )
                 end
             end
+            wprintf( "@------------ downgrade timer:   days: %s, hours: %s", rand, hour )
             timers.start_timer( "upgrade" .. id, rand, hour, 21, "sak_dialog.downgrade_item("..id..")" )
         end
     end
@@ -5737,7 +5742,11 @@ end
 local gluzoff_art = ( tostring( nlc_vars.gluzov_art_given ) .. "_dyn5d" ) or "af_soul_dyn5d"
 
 function marsh_soul_have( first_speaker, second_speaker )
-    return first_speaker:object( gluzoff_art ) ~= nil
+    local obj = first_speaker:object( gluzoff_art )
+    if obj then
+        if params.get_condition( obj, 0.999 ) > 0.95 then return true end
+    end
+    return false
 end
 
 function give_marsh_soul( first_speaker, second_speaker )
