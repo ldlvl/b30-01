@@ -1874,7 +1874,8 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "5" ][ 1 ], at[ aid .. i .. "5" ][ 2 ],
                 at[ aid .. i .. "5" ][ 3 ], at[ aid .. i .. "5" ][ 4 ],
-                at[ aid .. i .. "5" ][ 5 ], at[ aid .. i .. "5" ][ 6 ]
+                at[ aid .. i .. "5" ][ 5 ], at[ aid .. i .. "5" ][ 6 ],
+                anom_sect
             )
         end
     end
@@ -1886,7 +1887,8 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "6" ][ 1 ], at[ aid .. i .. "6" ][ 2 ],
                 at[ aid .. i .. "6" ][ 3 ], at[ aid .. i .. "6" ][ 4 ],
-                at[ aid .. i .. "6" ][ 5 ], at[ aid .. i .. "6" ][ 6 ]
+                at[ aid .. i .. "6" ][ 5 ], at[ aid .. i .. "6" ][ 6 ],
+                anom_sect
             )
         end
         if level.name() ~= "generators" then return end
@@ -1899,7 +1901,8 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "4" ][ 1 ], at[ aid .. i .. "4" ][ 2 ],
                 at[ aid .. i .. "4" ][ 3 ], at[ aid .. i .. "4" ][ 4 ],
-                at[ aid .. i .. "4" ][ 5 ], at[ aid .. i .. "4" ][ 6 ]
+                at[ aid .. i .. "4" ][ 5 ], at[ aid .. i .. "4" ][ 6 ],
+                anom_sect
             )
         end
         if level.name() ~= "aver" then return end
@@ -1914,7 +1917,8 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "3" ][ 1 ], at[ aid .. i .. "3" ][ 2 ],
                 at[ aid .. i .. "3" ][ 3 ], at[ aid .. i .. "3" ][ 4 ],
-                at[ aid .. i .. "3" ][ 5 ], at[ aid .. i .. "3" ][ 6 ]
+                at[ aid .. i .. "3" ][ 5 ], at[ aid .. i .. "3" ][ 6 ],
+                anom_sect
             )
         end
         if af_sect == "af_red_dummy_spring" then af_zone_off( af ) end
@@ -1926,7 +1930,9 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "1" ][ 1 ], at[ aid .. i .. "1" ][ 2 ],
                 at[ aid .. i .. "1" ][ 3 ], at[ aid .. i .. "1" ][ 4 ],
-                at[ aid .. i .. "1" ][ 5 ], at[ aid .. i .. "1" ][ 6 ])
+                at[ aid .. i .. "1" ][ 5 ], at[ aid .. i .. "1" ][ 6 ],
+                anom_sect
+            )
         end
         artmod01( af, "af_dummy_battery", "af_battery", "actor_jump_info", 1, 1, 50, anom )
         if af_sect == "af_red_dummy_pellicle" then af_zone_off( af ) end
@@ -1939,7 +1945,9 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. i .. "2" ][ 1 ], at[ aid .. i .. "2" ][ 2 ],
                 at[ aid .. i .. "2" ][ 3 ], at[ aid .. i .. "2" ][ 4 ],
-                at[ aid .. i .. "2" ][ 5 ], at[ aid .. i .. "2" ][ 6 ])
+                at[ aid .. i .. "2" ][ 5 ], at[ aid .. i .. "2" ][ 6 ],
+                anom_sect
+            )
         end
     end
     --------------------- из снежки ---------------------
@@ -1949,7 +1957,9 @@ function artmodscheck( anom, af, anom_sect )
                 anom, af,
                 at[ aid .. "7" .. i ][ 1 ], at[ aid .. "7" .. i ][ 2 ],
                 at[ aid .. "7" .. i ][ 3 ], at[ aid .. "7" .. i ][ 4 ],
-                at[ aid .. "7" .. i ][ 5 ], at[ aid .. "7" .. i ][ 6 ])
+                at[ aid .. "7" .. i ][ 5 ], at[ aid .. "7" .. i ][ 6 ],
+                anom_sect
+            )
         end
         artmod01( af, "af_dummy_battery", "af_red_dummy_battery", "info_red_battery", 0, 2, 0, anom )
         artmod01( af, "af_dummy_spring", "af_red_dummy_spring", "info_red_spring", 0, 2, 0, anom )
