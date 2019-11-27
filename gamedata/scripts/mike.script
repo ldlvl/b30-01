@@ -503,36 +503,37 @@ function add_rjaboi_kontainer()
 end
 
 function add_1_pda_npc()
-    add_device_pda_npc()
+    add_device_pda_npc( 2 )
     sak.send_tip( "1 шт.", "Получен ПДА", 0, 5, "g_g", "", "green" )
 end
 
 function add_12_pda_npc()
     for i = 1, 12 do
         if dsh.get_next_random( "generic_rnd" ) <= 0.2 then
-            sak.create_items( db.actor, "device_pda_npc" )
+            add_device_pda_npc( 3 )
         else
-            add_device_pda_npc()
+            add_device_pda_npc( 2 )
         end
     end
     sak.send_tip( "12 шт.", "Получены ПДА", 0, 5, "g_g", "", "green" )
 end
 
 function add_n_pda_broken_discharged( amount, threshold )
-    for i = 1, amount do
-        if dsh.get_next_random( "generic_rnd" ) > threshold then
-            sak.create_items( db.actor, "device_pda_npc" )
+    for i = 1, tonumber( amount ) do
+        if dsh.get_next_random( "generic_rnd" ) > tonumber( threshold ) then
+            add_device_pda_npc( 3 )
         else
-            add_device_pda_npc()
+            add_device_pda_npc( 2 )
         end
     end
     sak.send_tip( tostring( amount ) .. " шт.", "Получены ПДА", 0, 5, "g_g", "", "green" )
 end
 
-function add_device_pda_npc()
+function add_device_pda_npc( status )
     local obj = misc.spawn_to( "device_pda_npc", actor )
     if obj then
-        vergas_pda.add_tbl_pda( actor:id(), obj.id, 2 )
+        vergas_pda.add_tbl_pda( actor:id(), obj.id, tonumber( status ) )
+        test.set_pda_condition( obj.id, tonumber( status ) )
     end
 end
 

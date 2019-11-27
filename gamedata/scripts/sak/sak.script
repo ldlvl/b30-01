@@ -4003,7 +4003,12 @@ function health_handle()
                     local angle = math.atan2( cp:magnitude(), dp )
                     if math.abs( angle ) < 0.75 then
                         -- params.psy_health_add( 0.05 )
-                        params.psy_health_add( 0.1 )      -- увеличим в 2 раза на пробу
+                        local crouch = actor:get_crouch_factor()
+                        if crouch == 1 or crouch == 2 then
+                            params.psy_health_add( 0.16 )
+                        else
+                            params.psy_health_add( 0.08 )      -- увеличим в 2 раза на пробу
+                        end
                     else
                     end
                     wprintf(
@@ -5888,7 +5893,7 @@ function add_tail()
         end
         -------------------------------------------------------
         obj = level_object_by_sid( lev_prot[ lname ] )
-        if obj then grabb_seif( obj:id(), lname, actor ) end
+        if obj then grabb_seif( obj:id(), lname ) end
     end
 ---------------------------  конец обработки левел ченджера? ---------------------------------
     if lname == "aver" then
@@ -5917,7 +5922,7 @@ function sak.reset_actor_bio()
     actor_bio()
 end
 
-function grabb_seif ( obj_id, lname, actor )
+function grabb_seif( obj_id, lname )
     have_many = 0
     local ids, cnt = registry.inv_objects( obj_id, true )
     for n = 1, cnt do
@@ -5926,17 +5931,20 @@ function grabb_seif ( obj_id, lname, actor )
         if sobj then
             local nname = sobj:section()
             if
-                (   strpos( nname, "af_", 1, true )
-                    and not strposx( nname, "af_full_akkum" )
-                    and not strposx( nname, black_tip.section ))
+                (
+                            strpos ( nname, "af_", 1, true    )
+                    and not strposx( nname, "af_full_akkum"   )
+                    and not strposx( nname, black_tip.section )
+                )
                 or ( strposx( nname, "arc_art_box_" ) )
             then
                 add_price_arts( sobj )
             end
         end
     end
-    if ( have_many > 1250000 ) and not actor:has_info( lname .. "_prot_out" ) then
-        actor:give_info_portion( lname .. "_prot_out" )
+    log2( "@-------------------------------------  TOTAL STASH COST ON THIS LVL:   %s", have_many )
+    if ( have_many > 1250000 ) and not db.actor:has_info( lname .. "_prot_out" ) then
+        db.actor:give_info_portion( lname .. "_prot_out" )
         for n = 1, cnt do
             local id   = ids[ n ]
             local sobj = client_obj( id )
@@ -5944,7 +5952,7 @@ function grabb_seif ( obj_id, lname, actor )
                 misc.release_obj( id, 'sak.script:3555')
                 local obj2 = g_sim:story_object( story_ids.esc_sid_guard )
                 if obj2 then misc.release_obj( obj2, 'sak.script:3557') end
-                actor:give_info_portion( "esc_sid_guard_umer" )
+                db.actor:give_info_portion( "esc_sid_guard_umer" )
             else
                 local nname = sobj:section()
                 if
@@ -9454,18 +9462,17 @@ function add_price_arts( obj )
         art_sect = obj:section()
         cond     = params.get_condition( obj )
     end
-    -- считает тупо сальдо цены новых артефактов
     if strposx( art_sect, "arc_art_box_" ) then
-        local arts  = arc_containers.get_inv_container_arts( obj:id() )
+        local arts  = arc_containers.get_container_arts( obj:id() )
         local saldo = 0
         if arts then
             for i, rec in ipairs( arts ) do
                 local sect = rec.section or rec.x_section
                 local cond = rec.condition or 1.0
                 if sect ~= "?" and ini:section_exist( sect ) then
-                    sys_cost    = ini:r_float( sect, "cost" )
-                    have_many   = have_many + sys_cost * cond
-                    saldo = saldo + sys_cost * cond
+                    sys_cost  = ini:r_float( sect, "cost" )
+                    have_many = have_many + sys_cost * cond
+                    saldo     = saldo + sys_cost * cond
                 end
             end
         end
@@ -10162,7 +10169,9 @@ function timer_exo_charge_half_end()
         "Подваливай в гости, зарядилась твоя экза.",
         "Долговязый беспокоит", 11, 20, "ecolog", "sak", "green"
     )
-    db.actor:give_info_portion( "exo_charge_half_done" )
+    if db.actor:has_info( "exo_charge_half_start" ) then
+        db.actor:give_info_portion( "exo_charge_half_done" )
+    end
 end
 
 function timer_exo_charge_full_end()
@@ -10170,7 +10179,9 @@ function timer_exo_charge_full_end()
         "Твой экзоскелет заряжен, подходи забирай.",
         "Это Долговязый", 11, 20, "ecolog", "sak", "green"
     )
-    db.actor:give_info_portion( "exo_charge_full_done" )
+    if db.actor:has_info( "exo_charge_full_start" ) then
+        db.actor:give_info_portion( "exo_charge_full_done" )
+    end
 end
 
 function off_on( sobj )

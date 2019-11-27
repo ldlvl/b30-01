@@ -123,6 +123,8 @@ function watch_dialog:OnKeyboard( dik, keyboard_action )
     if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
         if dik == DIK_keys.DIK_ESCAPE then
             self:on_quit()
+        elseif dik == DIK_keys.DIK_C then
+            self:btn_reset_alarm()
         end
     end
     return true

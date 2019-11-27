@@ -258,6 +258,24 @@ function get_inv_container_arts( cont_id )
     return {}
 end
 
+function get_container_arts( cont_id )
+    local sobj = alife():object( cont_id )
+    if sobj == nil then return nil end
+    local pk        = get_netpk( sobj )
+    local data      = pk:get()
+    local cd_string = data.custom_data
+    if not cd_string or cd_string == "" then return nil end
+    local arts = {}
+    for a in string.gmatch( cd_string, "[_%w:-]+" ) do
+        if a == '_' then
+            table.insert( arts, { x_section = '?', count = 0 } )
+        else
+            table.insert( arts, arc_arts.af_decode( a ) )
+        end
+    end
+    return arts
+end
+
 class "containers_map"( list_tools.std_map )
 
 function containers_map:__init()
