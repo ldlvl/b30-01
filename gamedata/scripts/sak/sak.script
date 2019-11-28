@@ -4003,7 +4003,7 @@ function health_handle()
                     local angle = math.atan2( cp:magnitude(), dp )
                     if math.abs( angle ) < 0.75 then
                         -- params.psy_health_add( 0.05 )
-                        local crouch = actor:get_crouch_factor()
+                        local crouch = db.actor:get_crouch_factor()
                         if crouch == 1 or crouch == 2 then
                             params.psy_health_add( 0.16 )
                         else
