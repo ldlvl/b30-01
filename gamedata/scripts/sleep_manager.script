@@ -314,12 +314,12 @@ function show_dream()    -- показать сон инвалиду
     end
     level.remove_pp_effector( 1234 )
     if sleep_manager.is_sleep_active() then
-        local dream = dream.sleep_video_name_callback()
-        if dream ~= "" then 
-            game.start_tutorial( dream )
-        else 
+        -- local dream = dream.sleep_video_name_callback()
+        -- if dream ~= "" then 
+        --     game.start_tutorial( dream )
+        -- else 
             game.start_tutorial( "without_dream" ) 
-        end
+        -- end
     end
 end
 

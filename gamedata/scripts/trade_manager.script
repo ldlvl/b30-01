@@ -1,24 +1,30 @@
 local trade_manager = {}
 
 function trade_init( npc, cfg )
-    local tt = {}
+    local tt                  = {}
     trade_manager[ npc:id() ] = tt
-    tt.cfg_ltx = cfg
-    tt.config  = ini_file( cfg )
-
+    tt.cfg_ltx                = cfg
+    tt.config                 = ini_file( cfg )
+    -------------------------------------------------------------------------
     local str  = get_string( "trader", "buy_condition", nil, tt.config )
-    ASSERT( str, "Incorrect trader settings. Cannot find buy_condition. [%s]->[%s]", npc:name(), cfg )
+    ASSERT(
+        str,
+        "Incorrect trader settings. Cannot find buy_condition. [%s]->[%s]",
+        npc:name(), cfg
+    )
     tt.buy_condition = xr_logic.parse_condlist( npc, "trade_manager", "buy_condition", str )
-    
+    -------------------------------------------------------------------------
     str = get_string( "trader", "sell_condition", nil, tt.config )
-    ASSERT( str, "Incorrect trader settings. Cannot find sell_condition. [%s]->[%s]", npc:name(), cfg )
+    ASSERT(
+        str,
+        "Incorrect trader settings. Cannot find sell_condition. [%s]->[%s]",
+        npc:name(), cfg
+    )
     tt.sell_condition = xr_logic.parse_condlist( npc, "trade_manager", "sell_condition", str )
-
+    -------------------------------------------------------------------------
     str = get_string( "trader", "buy_supplies", nil, tt.config )
     if str then
-
         tt.skip_updates = 10
-
         tt.buy_supplies = xr_logic.parse_condlist( npc, "trade_manager", "buy_supplies", str )
         if not tt.resuply_time then
             local sobj = alife():object( npc:id() )
@@ -26,10 +32,10 @@ function trade_init( npc, cfg )
                 local data = amk.parse_custom_data( sobj.s_storage )
                 if data.trade_manager and data.trade_manager.resuply_time then
                     tt.resuply_time = unpack_time_from_string( data.trade_manager.resuply_time )
-                    log2(
-                      "TRADE INIT[%s] resuply_time in %s seconds",
-                      npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
-                    )
+                    -- log2(
+                    --     "TRADE INIT[%s] resuply_time in %s seconds",
+                    --     npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
+                    -- )
                 end
             end
         end
@@ -41,15 +47,13 @@ end
 function update( npc )
     local tt = trade_manager[ npc:id() ]
     ASSERT( tt, "trade_manager[ npc:id() ] npc found: %s", npc:name() )
-
     if tt.skip_updates and tt.skip_updates > 0 then
         tt.skip_updates = tt.skip_updates - 1
         return
     end
-
     if tt.update_time ~= nil and tt.update_time > time_global() then return end
     local update_t = math.random( 900, 1800 ) * 1000                       -- апдейт проверки, пора ли пополнять ассортимент,
-    tt.update_time = time_global() + update_t                               -- идёт раз в реальных полчаса-час, по рандому
+    tt.update_time = time_global() + update_t                              -- идёт раз в реальных полчаса-час, по рандому
 
     local str = xr_logic.pick_section_from_condlist( db.actor, npc, tt.buy_condition )
     if tt.current_buy_condition ~= str then
@@ -79,11 +83,12 @@ function update( npc )
             --add_buy_supplies( npc, tt.config, str )
             tt.current_buy_supplies = str
         end
-        if npc:name() == "escape_trader" or npc:name() == "lim_trader" then
-            tt.resuply_time = game.get_game_time() + seconds2ctime( 6 * 3600 )
-        else
-            tt.resuply_time = game.get_game_time() + seconds2ctime( math.random( 12, 24 ) * 3600 )
-        end
+        -- if npc:name() == "escape_trader" or npc:name() == "lim_trader" then
+        --     tt.resuply_time = game.get_game_time() + seconds2ctime( 6 * 3600 )
+        --     log2( "TRADE UPDATE[%s]: made sidor update", npc:name() )
+        -- else
+            tt.resuply_time = game.get_game_time() + seconds2ctime( math.random( 24, 36 ) * 3600 )
+        -- end
         -- log2(
         --   "TRADE UPDATE[%s] resuply_time in %s seconds",
         --   npc:name(), tt.resuply_time:diffSec( game.get_game_time() )
@@ -100,7 +105,7 @@ function update( npc )
                 [ "resuply_time" ] = pack_time_to_string( tt.resuply_time )
             }
             sobj.s_storage = amk.gen_custom_data( data )
-            log2( "TRADE UPDATE[%s] s_storage = %s", npc:name(), sobj.s_storage )
+            --log2( "TRADE UPDATE[%s] s_storage = %s", npc:name(), sobj.s_storage )
         end
     end
 end
@@ -138,12 +143,12 @@ function save( obj, packet )
         -- log2(
         --         "TRADE SAVE[%s]: update_time = %s",
         --         obj:name(), ( tt.update_time - cur_tm ) / 1000
-        --     )
+        -- )
     end
     if tt.resuply_time then
         -- log2(
-        --   "TRADE SAVE[%s]: resuply_time = %s",
-        --   obj:name(), tt.resuply_time:diffSec( game.get_game_time() )
+        --     "TRADE SAVE[%s]: resuply_time = %s",
+        --     obj:name(), tt.resuply_time:diffSec( game.get_game_time() )
         -- )
         packet:w_s32( tt.resuply_time:diffSec( game.get_game_time() ) * 1000 )
     else
@@ -187,7 +192,7 @@ function load( obj, packet, ver )
     end
     a = packet:r_s32()
     -- log2(
-    --   "TRADE LOAD[%s]: resuply_time = %s", obj:name(), tostring( a )
+    --     "TRADE LOAD[%s]: resuply_time = %s", obj:name(), tostring( a )
     -- )
     if a > 0 then
         tt.resuply_time = game.get_game_time() + seconds2ctime( a / 1000 )

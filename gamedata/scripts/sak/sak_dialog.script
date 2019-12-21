@@ -198,7 +198,7 @@ nagrad = {
         "ammo_9x19_fmj",
         "ammo_12x70_buck",
         "ammo_7.62x39_fmj",
-        "ammo_vog-25p",
+        --"ammo_vog-25p",
         "vodka",
         "conserva",
         "medkit_army",
@@ -1486,7 +1486,7 @@ function on_burer_kill( obj, who )
     local section = ""
     if math.fmod( id, 4 ) == 0 then
         local b_rnd = dsh.get_next_random( "on_burer_kill" )
-        if     b_rnd > 0.93 then
+        if     b_rnd > 0.95 then
             section = "af_medus_new"
         else
             section = table_aart[ dsh.get_next_random( "on_burer_kill", 1, #table_aart ) ]

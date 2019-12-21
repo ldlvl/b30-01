@@ -4005,9 +4005,9 @@ function health_handle()
                         -- params.psy_health_add( 0.05 )
                         local crouch = db.actor:get_crouch_factor()
                         if crouch == 1 or crouch == 2 then
-                            params.psy_health_add( 0.16 )
+                            params.psy_health_add( 0.12 )
                         else
-                            params.psy_health_add( 0.08 )      -- увеличим в 2 раза на пробу
+                            params.psy_health_add( 0.06 )      -- увеличим в 2 раза на пробу
                         end
                     else
                     end
@@ -6024,13 +6024,14 @@ function habar_by_nps( lid )
     local ids, cnt = registry.inv_objects( npc:id(), true )
     for n = 1, cnt do
         local id   = ids[ n ]
-        local sobj = client_obj( id )
-        if sobj then
+        local cobj = client_obj( id )
+        if cobj then
+            local sect = cobj:section()
             if
-                   is_food( sobj ) == true
-                or is_arts( sobj ) == true
-                or str_in_tab( sobj:section(), tbl_stuff )
-                or sobj:section() == "wpn_addon_grenade_launcher"
+                   is_food( cobj ) == true
+                or is_arts( cobj ) == true
+                or str_in_tab( sect, tbl_stuff )
+                or str_in_tab( sect, { "arc_art_box_", "wpn_addon_grenade_launcher" })
             then
                 misc.release_obj( id )
             end
@@ -8085,31 +8086,31 @@ local table_skelets = {
 }
 
 function add_sak_skelets( lname )
-    local aaa   = 0
-    local count = 2
-    if lname == "hospital" then count = 1 end
-    local pl = nlc_vars.prev_level or "?"
-    if pl == lname then -- на текущем уровне уже спавнилось
-        wprintf( "[~T]. #DBG: add_sak_skelets уже вызывалась на локации~C0A %s~C07", lname )
-        return
-    end
-    while aaa < count do
-        local new_lv, pos = const.random_level_point()
-        if new_lv and amk_anoms.check_coordinates( pos ) then
-            local obj      = misc.spawn_obj( "sak_skelet", pos )
-            local rand_vis = table_skelets[ lua_random( 1, #table_skelets ) ]
-            if obj then
-                local pk          = get_netpk( obj, 1 )
-                local data        = pk:get()
-                data.object_flags = -197
-                data.visual_name  = rand_vis
-                data.physic_type  = 3
-                data.mass         = 10
-                pk:set( data )
-                aaa = aaa + 1
-            end
-        end
-    end
+    -- local aaa   = 0
+    -- local count = 2
+    -- if lname == "hospital" then count = 1 end
+    -- local pl = nlc_vars.prev_level or "?"
+    -- if pl == lname then -- на текущем уровне уже спавнилось
+    --     wprintf( "[~T]. #DBG: add_sak_skelets уже вызывалась на локации~C0A %s~C07", lname )
+    --     return
+    -- end
+    -- while aaa < count do
+    --     local new_lv, pos = const.random_level_point()
+    --     if new_lv and amk_anoms.check_coordinates( pos ) then
+    --         local obj      = misc.spawn_obj( "sak_skelet", pos )
+    --         local rand_vis = table_skelets[ lua_random( 1, #table_skelets ) ]
+    --         if obj then
+    --             local pk          = get_netpk( obj, 1 )
+    --             local data        = pk:get()
+    --             data.object_flags = -197
+    --             data.visual_name  = rand_vis
+    --             data.physic_type  = 3
+    --             data.mass         = 10
+    --             pk:set( data )
+    --             aaa = aaa + 1
+    --         end
+    --     end
+    -- end
     local block_spawn = xray_vars.load_table( nlc_vars, "block_spawn", {} )
     for i = #block_spawn, 1, -1 do
         v = v - 1

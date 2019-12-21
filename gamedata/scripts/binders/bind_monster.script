@@ -433,6 +433,8 @@ function generic_object_binder:update( delta )
         end
         -----------------------------  КОНТРОЛЁР  -----------------------------
         if classid == CLID_CONTROLLER and sfobj:alive() then
+            local dist_mod = 0
+            if math.fmod( sfobj:id(), 3 ) == 0 then dist_mod = 20 end
             if
                 wpn_params.get_zie_obj()
                 and actor:see( sfobj )
@@ -447,7 +449,7 @@ function generic_object_binder:update( delta )
                 params.set_direction( coor_x, coor_y, coor_z )
                 return
             end 
-            if dist_to_actor < 80 then
+            if dist_to_actor < ( 80 + dist_mod ) then
                 local  byaka = lua_random()
                 --if nlc_vars.vodka_psi_block then byaka = byaka / 2 end  -- под водкой только развороты и дроп пухи
                 if     byaka < 0.2 then -- дроп пухи

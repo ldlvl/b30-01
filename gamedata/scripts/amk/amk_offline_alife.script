@@ -2650,7 +2650,7 @@ function actor_check_body( npc )
         local armor  = db.actor:item_in_slot( 6 )
         if
             armor
-            and strposx( armor, "monolit" )
+            and strposx( armor:section(), "monolit" )
         then
             return
         end

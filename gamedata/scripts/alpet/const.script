@@ -105,14 +105,14 @@ function best_game_vertex( pos, lname )
 end
 
 function level_gv_range()
-  return game_vertices[ level.name() ]
+    return game_vertices[ level.name() ]
 end
 
 function random_level_point( lname )
     if lname == nil then lname = level.name() end
     local lv_count = level_vertices[ lname ]
     if lv_count == 0 or underground( lname ) then return nil, nil end
-    lvid = lua_random( 1, lv_count )
+    lvid = dsh.get_next_random( "const.random_level_point", 1, lv_count )
     return lvid, level.vertex_position( lvid )
 end
 
