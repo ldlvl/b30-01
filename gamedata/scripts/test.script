@@ -1800,20 +1800,20 @@ end
 local sidor_force_updated = false
 
 function sidor_resuply()
-    if sidor_force_updated then return end
-    local sobj = g_sim:story_object( story_ids.escape_trader )
-    if sobj then
-        local gt = game.get_game_time()
-        local y, m, d, hh, mm, ss, ms = gt:get()
-        -- if
-        --         ( mm >= 0 and mm < 15 )
-        --     and ( hh == 6 or hh == 12 )
-        -- then
-            trade_manager.update( sobj, true )
-            sidor_force_updated = true
-            sak.send_tip( "Обновили ассортимент проклятому Сидору...", "", 2, 20, "uniq", "sak", "green" )
-        -- end
-    end
+    -- if sidor_force_updated then return end
+    -- local sobj = g_sim:object( "escape_trader" )
+    -- if sobj then
+    --     --local gt = game.get_game_time()
+    --     --local y, m, d, hh, mm, ss, ms = gt:get()
+    --     -- if
+    --     --         ( mm >= 0 and mm < 15 )
+    --     --     and ( hh == 6 or hh == 12 )
+    --     -- then
+    --         trade_manager.update( sobj )
+    --         sidor_force_updated = true
+    --         sak.send_tip( "Обновили ассортимент проклятому Сидору...", "", 2, 20, "uniq", "sak", "green" )
+    --     -- end
+    -- end
 end
 
 function add_text_quest_rashpil()
@@ -2026,6 +2026,15 @@ function try_rad_disease_heal()
 end
 
 function blowout_damage_equipment()
+    local det_damage_tbl = {
+        [ "detector_simple"         ] = 0.333,     -- 3  5000
+        [ "detector_advances"       ] = 0.250,     -- 4  10000
+        [ "detector_elite"          ] = 0.200,     -- 5  15000
+        [ "detector_elite_sak"      ] = 0.167,     -- 6  20000
+        [ "detector_sakbuzz_simple" ] = 0.250,     -- 4  15000
+        [ "detector_sakbuzz_elite"  ] = 0.143,     -- 7  25000
+        [ "detector_sakbuzz_sak"    ] = 0.200      -- 5  20000
+    }
     for a = 1, MAX_OBJ_ID do
         local obj = g_sim:object( a )
         if obj then
@@ -2048,10 +2057,11 @@ function blowout_damage_equipment()
                 local cond     = obj.condition or data.condition
                 log2( "@-- [ test.blowout_damage_equipment() ]: ITEM %s CURRENT CONDITION: %s", nname, cond )
                 if strposx( nname, "detector" ) then
-                    new_cond = dsh.get_next_random( "test.blowout_damage_equipment", 10, 20 ) / 100
+                    -- new_cond = dsh.get_next_random( "test.blowout_damage_equipment", 10, 20 ) / 100
+                    new_cond = det_damage_tbl[ obj:section_name() ] or 0.2
                 end
                 local sect = game.translate_string( system_ini():r_string( obj:section_name(), "inv_name" ) ) or ""
-                if cond and cond > 0.01 then
+                if cond > 0.01 then
                     local upd_cond = cond - new_cond
                     if upd_cond < 0 then upd_cond = 0 end
                     data.condition = upd_cond
@@ -2082,7 +2092,7 @@ function blowout_damage_equipment()
                                 "Внимание:", 5, 15, "g_g", "sak", "red"
                             )
                         end
-                        misc.release_obj( obj, 'tesr.blowout_damage_equipment()' )
+                        misc.release_obj( obj, 'test.blowout_damage_equipment()' )
                     end
                 end
                 log2( "@-----------------------------------------------------------" )
@@ -2118,4 +2128,26 @@ function have_give_any_bart_ao( transfer_switch )
             end
         end
     end
+end
+
+function monster_crit_damage( bone_index )
+    if bone_index >= 19 and bone_index <= 42 then
+        -- по рукам, повреждение оружия, если оно в руках есть
+        log2( "@------------------------------    HANDS DAMAGE     -----------------------------" )
+    elseif bone_index >= 1 and bone_index <= 8 then
+        -- по ногам, сбивание дыхания
+        log2( "@------------------------------    LEGS DAMAGE     -----------------------------" )
+    elseif bone_index >= 11 and bone_index < 18 then
+        -- по голове, маска? ПНВ?
+        log2( "@------------------------------    HEAD DAMAGE     -----------------------------" )
+    elseif bone_index >= 9 and bone_index < 11 then
+        -- по тушке, аккумулятор, предметы из рюкзака
+        log2( "@------------------------------    TORSO DAMAGE     -----------------------------" )
+    end
+end
+
+function is_borzyi_trade_day()
+    local day = timers.Get_Game_Days() or 1
+    if math.fmod( day + k2, 3 ) == 0 then return true end
+    return false
 end

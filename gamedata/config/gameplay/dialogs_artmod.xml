@@ -3412,9 +3412,9 @@
 		<next>42</next>
 	</phrase>
 	<phrase id="41">
-	<precondition>sak_dialog.spas12_have</precondition>	
+	<precondition>sak.have_items_count("bearer_cheque",1)</precondition>	
 		<text>artmod_455_2_dialog_41</text>
-		<action>sak_dialog.give_spas12</action>		
+		<action>sak_inventory.release_actor_items("bearer_cheque",1)</action>		
 		<next>5</next>
 	</phrase>
 	<phrase id="42">
@@ -3450,9 +3450,9 @@
 		<next>42</next>
 	</phrase>
 	<phrase id="41">
-	<precondition>sak_dialog.spas12_have</precondition>
+	<precondition>sak.have_items_count("bearer_cheque",1)</precondition>
 		<text>artmod_456_2_dialog_41</text>
-		<action>sak_dialog.give_spas12</action>
+		<action>sak_inventory.release_actor_items("bearer_cheque",1)</action>
 		<next>5</next>
 	</phrase>
 	<phrase id="42">

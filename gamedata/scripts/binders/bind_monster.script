@@ -185,7 +185,7 @@ function generic_object_binder:update( delta )
             if not strposx( sfobj:section(), "flame" ) then
                 charge_tushkano( sfobj )                                        -- разряд, как от электротушканчика
                 test.fuckup_gg_batteries()                                      -- уничтожение батареек в рюкзаке
-                if lua_random() <= 0.03 then                                    -- шанс поломки ПДА при каждом разряде
+                if lua_random() <= 0.02 then                                    -- шанс поломки ПДА при каждом разряде
                     if not (                                                    -- если нет "изолятора" на поясе
                         sak.arts_operate == true
                         and sak_inventory.belt_items[ "af_dummy_dummy_new" ]
