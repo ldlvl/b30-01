@@ -669,13 +669,13 @@ end
 
 function give_fanat_gun( first_speaker, second_speaker )
     dialogs.relocate_item_section( second_speaker, "wpn_mp153", "out" )
-    dialogs.relocate_item_section( second_speaker, "wpn_addon_cobra", "out" )
+    dialogs.relocate_item_section( second_speaker, "wpn_addon_eotech", "out" )
 end
 
 function have_fanat_gun()
     return
         sak.have_items_count( "wpn_mp153", 1 ) ~= false
-        and sak.have_items_count( "wpn_addon_cobra", 1 ) ~= false
+        and sak.have_items_count( "wpn_addon_eotech", 1 ) ~= false
 end
 
 function timer_zub()
