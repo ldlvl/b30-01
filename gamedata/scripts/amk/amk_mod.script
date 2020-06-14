@@ -1210,6 +1210,7 @@ function Blowout_pp( num )
         then
             timers.start_timer( "fuckup_batt_torch_all", 0, 0, 32, "test.fuckup_gg_batteries(true)" )
         end
+        test.update_r_treas_items()
         -- sleep_manager.change_sleepiness(25, true) -- увеличить сонливость, зачем?
     end
 end

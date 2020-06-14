@@ -401,7 +401,7 @@ reward_relation 	= dolg, +3
 reward_rank 		= 1
 character 			= vrach, +1
 reward_item1 		= mutant_psevdodog_tail, 2, grenade_f1, 2
-reward_item2 		= mutant_psevdodog_tail, 3, grenade_f1, 1
+reward_item2 		= mutant_tail_cat, 3, grenade_f1, 1
 reward_item3 		= mutant_flesh_eye, 2, grenade_rgd5, 3
 reward_item4 		= mutant_psevdodog_tail, 2, grenade_f1, 2
 reward_item5 		= mutant_flesh_eye, 2, grenade_f1, 2
@@ -679,7 +679,7 @@ prior 				= 5
 [barmen_find_artefact_1];--Достать три "Слизняка" за 5 дней.
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(6) -deactivate_radar_fall}
+condlist 			= {=task_day_time(1) =task_time(6) -deactivate_radar_fall !is_after_task_complete()}
 text 				= barmen_find_artefact_1_text
 description 		= barmen_find_artefact_1_descr
 parent 				= barman
@@ -704,7 +704,7 @@ time 				= 120
 [barmen_find_artefact_2];--Найти артефакты "Кристальная колючка" 3 дня.
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(3) +bar_darklab_document_done -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) =task_time(3) +bar_darklab_document_done !is_after_task_complete() -deactivate_radar_fall}
 text 				= barmen_find_artefact_2_text
 description 		= barmen_find_artefact_2_descr
 parent 				= barman
@@ -729,7 +729,7 @@ time 				= 72
 [barmen_find_artefact_3];--Найти два артефакта "Ночная звезда" 5 дней.
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(1) +yan_kill_brain_done}
+condlist 			= {=task_day_time(3) =task_time(1) !is_after_task_complete() +yan_kill_brain_done}
 text 				= barmen_find_artefact_3_text
 description 		= barmen_find_artefact_3_descr
 parent 				= barman
@@ -754,7 +754,7 @@ time 				= 120
 [barmen_find_artefact_4];--Найти три артефакта "Вспышка" пять дней.
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(7) +bar_darklab_document_done -deactivate_radar_fall}
+condlist 			= {=task_day_time(1) =task_time(7) !is_after_task_complete() +bar_darklab_document_done -deactivate_radar_fall}
 text 				= barmen_find_artefact_4_text
 description 		= barmen_find_artefact_4_descr
 parent 				= barman
@@ -779,7 +779,7 @@ time 				= 120
 [barmen_find_artefact_5];--Найти артефакт "Пустышка" за 5 дней 
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(4) +yan_kill_brain_done}
+condlist 			= {=task_day_time(2) =task_time(4) !is_after_task_complete() +yan_kill_brain_done}
 text 				= barmen_find_artefact_5_text
 description 		= barmen_find_artefact_5_descr
 parent 				= barman
@@ -1052,7 +1052,7 @@ time 				= 72
 [barmen_monster_part_1];--Достать глаз Полтергейста 
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(1) +bar_darklab_document_done}
+condlist 			= {=task_day_time(1) =task_time(1) !is_after_task_complete() +bar_darklab_document_done}
 text 				= barmen_monster_part_1_text
 description 		= barmen_monster_part_1_descr
 parent 				= barman
@@ -1077,7 +1077,7 @@ time 				= 72
 [barmen_monster_part_2];--Принести челюсть кровососа 2 шт
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(9)}
+condlist 			= {=task_day_time(2) =task_time(9) !is_after_task_complete()}
 text 				= barmen_monster_part_2_text
 description 		= barmen_monster_part_2_descr
 parent 				= barman
@@ -1102,7 +1102,7 @@ time 				= 72
 [barmen_monster_part_3];--Принести часть тела снорка 3шт
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(5) +bar_darklab_document_done}
+condlist 			= {=task_day_time(3) =task_time(5) !is_after_task_complete() +bar_darklab_document_done}
 text 				= barmen_monster_part_3_text
 description 		= barmen_monster_part_3_descr
 parent 				= barman
@@ -1127,7 +1127,7 @@ time 				= 72
 [barmen_monster_part_4];--Принести руку контролёра
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(6) +yan_kill_brain_done}
+condlist 			= {=task_day_time(3) =task_time(6) !is_after_task_complete() +yan_kill_brain_done}
 text 				= barmen_monster_part_4_text
 description 		= barmen_monster_part_4_descr
 parent 				= barman
@@ -1394,7 +1394,7 @@ prior 				= 2
 [ecolog_find_artefact_1];--Достать для исследований ученым артефакт "Огненный шар"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(5) -deactivate_radar_fall}
+condlist 			= {=task_day_time(1) =task_time(5) !is_after_task_complete() -deactivate_radar_fall}
 text 				= ecolog_find_artefact_1_text
 description 		= ecolog_find_artefact_1_descr
 parent 				= ecolog
@@ -1420,7 +1420,7 @@ time 				= 120
 [ecolog_find_artefact_2];--Найти артефакты "Грави"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(4) -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) =task_time(4) !is_after_task_complete() -deactivate_radar_fall}
 text 				= ecolog_find_artefact_2_text
 description 		= ecolog_find_artefact_2_descr
 parent 				= ecolog
@@ -1446,7 +1446,7 @@ time 				= 120
 [ecolog_find_artefact_3];--Добыть 3 артефакта "Душа"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(2) -deactivate_radar_fall}
+condlist 			= {=task_day_time(3) =task_time(2) !is_after_task_complete() -deactivate_radar_fall}
 text 				= ecolog_find_artefact_3_text
 description 		= ecolog_find_artefact_3_descr
 parent 				= ecolog
@@ -1472,7 +1472,7 @@ time 				= 120
 [ecolog_find_artefact_4];--Достать артефакт "Лунный свет" 5 дней
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(6) -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) =task_time(6) !is_after_task_complete() -deactivate_radar_fall}
 text 				= ecolog_find_artefact_4_text
 description 		= ecolog_find_artefact_4_descr
 parent 				= ecolog
@@ -1498,7 +1498,7 @@ time 				= 120
 [ecolog_find_artefact_5];--Достать артефакт "Морской ёж" 5 дней
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(6) -deactivate_radar_fall}
+condlist 			= {=task_day_time(3) =task_time(6) !is_after_task_complete() -deactivate_radar_fall}
 text 				= ecolog_find_artefact_5_text
 description 		= ecolog_find_artefact_5_descr
 parent 				= ecolog
@@ -2174,7 +2174,7 @@ time 				= 48
 [tm_find_artefact_1];--Найти артефакты "Медуза"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(2) -deactivate_radar_fall}
+condlist 			= {=task_day_time(1) =task_time(2) !is_after_task_complete() -deactivate_radar_fall}
 text 				= tm_find_artefact_1_text
 description 		= tm_find_artefact_1_descr
 parent 				= trader
@@ -2199,7 +2199,7 @@ time 				= 48
 [tm_find_artefact_2];--Найти артефакт "Каменный цветок"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(3) -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) =task_time(3) !is_after_task_complete() -deactivate_radar_fall}
 text 				= tm_find_artefact_2_text
 description 		= tm_find_artefact_2_descr
 parent 				= trader
@@ -2224,7 +2224,7 @@ time 				= 72
 [tm_find_artefact_3];--Найти «Кровь камня» 
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(0) +esc_darklab_documents_read -deactivate_radar_fall}
+condlist 			= {=task_day_time(3) =task_time(0) !is_after_task_complete() +esc_darklab_documents_read -deactivate_radar_fall}
 text 				= tm_find_artefact_3_text
 description 		= tm_find_artefact_3_descr
 parent 				= trader
@@ -2249,7 +2249,7 @@ time 				= 72
 [tm_find_artefact_4];--Найти заживляющий раны артефакт "Ломоть мяса"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(11) +agroprom_military_case_have -deactivate_radar_fall}
+condlist 			= {=task_day_time(1) =task_time(11) !is_after_task_complete() +agroprom_military_case_have -deactivate_radar_fall}
 text 				= tm_find_artefact_4_text
 description 		= tm_find_artefact_4_descr
 parent 				= trader
@@ -2274,7 +2274,7 @@ time 				= 72
 [tm_find_artefact_5];--Найти 3 артефакта "Бенгальский огонь"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(8) +agroprom_military_case_have -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) =task_time(8) !is_after_task_complete() +agroprom_military_case_have -deactivate_radar_fall}
 text 				= tm_find_artefact_5_text
 description 		= tm_find_artefact_5_descr
 parent 				= trader
@@ -2299,7 +2299,7 @@ time 				= 72
 [tm_find_artefact_6];--Найти 3 артефакта "Выверт"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(4) +agroprom_military_case_have -deactivate_radar_fall}
+condlist 			= {=task_day_time(3) =task_time(4) !is_after_task_complete() +agroprom_military_case_have -deactivate_radar_fall}
 text 				= tm_find_artefact_6_text
 description 		= tm_find_artefact_6_descr
 parent 				= trader
@@ -2595,7 +2595,7 @@ time 				= 120
 [tm_monster_part_1];-- Принести 2 щупальца Кровососа.
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(9) +agroprom_military_case_done}
+condlist 			= {=task_day_time(1) =task_time(9) !is_after_task_complete() +agroprom_military_case_done}
 text 				= tm_monster_part_1_text
 description 		= tm_monster_part_1_descr
 parent 				= trader
@@ -2621,7 +2621,7 @@ time 				= 72
 [tm_monster_part_2];--Добыть 4 хвостов псевдособаки
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(5)}
+condlist 			= {=task_day_time(2) =task_time(5) !is_after_task_complete()}
 text 				= tm_monster_part_2_text
 description 		= tm_monster_part_2_descr
 parent 				= trader
@@ -2646,7 +2646,7 @@ time 				= 72
 [tm_monster_part_3];--Добыть часть псевдогиганта
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(1) +yan_kill_brain_done}
+condlist 			= {=task_day_time(3) =task_time(1) !is_after_task_complete() +yan_kill_brain_done}
 text 				= tm_monster_part_3_text
 description 		= tm_monster_part_3_descr
 parent 				= trader
@@ -2672,7 +2672,7 @@ time 				= 120
 [tm_monster_part_4];--Добыть 2 лапы бюрера
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(10) +agroprom_military_case_done}
+condlist 			= {=task_day_time(3) =task_time(10) !is_after_task_complete() +agroprom_military_case_done}
 text 				= tm_monster_part_4_text
 description 		= tm_monster_part_4_descr
 parent 				= trader
@@ -2698,7 +2698,7 @@ time 				= 72
 [pahom_monster_part_1];--Принести хвосты кошки 2 шт
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(1)}
+condlist 			= {=task_day_time(3) =task_time(1) !is_after_task_complete()}
 text 				= pahom_monster_part_1_text
 description 		= pahom_monster_part_1_descr
 parent 				= pahom
@@ -2726,7 +2726,7 @@ time 				= 18
 [pahom_monster_part_2];--Добыть три глаза плоти
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(3)}
+condlist 			= {=task_day_time(1) =task_time(3) !is_after_task_complete()}
 text 				= pahom_monster_part_2_text
 description 		= pahom_monster_part_2_descr
 parent 				= pahom
@@ -2752,7 +2752,7 @@ time 				= 24
 [pahom_monster_part_3];--Достать кабанью ногу
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(5)}
+condlist 			= {=task_day_time(2) =task_time(5) !is_after_task_complete()}
 text 				= pahom_monster_part_3_text
 description 		= pahom_monster_part_3_descr
 parent 				= pahom
@@ -2778,7 +2778,7 @@ time 				= 48
 [pahom_monster_part_4];--Найти хвост псевдособаки
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(7)}
+condlist 			= {=task_day_time(3) =task_time(7) !is_after_task_complete()}
 text 				= pahom_monster_part_4_text
 description 		= pahom_monster_part_4_descr
 parent 				= pahom
@@ -2804,7 +2804,7 @@ time 				= 48
 [pahom_monster_part_5];--Добыть хвосты слепой собаки 10 шт
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(0)}
+condlist 			= {=task_day_time(1) =task_time(0) !is_after_task_complete()}
 text 				= pahom_monster_part_5_text
 description 		= pahom_monster_part_5_descr
 parent 				= pahom
@@ -2831,7 +2831,7 @@ time 				= 48
 [pahom_monster_part_6];--Принести головы тушканчика 6 шт 
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(2)}
+condlist 			= {=task_day_time(2) =task_time(2) !is_after_task_complete()}
 text 				= pahom_monster_part_6_text
 description 		= pahom_monster_part_6_descr
 parent 				= pahom
@@ -2966,7 +2966,7 @@ time 				= 36
 [pahom_courier_5];--В Лиманск антирады
 type 				= courier
 community 			= actor
-condlist 			= {+time_day =task_day_time(1)+lim_trader_new_gg}
+condlist 			= {+time_day =task_day_time(1) +lim_trader_new_gg}
 text 				= pahom_courier_5_text
 description 		= pahom_courier_5_descr
 parent 				= pahom
@@ -3019,7 +3019,7 @@ time 				= 72
 [dolg_monster_part_1];--Добыть почку Электрохимеры
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(4) +yan_kill_brain_done}
+condlist 			= {=task_day_time(1) =task_time(4) !is_after_task_complete() +yan_kill_brain_done}
 text 				= dolg_monster_part_1_text
 description 		= dolg_monster_part_1_descr
 parent 				= dolg
@@ -3045,7 +3045,7 @@ time 				= 120
 [dolg_monster_part_2];--Достать руку зомби
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(9) +yan_kill_brain_done}
+condlist 			= {=task_day_time(2) =task_time(9) !is_after_task_complete() +yan_kill_brain_done}
 text 				= dolg_monster_part_2_text
 description 		= dolg_monster_part_2_descr
 parent 				= dolg
@@ -3072,7 +3072,7 @@ time 				= 72
 [dolg_monster_part_3];--представить доказательство уничтожения 3 химер
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(1) +yan_kill_brain_done}
+condlist 			= {=task_day_time(3) =task_time(1) !is_after_task_complete() +yan_kill_brain_done}
 text 				= dolg_monster_part_3_text
 description 		= dolg_monster_part_3_descr
 parent 				= dolg
@@ -4006,7 +4006,7 @@ time 				= 120
 [freedom_kill_stalker_2];--Узнать о готовности вступить в Свободу сталкера
 type 				= kill_stalker
 community 			= actor
-condlist 			= {-freedom_kill_stalker_2_done =task_day_time(3) =task_time(0)+mil_lukash_find_dinamit_done}
+condlist 			= {-freedom_kill_stalker_2_done =task_day_time(3) =task_time(0) +mil_lukash_find_dinamit_done}
 text 				= freedom_kill_stalker_2_text
 description 		= freedom_kill_stalker_2_descr
 parent 				= freedom
@@ -4226,7 +4226,7 @@ time 				= 24
 [voron_find_artefact_1];--найти артефакт "Кристалл"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(1)}
+condlist 			= {=task_day_time(2) =task_time(1) !is_after_task_complete()}
 text 				= voron_find_artefact_1_text
 description 		= voron_find_artefact_1_descr
 parent 				= voron
@@ -4252,7 +4252,7 @@ time 				= 72
 [voron_find_artefact_2];--найти "Пружину"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(3)}
+condlist 			= {=task_day_time(3) =task_time(3) !is_after_task_complete()}
 text 				= voron_find_artefact_2_text
 description 		= voron_find_artefact_2_descr
 parent 				= voron
@@ -4278,7 +4278,7 @@ time 				= 120
 [voron_find_artefact_3];--найти семейство артефактов "Колючка"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(5)}
+condlist 			= {=task_day_time(1) =task_time(5) !is_after_task_complete()}
 text 				= voron_find_artefact_3_text
 description 		= voron_find_artefact_3_descr
 parent 				= voron
@@ -4304,7 +4304,7 @@ time 				= 72
 [voron_find_artefact_4];--найти артефакт "Золотая рыбка"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(7)}
+condlist 			= {=task_day_time(2) =task_time(7) !is_after_task_complete()}
 text 				= voron_find_artefact_4_text
 description 		= voron_find_artefact_4_descr
 parent 				= voron
@@ -4330,7 +4330,7 @@ time 				= 120
 [voron_find_artefact_5];--найти артефакт "Слизь"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(9)}
+condlist 			= {=task_day_time(3) =task_time(9) !is_after_task_complete()}
 text 				= voron_find_artefact_5_text
 description 		= voron_find_artefact_5_descr
 parent 				= voron
@@ -4356,7 +4356,7 @@ time 				= 72
 [voron_find_artefact_6];--найти артефакт "Капли"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(11)}
+condlist 			= {=task_day_time(1) =task_time(11) !is_after_task_complete()}
 text 				= voron_find_artefact_6_text
 description 		= voron_find_artefact_6_descr
 parent 				= voron
@@ -4382,7 +4382,7 @@ time 				= 72
 [voron_find_artefact_7];--найти артефакт "Слюда"
 type 				= artefact
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(0)}
+condlist 			= {=task_day_time(2) =task_time(0) !is_after_task_complete()}
 text 				= voron_find_artefact_7_text
 description 		= voron_find_artefact_7_descr
 parent 				= voron
@@ -4408,7 +4408,7 @@ time 				= 72
 [voron_monster_part_1];--Достать копыто кабана
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(0)}
+condlist 			= {=task_day_time(3) =task_time(0) !is_after_task_complete()}
 text 				= voron_monster_part_1_text
 description 		= voron_monster_part_1_descr
 parent 				= voron
@@ -4435,7 +4435,7 @@ time 				= 72
 [voron_monster_part_2];--Достать хвост псевдопса
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(2)}
+condlist 			= {=task_day_time(1) =task_time(2) !is_after_task_complete()}
 text 				= voron_monster_part_2_text
 description 		= voron_monster_part_2_descr
 parent 				= voron
@@ -4462,7 +4462,7 @@ time 				= 72
 [voron_monster_part_3];--Достать коготь химеры
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(2) =task_time(4)}
+condlist 			= {=task_day_time(2) =task_time(4) !is_after_task_complete()}
 text 				= voron_monster_part_3_text
 description 		= voron_monster_part_3_descr
 parent 				= voron
@@ -4490,7 +4490,7 @@ time 				= 96
 [voron_monster_part_4];--Достать часть тела снорка
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(3) =task_time(8)}
+condlist 			= {=task_day_time(3) =task_time(8) !is_after_task_complete()}
 text 				= voron_monster_part_4_text
 description 		= voron_monster_part_4_descr
 parent 				= voron
@@ -4518,7 +4518,7 @@ time 				= 72
 [voron_monster_part_5];--Достать челюсть кровососа
 type 				= monster_part
 community 			= actor
-condlist 			= {=task_day_time(1) =task_time(10)}
+condlist 			= {=task_day_time(1) =task_time(10) !is_after_task_complete()}
 text 				= voron_monster_part_5_text
 description 		= voron_monster_part_5_descr
 parent 				= voron
@@ -6027,7 +6027,7 @@ time 				= 8
 [engineer_courier_3];--Броник на Барьер отнести
 type 				= courier
 community 			= actor
-condlist 			= {=task_day_time(2) +time_day =is_alive_sid(724) -deactivate_radar_fall}
+condlist 			= {=task_day_time(2) +time_day =is_alive_sid(724) !is_after_task_complete() -deactivate_radar_fall}
 text 				= engineer_courier_3_text
 description 		= engineer_courier_3_descr
 parent 				= engineer

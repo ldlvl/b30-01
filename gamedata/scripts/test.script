@@ -2151,3 +2151,13 @@ function is_borzyi_trade_day()
     if math.fmod( day + k2, 3 ) == 0 then return true end
     return false
 end
+
+function update_r_treas_items()
+    local current_day = timers.Get_Game_Days() or 1
+    local last_update = nlc_vars.r_treas_items_last_update or 1
+    if ( current_day - last_update ) > 4 then
+        local a = lua_random( 1, 3 )
+        WriteIni( db.stor_ltx, "stor", "r_treas_items", a )
+        nlc_vars.r_treas_items_last_update = current_day
+    end
+end

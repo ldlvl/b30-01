@@ -3553,7 +3553,6 @@
 		</phrase>
 		<phrase id="5">
 			<text>tm_kill_stalker_1_done_5</text>
-			<action>test.give_rnd_recipt(2)</action>
 			<next>61</next>
 			<next>62</next>
 		</phrase>
@@ -3567,6 +3566,7 @@
 <!-- 			<action>test.add_to_actor("medkit",2)</action>
 			<action>test.add_to_actor("conserva",2)</action> -->
 			<action>test.add_sidor_nagrad</action>
+			<action>test.give_rnd_recipt(2)</action>
 			<next>9</next>
 		</phrase>
 		<phrase id="62">
@@ -3578,6 +3578,7 @@
 			<give_info>tm_kill_stalker_1_done</give_info>
 			<!-- <action>sak_dialog.add_sid_nagrad</action> -->
 			<action>sak_dialog.relocate_money(db.actor,15000,"in")</action>
+			<action>test.give_rnd_recipt(2)</action>
 			<next>9</next>
 		</phrase>
 		<phrase id="9">
