@@ -16,7 +16,8 @@ function on_late_init()
         this.remove_chairs,
         this.fix_mil_wpn_gm94,
         this.fix_vertel_kishka,
-        this.fix_prices_blokpost_kishka
+        this.fix_prices_blokpost_kishka,
+        this.store_r_treas_items_to_nlc_vars
     }
     local stored_fixes_num = nlc_vars.fixes_num or 0
     log2(
@@ -51,6 +52,11 @@ function on_late_init()
     --     end
     -- end
     --------------------------------------------------------------------------------
+end
+
+function store_r_treas_items_to_nlc_vars()
+    local a = ReadIni( db.stor_ltx, "stor", "r_treas_items" ) or 1
+    nlc_vars.stored_r_treas_items = a
 end
 
 function fix_prices_blokpost_kishka()

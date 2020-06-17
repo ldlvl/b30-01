@@ -1442,19 +1442,19 @@ function add_pellicle_red() amk.spawn_item( "af_red_dummy_pellicle", v3f( -239.9
 function add_battery_red()  amk.spawn_item( "af_red_dummy_battery",  v3f( 668.9,  -45.79, -39.93 ), 1896, 227187 ) end
 
 function add_medusa_green()
-    local rand = ( amk_vars.r_treas_items or 1 )
+    local rand = ( nlc_vars.stored_r_treas_items or 1 )
     local arts = { "af_dummy_green_vyvert", "af_dummy_green_medusa", "af_dummy_green_blood" }
     amk.spawn_item( arts[ rand ], v3f( 260.59, -9.82, -135 ), 404, 373051 )
 end
 
 function add_vyvert_green()
-    local rand = ( amk_vars.r_treas_items or 1 )
+    local rand = ( nlc_vars.stored_r_treas_items or 1 )
     local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
     amk.spawn_item( arts[ rand ], v3f( 115.13, 4.83, -409.26 ), 942, 311330 )
 end
 
 function add_blood_green()
-    local rand = ( amk_vars.r_treas_items or 1 )
+    local rand = ( nlc_vars.stored_r_treas_items or 1 )
     local arts = { "af_dummy_green_blood", "af_dummy_green_vyvert", "af_dummy_green_medusa" }
     amk.spawn_item( arts[ rand ], v3f( 55.34, 1.27, 40.89 ), 1511, 68094 )
 end
@@ -9075,7 +9075,7 @@ function kanistra_fill()
         lname == "l04_darkvalley"
         and amk.check_npc_in_box( actor, point_drop[ 19 ], point_drop[ 20 ] ) ~= false
     then
-        if nlc_vars.benz1 <= amk_vars.r_treas_items then
+        if nlc_vars.benz1 <= nlc_vars.stored_r_treas_items then
             timers.start_timer( "knstr_ful", 8, "sak.kanistra_full(1)" )
             nlc_vars.benz1 = nlc_vars.benz1 + 1
             level.disable_input()
