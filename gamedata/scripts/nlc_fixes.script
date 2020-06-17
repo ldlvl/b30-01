@@ -55,7 +55,7 @@ function on_late_init()
 end
 
 function store_r_treas_items_to_nlc_vars()
-    local a = ReadIni( db.stor_ltx, "stor", "r_treas_items" ) or 1
+    local a = amk_vars.r_treas_items or 1
     nlc_vars.stored_r_treas_items = a
 end
 
