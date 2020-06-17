@@ -141,7 +141,7 @@ tbl_recipt = {
 }
 
 local k1 = amk_vars.r_task_reward or 1
-local k2 = amk_vars.r_treas_items or 2
+local k2 = nlc_vars.stored_r_treas_items or 2
 local f_sect, m_flag = "?", false
 
 local tbl_med = {
@@ -1787,7 +1787,7 @@ function pos_in_front_of_actor()
 end
 
 function is_protected_art( obj )
-    local ind = amk_vars.r_treas_items or 1
+    local ind = nlc_vars.stored_r_treas_items or 1
     local eternal_tbl = {
         "esc_af_electra_sparkler",
         "esc_af_electra_sparkler_0000",
@@ -1831,7 +1831,7 @@ function add_text_quest_rashpil()
         "\nА к прикиду сверху ещё пуху накинь, 'глок'. Там патронов много, для Севера в самый раз. На Баре кажысь такими банчат. Ну чё, давай краба?"
     }
     db.actor:give_talk_message(
-        "%c[255,216,186,140]" .. game.translate_string( tbl[ amk_vars.r_treas_items or 1 ] ),
+        "%c[255,216,186,140]" .. game.translate_string( tbl[ nlc_vars.stored_r_treas_items or 1 ] ),
         "ui\\ui_iconsTotal", Frect():set( 0, 0, 0, 0), "simple_answer_item"
     ) 
 end
@@ -1844,16 +1844,16 @@ function have_rashpil_items()
     return
         have_with_cond( "ecolog_outfit", 1, 0.95, false )
         and vergas_lib.search_items(
-            rashpil_tbl[ amk_vars.r_treas_items ][ 1 ],
-            rashpil_tbl[ amk_vars.r_treas_items ][ 2 ], 1
+            rashpil_tbl[ nlc_vars.stored_r_treas_items ][ 1 ],
+            rashpil_tbl[ nlc_vars.stored_r_treas_items ][ 2 ], 1
         )
 end
 
 function give_rashpil_items()
     sak_inventory.release_actor_items( "ecolog_outfit", 1 )
     sak_inventory.release_actor_items(
-        rashpil_tbl[ amk_vars.r_treas_items ][ 1 ],
-        rashpil_tbl[ amk_vars.r_treas_items ][ 2 ]        
+        rashpil_tbl[ nlc_vars.stored_r_treas_items ][ 1 ],
+        rashpil_tbl[ nlc_vars.stored_r_treas_items ][ 2 ]        
     )
 end
 

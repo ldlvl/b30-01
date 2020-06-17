@@ -2840,7 +2840,7 @@ end
 
 function yan_kruglov_green_art_have()
     local arts = { "af_dummy_green_blood", "af_dummy_green_vyvert", "af_dummy_green_medusa" }
-    return sak.have_items_count( arts[ amk_vars.r_treas_items or 1 ], 1 ) ~= false
+    return sak.have_items_count( arts[ nlc_vars.stored_r_treas_items or 1 ], 1 ) ~= false
 end
 
 function add_spot_to_hospital()
@@ -2878,19 +2878,19 @@ function give_gar_dolg_flesh_eye( first_speaker, second_speaker )
 end
 
 function bar_dolg_base_guard_art_have()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
     return sak.have_items_count( arts[ rand ], 1 ) ~= false
 end
 
 function take_green_vyvert()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
     sak.create_items( db.actor, arts[ rand ], 1 )
 end
 
 function give_bar_dolg_base_guard_art( first_speaker, second_speaker )
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     local arts = { "af_dummy_green_medusa", "af_dummy_green_blood", "af_dummy_green_vyvert" }
     sak_inventory.release_actor_items( arts[ rand ], 1 )
     second_speaker:set_relation( game_object.friend, first_speaker )
@@ -4019,7 +4019,7 @@ function give_any_art()
 end
 
 function rand_plus()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     local art  = amk_vars.r_art or 2
     local r    = ( rand + art ) % 3
     return r
@@ -4035,17 +4035,17 @@ function pda_repair_dialog_done()
 end
 
 function rand_1_dialog()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     if rand == 1 then return true end
 end
 
 function rand_2_dialog()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     if rand == 2 then return true end
 end
 
 function rand_3_dialog()
-    local rand = amk_vars.r_treas_items or 1
+    local rand = nlc_vars.stored_r_treas_items or 1
     if rand == 3 then return true end
 end
 
@@ -4076,9 +4076,9 @@ function time_is_22() local m_h = level:get_time_hours() return m_h == 22 end
 function time_is_23() local m_h = level:get_time_hours() return m_h == 23 end
 function time_is_24() local m_h = level:get_time_hours() return m_h == 0 or m_h == 24 end
 
-function rand_game_1() local m = amk_vars.r_treas_items or 1 return m == 1 end
-function rand_game_2() local m = amk_vars.r_treas_items or 1 return m == 2 end
-function rand_game_3() local m = amk_vars.r_treas_items or 1 return m == 3 end
+function rand_game_1() local m = nlc_vars.stored_r_treas_items or 1 return m == 1 end
+function rand_game_2() local m = nlc_vars.stored_r_treas_items or 1 return m == 2 end
+function rand_game_3() local m = nlc_vars.stored_r_treas_items or 1 return m == 3 end
 
 function have_info_flamethrower()
     if db.actor:has_info( "flame_reload_receipt_have" ) or db.actor:has_info( "game_over" ) then
@@ -6064,7 +6064,7 @@ function kruglov_exchange_done()
 end
 
 function shustryi_art_needed()
-    local ind  = amk_vars.r_treas_items + amk_vars.r_task_reward -1
+    local ind  = nlc_vars.stored_r_treas_items + amk_vars.r_task_reward -1
     if ind > 7 or ind < 1 then ind = 7 end
     local art_sect = test.tbl_arts.lvl1[ ind ]
     db.actor:give_talk_message(
@@ -6077,7 +6077,7 @@ end
 local shustr_art_sect
 
 function have_shustryi_art()
-    local ind  = amk_vars.r_treas_items + amk_vars.r_task_reward - 1
+    local ind  = nlc_vars.stored_r_treas_items + amk_vars.r_task_reward - 1
     if ind > 7 or ind < 1 then ind = 7 end
     shustr_art_sect = test.tbl_arts.lvl1[ ind ]
     if sak.have_items_count( shustr_art_sect, 1 ) then return true end
