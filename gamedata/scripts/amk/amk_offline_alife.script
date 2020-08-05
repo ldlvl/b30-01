@@ -1839,7 +1839,18 @@ function create_newitem( obj, pos, lvi, gvi, pid )
                 )
             end
         else
-            return g_sim:create( obj:section_name(), pos, lvi, gvi, pid )
+            local item_cond = 1
+            local pk        = get_netpk( obj, 1 )
+            local data      = pk:get()
+            item_cond       = data.condition
+            local new_itm   = g_sim:create( obj:section_name(), pos, lvi, gvi, pid )
+            if new_itm then
+                pk             = get_netpk( new_itm, 1 )
+                data           = pk:get()
+                data.condition = item_cond
+                pk:set( data )
+                return new_itm
+            end
         end
     end
     return nil
