@@ -523,9 +523,10 @@ end
 -- цена зарядки пда по торговцам с повышением через каждые 14 дней
 function calc_pda_recharge_price( vendor )
     local day = timers.Get_Game_Days() or 1
-    local price
-    if vendor == "vergas" then price = 500 else price = 800 end
-    return math.floor ( math.abs( price + math.floor( day / 14 ) * 1200 - ( 3 * db.actor:character_reputation() ) ) / 500 ) * 500
+    local price = 800
+    if vendor == "vergas" then price = 500 end
+    price = price + math.floor( math.abs( price + math.floor( day / 14 ) * 1200 - ( 3 * db.actor:character_reputation() ) ) / 500 ) * 500
+    return price
 end
 
 function show_pda_recharge_price( vendor )
