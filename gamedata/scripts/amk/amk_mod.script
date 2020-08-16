@@ -1091,14 +1091,14 @@ function Run_Blowout_pp()
     start_blow_timer()
 end
 
-function start_blow_timer()     -- (36ч +/- 0..12ч) + 30мин в день.  К 100 дню +50 часов
+function start_blow_timer()     -- (36ч +/- 0..12ч) + 40мин в день.  К 100 дню +68 часов
     if lua_random() > 0.15 then
         amk_vars.blow_on = true
     else
         amk_vars.blow_on = false
     end
     local shift   = 1440
-    local shift_p = ( math.floor( vergas_watch.time_days() ) * 30 ) or 1
+    local shift_p = ( math.floor( vergas_watch.time_days() ) * 40 ) or 1
     local t_time  = ( lua_random() * shift ) - ( shift / 2 ) + 2880 + shift_p
     timers.start_timer( "blow_shift", 0, 0, t_time, "amk_mod.Run_Blowout_pp()" )
     news_main.next_blow( t_time )
