@@ -1471,16 +1471,6 @@ function add_order()
     end
 end
 
-function add_weapon_folls()
-    local obj = g_sim:story_object( story_ids.agr_und_inventory_box )
-    misc.spawn_objects( "ammo_5.45x39_fmj,vodka,ammo_5.45x39_fmj,medkit_army,wpn_ak74u_old", obj.position, obj.id )
-    if obj.online then
-        sim:set_switch_online ( obj.id, false )
-        sim:set_switch_offline( obj.id, true  )
-        amk.convert_npc[ obj.id ] = 1
-    end
-end
-
 function add_yan_matveev2()
     local obj = g_sim:story_object( story_ids.assistant2 )
     if not obj then obj = misc.spawn_by_name( "assistant2" ) end
@@ -1719,7 +1709,9 @@ function add_books()
     amk.spawn_item( "sak_book3", v3f( 0.77,    -19.45, 24.89  ), 2768, 6203 )
 end
 
-function add_new_111item() amk.spawn_item( "dynamite", v3f( -213.57, -23.19, -127.39 ), 59, 39928 ) end
+function add_new_111item()
+    amk.spawn_item( "dynamite", v3f( -213.57, -23.19, -127.39 ), 59, 39928 )
+end
 
 function add_new_109item()
     local point_val_case = {
@@ -1731,10 +1723,18 @@ function add_new_109item()
     }
     local point = amk_vars.r_task_reward or 2
     local obj = amk.spawn_item( "quest_case_05",
-        v3f( point_val_case[ point ][ 1 ], point_val_case[ point ][ 2 ], point_val_case[ point ][ 3 ] ),
-        point_val_case[ point ][ 5 ], point_val_case[ point ][ 4 ]
+        v3f(
+            point_val_case[ point ][ 1 ],
+            point_val_case[ point ][ 2 ],
+            point_val_case[ point ][ 3 ]
+        ),
+            point_val_case[ point ][ 5 ],
+            point_val_case[ point ][ 4 ]
     )
-    timers.start_timer( "val_case", 0, lua_random( 8, 11 ), 28, "sak.val_case_out("..obj.id..")" )
+    timers.start_timer(
+        "val_case", 0, lua_random( 8, 11 ), 28,
+        "sak.val_case_out("..obj.id..")"
+    )
 end
 
 function val_case_out( id )
@@ -1751,27 +1751,137 @@ function add_esc_bandit_letter()
     misc.spawn_to( "scaintist_pda", obj )
 end
 
-function add_resiver()     amk.spawn_item( "sak_resiver", v3f( -185.57, -3.58, 94.89  ), 338,  39411  ) end
-function add_drug()        amk.spawn_item( "dogfrend",    v3f( -6.71,   0.41,  247.19 ), 258,  170000 ) end
-function add_strelok_pda() amk.spawn_item( "strelok_pda", v3f( 42.95,   61.56, -26.25 ), 2417, 6406   ) end
+function add_resiver()
+    amk.spawn_item( "sak_resiver", v3f( -185.57, -3.58, 94.89 ), 338, 39411 )
+end
 
-function info_received()     send_tip( "Найдена информация о новом пути!", "Новый путь", 2, 10, "nlc", "pda_news", "sky_blue" ) end
-function info_amk_received() send_tip( "Найден новый рецепт!", "Найдена информация", 2, 10, "artmod", "pda_news", "sky_blue" ) end
-function info_strelok_pda()  send_tip( "В ПДА Стрелка предупреждение о фальшивости МОНОЛИТА", "Остановись", 2, 20, "g_g", "pda_news", "red" ) end
-function info_artmod()       send_tip( "Найден рецепт преобразования артефакта!", "Новый артмод", 5, 10, "artmod", "pda_news", "pink" ) end
-function info_code()         send_tip( "Обнаружена кодовая комбинация блокированной двери!", "Получен код", 2, 10, "code", "pda_news", "pink" ) end
-function info_doktor()       send_tip( "Странные записи, странного человека. Харон. Кто это?", "Записная книжка Харона", 0, 10, "teleport", "pda_news", "sky_blue" ) end
-function info_teleport()     send_tip( "Телепорт настроен и активирован!", "Телепорт готов", 2, 10, "teleport", "sak", "sky_blue" ) end
-function mar_zone_tips()     send_tip( "Сталкер! Стой и не двигайся! Сейчас к тебе подойдут...", "Внимание!", 0, 10, "default", "sak", "red" ) end
-function gar_zone_tips()     send_tip( "Э! Подойди к знаку и не махай стволом, побазарим...", "Внимание!", 0, 10, "default", "sak", "red" ) end
-function gar_zone_2tips()    send_tip( "Ну ты чё! Не вкурил?! К знаку иди и стой! Завалим, в натуре...", "Внимание!", 0, 10, "default", "sak", "red" ) end
-function info_no_matches()   send_tip( "Спичек-то нет! Развести огонь не удалось", "Пламя", 0, 5, "g_g", "pda_news", "red" ) end
-function info_no_battery()   send_tip( "Прибор не работат. Нет питания. Нужен заряженный аккумулятор.", "Измеритель", 0, 5, "g_g", "pda_news", "red" ) end
-function info_no_module()    send_tip( "Что менять-то? Ломать не стоит, мало ли...", "Гармонизатор излучателя", 0, 5, "g_g", "pda_news", "red" ) end
-function rad_outfit_in_tip() send_tip( "Зафиксировано аномальное воздействие...", "Датчик костюма", 3, 5, "pribor", "pda_news", "red" ) end
-function rad_outfit_out_tip()send_tip( "Защитное покрытие нормализовано...", "Датчик костюма", 3, 5, "pribor", "pda_news", "green" ) end
-function info_not_ready()    send_tip( "Идёт обработка данных, ждите...", "Измеритель", 0, 5, "pribor", "pda_news", "red" ) end
-function info_rep_box()      send_tip( "Нечем ремонтировать! Нет подготовленных ремкомплектов", "Ремонт", 0, 5, "g_g", "pda_news", "red" ) end
+function add_drug()
+    amk.spawn_item( "dogfrend", v3f( -6.71, 0.41, 247.19 ), 258, 170000 )
+end
+
+function add_strelok_pda()
+    amk.spawn_item( "strelok_pda", v3f( 42.95, 61.56, -26.25 ), 2417, 6406 )
+end
+
+function info_received()
+    send_tip(
+        "Найдена информация о новом пути!", "Новый путь",
+        2, 10, "nlc", "pda_news", "sky_blue"
+    )
+end
+
+function info_amk_received()
+    send_tip(
+        "Найден новый рецепт!", "Найдена информация",
+        2, 10, "artmod", "pda_news", "sky_blue"
+    )
+end
+
+function info_strelok_pda()
+    send_tip(
+        "В ПДА Стрелка предупреждение о фальшивости МОНОЛИТА", "Остановись",
+        2, 20, "g_g", "pda_news", "red"
+    )
+end
+
+function info_artmod()
+    send_tip(
+        "Найден рецепт преобразования артефакта!", "Новый артмод",
+        5, 10, "artmod", "pda_news", "pink"
+    )
+end
+
+function info_code()
+    send_tip(
+        "Обнаружена кодовая комбинация блокированной двери!", "Получен код",
+        2, 10, "code", "pda_news", "pink"
+    )
+end
+
+function info_doktor()
+    send_tip(
+        "Странные записи, странного человека. Харон. Кто это?",
+        "Записная книжка Харона",
+        0, 10, "teleport", "pda_news", "sky_blue"
+    )
+end
+
+function info_teleport()
+    send_tip(
+        "Телепорт настроен и активирован!", "Телепорт готов",
+        2, 10, "teleport", "sak", "sky_blue"
+    )
+end
+
+function mar_zone_tips()
+    send_tip(
+        "Сталкер! Стой и не двигайся! Сейчас к тебе подойдут...", "Внимание!",
+        0, 10, "default", "sak", "red"
+    )
+end
+
+function gar_zone_tips()
+    send_tip(
+        "Э! Подойди к знаку и не махай стволом, побазарим...", "Внимание!",
+        0, 10, "default", "sak", "red"
+    )
+end
+
+function gar_zone_2tips()
+    send_tip(
+        "Ты чё, не вкурил?! К знаку иди и стой! Завалим, в натуре...", "Внимание!",
+        0, 10, "default", "sak", "red"
+    )
+end
+
+function info_no_matches()
+    send_tip(
+        "Спичек-то нет! Развести огонь не удалось", "Пламя",
+        0, 5, "g_g", "pda_news", "red"
+    )
+end
+
+function info_no_battery()
+    send_tip(
+        "Прибор не работат. Нет питания. Нужен заряженный аккумулятор.", "Измеритель",
+        0, 5, "g_g", "pda_news", "red"
+    )
+end
+
+function info_no_module()
+    send_tip(
+        "Что менять-то? Ломать не стоит, мало ли...", "Гармонизатор излучателя",
+        0, 5, "g_g", "pda_news", "red"
+    )
+end
+
+function rad_outfit_in_tip()
+    send_tip(
+        "Зафиксировано аномальное воздействие...", "Датчик костюма",
+        3, 5, "pribor", "pda_news", "red"
+    )
+end
+
+function rad_outfit_out_tip()
+    send_tip(
+        "Защитное покрытие нормализовано...", "Датчик костюма",
+        3, 5, "pribor", "pda_news", "green"
+    )
+end
+
+function info_not_ready()
+    send_tip(
+        "Идёт обработка данных, ждите...", "Измеритель",
+        0, 5, "pribor", "pda_news", "red"
+    )
+end
+
+function info_rep_box()
+    send_tip(
+        "Нечем ремонтировать! Нет подготовленных ремкомплектов", "Ремонт",
+        0, 5, "g_g", "pda_news", "red"
+    )
+end
 
 function info_klava()
     if
@@ -2046,7 +2156,7 @@ function artmod( nearest_anomaly, af, item1, item2, item3, item4, info_artmod, i
             local dgc   = 1 + ( 3 - level.get_game_difficulty() ) / 5 -- коэффициент в зависимости от сложности игры
             local goods = nlc_vars.artmod_goods or 1
             if not str_in_tab( item_targ, { "af_dummy_", "af_dummy_simbion", "_new" } ) then
-                local rand_goods = math.floor( math.log( goods * dgc ) ) + 1
+                local rand_goods = math.floor( math.log( goods * dgc / 1.4 ) ) + 1
                 if rand_goods > 5 then rand_goods = 5 end
                 -- переделаем на dsh-рандомы, чтобы не было соблазна время подгонять под зелень
                 local rand_dyn = dsh.get_next_random( "sak.artmod", rand_goods )
@@ -8544,9 +8654,9 @@ function marsh_radiation()
                     local xdelta    = math.sin( a.y )
                     local zdelta    = math.cos( a.y )
                     local particle  = particles_object( "anomaly2\\electra_entrance_big" )
-                    local sound     = sound_object([[anomaly\emi_entrance]])
+                    local sound     = sound_object( [[anomaly\emi_entrance]] )
                     local pos_blast = v3f(
-                        ( act_pos.x+xdelta ), ( act_pos.y+0.4 ), ( act_pos.z+zdelta )
+                        ( act_pos.x + xdelta ), ( act_pos.y + 0.4 ), ( act_pos.z + zdelta )
                     )
                     particle:play_at_pos( pos_blast )
                     sound:play_at_pos( actor, pos_blast, 0 )
