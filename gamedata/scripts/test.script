@@ -827,12 +827,13 @@ function add_soul()
 end
 
 function isBarterAvailable( treshold, npc_koeff )
-    local day = timers.Get_Game_Days() or 1
-    if day > 45 then day = 45 end
-    local chance = dsh.get_fixed_random( "test.isBarterAvailable." .. npc_koeff, day, ( 80 - day ), 100 )
-    wprintf( "----------CHANSE: "..chance.." --------- TRESHOLD: "..treshold.. " -------- DAY: "..day.." ------ npc_koeff: ".. npc_koeff )
-    if chance >= treshold then return true end
-    return false
+    -- local day = timers.Get_Game_Days() or 1
+    -- if day > 45 then day = 45 end
+    -- local chance = dsh.get_fixed_random( "test.isBarterAvailable." .. npc_koeff, day, ( 80 - day ), 100 )
+    -- wprintf( "----------CHANSE: "..chance.." --------- TRESHOLD: "..treshold.. " -------- DAY: "..day.." ------ npc_koeff: ".. npc_koeff )
+    -- if chance >= treshold then return true end
+    -- return false
+    return true
 end
 
 function noBarterAvailable( treshold, npc_koeff )
