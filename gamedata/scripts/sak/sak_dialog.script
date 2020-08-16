@@ -37,7 +37,7 @@ table_semart = {
 }
 
 table_good_semart = {
-    "af_baloon",
+    --"af_baloon",
     "af_medus_new",
     "af_crist_new",
     "af_flower_new",
@@ -1486,7 +1486,7 @@ function on_burer_kill( obj, who )
     local section = ""
     if math.fmod( id, 4 ) == 0 then
         local b_rnd = dsh.get_next_random( "on_burer_kill" )
-        if     b_rnd > 0.95 then
+        if     b_rnd > 0.96 then
             section = "af_medus_new"
         else
             section = table_aart[ dsh.get_next_random( "on_burer_kill", 1, #table_aart ) ]
