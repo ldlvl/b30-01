@@ -227,11 +227,11 @@ local rare_list = {
         "af_red_dummy_spring",
         "af_red_dummy_battery",
         "af_red_dummy_pellicle",
-        "af_sul_new",                           -- дирижабль
+        --"af_sul_new",                           -- дирижабль
         "af_eye",                               -- глаз
-        "af_compass",                           -- компасс
-        "af_dummy_dummy_new",                   -- изолятор
-        "af_baloon",                            -- балончик
+        --"af_compass",                           -- компасс
+        --"af_dummy_dummy_new",                   -- изолятор
+        --"af_baloon",                            -- балончик
         "af_dummy_buliz",                       -- булыжник
         "af_dummy_fire",                        -- пузырёк
         "af_flower_new",                        -- пицца
@@ -394,7 +394,7 @@ function CTreasure:use( npc, community, rang_n )
             end
         end
     end
-    if tr_sum == 0 or dsh.get_next_random( "treasure_manager.rnd" ) < 0.65 then
+    if tr_sum == 0 or dsh.get_next_random( "treasure_manager.rnd" ) < 0.75 then
         shron = 0
         return shron
     end
