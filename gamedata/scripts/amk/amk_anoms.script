@@ -45,809 +45,632 @@ local anom_suffixes = {
 local exclusive_chance = 5
 
 local anoms_sections = {
-	greedy = {
-		"greedy",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	zharka_static = {
-		"zharka_static",
-		{ shtype = 0, radius = 1.6, center = { 0, 0, 0 } }
-	},
-	buzz = {
-		"buzz",
-		{ shtype = 0, radius = 2.2, center = { 0, 0, 0 } }
-	},
-	sakbuzz = {
-		"sakbuzz",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	mincer = {
-		"mincer",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } },
-		true
-	},
-	breathe = {
-		"breathe",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } },
-		true
-	},
-	electra = {
-		"witches_galantine",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } },
-		true
-	},
-	mosquito_bald = {
-		"mosquito_bald",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } },
-		true
-	},
-	psi_field = {
-		"psi_field",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_esc = {
-		"teleport_esc",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_gar = {
-		"teleport_gar",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_agr = {
-		"teleport_agr",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_td = {
-		"teleport_td",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_dt = {
-		"teleport_dt",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_yan = {
-		"teleport_yan",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_as = {
-		"teleport_as",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_rad = {
-		"teleport_rad",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_prip = {
-		"teleport_prip",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	teleport_gen = {
-		"teleport_gen",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	gravi = {
-		"gravi_zone",
-		{ shtype = 0, radius = 3,   center = { 0, 0, 0 } }
-	},
-	radioactive = {
-		"radioactive",
-		{ shtype = 0, radius = 8,   center = { 0, 0, 0 } }
-	}
+    greedy = {
+        "greedy",            { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    zharka_static = {
+        "zharka_static",     { shtype = 0, radius = 1.6, center = { 0, 0, 0 } }
+    },
+    buzz = {
+        "buzz",              { shtype = 0, radius = 2.2, center = { 0, 0, 0 } }
+    },
+    sakbuzz = {
+        "sakbuzz",           { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    mincer = {
+        "mincer",            { shtype = 0, radius = 3,   center = { 0, 0, 0 } }, true
+    },
+    breathe = {
+        "breathe",           { shtype = 0, radius = 3,   center = { 0, 0, 0 } }, true
+    },
+    electra = {
+        "witches_galantine", { shtype = 0, radius = 3,   center = { 0, 0, 0 } }, true
+    },
+    mosquito_bald = {
+        "mosquito_bald",     { shtype = 0, radius = 3,   center = { 0, 0, 0 } }, true
+    },
+    psi_field = {
+        "psi_field",         { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_esc = {
+        "teleport_esc",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_gar = {
+        "teleport_gar",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_agr = {
+        "teleport_agr",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_td = {
+        "teleport_td",       { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_dt = {
+        "teleport_dt",       { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_yan = {
+        "teleport_yan",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_as = {
+        "teleport_as",       { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_rad = {
+        "teleport_rad",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_prip = {
+        "teleport_prip",     { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    teleport_gen = {
+        "teleport_gen",      { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    gravi = {
+        "gravi_zone",        { shtype = 0, radius = 3,   center = { 0, 0, 0 } }
+    },
+    radioactive = {
+        "radioactive",       { shtype = 0, radius = 8,   center = { 0, 0, 0 } }
+    }
 }
 
 local arts_sections = {
-	new       = "_new",
-	balb_1    = "af_medusa",
-	balb_2    = "af_cristal_flower",
-	balb_3    = "af_night_star_capsule",
-	gravi_1   = "af_vyvert",
-	gravi_2   = "af_gravi",
-	gravi_3   = "af_gold_fish_capsule",
-	mincer_1  = "af_blood",
-	mincer_2  = "af_mincer_meat",
-	mincer_3  = "af_soul_capsule",
-	electra_1 = "af_electra_sparkler",
-	electra_2 = "af_electra_flash",
-	electra_3 = "af_electra_moonlight_capsule",
-	zharka_1  = "af_drops",
-	zharka_2  = "af_fireball",
-	zharka_3  = "af_cristall_capsule",
-	buzz_1    = "af_ameba_slime",
-	buzz_2    = "af_ameba_slug",
-	buzz_3    = "af_ameba_mica_capsule",
-	rusty_1   = "af_rusty_thorn",
-	rusty_2   = "af_rusty_kristall",
-	rusty_3   = "af_rusty_sea-urchin_capsule",
-	dummy_1   = "af_dummy_spring_capsule",
-	dummy_2   = "af_dummy_dummy_capsule",
-	dummy_3   = "af_dummy_battery_capsule",
-	dummy_4   = "af_dummy_pellicle_capsule",
-	dummy_5   = "af_dummy_kolobok_capsule",
-	dummy_6   = "af_dummy_glassbeads_capsule"
+    new       = "_new",
+    balb_1    = "af_medusa",
+    balb_2    = "af_cristal_flower",
+    balb_3    = "af_night_star_capsule",
+    gravi_1   = "af_vyvert",
+    gravi_2   = "af_gravi",
+    gravi_3   = "af_gold_fish_capsule",
+    mincer_1  = "af_blood",
+    mincer_2  = "af_mincer_meat",
+    mincer_3  = "af_soul_capsule",
+    electra_1 = "af_electra_sparkler",
+    electra_2 = "af_electra_flash",
+    electra_3 = "af_electra_moonlight_capsule",
+    zharka_1  = "af_drops",
+    zharka_2  = "af_fireball",
+    zharka_3  = "af_cristall_capsule",
+    buzz_1    = "af_ameba_slime",
+    buzz_2    = "af_ameba_slug",
+    buzz_3    = "af_ameba_mica_capsule",
+    rusty_1   = "af_rusty_thorn",
+    rusty_2   = "af_rusty_kristall",
+    rusty_3   = "af_rusty_sea-urchin_capsule",
+    dummy_1   = "af_dummy_spring_capsule",
+    dummy_2   = "af_dummy_dummy_capsule",
+    dummy_3   = "af_dummy_battery_capsule",
+    dummy_4   = "af_dummy_pellicle_capsule",
+    dummy_5   = "af_dummy_kolobok_capsule",
+    dummy_6   = "af_dummy_glassbeads_capsule"
 }
 
 local teleport_sections = {
-	teleport = "sak_teleport_" .. level.name()
+    teleport = "sak_teleport_" .. level.name()
 }
 
 level_anoms = {
-	marsh = {
-		120, 180, 1000,
-		{
-			mosquito_bald = 23,
-			gravi         = 21,
-			mincer        = 18,
-			sakbuzz       = 17,
-			radioactive   = 10,
-			electra       = 10,
-			breathe       = 1
-		}
-	},
-	generators = {
-		150, 220, 1000,
-		{
-			electra       = 25,
-			sakbuzz       = 20,
-			mosquito_bald = 14,
-			gravi         = 10,
-			mincer        = 10,
-			psi_field     = 10,
-			buzz          = 5,
-			greedy        = 4,
-			breathe       = 1,
-			teleport_gen  = 1
-		}
-	},
-	aver = {
-		100, 150, 1000,
-		{
-			sakbuzz       = 20,
-			mosquito_bald = 16,
-			mincer        = 15,
-			gravi         = 12,
-			radioactive   = 10,
-			psi_field     = 10,
-			electra       = 8,
-			buzz          = 5,
-			greedy        = 3,
-			breathe       = 1
-		}
-	},
-	limansk = {
-		30, 50, 1000,
-		{
-			mincer        = 20,
-			sakbuzz       = 20,
-			mosquito_bald = 15,
-			radioactive   = 15,
-			gravi         = 15,
-			electra       = 10,
-			buzz          = 5
-		}
-	},
-	deadcity = {
-		130, 180, 1000,
-		{
-			mosquito_bald = 23,
-			gravi         = 16,
-			mincer        = 15,
-			sakbuzz       = 13,
-			radioactive   = 12,
-			electra       = 8,
-			psi_field     = 5,
-			buzz          = 5,
-			greedy        = 3
-		}
-	},
-	red_forest = {
-		150, 200, 1000,
-		{
-			mosquito_bald = 20,
-			gravi         = 18,
-			mincer        = 18,
-			sakbuzz       = 17,
-			radioactive   = 10,
-			electra       = 9,
-			buzz          = 5,
-			greedy        = 3
-		}
-	},
-	lost_village = {
-		20, 30, 1000,
-		{
-			mosquito_bald = 20,
-			gravi         = 20,
-			mincer        = 19,
-			sakbuzz       = 17,
-			radioactive   = 8,
-			electra       = 10,
-			breathe       = 6
-		}
-	},
-	l01_escape = {
-		90, 120, 1000,
-		{
-			mosquito_bald = 34,
-			gravi         = 20,
-			mincer        = 20,
-			sakbuzz       = 15,
-			electra       = 10,
-			teleport_esc  = 1
-		}
-	},
-	hospital = {
-		10, 12, 1000,
-		{
-			mosquito_bald = 23,
-			gravi         = 21,
-			mincer        = 20,
-			sakbuzz       = 14,
-			electra       = 11,
-			radioactive   = 5,
-			buzz          = 5,
-			breathe       = 1
-		}
-	},
-	l02_garbage = {
-		150, 220, 800,
-		{
-			mincer        = 24,
-			sakbuzz       = 23,
-			mosquito_bald = 16,
-			gravi         = 14,
-			radioactive   = 10,
-			electra       = 10,
-			teleport_gar  = 1,
-			breathe       = 1,
-			greedy        = 1
-		}
-	},
-	l03_agroprom = {
-		150, 200, 800,
-		{
-			sakbuzz       = 21,
-			mincer        = 18,
-			gravi         = 17,
-			mosquito_bald = 16,
-			electra       = 10,
-			radioactive   = 10,
-			buzz          = 5,
-			teleport_agr  = 1,
-			breathe       = 1,
-			greedy        = 1
-		}
-	},
-	l04_darkvalley = {
-		150, 200, 1000,
-		{
-			sakbuzz       = 19,
-			mincer        = 17,
-			mosquito_bald = 13,
-			gravi         = 13,
-			radioactive   = 10,
-			buzz          = 10,
-			electra       = 9,
-			zharka_static = 6,
-			teleport_td   = 1,
-			breathe       = 1,
-			greedy        = 1
-		}
-	},
-	k01_darkscape = {
-		200, 250, 1000,
-		{
-			sakbuzz       = 21,
-			mincer        = 17,
-			mosquito_bald = 14,
-			gravi         = 13,
-			electra       = 10,
-			buzz          = 10,
-			radioactive   = 7,
-			zharka_static = 6,
-			breathe       = 1,
-			greedy        = 1
-		}
-	},
-	l05_bar = {
-		15, 30, 300,
-		{
-			mosquito_bald = 23,
-			mincer        = 23,
-			gravi         = 23,
-			sakbuzz       = 15,
-			electra       = 10,
-			radioactive   = 6
-		}
-	},
-	l06_rostok = {
-		20, 30, 800,
-		{
-			sakbuzz       = 30,
-			zharka_static = 24,
-			mincer        = 10,
-			mosquito_bald = 10,
-			radioactive   = 10,
-			electra       = 8,
-			gravi         = 5,
-			teleport_dt   = 1,
-			breathe       = 1,
-			psi_field     = 1
-		}
-	},
-	l08_yantar = {
-		80, 120, 400,
-		{
-			sakbuzz       = 22,
-			mosquito_bald = 13,
-			mincer        = 13,
-			gravi         = 13,
-			electra       = 13,
-			zharka_static = 11,
-			radioactive   = 10,
-			greedy        = 2,
-			breathe       = 1,
-			psi_field     = 1,
-			teleport_yan  = 1
-		}
-	},
-	l07_military = {
-		150,200,1000,
-		{
-			sakbuzz       = 26,
-			mincer        = 17,
-			mosquito_bald = 13,
-			gravi         = 12,
-			electra       = 10,
-			radioactive   = 10,
-			zharka_static = 6,
-			greedy        = 3,
-			teleport_as   = 1,
-			breathe       = 1,
-			psi_field     = 1
-		}
-	},
-	l10_radar = {
-		170, 220, 1000,
-		{
-			sakbuzz       = 26,
-			mincer        = 16,
-			mosquito_bald = 15,
-			gravi         = 15,
-			radioactive   = 6,
-			electra       = 7,
-			zharka_static = 5,
-			buzz          = 4,
-			greedy        = 6,
-			psi_field     = 3,
-			teleport_rad  = 1,
-			breathe       = 1
-		}
-	},
-	l11_pripyat = {
-		100, 180, 900,
-		{
-			sakbuzz       = 20,
-			greedy        = 15,
-			psi_field     = 12,
-			buzz          = 11,
-			breathe       = 10,
-			electra       = 10,
-			zharka_static = 8,
-			mincer        = 7,
-			mosquito_bald = 6,
-			teleport_prip = 1
-		}
-	},
-	l12_stancia_new = {
-		120, 180, 700,
-		{
-			buzz          = 10,
-			zharka_static = 20,
-			psi_field     = 25,
-			sakbuzz       = 25,
-			greedy        = 20
-		}
-	},
-	l12_stancia_2_new = {
-		200, 250, 1000,
-		{
-			zharka_static = 10,
-			psi_field     = 60,
-			sakbuzz       = 10,
-			greedy        = 20
-		}
-	}
+    marsh = {
+        120, 180, 1000,
+        {
+            mosquito_bald = 23,
+            gravi         = 21,
+            mincer        = 18,
+            sakbuzz       = 17,
+            radioactive   = 10,
+            electra       = 10,
+            breathe       = 1
+        }
+    },
+    generators = {
+        150, 220, 1000,
+        {
+            electra       = 25,
+            sakbuzz       = 20,
+            mosquito_bald = 14,
+            gravi         = 10,
+            mincer        = 10,
+            psi_field     = 10,
+            buzz          = 5,
+            greedy        = 4,
+            breathe       = 1,
+            teleport_gen  = 1
+        }
+    },
+    aver = {
+        100, 150, 1000,
+        {
+            sakbuzz       = 20,
+            mosquito_bald = 16,
+            mincer        = 15,
+            gravi         = 12,
+            radioactive   = 10,
+            psi_field     = 10,
+            electra       = 8,
+            buzz          = 5,
+            greedy        = 3,
+            breathe       = 1
+        }
+    },
+    limansk = {
+        30, 50, 1000,
+        {
+            mincer        = 20,
+            sakbuzz       = 20,
+            mosquito_bald = 15,
+            radioactive   = 15,
+            gravi         = 15,
+            electra       = 10,
+            buzz          = 5
+        }
+    },
+    deadcity = {
+        130, 180, 1000,
+        {
+            mosquito_bald = 23,
+            gravi         = 16,
+            mincer        = 15,
+            sakbuzz       = 13,
+            radioactive   = 12,
+            electra       = 8,
+            psi_field     = 5,
+            buzz          = 5,
+            greedy        = 3
+        }
+    },
+    red_forest = {
+        150, 200, 1000,
+        {
+            mosquito_bald = 20,
+            gravi         = 18,
+            mincer        = 18,
+            sakbuzz       = 17,
+            radioactive   = 10,
+            electra       = 9,
+            buzz          = 5,
+            greedy        = 3
+        }
+    },
+    lost_village = {
+        20, 30, 1000,
+        {
+            mosquito_bald = 20,
+            gravi         = 20,
+            mincer        = 19,
+            sakbuzz       = 17,
+            radioactive   = 8,
+            electra       = 10,
+            breathe       = 6
+        }
+    },
+    l01_escape = {
+        90, 120, 1000,
+        {
+            mosquito_bald = 34,
+            gravi         = 20,
+            mincer        = 20,
+            sakbuzz       = 15,
+            electra       = 10,
+            teleport_esc  = 1
+        }
+    },
+    hospital = {
+        10, 12, 1000,
+        {
+            mosquito_bald = 23,
+            gravi         = 21,
+            mincer        = 20,
+            sakbuzz       = 14,
+            electra       = 11,
+            radioactive   = 5,
+            buzz          = 5,
+            breathe       = 1
+        }
+    },
+    l02_garbage = {
+        150, 220, 800,
+        {
+            mincer        = 24,
+            sakbuzz       = 23,
+            mosquito_bald = 16,
+            gravi         = 14,
+            radioactive   = 10,
+            electra       = 10,
+            teleport_gar  = 1,
+            breathe       = 1,
+            greedy        = 1
+        }
+    },
+    l03_agroprom = {
+        150, 200, 800,
+        {
+            sakbuzz       = 21,
+            mincer        = 18,
+            gravi         = 17,
+            mosquito_bald = 16,
+            electra       = 10,
+            radioactive   = 10,
+            buzz          = 5,
+            teleport_agr  = 1,
+            breathe       = 1,
+            greedy        = 1
+        }
+    },
+    l04_darkvalley = {
+        150, 200, 1000,
+        {
+            sakbuzz       = 19,
+            mincer        = 17,
+            mosquito_bald = 13,
+            gravi         = 13,
+            radioactive   = 10,
+            buzz          = 10,
+            electra       = 9,
+            zharka_static = 6,
+            teleport_td   = 1,
+            breathe       = 1,
+            greedy        = 1
+        }
+    },
+    k01_darkscape = {
+        200, 250, 1000,
+        {
+            sakbuzz       = 21,
+            mincer        = 17,
+            mosquito_bald = 14,
+            gravi         = 13,
+            electra       = 10,
+            buzz          = 10,
+            radioactive   = 7,
+            zharka_static = 6,
+            breathe       = 1,
+            greedy        = 1
+        }
+    },
+    l05_bar = {
+        15, 30, 300,
+        {
+            mosquito_bald = 23,
+            mincer        = 23,
+            gravi         = 23,
+            sakbuzz       = 15,
+            electra       = 10,
+            radioactive   = 6
+        }
+    },
+    l06_rostok = {
+        20, 30, 800,
+        {
+            sakbuzz       = 30,
+            zharka_static = 24,
+            mincer        = 10,
+            mosquito_bald = 10,
+            radioactive   = 10,
+            electra       = 8,
+            gravi         = 5,
+            teleport_dt   = 1,
+            breathe       = 1,
+            psi_field     = 1
+        }
+    },
+    l08_yantar = {
+        80, 120, 400,
+        {
+            sakbuzz       = 22,
+            mosquito_bald = 13,
+            mincer        = 13,
+            gravi         = 13,
+            electra       = 13,
+            zharka_static = 11,
+            radioactive   = 10,
+            greedy        = 2,
+            breathe       = 1,
+            psi_field     = 1,
+            teleport_yan  = 1
+        }
+    },
+    l07_military = {
+        150,200,1000,
+        {
+            sakbuzz       = 26,
+            mincer        = 17,
+            mosquito_bald = 13,
+            gravi         = 12,
+            electra       = 10,
+            radioactive   = 10,
+            zharka_static = 6,
+            greedy        = 3,
+            teleport_as   = 1,
+            breathe       = 1,
+            psi_field     = 1
+        }
+    },
+    l10_radar = {
+        170, 220, 1000,
+        {
+            sakbuzz       = 26,
+            mincer        = 16,
+            mosquito_bald = 15,
+            gravi         = 15,
+            radioactive   = 6,
+            electra       = 7,
+            zharka_static = 5,
+            buzz          = 4,
+            greedy        = 6,
+            psi_field     = 3,
+            teleport_rad  = 1,
+            breathe       = 1
+        }
+    },
+    l11_pripyat = {
+        100, 180, 900,
+        {
+            sakbuzz       = 20,
+            greedy        = 15,
+            psi_field     = 12,
+            buzz          = 11,
+            breathe       = 10,
+            electra       = 10,
+            zharka_static = 8,
+            mincer        = 7,
+            mosquito_bald = 6,
+            teleport_prip = 1
+        }
+    },
+    l12_stancia_new = {
+        120, 180, 700,
+        {
+            buzz          = 10,
+            zharka_static = 20,
+            psi_field     = 25,
+            sakbuzz       = 25,
+            greedy        = 20
+        }
+    },
+    l12_stancia_2_new = {
+        200, 250, 1000,
+        {
+            zharka_static = 10,
+            psi_field     = 60,
+            sakbuzz       = 10,
+            greedy        = 20
+        }
+    }
 }
 
 level_arts = {
-	marsh = {
-		2, 4,
-		{
-			balb_1        = 14,
-			gravi_1       = 15,
-			mincer_1      = 14,
-			electra_1     = 14,
-			zharka_1      = 15,
-			buzz_1        = 14,
-			rusty_1       = 14
-		}
-	},
-	lost_village = {
-		0, 1,
-		{
-			electra_1     = 20,
-			zharka_1      = 20,
-			buzz_1        = 20,
-			rusty_1       = 20,
-			rusty_2       = 5,
-			buzz_2        = 5,
-			zharka_2      = 5,
-			electra_2     = 4,
-			zharka_3      = 1
-		}
-	},
-	l01_escape = {
-		1, 2,
-		{
-			balb_1        = 33,
-			gravi_1       = 32,
-			mincer_1      = 32,
-			balb_2        = 1,
-			gravi_2       = 1,
-			mincer_2      = 1
-		}
-	},
-	l02_garbage = {
-		1, 2,
-		{
-			balb_1        = 20,
-			gravi_1       = 20,
-			mincer_1      = 20,
-			electra_1     = 10,
-			zharka_1      = 10,
-			buzz_1        = 5,
-			mincer_2      = 4,
-			gravi_2       = 4,
-			balb_2        = 4,
-			electra_2     = 2,
-			zharka_2      = 1
-		}
-	},
-	hospital = {
-		0, 1,
-		{
-			buzz_1        = 45,
-			rusty_1       = 45,
-			buzz_2        = 4,
-			rusty_2       = 4,
-			rusty_3       = 1,
-			buzz_3        = 1
-		}
-	},
-	l03_agroprom = {
-		1, 3,
-		{
-			balb_1        = 15,
-			gravi_1       = 15,
-			mincer_1      = 15,
-			electra_1     = 15,
-			zharka_1      = 15,
-			electra_2     = 5,
-			mincer_2      = 5,
-			gravi_2       = 5,
-			balb_2        = 5,
-			zharka_2      = 5
-		}
-	},
-	l04_darkvalley = {
-		1, 3,
-		{
-			balb_1        = 15,
-			gravi_1       = 15,
-			mincer_1      = 15,
-			electra_1     = 15,
-			zharka_1      = 15,
-			buzz_1        = 5,
-			rusty_1       = 5,
-			balb_2        = 3,
-			zharka_2      = 3,
-			electra_2     = 3,
-			mincer_2      = 3,
-			gravi_2       = 3
-		}
-	},
-	k01_darkscape = {
-		2, 4,
-		{
-			balb_1        = 14,
-			gravi_1       = 14,
-			mincer_1      = 14,
-			electra_1     = 13,
-			zharka_1      = 13,
-			buzz_1        = 13,
-			rusty_1       = 12,
-			buzz_2        = 1,
-			zharka_2      = 1,
-			electra_2     = 1,
-			mincer_2      = 1,
-			gravi_2       = 1,
-			balb_2        = 1,
-			rusty_2       = 1
-		}
-	},
-	l05_bar = {
-		0, 1,
-		{
-			balb_1        = 25,
-			gravi_1       = 25,
-			mincer_1      = 25,
-			rusty_1       = 13,
-			rusty_2       = 3,
-			mincer_2      = 3,
-			gravi_2       = 3,
-			balb_2        = 3
-		}
-	},
-	l06_rostok = {
-		1, 2,
-		{
-			electra_1     = 19,
-			zharka_1      = 19,
-			rusty_1       = 19,
-			buzz_1        = 19,
-			rusty_2       = 5,
-			buzz_2        = 5,
-			zharka_2      = 5,
-			electra_2     = 5,
-			zharka_3      = 1,
-			electra_3     = 1,
-			buzz_3        = 1,
-			rusty_3       = 1
-		}
-	},
-	l08_yantar = {
-		1, 3,
-		{
-			balb_1        = 8,
-			gravi_1       = 9,
-			mincer_1      = 9,
-			electra_1     = 9,
-			zharka_1      = 9,
-			buzz_1        = 8,
-			rusty_1       = 8,
-			buzz_2        = 5,
-			electra_2     = 5,
-			mincer_2      = 5,
-			gravi_2       = 5,
-			balb_2        = 5,
-			zharka_2      = 5,
-			rusty_2       = 2,
-			buzz_3        = 1,
-			zharka_3      = 1,
-			electra_3     = 1,
-			mincer_3      = 1,
-			gravi_3       = 1,
-			balb_3        = 1,
-			rusty_3       = 1,
-			new           = 1
-		}
-	},
-	aver = {
-		2, 4,
-		{
-			balb_2        = 12,
-			gravi_2       = 12,
-			mincer_2      = 12,
-			electra_2     = 12,
-			zharka_2      = 12,
-			buzz_2        = 12,
-			rusty_2       = 12,
-			buzz_3        = 2,
-			zharka_3      = 2,
-			electra_3     = 2,
-			mincer_3      = 2,
-			gravi_3       = 2,
-			balb_3        = 2,
-			rusty_3       = 2,
-			new           = 2
-		}
-	},
-	l07_military = {
-		1, 2,
-		{
-			balb_1        = 8,
-			gravi_1       = 8,
-			mincer_1      = 8,
-			electra_1     = 8,
-			zharka_1      = 8,
-			buzz_1        = 8,
-			rusty_1       = 8,
-			rusty_2       = 6,
-			buzz_2        = 5,
-			zharka_2      = 5,
-			electra_2     = 5,
-			mincer_2      = 5,
-			gravi_2       = 5,
-			balb_2        = 5,
-			zharka_3      = 1,
-			buzz_3        = 1,
-			electra_3     = 1,
-			mincer_3      = 1,
-			gravi_3       = 1,
-			balb_3        = 1,
-			rusty_3       = 1,
-			new           = 1
-		}
-	},
-	generators = {
-		3, 5,
-		{
-			electra_1     = 47,
-			electra_2     = 40,
-			electra_3     = 10,
-			dummy_3       = 2,
-			new           = 1
-		}
-	},
-	red_forest = {
-		2, 3,
-		{
-			balb_2        = 10,
-			gravi_2       = 10,
-			mincer_2      = 10,
-			electra_2     = 10,
-			zharka_2      = 10,
-			buzz_2        = 10,
-			rusty_2       = 10,
-			zharka_3      = 4,
-			electra_3     = 3,
-			mincer_3      = 3,
-			gravi_3       = 4,
-			balb_3        = 4,
-			buzz_3        = 3,
-			rusty_3       = 4,
-			dummy_1       = 1,
-			dummy_5       = 1,
-			dummy_6       = 1,
-			new           = 2
-		}
-	},
-	limansk = {
-		1, 2,
-		{
-			balb_2        = 11,
-			gravi_2       = 11,
-			mincer_2      = 11,
-			electra_2     = 11,
-			zharka_2      = 11,
-			buzz_2        = 11,
-			rusty_2       = 11,
-			zharka_3      = 3,
-			electra_3     = 3,
-			mincer_3      = 3,
-			gravi_3       = 3,
-			balb_3        = 3,
-			buzz_3        = 3,
-			rusty_3       = 3,
-			new           = 2
-		}
-	},
-	deadcity = {
-		2, 3,
-		{
-			balb_2        = 7,
-			gravi_2       = 8,
-			mincer_2      = 8,
-			electra_2     = 7,
-			zharka_2      = 7,
-			buzz_2        = 7,
-			rusty_2       = 7,
-			zharka_3      = 5,
-			electra_3     = 5,
-			mincer_3      = 5,
-			gravi_3       = 5,
-			balb_3        = 5,
-			buzz_3        = 5,
-			rusty_3       = 5,
-			dummy_1       = 2,
-			dummy_2       = 2,
-			dummy_3       = 2,
-			dummy_4       = 2,
-			dummy_5       = 2,
-			dummy_6       = 2,
-			new           = 2
-		}
-	},
-	l10_radar = {
-		2, 3,
-		{
-			balb_2        = 9,
-			gravi_2       = 9,
-			mincer_2      = 9,
-			electra_2     = 9,
-			zharka_2      = 9,
-			buzz_2        = 9,
-			rusty_2       = 10,
-			zharka_3      = 3,
-			electra_3     = 3,
-			mincer_3      = 3,
-			gravi_3       = 3,
-			balb_3        = 3,
-			buzz_3        = 3,
-			rusty_3       = 3,
-			new           = 3,
-			dummy_1       = 2,
-			dummy_2       = 2,
-			dummy_3       = 2,
-			dummy_4       = 2,
-			dummy_5       = 2,
-			dummy_6       = 2
-		}
-	},
-	l11_pripyat = {
-		2, 3,
-		{
-			balb_2        = 7,
-			gravi_2       = 7,
-			mincer_2      = 7,
-			electra_2     = 7,
-			zharka_2      = 7,
-			buzz_2        = 7,
-			rusty_2       = 7,
-			zharka_3      = 5,
-			electra_3     = 5,
-			mincer_3      = 5,
-			gravi_3       = 5,
-			balb_3        = 5,
-			buzz_3        = 5,
-			rusty_3       = 5,
-			new           = 4,
-			dummy_1       = 2,
-			dummy_2       = 2,
-			dummy_3       = 2,
-			dummy_4       = 2,
-			dummy_5       = 2,
-			dummy_6       = 2
-		}
-	},
-	l12_stancia_new = {
-		3, 5,
-		{
-			new           = 12,
-			zharka_3      = 10,
-			electra_3     = 10,
-			mincer_3      = 10,
-			gravi_3       = 10,
-			balb_3        = 10,
-			buzz_3        = 10,
-			rusty_3       = 10,
-			dummy_1       = 3,
-			dummy_2       = 3,
-			dummy_3       = 3,
-			dummy_4       = 3,
-			dummy_5       = 3,
-			dummy_6       = 3
-		}
-	},
-	l12_stancia_2_new = {
-		3, 5,
-		{
-			new           = 12,
-			zharka_3      = 10,
-			electra_3     = 10,
-			mincer_3      = 10,
-			gravi_3       = 10,
-			balb_3        = 10,
-			buzz_3        = 10,
-			rusty_3       = 10,
-			dummy_1       = 3,
-			dummy_2       = 3,
-			dummy_3       = 3,
-			dummy_4       = 3,
-			dummy_5       = 3,
-			dummy_6       = 3
-		}
-	}
+    marsh = { 0, 3,
+        {
+            balb_1        = 14,
+            gravi_1       = 15,
+            mincer_1      = 14,
+            electra_1     = 14,
+            zharka_1      = 15,
+            buzz_1        = 14,
+            rusty_1       = 14
+        }
+    },
+    ---------------------------------------------------------------
+    lost_village = { 0, 1,
+        {
+            electra_1 = 20,   buzz_2    = 5,    zharka_3  = 1,
+            zharka_1  = 20,   zharka_2  = 5,
+            buzz_1    = 20,   electra_2 = 4,
+            rusty_1   = 20,   rusty_2   = 5
+        }
+    },
+    ---------------------------------------------------------------
+    l01_escape = { 0, 2,
+        {
+            balb_1    = 33,   balb_2    = 1,
+            gravi_1   = 32,   gravi_2   = 1,
+            mincer_1  = 32,   mincer_2  = 1
+        }
+    },
+    ---------------------------------------------------------------
+    l02_garbage = { 0, 2,
+        {
+            balb_1    = 20,   mincer_2  = 4,
+            gravi_1   = 20,   gravi_2   = 4,
+            mincer_1  = 20,   balb_2    = 4,
+            electra_1 = 10,   electra_2 = 2,
+            zharka_1  = 10,   zharka_2  = 1,
+            buzz_1    = 5
+        }
+    },
+    ---------------------------------------------------------------
+    hospital = { 0, 1,
+        {
+            buzz_1    = 45,   buzz_2   = 4,    rusty_3  = 1,
+            rusty_1   = 45,   rusty_2  = 4,    buzz_3   = 1
+       }
+    },
+    ---------------------------------------------------------------
+    l03_agroprom = { 0, 2,
+        {
+            balb_1    = 15,   electra_2 = 5,
+            gravi_1   = 15,   mincer_2  = 5,
+            mincer_1  = 15,   gravi_2   = 5,
+            electra_1 = 15,   balb_2    = 5,
+            zharka_1  = 15,   zharka_2  = 5
+        }
+    },
+    ---------------------------------------------------------------
+    l04_darkvalley = { 0, 2,
+        {
+            balb_1    = 15,   balb_2    = 3,
+            gravi_1   = 15,   zharka_2  = 3,
+            mincer_1  = 15,   electra_2 = 3,
+            electra_1 = 15,   mincer_2  = 3,
+            zharka_1  = 15,   gravi_2   = 3,
+            buzz_1    = 5,
+            rusty_1   = 5
+        }
+    },
+    ---------------------------------------------------------------
+    k01_darkscape = { 0, 3,
+        {
+            balb_1    = 14,   buzz_2    = 1,
+            gravi_1   = 14,   zharka_2  = 1,
+            mincer_1  = 14,   electra_2 = 1,
+            electra_1 = 13,   mincer_2  = 1,
+            zharka_1  = 13,   gravi_2   = 1,
+            buzz_1    = 13,   balb_2    = 1,
+            rusty_1   = 12,   rusty_2   = 1
+        }
+    },
+    ---------------------------------------------------------------
+    l05_bar = { 0, 1,
+        {
+            balb_1    = 25,   rusty_2   = 3,
+            gravi_1   = 25,   mincer_2  = 3,
+            mincer_1  = 25,   gravi_2   = 3,
+            rusty_1   = 13,   balb_2    = 3
+        }
+    },
+    ---------------------------------------------------------------
+    l06_rostok = { 0, 1,
+        {
+            electra_1 = 19,   rusty_2   = 5,    zharka_3  = 1,
+            zharka_1  = 19,   buzz_2    = 5,    electra_3 = 1,
+            rusty_1   = 19,   zharka_2  = 5,    buzz_3    = 1,
+            buzz_1    = 19,   electra_2 = 5,    rusty_3   = 1
+        }
+    },
+    ---------------------------------------------------------------
+    l08_yantar = { 0, 2,
+        {
+            balb_1    = 8,    buzz_2    = 5,    buzz_3    = 1,
+            gravi_1   = 9,    electra_2 = 5,    zharka_3  = 1,
+            mincer_1  = 9,    mincer_2  = 5,    electra_3 = 1,
+            electra_1 = 9,    gravi_2   = 5,    mincer_3  = 1,
+            zharka_1  = 9,    balb_2    = 5,    gravi_3   = 1,
+            buzz_1    = 8,    zharka_2  = 5,    balb_3    = 1,
+            rusty_1   = 8,    rusty_2   = 2,    rusty_3   = 1,
+            new       = 1
+        }
+    },
+    ---------------------------------------------------------------
+    aver = { 0, 4,
+        {
+            balb_2    = 12,   buzz_3    = 2,
+            gravi_2   = 12,   zharka_3  = 2,
+            mincer_2  = 12,   electra_3 = 2,
+            electra_2 = 12,   mincer_3  = 2,
+            zharka_2  = 12,   gravi_3   = 2,
+            buzz_2    = 12,   balb_3    = 2,
+            rusty_2   = 12,   rusty_3   = 2,
+            new       = 2
+        }
+    },
+    ---------------------------------------------------------------
+    l07_military = { 0, 2,
+        {
+            balb_1    = 8,    zharka_2  = 5,    zharka_3  = 1,
+            gravi_1   = 8,    electra_2 = 5,    buzz_3    = 1,
+            mincer_1  = 8,    mincer_2  = 5,    electra_3 = 1,
+            electra_1 = 8,    gravi_2   = 5,    mincer_3  = 1,
+            zharka_1  = 8,    balb_2    = 5,    gravi_3   = 1,
+            buzz_1    = 8,    rusty_2   = 6,    balb_3    = 1,
+            rusty_1   = 8,    buzz_2    = 5,    rusty_3   = 1,
+            new       = 1
+        }
+    },
+    ---------------------------------------------------------------
+    generators = { 0, 5,
+        {
+            electra_1 = 47,   electra_2 = 40,   electra_3 = 10,
+                                                dummy_3   = 2,
+            new       = 1
+        }
+    },
+    ---------------------------------------------------------------
+    red_forest = { 0, 2,
+        {
+            balb_2    = 10,   zharka_3  = 4,    dummy_1   = 1,
+            gravi_2   = 10,   electra_3 = 3,    dummy_5   = 1,
+            mincer_2  = 10,   mincer_3  = 3,    dummy_6   = 1,
+            electra_2 = 10,   gravi_3   = 3,
+            zharka_2  = 10,   balb_3    = 4,
+            buzz_2    = 10,   buzz_3    = 3,
+            rusty_2   = 10,   rusty_3   = 4,
+            new       = 3
+        }
+    },
+    ---------------------------------------------------------------
+    limansk = { 0, 2,
+        {
+            balb_2    = 11,   zharka_3  = 3,
+            gravi_2   = 11,   electra_3 = 3,
+            mincer_2  = 11,   mincer_3  = 3,
+            electra_2 = 11,   gravi_3   = 3,
+            zharka_2  = 11,   balb_3    = 3,
+            buzz_2    = 11,   buzz_3    = 3,
+            rusty_2   = 11,   rusty_3   = 3,
+            new       = 2
+        }
+    },
+    ---------------------------------------------------------------
+    deadcity = { 0, 3,
+        {
+            balb_2    = 7,    zharka_3  = 5,    dummy_1   = 2,
+            gravi_2   = 8,    electra_3 = 4,    dummy_2   = 2,
+            mincer_2  = 8,    mincer_3  = 5,    dummy_3   = 2,
+            electra_2 = 7,    gravi_3   = 5,    dummy_4   = 2,
+            zharka_2  = 7,    balb_3    = 5,    dummy_5   = 2,
+            buzz_2    = 7,    buzz_3    = 4,    dummy_6   = 2,
+            rusty_2   = 7,    rusty_3   = 5,
+            new       = 4
+        }
+    },
+    ---------------------------------------------------------------
+    l10_radar = { 1, 3,
+        {
+            balb_2    = 9,    zharka_3  = 3,    dummy_1   = 2,
+            gravi_2   = 9,    electra_3 = 3,    dummy_2   = 2,
+            mincer_2  = 9,    mincer_3  = 3,    dummy_3   = 2,
+            electra_2 = 9,    gravi_3   = 3,    dummy_4   = 2,
+            zharka_2  = 9,    balb_3    = 3,    dummy_5   = 2,
+            buzz_2    = 9,    buzz_3    = 3,    dummy_6   = 2,
+            rusty_2   = 9,    rusty_3   = 3,
+            new       = 4
+        }
+    },
+    ---------------------------------------------------------------
+    l11_pripyat = { 2, 3,
+        {
+            balb_2    = 7,    zharka_3  = 5,    dummy_1   = 2,
+            gravi_2   = 7,    electra_3 = 5,    dummy_2   = 2,
+            mincer_2  = 7,    mincer_3  = 5,    dummy_3   = 2,
+            electra_2 = 7,    gravi_3   = 5,    dummy_4   = 2,
+            zharka_2  = 7,    balb_3    = 5,    dummy_5   = 2,
+            buzz_2    = 7,    buzz_3    = 4,    dummy_6   = 2,
+            rusty_2   = 7,    rusty_3   = 5,
+            new       = 5
+        }
+    },
+    ---------------------------------------------------------------
+    l12_stancia_new = { 2, 5,
+        {
+            zharka_3  = 10,   dummy_1   = 3,
+            electra_3 = 10,   dummy_2   = 3,
+            mincer_3  = 10,   dummy_3   = 3,
+            gravi_3   = 10,   dummy_4   = 3,
+            balb_3    = 10,   dummy_5   = 3,
+            buzz_3    = 10,   dummy_6   = 3,
+            rusty_3   = 10,
+            new       = 12
+        }
+    },
+    ---------------------------------------------------------------
+    l12_stancia_2_new = { 3, 5,
+        {
+            zharka_3  = 10,   dummy_1   = 3,
+            electra_3 = 10,   dummy_2   = 3,
+            mincer_3  = 10,   dummy_3   = 3,
+            gravi_3   = 10,   dummy_4   = 3,
+            balb_3    = 10,   dummy_5   = 3,
+            buzz_3    = 10,   dummy_6   = 3,
+            rusty_3   = 10,
+            new       = 12,
+        }
+    }
 }
 
 local on_anoms_per_level = {}
@@ -855,728 +678,729 @@ local anti_spawn_zones   = {}
 local initialized        = false
 
 function init()
-	db.anoms_list = anoms_list -- make copy
-	local lname   = level.name()
-	local sini    = ini_file( "scripts\\amk\\anoms\\anoms.ltx" )
-	if xr_build_id < 6200 then
-		fatal_error( " incompatible xr_build_id " .. tostring( xr_build_id ) )
-	end
-	if sini:section_exist( lname ) then
-		wprintf( "[~T]. #DBG: loading anomalies for level~C0A %s~C07", lname )
-		local ini               = sini:object()
-		local sc                = ini[ lname ]
-		local result, id, value = nil, nil, nil
-		local count             = sini:line_count( lname )
-		for index = 0, count - 1 do
-			result, id, value = sc:r_line( index )
-			if result and amk.trim( id ) ~= "" then
-				local s = SplitStr( id, "," )
-				local v = vector():set(
-					tonumber( s[ 1 ] ),
-					tonumber( s[ 2 ] ),
-					tonumber( s[ 3 ] )
-				)
-				table.insert ( anti_spawn_zones, { v, tonumber( s[ 4 ] ) } )
-			end
-		end
-		wprintf( "[~T]. #DBG: parsed~C0D %d~C07 lines", count )
-	end
-	sini:release()
-	collect_info()
-	initialized = true
+    db.anoms_list = anoms_list -- make copy
+    local lname   = level.name()
+    local sini    = ini_file( "scripts\\amk\\anoms\\anoms.ltx" )
+    if xr_build_id < 6200 then
+        fatal_error( " incompatible xr_build_id " .. tostring( xr_build_id ) )
+    end
+    if sini:section_exist( lname ) then
+        wprintf( "[~T]. #DBG: loading anomalies for level~C0A %s~C07", lname )
+        local ini               = sini:object()
+        local sc                = ini[ lname ]
+        local result, id, value = nil, nil, nil
+        local count             = sini:line_count( lname )
+        for index = 0, count - 1 do
+            result, id, value = sc:r_line( index )
+            if result and amk.trim( id ) ~= "" then
+                local s = SplitStr( id, "," )
+                local v = vector():set(
+                    tonumber( s[ 1 ] ), tonumber( s[ 2 ] ), tonumber( s[ 3 ] )
+                )
+                table.insert ( anti_spawn_zones, { v, tonumber( s[ 4 ] ) } )
+            end
+        end
+        wprintf( "[~T]. #DBG: parsed~C0D %d~C07 lines", count )
+    end
+    sini:release()
+    collect_info()
+    initialized = true
 end
 
 function randomize_arts()
-	if timers.check_timer( "bron_safe_rel" ) then return end
-	local rnd_chanse = 0.77
-	local bino       = db.actor:item_in_slot( 4 )
-	if bino ~= nil then
-		local sc = bino:section()
-		if sc and sc == "wpn_binoc" then rnd_chanse = 0.67 end
-	end
-	-- здесь будет цикл по телепорту существующих артов
-	if dsh.get_next_random( "amk_anoms.randomize_arts" ) < rnd_chanse then
-		local ids = registry.level_objects( "af_*", true )
-		local obj = registry.convert_ids( ids, server_obj )
-		for id, sobj in pairs( obj ) do
-			if
-				sobj.parent_id
-				and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID )
-				and not str_in_tab( sobj:section_name(), {
-            		"unknown",
-            		"_full_akkum",
-            		"dummy_green"
-        		})
-				and not test.is_protected_art( sobj )
-			then
-				wprintf( "@----------------------- OH NOES!!  released: %s", sobj:name() )
-				misc.release_obj( sobj )
-				break
-			end
-		end
-	end
+    if timers.check_timer( "bron_safe_rel" ) then return end
+    -- local rnd_chanse = 0.77
+    -- local bino       = db.actor:item_in_slot( 4 )
+    -- if bino ~= nil then
+    --     local sc = bino:section()
+    --     if sc and sc == "wpn_binoc" then rnd_chanse = 0.67 end
+    -- end
+    -- здесь будет цикл по телепорту существующих артов
+    -- if dsh.get_next_random( "amk_anoms.randomize_arts" ) < rnd_chanse then
+        local ids = registry.level_objects( "af_*", true )
+        local obj = registry.convert_ids( ids, server_obj )
+        for id, sobj in pairs( obj ) do
+            if
+                sobj.parent_id
+                and ( sobj.parent_id == nil or sobj.parent_id == BAD_OBJ_ID )
+                and not str_in_tab( sobj:section_name(), {
+                    "unknown",
+                    "_full_akkum",
+                    "dummy_green"
+                })
+                and not test.is_protected_art( sobj )
+            then
+                wprintf( "@----------------------- OH NOES!!  released: %s", sobj:name() )
+                misc.release_obj( sobj )
+                break
+            end
+        end
+    -- end
 end
 
 function get_all_anoms( filter )
-	return registry.sc_objects( "zone_*", true, filter or 15 )
+    return registry.sc_objects( "zone_*", true, filter or 15 )
 end
 
 function test_around( pos, radius )
-	local ids     = misc.find_around( pos, "physic_destroyable_object", radius )
-	local cnt     = #ids
-	local result  = false
-	if cnt > 0 then
-		for i = 1, cnt do
-			local obj = g_sim:object( ids [ i ] )
-			if ( obj ~= nil ) then
-				local pk    = get_netpk( obj, 1 )
-				local data  = pk:get()
-				local v     = data.visual_name
-				if strpos( v, "box_wood" ) ~= nil then result = true end
-			end
-		end
-		return result
-	end
-	return false
+    local ids     = misc.find_around( pos, "physic_destroyable_object", radius )
+    local cnt     = #ids
+    local result  = false
+    if cnt > 0 then
+        for i = 1, cnt do
+            local obj = g_sim:object( ids [ i ] )
+            if ( obj ~= nil ) then
+                local pk    = get_netpk( obj, 1 )
+                local data  = pk:get()
+                local v     = data.visual_name
+                if strpos( v, "box_wood" ) ~= nil then result = true end
+            end
+        end
+        return result
+    end
+    return false
 end
 
 function check_is_anom( sobj )
-	if sobj == nil then return false end
-	local ci = sobj:clsid()
-	--ODS("[~T/~B]. #DBG: anoms countes="..tostring(sobj:name()).."   cl: "..ci)
-	if
-		( ci >= CLID_ZONE_BURNING_FUZZ and ci <= CLID_ZONE_AMEBA )
-		or strposx( sobj:name(), "amk_zone_radioactive_" )
-	then
-		return true
-	else
-		return false
-	end
+    if sobj == nil then return false end
+    local ci = sobj:clsid()
+    --ODS("[~T/~B]. #DBG: anoms countes="..tostring(sobj:name()).."   cl: "..ci)
+    if
+        ( ci >= CLID_ZONE_BURNING_FUZZ and ci <= CLID_ZONE_AMEBA )
+        or strposx( sobj:name(), "amk_zone_radioactive_" )
+    then
+        return true
+    else
+        return false
+    end
 end
 
 function update_anoms_cache() -- сравнительно медленная функция, сканирует все аномалии в игре
-	anoms_cache = {}
-	wprintf( "[~T/~B]. #PERF: update_anoms_cache() #1" )
-	local ids  = get_all_anoms( 15 )
-	local objl = registry.convert_ids( ids, server_obj )
-	wprintf( "[~T/~B]. #PERF: update_anoms_cache() #2, count =~C0D %d~C07", #ids )
-	for id, sobj in pairs( objl ) do
-		if check_is_anom( sobj ) then
-			anoms_cache [ id ] = sobj
-		end
-	end
-	wprintf( "[~T/~B]. #PERF: update_anoms_cache() #3" )
+    anoms_cache = {}
+    wprintf( "[~T/~B]. #PERF: update_anoms_cache() #1" )
+    local ids  = get_all_anoms( 15 )
+    local objl = registry.convert_ids( ids, server_obj )
+    wprintf( "[~T/~B]. #PERF: update_anoms_cache() #2, count =~C0D %d~C07", #ids )
+    for id, sobj in pairs( objl ) do
+        if check_is_anom( sobj ) then
+            anoms_cache [ id ] = sobj
+        end
+    end
+    wprintf( "[~T/~B]. #PERF: update_anoms_cache() #3" )
 end
 
 function foreach_anom( func, parms, in_level, no_excl )
-	if anoms_cache_actual ~= bind_stalker.binder_ticks then
-		update_anoms_cache()
-		anoms_cache_actual = bind_stalker.binder_ticks
-	end
-	local lname    = level.name()
-	local gv_range = const.game_vertices[ lname ]
-	for id, sobj in pairs( anoms_cache ) do
-		local gv = sobj.m_game_vertex_id -- проверка по геймвертексам быстрее
-		if
-			in_level
-			and ( gv < gv_range[ 1 ] or gv > gv_range[ 2 ] )
-		then
-		else
-			local map = sobj.level_name
-			if no_excl or not check_exclusion( sobj, map ) then
-				func( sobj, parms, map )
-			end
-		end
-	end
+    if anoms_cache_actual ~= bind_stalker.binder_ticks then
+        update_anoms_cache()
+        anoms_cache_actual = bind_stalker.binder_ticks
+    end
+    local lname    = level.name()
+    local gv_range = const.game_vertices[ lname ]
+    for id, sobj in pairs( anoms_cache ) do
+        local gv = sobj.m_game_vertex_id -- проверка по геймвертексам быстрее
+        if
+            in_level
+            and ( gv < gv_range[ 1 ] or gv > gv_range[ 2 ] )
+        then
+        else
+            local map = sobj.level_name
+            if no_excl or not check_exclusion( sobj, map ) then
+                func( sobj, parms, map )
+            end
+        end
+    end
 end
 
 function collect_info()
-	local parms = {
-		lname   = level.name(),
-		st_cntr = { on = 0, off = 0 }
-	}
-	local here          = 0
-	on_anoms_per_level  = {}
-	local late_disabled = 0
-	local func = function( sobj, parms, map )
-					local status = get_anomaly_status( sobj )
-					--amk.add_spot_on_map(sobj.id,'red_location',sobj:name().." "..status)
-					if status == "" or status == "del" then
-						--wprintf("[~T]. #DBG: removing anomaly~C0F %s~C07 due status =~C0E '%s'~C07", sobj:name(), status)
-						if not anom_disabled[ sobj.id ] then
-							set_online_anomaly_status( sobj.id, "del" )
-							late_disabled = late_disabled + 1
-						end
-						misc.release_obj( sobj )
-					end
-					if
-						    ( map == parms.lname )
-						and ( (status == "on") or ( status == "off") )
-					then
-						if parms.st_cntr[ status ] == nil then
-							parms.st_cntr[ status ] = 1
-						else
-							parms.st_cntr[ status ] = parms.st_cntr[ status ] + 1
-						end
-						here = here + 1
-					end
-				end
-	foreach_anom( func, parms )
-	local on_anoms  = parms.st_cntr.on
-	local off_anoms = parms.st_cntr.off
-	 wprintf("[~T/~U/~B].~C0B #PERF(amk_anoms.collect_info):~C07 on=%d, off=%d, here=%d, map=%s ", on_anoms, off_anoms, here, parms.lname)
-	if     on_anoms < 5 and off_anoms < 5 then
-		generate_anoms( "on"  )
-		generate_anoms( "off" )
-	elseif on_anoms > 5	and off_anoms < 5 then
-		generate_anoms( "off" )
-	elseif on_anoms < 5 and off_anoms > 5 then
-		generate_anoms( "on"  )
-	end
-	if late_disabled > 0 then
-		schedule.add( "syn_mon", "amk_anoms.sync_mon()", 2000 ) -- sync#1
-	end
+    local parms = {
+        lname   = level.name(),
+        st_cntr = { on = 0, off = 0 }
+    }
+    local here          = 0
+    on_anoms_per_level  = {}
+    local late_disabled = 0
+    local func = function( sobj, parms, map )
+                    local status = get_anomaly_status( sobj )
+                    --amk.add_spot_on_map(sobj.id,'red_location',sobj:name().." "..status)
+                    if status == "" or status == "del" then
+                        --wprintf("[~T]. #DBG: removing anomaly~C0F %s~C07 due status =~C0E '%s'~C07", sobj:name(), status)
+                        if not anom_disabled[ sobj.id ] then
+                            set_online_anomaly_status( sobj.id, "del" )
+                            late_disabled = late_disabled + 1
+                        end
+                        misc.release_obj( sobj )
+                    end
+                    if
+                            map == parms.lname
+                        and ( status == "on" or status == "off" )
+                    then
+                        if parms.st_cntr[ status ] == nil then
+                            parms.st_cntr[ status ] = 1
+                        else
+                            parms.st_cntr[ status ] = parms.st_cntr[ status ] + 1
+                        end
+                        here = here + 1
+                    end
+                end
+    foreach_anom( func, parms )
+    local on_anoms  = parms.st_cntr.on
+    local off_anoms = parms.st_cntr.off
+    wprintf(
+        "[~T/~U/~B].~C0B #PERF(amk_anoms.collect_info):~C07 on=%d, off=%d, here=%d, map=%s ",
+        on_anoms, off_anoms, here, parms.lname
+    )
+    if     on_anoms < 5 and off_anoms < 5 then
+        generate_anoms( "on"  )
+        generate_anoms( "off" )
+    elseif on_anoms > 5 and off_anoms < 5 then
+        generate_anoms( "off" )
+    elseif on_anoms < 5 and off_anoms > 5 then
+        generate_anoms( "on"  )
+    end
+    if late_disabled > 0 then
+        schedule.add( "syn_mon", "amk_anoms.sync_mon()", 2000 ) -- sync#1
+    end
 end
 
 function sync_mon() -- sync main
-	for npc_id, anoms in pairs( anoms_for_npc ) do
-		local obj = client_obj( npc_id )
-		if obj then
-			local trestr = obj:in_restrictions()
-			obj:remove_restrictions( "", trestr )
-			-- wprintf("[~T]. #DBG: syncing restrictors for npc~C0A %s restr =~C0F %s~C07 ", obj:name(), trestr)
-			actual_anoms_for_npc[ npc_id ] = nil
-			npc_restrictors_need_update[ npc_id ] = true
-			amk_anoms.synchronize( obj )
-		else
-			anoms_for_npc[ npc_id ] = nil
-		end
-	end
+    for npc_id, anoms in pairs( anoms_for_npc ) do
+        local obj = client_obj( npc_id )
+        if obj then
+            local trestr = obj:in_restrictions()
+            obj:remove_restrictions( "", trestr )
+            -- wprintf("[~T]. #DBG: syncing restrictors for npc~C0A %s restr =~C0F %s~C07 ", obj:name(), trestr)
+            actual_anoms_for_npc[ npc_id ] = nil
+            npc_restrictors_need_update[ npc_id ] = true
+            amk_anoms.synchronize( obj )
+        else
+            anoms_for_npc[ npc_id ] = nil
+        end
+    end
 end
 
 local anoms_difficulty_koef = {
-	[ 0 ] = 0.7,
-	[ 1 ] = 0.8,
-	[ 2 ] = 0.9,
-	[ 3 ] = 1.0
+    [ 0 ] = 0.7,
+    [ 1 ] = 0.8,
+    [ 2 ] = 0.9,
+    [ 3 ] = 1.0
 }
 
 function generate_anoms( status )
-	local lname = level.name()
-	if const.underground( lname ) == true then return end
-	local v = level_anoms[ lname ]
-	if v then
-		local cnt, mxx = 0, lua_random( v[ 1 ], v[ 2 ] ) * anoms_difficulty_koef[ level.get_game_difficulty() ]
-		while cnt < mxx do
-			if generate_anomaly( status ) then cnt = cnt + 1 end
-		end
-		ODS( sprintf( "[~T]. #DBG: generated %d anoms, st=%s", cnt, status ) )
-	end
+    local lname = level.name()
+    if const.underground( lname ) == true then return end
+    local v = level_anoms[ lname ]
+    if v then
+        local cnt, mxx = 0, lua_random( v[ 1 ], v[ 2 ] ) * anoms_difficulty_koef[ level.get_game_difficulty() ]
+        while cnt < mxx do
+            if generate_anomaly( status ) then cnt = cnt + 1 end
+        end
+        ODS( sprintf( "[~T]. #DBG: generated %d anoms, st=%s", cnt, status ) )
+    end
 end
 
 function check_coordinates( pos )
-	local lname = level.name()
-	for k, v in pairs( anti_spawn_zones ) do
-		if pos:distance_to( v[ 1 ] ) <= v[ 2 ] then return false end
-	end
-	local hides = amk_hideouts.hide[ lname ]
-	local tmp
-	if hides then
-		for i, o in ipairs( hides ) do
-			if o.zone then
-				for j, v in ipairs( o.zone ) do
-					local v1 = vector():set( unpack( v.p1 ) )
-					local v2 = vector():set( unpack( v.p2 ) )
-					if v.p3 then
-						local v3 = vector():set( unpack( v.p3 ) )
-						tmp = amk.check_npc_in_box( pos, v1, v2, v3 )
-					else
-						tmp = amk.check_npc_in_box( pos, v1, v2 )
-					end
-					if tmp == true then return false end
-				end
-			end
-		end
-	end
-	return true
+    local lname = level.name()
+    for k, v in pairs( anti_spawn_zones ) do
+        if pos:distance_to( v[ 1 ] ) <= v[ 2 ] then return false end
+    end
+    local hides = amk_hideouts.hide[ lname ]
+    local tmp
+    if hides then
+        for i, o in ipairs( hides ) do
+            if o.zone then
+                for j, v in ipairs( o.zone ) do
+                    local v1 = vector():set( unpack( v.p1 ) )
+                    local v2 = vector():set( unpack( v.p2 ) )
+                    if v.p3 then
+                        local v3 = vector():set( unpack( v.p3 ) )
+                        tmp = amk.check_npc_in_box( pos, v1, v2, v3 )
+                    else
+                        tmp = amk.check_npc_in_box( pos, v1, v2 )
+                    end
+                    if tmp == true then return false end
+                end
+            end
+        end
+    end
+    return true
 end
 
 function generate_anomaly( status )
-	local new_lv, pos = const.random_level_point()
-	if new_lv == nil or not check_coordinates( pos ) then return false end
-	local new_gv = const.best_game_vertex( pos )
-	return spawn_rand_anom( pos, new_gv, new_lv, status )
+    local new_lv, pos = const.random_level_point()
+    if new_lv == nil or not check_coordinates( pos ) then return false end
+    local new_gv = const.best_game_vertex( pos )
+    return spawn_rand_anom( pos, new_gv, new_lv, status )
 end
 
 function generate_arts()
-	local lname = level.name()
-	local lvc = const.level_vertices[ lname ]
-	if
-		lvc == nil
-		or const.underground( lname ) == true
-		or lname == "l12_stancia_2_new"
-	then
-		return true
-	end
-	generate_test( lname )
-	local v = level_arts[ lname ]
-	if v then
-		local cnt, mxx = 0, dsh.get_next_random( "amk_anoms.generate_arts", v[ 1 ],( v[ 2 ] ) )
-		while cnt < mxx do
-			if generate_art( lname ) then cnt = cnt + 1	end
-		end
-	end
+    local lname = level.name()
+    local lvc = const.level_vertices[ lname ]
+    if
+        lvc == nil
+        or const.underground( lname ) == true
+        or lname == "l12_stancia_2_new"
+    then
+        return true
+    end
+    generate_test( lname )
+    local v = level_arts[ lname ]
+    if v then
+        local cnt, mxx = 0, dsh.get_next_random( "amk_anoms.generate_arts", v[ 1 ],( v[ 2 ] ) )
+        while cnt < mxx do
+            if generate_art( lname ) then cnt = cnt + 1 end
+        end
+    end
 end
 
 function generate_test( lname )
-	local new_lv, pos = const.random_level_point( lname )
-	if ( new_lv == nil ) then return false end
-	local new_gw = const.best_game_vertex( pos, lname )
-	return spawn_test ( pos, new_gv, new_lv, lname )
+    local new_lv, pos = const.random_level_point( lname )
+    if ( new_lv == nil ) then return false end
+    local new_gw = const.best_game_vertex( pos, lname )
+    return spawn_test ( pos, new_gv, new_lv, lname )
 end
 
 function spawn_test( pos, gv, lv, lname )
-	local section = "testsak_"..lname
-	return  amk.spawn_item( section, pos, gv, lv )
+    local section = "testsak_"..lname
+    return  amk.spawn_item( section, pos, gv, lv )
 end
 
 function check_coordinates_arts( pos, lname )
-	for k, v in pairs( anti_spawn_zones ) do
-		if pos:distance_to( v[ 1 ] ) <= v[ 2 ] then return false end
-	end
-	local hides = amk_hideouts.hide[ lname ]
-	local tmp
-	if hides then
-		for i, o in ipairs( hides ) do
-			if o.zone then
-				for j, v in ipairs( o.zone ) do
-					if v.p3 then
-						tmp = amk.check_npc_in_box( pos,
-							vector():set( unpack( v.p1 ) ),
-							vector():set( unpack( v.p2 ) ),
-							vector():set( unpack( v.p3 ) )
-						)
-					else
-						tmp = amk.check_npc_in_box( pos,
-							vector():set( unpack( v.p1 ) ),
-							vector():set( unpack( v.p2 ) )
-						)
-					end
-					if tmp == true then	return false end
-				end
-			end
-		end
-	end
-	return true
+    for k, v in pairs( anti_spawn_zones ) do
+        if pos:distance_to( v[ 1 ] ) <= v[ 2 ] then return false end
+    end
+    local hides = amk_hideouts.hide[ lname ]
+    local tmp
+    if hides then
+        for i, o in ipairs( hides ) do
+            if o.zone then
+                for j, v in ipairs( o.zone ) do
+                    if v.p3 then
+                        tmp = amk.check_npc_in_box( pos,
+                            vector():set( unpack( v.p1 ) ),
+                            vector():set( unpack( v.p2 ) ),
+                            vector():set( unpack( v.p3 ) )
+                        )
+                    else
+                        tmp = amk.check_npc_in_box( pos,
+                            vector():set( unpack( v.p1 ) ),
+                            vector():set( unpack( v.p2 ) )
+                        )
+                    end
+                    if tmp == true then return false end
+                end
+            end
+        end
+    end
+    return true
 end
 
 function generate_art( lname )
-	local new_lv, pos = const.random_level_point( lname )
-	if
-		( new_lv == nil )
-		or ( not check_coordinates_arts( pos, lname ) )
-	then
-		return false
-	end
-	local new_gw = const.best_game_vertex( pos )
-	return spawn_rand_arts( pos, new_gv, new_lv, lname )
+    local new_lv, pos = const.random_level_point( lname )
+    if
+        ( new_lv == nil )
+        or ( not check_coordinates_arts( pos, lname ) )
+    then
+        return false
+    end
+    local new_gw = const.best_game_vertex( pos )
+    return spawn_rand_arts( pos, new_gv, new_lv, lname )
 end
 
 local new_arts = {
-	"af_medus_new",
-	"af_crist_new",
-	"af_flower_new",
-	"af_star_new",
-	"af_glass_new",
-	"af_sul_new"
+    "af_medus_new",
+    "af_crist_new",
+    "af_flower_new",
+    "af_star_new",
+    "af_glass_new",
+    "af_sul_new"
 }
 
 function spawn_rand_arts( pos, gv, lv, lname )
-	local rnd = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 100 )
-	for k, v in pairs( level_arts[ lname ][ 3 ] ) do
-		if rnd <= v then
-			if
-				    not strpos( arts_sections[ k ], "_new",      1, true )
-				and	not strpos( arts_sections[ k ], "af_dummy_", 1, true )
-			then
-				local arts_dyn = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 21 )
-				if strpos( arts_sections[ k ], "_capsule", 1, true ) then
-					arts_dyn = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 15, 21 )
-				end
-				if     arts_dyn >= 1  and arts_dyn <= 3  then section = ( arts_sections[ k ].."_dyn1d" ) break
-				elseif arts_dyn >= 4  and arts_dyn <= 9  then section = ( arts_sections[ k ].."_dyn2d" ) break
-				elseif arts_dyn >= 10 and arts_dyn <= 16 then section = ( arts_sections[ k ].."_dyn3d" ) break
-				elseif arts_dyn >= 17 and arts_dyn <= 20 then section = ( arts_sections[ k ].."_dyn4d" ) break
-				elseif arts_dyn == 21 then                    section = ( arts_sections[ k ].."_dyn5d" ) break
-				end
-			elseif strpos( arts_sections[ k ], "_new", 1, true ) then
-				if dsh.get_next_random( "amk_anoms.spawn_rand_arts" ) > 0.5 then
-					section = new_arts[ dsh.get_next_random( "amk_anoms.spawn_rand_arts", #new_arts ) ] break
-				else
-					section = "af_unknown_" .. dsh.get_next_random( "amk_anoms.spawn_rand_arts", 1, 31 ) .. "_new" break
-				end
-			else
-				section = ( arts_sections[ k ] ) break
-			end
-		end
-		rnd = rnd - v
-	end
-	if section then
-		return spawn_art( section, pos, gv, lv )
-	else
-		section = ( arts_sections[ k ] )
-		return spawn_art( section, pos, gv, lv )
-	end
+    local rnd = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 100 )
+    for k, v in pairs( level_arts[ lname ][ 3 ] ) do
+        if rnd <= v then
+            if
+                    not strpos( arts_sections[ k ], "_new",      1, true )
+                and not strpos( arts_sections[ k ], "af_dummy_", 1, true )
+            then
+                local arts_dyn = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 21 )
+                if strpos( arts_sections[ k ], "_capsule", 1, true ) then
+                    arts_dyn = dsh.get_next_random( "amk_anoms.spawn_rand_arts", 15, 21 )
+                end
+                if     arts_dyn >= 1  and arts_dyn <= 3  then section = ( arts_sections[ k ].."_dyn1d" ) break
+                elseif arts_dyn >= 4  and arts_dyn <= 9  then section = ( arts_sections[ k ].."_dyn2d" ) break
+                elseif arts_dyn >= 10 and arts_dyn <= 16 then section = ( arts_sections[ k ].."_dyn3d" ) break
+                elseif arts_dyn >= 17 and arts_dyn <= 20 then section = ( arts_sections[ k ].."_dyn4d" ) break
+                elseif arts_dyn == 21 then                    section = ( arts_sections[ k ].."_dyn5d" ) break
+                end
+            elseif strpos( arts_sections[ k ], "_new", 1, true ) then
+                if dsh.get_next_random( "amk_anoms.spawn_rand_arts" ) > 0.5 then
+                    section = new_arts[ dsh.get_next_random( "amk_anoms.spawn_rand_arts", #new_arts ) ] break
+                else
+                    section = "af_unknown_" .. dsh.get_next_random( "amk_anoms.spawn_rand_arts", 1, 31 ) .. "_new" break
+                end
+            else
+                section = ( arts_sections[ k ] ) break
+            end
+        end
+        rnd = rnd - v
+    end
+    if section then
+        return spawn_art( section, pos, gv, lv )
+    else
+        section = ( arts_sections[ k ] )
+        return spawn_art( section, pos, gv, lv )
+    end
 end
 
 function spawn_art( section, pos, gv, lv )
-	local sobj = amk.spawn_item( section, pos, gv, lv )
-	if sobj then
-		--amk.add_spot_on_map( sobj.id, 'red_location', section )
-		-- занесём для статистики id артов в nlc_vars, во время выброса будем чистить...
-		test.add_art_to_vars( sobj.id )
-		return sobj
-	end
+    local sobj = amk.spawn_item( section, pos, gv, lv )
+    if sobj then
+        --amk.add_spot_on_map( sobj.id, 'red_location', section )
+        -- занесём для статистики id артов в nlc_vars, во время выброса будем чистить...
+        test.add_art_to_vars( sobj.id )
+        return sobj
+    end
 end
 
 function spawn_anomaly( section, pos, gv, lv, shape, status, offs )
-	local sobj = amk.spawn_item(
-		section, sak.v3f( pos.x, pos.y + 0.1, pos.z ), gv, lv
-	)
-	if sobj then
-		anom_disabled[ sobj.id ] = false
-		local pk = get_netpk( sobj )
-		if pk then
-			SetDbgVar( "spawn_anom", section, true )
-			local data = pk:get()
-			if shape.shtype == 0 then
-				if type( shape.center ) == "table" then
-					data.shapes:addSphere(
-						shape.radius,
-						sak.v3f(
-						    shape.center[ 1 ],
-						    shape.center[ 2 ],
-						    shape.center[ 3 ]
-						)
-					)
-				else
-					data.shapes:addSphere(
-						shape.radius,
-						sak.v3f(
-						    shape.center.x,
-						    shape.center.y,
-						    shape.center.z
-						)
-					)
-				end
-			elseif shape.v1 then
-				data.shapes:addBox(
-					sak.v3f( shape.v1[ 1 ], shape.v1[ 2 ], shape.v1[ 3 ] ),
-					sak.v3f( shape.v2[ 1 ], shape.v2[ 2 ], shape.v2[ 3 ] ),
-					sak.v3f( shape.v3[ 1 ], shape.v3[ 2 ], shape.v3[ 3 ] ),
-					sak.v3f( shape.offset[ 1 ], shape.offset[ 2 ], shape.offset[ 3 ] )
-				)
-			end
-			data.custom_data = modify_anomaly_custom_data( data.custom_data, status )
-			pk:set( data )
-		end
-	end
-	return sobj
+    local sobj = amk.spawn_item(
+        section, sak.v3f( pos.x, pos.y + 0.1, pos.z ), gv, lv
+    )
+    if sobj then
+        anom_disabled[ sobj.id ] = false
+        local pk = get_netpk( sobj )
+        if pk then
+            SetDbgVar( "spawn_anom", section, true )
+            local data = pk:get()
+            if shape.shtype == 0 then
+                if type( shape.center ) == "table" then
+                    data.shapes:addSphere(
+                        shape.radius,
+                        sak.v3f(
+                            shape.center[ 1 ],
+                            shape.center[ 2 ],
+                            shape.center[ 3 ]
+                        )
+                    )
+                else
+                    data.shapes:addSphere(
+                        shape.radius,
+                        sak.v3f(
+                            shape.center.x,
+                            shape.center.y,
+                            shape.center.z
+                        )
+                    )
+                end
+            elseif shape.v1 then
+                data.shapes:addBox(
+                    sak.v3f( shape.v1[ 1 ], shape.v1[ 2 ], shape.v1[ 3 ] ),
+                    sak.v3f( shape.v2[ 1 ], shape.v2[ 2 ], shape.v2[ 3 ] ),
+                    sak.v3f( shape.v3[ 1 ], shape.v3[ 2 ], shape.v3[ 3 ] ),
+                    sak.v3f( shape.offset[ 1 ], shape.offset[ 2 ], shape.offset[ 3 ] )
+                )
+            end
+            data.custom_data = modify_anomaly_custom_data( data.custom_data, status )
+            pk:set( data )
+        end
+    end
+    return sobj
 end
 
 function spawn_rand_anom( pos, gv, lv, status )
-	local lname   = level.name()
-	local offs    = false
-	local shape1  = {}
-	local section = "zone_ice"
-	if exclusive_chance > lua_random( 100 ) then
-		shape1 = { shtype = 0, radius = 4, center = { 0, 0, 0 } }
-	else
-		local rnd    = lua_random( 100 )
-		local suffix = ''
-		for k, v in pairs( anom_suffixes[ lname ] ) do
-			if rnd <= v then suffix = k break end
-			rnd = rnd - v
-		end
-		rnd = lua_random( 100 )
-		for k, v in pairs( level_anoms[ lname ][ 4 ] ) do
-			if rnd <= v then section = anoms_sections[ k ] break end
-			rnd = rnd - v
-		end
-		shape1 = section[ 2 ]
-		if section[ 3 ] and suffix == '_strong' then
-			rnd = lua_random()
-			local lok_offs = ( sak.level_difficulty[ lname ] - 1 )
-			if rnd < lok_offs then offs = true end
-		end
-		section = anom_prefix .. section[ 1 ] .. suffix
-	end
-	return spawn_anomaly( section, pos, gv, lv, shape1, status, offs )
+    local lname   = level.name()
+    local offs    = false
+    local shape1  = {}
+    local section = "zone_ice"
+    if exclusive_chance > lua_random( 100 ) then
+        shape1 = { shtype = 0, radius = 4, center = { 0, 0, 0 } }
+    else
+        local rnd    = lua_random( 100 )
+        local suffix = ''
+        for k, v in pairs( anom_suffixes[ lname ] ) do
+            if rnd <= v then suffix = k break end
+            rnd = rnd - v
+        end
+        rnd = lua_random( 100 )
+        for k, v in pairs( level_anoms[ lname ][ 4 ] ) do
+            if rnd <= v then section = anoms_sections[ k ] break end
+            rnd = rnd - v
+        end
+        shape1 = section[ 2 ]
+        if section[ 3 ] and suffix == '_strong' then
+            rnd = lua_random()
+            local lok_offs = ( sak.level_difficulty[ lname ] - 1 )
+            if rnd < lok_offs then offs = true end
+        end
+        section = anom_prefix .. section[ 1 ] .. suffix
+    end
+    return spawn_anomaly( section, pos, gv, lv, shape1, status, offs )
 end
 
 function set_anomaly_status( sobj, status )
-	if sobj and sobj.id then
-		local anom_id = sobj.id
-		if status == "del" then end
-		local pk         = get_netpk(sobj)
-		local data       = pk:get()
-		data.custom_data = modify_anomaly_custom_data( data.custom_data, status )
-		pk:set( data )
-		set_online_anomaly_status( anom_id, status )
-	end
+    if sobj and sobj.id then
+        local anom_id = sobj.id
+        if status == "del" then end
+        local pk         = get_netpk(sobj)
+        local data       = pk:get()
+        data.custom_data = modify_anomaly_custom_data( data.custom_data, status )
+        pk:set( data )
+        set_online_anomaly_status( anom_id, status )
+    end
 end
 
 function modify_anomaly_custom_data( cd, status )
-	cd = amk.parse_custom_data( cd )
-	if not cd then cd = {} end
-	if not cd.dyn_anom then cd.dyn_anom = {} end
-	cd.dyn_anom.status = status
-	return amk.gen_custom_data( cd )
+    cd = amk.parse_custom_data( cd )
+    if not cd then cd = {} end
+    if not cd.dyn_anom then cd.dyn_anom = {} end
+    cd.dyn_anom.status = status
+    return amk.gen_custom_data( cd )
 end
 
 function set_online_anomaly_status( obj_id, status )
-	local obj               = client_obj( obj_id )
-	local disable           = ( status == "off" or status == "del" )
-	anom_disabled[ obj_id ] = disable
-	if obj then
-		if disable then
-			obj:disable_anomaly()
-			--wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, off obj #%d, name = %s ", obj_id, obj:name())
-		else
-			obj:enable_anomaly()
-			local sobj = g_sim:object( obj_id )
-			--wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07,on obj #%d, name = %s ", obj_id, sobj:name())
-			add_anomaly( obj_id, sobj.position, 3 )
-		end
-		--else
-		--wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, not found obj #%d ", obj_id)
-	end
-	local sobj = server_obj( obj_id )
-	if sobj and disable then
-		--wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, server found obj #%d, name = %s ", obj_id, sobj:name())
-		remove_anomaly( obj_id )
-		restrictor_deleted( obj_id, sobj:name() )
-	end
+    local obj               = client_obj( obj_id )
+    local disable           = ( status == "off" or status == "del" )
+    anom_disabled[ obj_id ] = disable
+    if obj then
+        if disable then
+            obj:disable_anomaly()
+            --wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, off obj #%d, name = %s ", obj_id, obj:name())
+        else
+            obj:enable_anomaly()
+            local sobj = g_sim:object( obj_id )
+            --wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07,on obj #%d, name = %s ", obj_id, sobj:name())
+            add_anomaly( obj_id, sobj.position, 3 )
+        end
+        --else
+        --wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, not found obj #%d ", obj_id)
+    end
+    local sobj = server_obj( obj_id )
+    if sobj and disable then
+        --wprintf("[~T].~C0C #WARN:~C0F set_online_anomaly_status~C07, server found obj #%d, name = %s ", obj_id, sobj:name())
+        remove_anomaly( obj_id )
+        restrictor_deleted( obj_id, sobj:name() )
+    end
 end
 
 function get_anomaly_status( sobj )
-	local stat = ""
-	if sobj == nil or sobj:name() == "sar_teleport_zone_0000" then return stat end
-	local pk = get_netpk( sobj )
-	if pk then
-		local data = pk:get()
-		local cd   = data.custom_data
-		cd         = amk.parse_custom_data( cd )
-		if not cd.dyn_anom then return stat end
-		if not cd.dyn_anom.status then return stat end
-		stat = cd.dyn_anom.status
-		--if strposx( sobj:name(), "amk_zone_radioactive" ) then misc.dump_table ( cd ) end
-	end
-	return stat
+    local stat = ""
+    if sobj == nil or sobj:name() == "sar_teleport_zone_0000" then return stat end
+    local pk = get_netpk( sobj )
+    if pk then
+        local data = pk:get()
+        local cd   = data.custom_data
+        cd         = amk.parse_custom_data( cd )
+        if not cd.dyn_anom then return stat end
+        if not cd.dyn_anom.status then return stat end
+        stat = cd.dyn_anom.status
+        --if strposx( sobj:name(), "amk_zone_radioactive" ) then misc.dump_table ( cd ) end
+    end
+    return stat
 end
 
 blow_out_turn_off_anomalies = false
 
 function update()
-	if initialized == false then return end
+    if initialized == false then return end
 end
 
 function turn_off_all()
-	--ODS("[~T/~B]. #DBG: 64K enum 2")
-	local func = 	function( sobj, parms, map )
-						local status = get_anomaly_status( sobj )
-						if status == "on" then
-							set_anomaly_status( sobj, "del" )
-						end
-				 	end
-	foreach_anom( func, {} )
+    --ODS("[~T/~B]. #DBG: 64K enum 2")
+    local func =    function( sobj, parms, map )
+                        local status = get_anomaly_status( sobj )
+                        if status == "on" then
+                            set_anomaly_status( sobj, "del" )
+                        end
+                    end
+    foreach_anom( func, {} )
 end
 
 function pre_blow_off() turn_off_all() end
 
 function after_blow_on()
-	--ODS("[~T/~B]. #DBG: 64K enum 3, включение аномалий.")
-	SetVerbosity( 1 )
-	local func = 	function( sobj, parms, map )
-						local status = get_anomaly_status( sobj )
-						if ( status == "off" ) --and not test_around(sobj.position, 3)
-						then set_anomaly_status( sobj, "on" ) end
-					end --function
-	foreach_anom( func, {} )
-	SetVerbosity( 4 )
-	move_mgr.invalidate_pp_accessibility()
-	--ODS("[~T/~B]. #DBG: 64K enum 3, ok.")
+    --ODS("[~T/~B]. #DBG: 64K enum 3, включение аномалий.")
+    SetVerbosity( 1 )
+    local func =    function( sobj, parms, map )
+                        local status = get_anomaly_status( sobj )
+                        if ( status == "off" ) --and not test_around(sobj.position, 3)
+                        then set_anomaly_status( sobj, "on" ) end
+                    end --function
+    foreach_anom( func, {} )
+    SetVerbosity( 4 )
+    move_mgr.invalidate_pp_accessibility()
+    --ODS("[~T/~B]. #DBG: 64K enum 3, ok.")
 end
 
 function check_exclusion( obj, map )
-	local n = obj:name()
-	if strposx( n, "amk_" ) then return false end
-	if const.underground( map ) then return true end
-	return str_in_tab(
-	                  	n,
-						{
-							"_zone_zharka_static",
-							"tutorial",
-							"sak_zone_",
-							"esc_zone_witches",
-							"esc_zone_buzz",
-							"_mincer",
-							"sak_mil_zone_",
-							"zone_radioactive_",
-						}
-					)
+    local n = obj:name()
+    if strposx( n, "amk_" ) then return false end
+    if const.underground( map ) then return true end
+    return str_in_tab(
+                        n,
+                        {
+                            "_zone_zharka_static",
+                            "tutorial",
+                            "sak_zone_",
+                            "esc_zone_witches",
+                            "esc_zone_buzz",
+                            "_mincer",
+                            "sak_mil_zone_",
+                            "zone_radioactive_",
+                        }
+                    )
 end
 
 function init_if_needed( nid )
-	if anoms_for_npc[ nid ] == nil then
-		anoms_for_npc[ nid ] = {}
-	end
-	if actual_anoms_for_npc[ nid ] == nil then
-		actual_anoms_for_npc[ nid ] = {}
-	end
-	return anoms_for_npc[ nid ], actual_anoms_for_npc[ nid ]
+    if anoms_for_npc[ nid ] == nil then
+        anoms_for_npc[ nid ] = {}
+    end
+    if actual_anoms_for_npc[ nid ] == nil then
+        actual_anoms_for_npc[ nid ] = {}
+    end
+    return anoms_for_npc[ nid ], actual_anoms_for_npc[ nid ]
 end
 
 function add_restriction( npc, _id, name )
-	local nid = npc:id()
-	if name == nil then
-		if client_obj( _id ) then
-			name = client_obj( _id ):name()
-		end
-	end
-	if not name or strposx( name, "_self" ) then --get_console():execute("load ~~~ add_restriction(): Warning! Nonexistent restrictor id "..id)
-		return
-	end
-	init_if_needed( nid )
-	if anoms_for_npc[ nid ][ _id ] then
-	else
-		anoms_for_npc[ nid ][ _id ] = name
-		npc_restrictors_need_update[ nid ] = true
-	end
+    local nid = npc:id()
+    if name == nil then
+        if client_obj( _id ) then
+            name = client_obj( _id ):name()
+        end
+    end
+    if not name or strposx( name, "_self" ) then --get_console():execute("load ~~~ add_restriction(): Warning! Nonexistent restrictor id "..id)
+        return
+    end
+    init_if_needed( nid )
+    if anoms_for_npc[ nid ][ _id ] then
+    else
+        anoms_for_npc[ nid ][ _id ] = name
+        npc_restrictors_need_update[ nid ] = true
+    end
 end
 
 function remove_restriction( npc, id, name, immed )
-	local nid = npc:id()
-	if name == nil then
-		name = ( client_obj( id ) and client_obj( id ):name() )
-	end
-	if not name then return end
-	init_if_needed( nid )
-	if immed then
-		if actual_anoms_for_npc[ nid ][ id ] then
-			npc:remove_restrictions( "", name )
-			actual_anoms_for_npc[ nid ][ id ] = nil
-			npcs_for_anom[ id ][ nid ]        = nil
-		end
-		if anoms_for_npc[ nid ][ id ] then
-			anoms_for_npc[ nid ][ id ]        = nil
-		end
-	else
-		if anoms_for_npc[ nid ][ id ] then
-			anoms_for_npc[ nid ][ id ]         = nil
-			npc_restrictors_need_update[ nid ] = true
-		end
-	end
+    local nid = npc:id()
+    if name == nil then
+        name = ( client_obj( id ) and client_obj( id ):name() )
+    end
+    if not name then return end
+    init_if_needed( nid )
+    if immed then
+        if actual_anoms_for_npc[ nid ][ id ] then
+            npc:remove_restrictions( "", name )
+            actual_anoms_for_npc[ nid ][ id ] = nil
+            npcs_for_anom[ id ][ nid ]        = nil
+        end
+        if anoms_for_npc[ nid ][ id ] then
+            anoms_for_npc[ nid ][ id ]        = nil
+        end
+    else
+        if anoms_for_npc[ nid ][ id ] then
+            anoms_for_npc[ nid ][ id ]         = nil
+            npc_restrictors_need_update[ nid ] = true
+        end
+    end
 end
 
 function restrictor_deleted( id, name )
-	for nid, anoms in pairs( anoms_for_npc ) do
-		if anoms[ id ] then
-			anoms[ id ] = nil
-			npc_restrictors_need_update[ nid ] = true
-		end
-	end
+    for nid, anoms in pairs( anoms_for_npc ) do
+        if anoms[ id ] then
+            anoms[ id ] = nil
+            npc_restrictors_need_update[ nid ] = true
+        end
+    end
 end
 
 function clear_to_release( id )
-	local cnt
-	if npcs_for_anom[ id ] then
-		for nid in pairs( npcs_for_anom[ id ] ) do cnt = cnt + 1 end
-		return cnt == 0
-	else
-		return true
-	end
+    local cnt
+    if npcs_for_anom[ id ] then
+        for nid in pairs( npcs_for_anom[ id ] ) do cnt = cnt + 1 end
+        return cnt == 0
+    else
+        return true
+    end
 end
 
 function have_pending_sync( npc )
-	local nid = npc:id()
-	return npc_restrictors_need_update[ nid ] == true
+    local nid = npc:id()
+    return npc_restrictors_need_update[ nid ] == true
 end
 
 --local max_dynamic_restrictors_count=0
 
 function amk_anoms.synchronize( npc )
-	--get_console():execute("load ~~~ syncronize__"..npc:name())
-	local nid = npc:id()
-	--local cnt=0
-	local anoms,actual = init_if_needed( nid ) -- выбор аномалий, в т.ч. актуальных
-	local add, rem = "", ""
-	local first    = true
-	for id,name in pairs( actual ) do
-		if anoms[ id ] == nil then
-			if first then
-				first = false
-				rem   = name
-			else
-				rem   = name .. "," .. rem
-			end
-			if npcs_for_anom[ id ] then
-				npcs_for_anom[ id ][ nid ] = nil
-			end
-			actual[ id ] = nil
-		end
-	end
-	first = true
-	for id, name in pairs( anoms ) do
-		if not actual[id] then
-			if first then
-				first = false
-				add   = name
-			else
-				add   = name .. "," .. add
-			end
-			if npcs_for_anom[ id ] == nil then
-				npcs_for_anom[ id ] = {}
-			end
-			npcs_for_anom[ id ][ nid ] = true
-			actual[ id ] = name
-		end
-	end
-	if rem ~= "" then
-		npc:remove_restrictions( "", rem )
-	end
-	if add ~= "" then
-		-- wprintf("[~T]. #DBG: for npc~C0A %s~C07 adding in-restrictions~C0F{ %s }~C07 ", npc:name(), add)
-		npc:add_restrictions( "", add )
-	end
-	npc_restrictors_need_update[ nid ] = false
+    --get_console():execute("load ~~~ syncronize__"..npc:name())
+    local nid = npc:id()
+    --local cnt=0
+    local anoms,actual = init_if_needed( nid ) -- выбор аномалий, в т.ч. актуальных
+    local add, rem = "", ""
+    local first    = true
+    for id,name in pairs( actual ) do
+        if anoms[ id ] == nil then
+            if first then
+                first = false
+                rem   = name
+            else
+                rem   = name .. "," .. rem
+            end
+            if npcs_for_anom[ id ] then
+                npcs_for_anom[ id ][ nid ] = nil
+            end
+            actual[ id ] = nil
+        end
+    end
+    first = true
+    for id, name in pairs( anoms ) do
+        if not actual[id] then
+            if first then
+                first = false
+                add   = name
+            else
+                add   = name .. "," .. add
+            end
+            if npcs_for_anom[ id ] == nil then
+                npcs_for_anom[ id ] = {}
+            end
+            npcs_for_anom[ id ][ nid ] = true
+            actual[ id ] = name
+        end
+    end
+    if rem ~= "" then
+        npc:remove_restrictions( "", rem )
+    end
+    if add ~= "" then
+        -- wprintf("[~T]. #DBG: for npc~C0A %s~C07 adding in-restrictions~C0F{ %s }~C07 ", npc:name(), add)
+        npc:add_restrictions( "", add )
+    end
+    npc_restrictors_need_update[ nid ] = false
 end
 
 function unreg_in_anom_manager( npc )
-	local nid   = npc:id()
-	local anoms = anoms_for_npc[ nid ]
-	if anoms then
-		for aid in pairs( anoms ) do
-			if npcs_for_anom[ aid ] then
-				npcs_for_anom[ aid ][ nid ] = nil
-			end
-		end
-		anoms_for_npc[ nid ] = nil
-	end
+    local nid   = npc:id()
+    local anoms = anoms_for_npc[ nid ]
+    if anoms then
+        for aid in pairs( anoms ) do
+            if npcs_for_anom[ aid ] then
+                npcs_for_anom[ aid ][ nid ] = nil
+            end
+        end
+        anoms_for_npc[ nid ] = nil
+    end
 end
 
 function register_anomaly( sobj )
-	local status = get_anomaly_status( sobj )
-	if status == "del" or status == "off" then
-		return false
-	else
-		add_anomaly( sobj.id, sobj.position, 5 ) --ввести радиусы
-		return true
-	end
+    local status = get_anomaly_status( sobj )
+    if status == "del" or status == "off" then
+        return false
+    else
+        add_anomaly( sobj.id, sobj.position, 5 ) --ввести радиусы
+        return true
+    end
 end
 
 function bind( obj )
-	obj:bind_object( anom_binder( obj ) )
+    obj:bind_object( anom_binder( obj ) )
 end
 
 ------------------------------------------------------------------------------------
@@ -1584,105 +1408,105 @@ end
 class "anom_binder" (object_binder)
 
 function anom_binder:__init( obj ) super( obj )
-	-- wprintf("[~T]. #DBG: anom_binder:__init() for object %s ", self.object:name())
+    -- wprintf("[~T]. #DBG: anom_binder:__init() for object %s ", self.object:name())
 end
 
 function anom_binder:net_spawn( sobj )
-	if not object_binder.net_spawn( self,sobj ) then
-		return false
-	end
-	if not register_anomaly( sobj ) then
-		self.object:disable_anomaly()
-	end
-	return true
+    if not object_binder.net_spawn( self,sobj ) then
+        return false
+    end
+    if not register_anomaly( sobj ) then
+        self.object:disable_anomaly()
+    end
+    return true
 end
 
 function anom_binder:update()
-	local id = self.object:id()
-	if not anom_list[ id ] then
-		wprintf(
-			"[~T].~C0C #WARN~C07: anom_binder:update() called for object~C0A %s~C07 not present in anom_list",
-			self.object:name()
-		)
-	end
+    local id = self.object:id()
+    if not anom_list[ id ] then
+        wprintf(
+            "[~T].~C0C #WARN~C07: anom_binder:update() called for object~C0A %s~C07 not present in anom_list",
+            self.object:name()
+        )
+    end
 end
 
 function anom_binder:net_destroy()
-	remove_anomaly( self.object:id() )
-	object_binder.net_destroy( self )
+    remove_anomaly( self.object:id() )
+    object_binder.net_destroy( self )
 end
 
 -----------------------------------------------------------------------------------
 
 function add_anomaly( id, pos, radius )
-	--ODS("[~T]. #DBG: удаляем объект008 ~C0A"..id.."  name=  "..client_obj(id):name().." x= "..pos.x.." y= "..pos.y.." z= "..pos.z.."~C07")
-	anom_list[ id ] = { pos = pos, radius = 5 }
+    --ODS("[~T]. #DBG: удаляем объект008 ~C0A"..id.."  name=  "..client_obj(id):name().." x= "..pos.x.." y= "..pos.y.." z= "..pos.z.."~C07")
+    anom_list[ id ] = { pos = pos, radius = 5 }
 end
 
 function remove_anomaly( id )
-	if anom_list then anom_list[ id ] = nil end
+    if anom_list then anom_list[ id ] = nil end
 end
 
 function update_list()
-	local ids = get_all_anoms( 7 ) -- online anoms
-	for i, id in ipairs( ids ) do
-		local sobj = g_sim:object( id )
-		if sobj then
-			register_anomaly( sobj )
-		end
-	end
+    local ids = get_all_anoms( 7 ) -- online anoms
+    for i, id in ipairs( ids ) do
+        local sobj = g_sim:object( id )
+        if sobj then
+            register_anomaly( sobj )
+        end
+    end
 end
 
 if level.present then
-	update_list()
+    update_list()
 end
 
 function get_nearest_anomaly( npc )
-	return get_nearest_anomaly_for_pos( npc:position() )
+    return get_nearest_anomaly_for_pos( npc:position() )
 end
 
 function get_nearest_anomaly_for_pos( posn )
-	local anomid
-	local pos, radius
-	local mindist = 10000000
-	for id, o in pairs( anom_list ) do
-		local dist = posn:distance_to( o.pos ) - o.radius
-		if (dist < mindist) and client_obj( id ) then
-			mindist = dist
-			anomid  = id
-			pos     = o.pos
-			radius  = o.radius
-		end
-	end
-	return anomid, pos, radius, mindist
+    local anomid
+    local pos, radius
+    local mindist = 10000000
+    for id, o in pairs( anom_list ) do
+        local dist = posn:distance_to( o.pos ) - o.radius
+        if (dist < mindist) and client_obj( id ) then
+            mindist = dist
+            anomid  = id
+            pos     = o.pos
+            radius  = o.radius
+        end
+    end
+    return anomid, pos, radius, mindist
 end
 
 function get_anomaly_list( npc, radius )
-	return get_anomaly_list_for_pos( npc:position(), radius )
+    return get_anomaly_list_for_pos( npc:position(), radius )
 end
 
 function get_anomaly_list_for_pos( posn, radius )
-	if not anom_list then return {} end
-	local ret = {}
-	for id, o in pairs( anom_list ) do
-		local obj = client_obj( id )
-		if obj then
-			local dist = posn:distance_to( o.pos ) - o.radius
-			if dist <= radius then
-				table.insert(
-				    ret,
-					{
-						id      = id,
-						name    = obj:name(),
-						pos     = o.pos,
-						radius  = o.radius,
-						dist    = dist
-					}
-				)
-			end
-		else
-			remove_anomaly( id )
-		end
-	end -- for
-	return ret
+    if not anom_list then return {} end
+    local ret = {}
+    for id, o in pairs( anom_list ) do
+        local obj = client_obj( id )
+        if obj then
+            local dist = posn:distance_to( o.pos ) - o.radius
+            if dist <= radius then
+                table.insert(
+                    ret,
+                    {
+                        id      = id,
+                        name    = obj:name(),
+                        pos     = o.pos,
+                        radius  = o.radius,
+                        dist    = dist
+                    }
+                )
+            end
+        else
+            remove_anomaly( id )
+        end
+    end -- for
+    return ret
 end
